@@ -41,12 +41,13 @@ test("global nav collapses and icon buttons keep 44px targets", async ({
   await page.setViewportSize({ width: 720, height: 900 });
   await page.goto("/");
 
-  const toggle = page.getByRole("button", { name: "Menu" });
+  const banner = page.getByRole("banner");
+  const toggle = banner.getByRole("button", { name: "Menu" });
   await expect(toggle).toBeVisible();
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
 
   for (const name of ["Search tools", "Menu"]) {
-    const box = await page.getByRole("button", { name }).boundingBox();
+    const box = await banner.getByRole("button", { name }).boundingBox();
     if (!box) throw new Error(`${name} button is not visible`);
     expect(box.width).toBeGreaterThanOrEqual(44);
     expect(box.height).toBeGreaterThanOrEqual(44);
@@ -75,4 +76,31 @@ test("keyboard focus shows the focus ring on the skip link", async ({
   await expect(skipLink).toBeVisible();
   await expect(skipLink).toHaveCSS("outline-color", "rgb(13, 148, 136)");
   await expect(skipLink).toHaveCSS("outline-width", "2px");
+});
+
+test("navigation buttons show the design-system focus ring", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 720, height: 900 });
+  await page.goto("/");
+
+  const banner = page.getByRole("banner");
+  const search = banner.getByRole("button", { name: "Search tools" });
+  const menu = banner.getByRole("button", { name: "Menu" });
+
+  await page.keyboard.press("Tab"); // skip link
+  await page.keyboard.press("Tab"); // logo
+  await page.keyboard.press("Tab"); // search trigger
+  await expect(search).toBeFocused();
+  await expect(search).toHaveCSS("outline-width", "2px");
+  await expect(search).toHaveCSS("outline-style", "solid");
+  await expect(search).toHaveCSS("outline-color", "rgb(13, 148, 136)");
+  await expect(search).toHaveCSS("outline-offset", "2px");
+
+  await page.keyboard.press("Tab"); // menu toggle
+  await expect(menu).toBeFocused();
+  await expect(menu).toHaveCSS("outline-width", "2px");
+  await expect(menu).toHaveCSS("outline-style", "solid");
+  await expect(menu).toHaveCSS("outline-color", "rgb(13, 148, 136)");
+  await expect(menu).toHaveCSS("outline-offset", "2px");
 });
