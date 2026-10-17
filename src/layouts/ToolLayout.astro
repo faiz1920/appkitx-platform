@@ -1,0 +1,97 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import GlobalNav from "../components/GlobalNav.astro";
+import Footer from "../components/Footer.astro";
+import ToolCard from "../components/ToolCard.astro";
+
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface RelatedTool {
+  title: string;
+  description: string;
+  href: string;
+  icon: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  toolName: string;
+  toolDescription: string;
+  breadcrumb?: BreadcrumbItem[];
+  relatedTools?: RelatedTool[];
+}
+
+const {
+  title,
+  description,
+  toolName,
+  toolDescription,
+  breadcrumb = [],
+  relatedTools = [],
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <GlobalNav />
+  <main id="main">
+    <div class="mx-auto max-w-(--layout-prose) px-6 py-10 md:py-12">
+      {breadcrumb.length > 0 && (
+        <nav aria-label="Breadcrumb" class="text-caption text-text-muted">
+          <ol class="flex flex-wrap items-center gap-2">
+            {breadcrumb.map((item, index) => (
+              <li class="flex items-center gap-2">
+                {index > 0 && <span aria-hidden="true">/</span>}
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    class="focus-ring text-accent hover:text-accent-hover"
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <span aria-current="page">{item.label}</span>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+
+      <h1 class="mt-4 text-headline text-text-primary">{toolName}</h1>
+      <p class="mt-2 max-w-(--layout-tool) text-body-lg text-text-secondary">
+        {toolDescription}
+      </p>
+
+      <div class="mt-8 max-w-(--layout-tool)">
+        <slot name="tool" />
+      </div>
+
+      <div class="prose mt-16">
+        <slot />
+      </div>
+    </div>
+
+    {relatedTools.length > 0 && (
+      <section class="bg-surface-subtle">
+        <div class="mx-auto max-w-(--layout-container) px-6 py-16 md:py-(--layout-section-y)">
+          <h2 class="text-title text-text-primary">Related tools</h2>
+          <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-(--layout-grid-gap) lg:grid-cols-3">
+            {relatedTools.map((tool) => (
+              <ToolCard
+                title={tool.title}
+                description={tool.description}
+                icon={tool.icon}
+                href={tool.href}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+  </main>
+  <Footer />
+</BaseLayout>

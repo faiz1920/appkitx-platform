@@ -1,0 +1,378 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+import checkIcon from "lucide-static/icons/check.svg?raw";
+import copyIcon from "lucide-static/icons/copy.svg?raw";
+---
+
+<div data-percentage-calculator>
+  <form novalidate data-calculator-form>
+    <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)">
+      <fieldset class="min-w-0">
+        <legend class="text-label text-text-primary">Mode</legend>
+        <div class="segmented mt-2">
+          <label>
+            <input
+              type="radio"
+              name="mode"
+              value="percent-of"
+              class="sr-only"
+              checked
+            />
+            X% of Y
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="mode"
+              value="what-percent"
+              class="sr-only"
+            />
+            What %
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="mode"
+              value="percent-change"
+              class="sr-only"
+            />
+            % change
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="mt-6 space-y-5">
+        <div>
+          <label
+            for="calc-input-a"
+            class="text-label text-text-primary"
+            data-label-a
+          >
+            Percentage (X%)
+          </label>
+          <input
+            id="calc-input-a"
+            name="a"
+            type="number"
+            step="any"
+            inputmode="decimal"
+            autocomplete="off"
+            class="input mt-2 font-mono tabular-nums"
+            aria-describedby="calc-hint-a calc-error-a"
+            data-input-a
+          />
+          <p
+            id="calc-hint-a"
+            class="mt-1 text-caption text-text-muted"
+            data-hint-a
+          >
+            The percentage to apply.
+          </p>
+          <p id="calc-error-a" class="field-error mt-1" hidden data-error-a>
+            <span aria-hidden="true" set:html={alertIcon} />
+            <span data-error-text-a></span>
+          </p>
+        </div>
+
+        <div>
+          <label
+            for="calc-input-b"
+            class="text-label text-text-primary"
+            data-label-b
+          >
+            Value (Y)
+          </label>
+          <input
+            id="calc-input-b"
+            name="b"
+            type="number"
+            step="any"
+            inputmode="decimal"
+            autocomplete="off"
+            class="input mt-2 font-mono tabular-nums"
+            aria-describedby="calc-hint-b calc-error-b"
+            data-input-b
+          />
+          <p
+            id="calc-hint-b"
+            class="mt-1 text-caption text-text-muted"
+            data-hint-b
+          >
+            The number to take the percentage of.
+          </p>
+          <p id="calc-error-b" class="field-error mt-1" hidden data-error-b>
+            <span aria-hidden="true" set:html={alertIcon} />
+            <span data-error-text-b></span>
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <button type="submit" class="btn btn-primary w-full">
+          Calculate
+        </button>
+        <button type="button" class="btn btn-secondary mt-3 w-full" data-reset>
+          Reset
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div
+    class="relative mt-6 rounded-lg bg-accent-subtle p-(--layout-card-padding)"
+    aria-live="polite"
+    data-result-region
+  >
+    <p class="text-overline text-text-secondary uppercase">Result</p>
+    <p class="mt-2 pr-14 text-mono-result text-text-disabled" data-result-value>
+      —
+    </p>
+    <p class="mt-1 pr-14 text-caption text-text-muted" data-result-caption>
+      Results appear here
+    </p>
+    <button
+      type="button"
+      class="btn btn-ghost absolute top-3 right-3 w-11 px-0"
+      aria-label="Copy result"
+      disabled
+      data-copy
+    >
+      <span
+        class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        data-copy-idle
+        set:html={copyIcon}
+      />
+      <span
+        class="h-5 w-5 text-success [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        hidden
+        data-copy-done
+        set:html={checkIcon}
+      />
+    </button>
+  </div>
+
+  <p class="mt-4 text-small text-text-secondary">
+    Formula:{" "}
+    <code class="inline-code" data-formula>
+      (X ÷ 100) × Y
+    </code>
+  </p>
+</div>
+
+<script>
+  import {
+    calculate,
+    describeFormula,
+    describeResult,
+    formatNumber,
+    formulaTemplate,
+    type Mode,
+  } from "../lib/percentage";
+
+  const root = document.querySelector<HTMLElement>(
+    "[data-percentage-calculator]",
+  );
+
+  if (root) {
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`Percentage calculator: missing ${selector}`);
+      return el;
+    };
+
+    const form = requireEl<HTMLFormElement>("[data-calculator-form]");
+    const inputA = requireEl<HTMLInputElement>("[data-input-a]");
+    const inputB = requireEl<HTMLInputElement>("[data-input-b]");
+    const labelA = requireEl<HTMLElement>("[data-label-a]");
+    const hintA = requireEl<HTMLElement>("[data-hint-a]");
+    const labelB = requireEl<HTMLElement>("[data-label-b]");
+    const hintB = requireEl<HTMLElement>("[data-hint-b]");
+    const errorA = requireEl<HTMLElement>("[data-error-a]");
+    const errorTextA = requireEl<HTMLElement>("[data-error-text-a]");
+    const errorB = requireEl<HTMLElement>("[data-error-b]");
+    const errorTextB = requireEl<HTMLElement>("[data-error-text-b]");
+    const resultValue = requireEl<HTMLElement>("[data-result-value]");
+    const resultCaption = requireEl<HTMLElement>("[data-result-caption]");
+    const formulaEl = requireEl<HTMLElement>("[data-formula]");
+    const copyButton = requireEl<HTMLButtonElement>("[data-copy]");
+    const copyIdle = requireEl<HTMLElement>("[data-copy-idle]");
+    const copyDone = requireEl<HTMLElement>("[data-copy-done]");
+    const resetButton = requireEl<HTMLButtonElement>("[data-reset]");
+    const radios =
+      root.querySelectorAll<HTMLInputElement>('input[name="mode"]');
+
+    const MODES: Record<
+      Mode,
+      { labelA: string; hintA: string; labelB: string; hintB: string }
+    > = {
+      "percent-of": {
+        labelA: "Percentage (X%)",
+        hintA: "The percentage to apply.",
+        labelB: "Value (Y)",
+        hintB: "The number to take the percentage of.",
+      },
+      "what-percent": {
+        labelA: "Part (X)",
+        hintA: "The number you are comparing.",
+        labelB: "Whole (Y)",
+        hintB: "The number to compare it against.",
+      },
+      "percent-change": {
+        labelA: "From (original value)",
+        hintA: "The starting value.",
+        labelB: "To (new value)",
+        hintB: "The value after the change.",
+      },
+    };
+
+    let copyTimer: number | undefined;
+    let currentCaption = "Results appear here";
+    let lastResult = "";
+
+    const mode = (): Mode =>
+      (root.querySelector<HTMLInputElement>('input[name="mode"]:checked')
+        ?.value as Mode | undefined) ?? "percent-of";
+
+    const setCaption = (text: string) => {
+      currentCaption = text;
+      resultCaption.textContent = text;
+    };
+
+    const resetCopyFeedback = () => {
+      window.clearTimeout(copyTimer);
+      copyIdle.hidden = false;
+      copyDone.hidden = true;
+    };
+
+    const clearErrors = () => {
+      for (const [wrap, text, input] of [
+        [errorA, errorTextA, inputA],
+        [errorB, errorTextB, inputB],
+      ] as const) {
+        wrap.hidden = true;
+        text.textContent = "";
+        input.removeAttribute("aria-invalid");
+      }
+    };
+
+    const showError = (
+      input: HTMLInputElement,
+      wrap: HTMLElement,
+      text: HTMLElement,
+    ) => {
+      wrap.hidden = false;
+      text.textContent = "Enter a valid number.";
+      input.setAttribute("aria-invalid", "true");
+    };
+
+    const showEmptyResult = () => {
+      lastResult = "";
+      resetCopyFeedback();
+      resultValue.textContent = "—";
+      resultValue.classList.replace("text-text-primary", "text-text-disabled");
+      setCaption("Results appear here");
+      formulaEl.textContent = formulaTemplate(mode());
+      copyButton.disabled = true;
+    };
+
+    const applyMode = () => {
+      const copy = MODES[mode()];
+      labelA.textContent = copy.labelA;
+      hintA.textContent = copy.hintA;
+      labelB.textContent = copy.labelB;
+      hintB.textContent = copy.hintB;
+      clearErrors();
+      showEmptyResult();
+    };
+
+    const parseInput = (input: HTMLInputElement): number | null => {
+      if (input.value.trim() === "") return null;
+      return Number.isFinite(input.valueAsNumber) ? input.valueAsNumber : null;
+    };
+
+    const captionFor = (
+      activeMode: Mode,
+      a: number,
+      b: number,
+      value: number,
+    ) => {
+      if (activeMode === "percent-of")
+        return `${formatNumber(a)}% of ${formatNumber(b)}.`;
+      if (activeMode === "what-percent")
+        return `${formatNumber(a)} out of ${formatNumber(b)}.`;
+      return value === 0
+        ? `No change from ${formatNumber(a)} to ${formatNumber(b)}.`
+        : `From ${formatNumber(a)} to ${formatNumber(b)}.`;
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      clearErrors();
+
+      const a = parseInput(inputA);
+      const b = parseInput(inputB);
+      if (a === null) showError(inputA, errorA, errorTextA);
+      if (b === null) showError(inputB, errorB, errorTextB);
+      if (a === null || b === null) {
+        showEmptyResult();
+        return;
+      }
+
+      const activeMode = mode();
+      const value = calculate(activeMode, a, b);
+      resetCopyFeedback();
+
+      if (value === null) {
+        lastResult = "";
+        resultValue.textContent = "Undefined";
+        resultValue.classList.replace(
+          "text-text-disabled",
+          "text-text-primary",
+        );
+        setCaption(
+          activeMode === "percent-change"
+            ? "Can't compute a percentage change from 0 — the original value must not be zero."
+            : "Can't divide by 0 — the whole must not be zero.",
+        );
+        formulaEl.textContent = formulaTemplate(activeMode);
+        copyButton.disabled = true;
+        return;
+      }
+
+      lastResult = describeResult(activeMode, value);
+      resultValue.textContent = lastResult;
+      resultValue.classList.replace("text-text-disabled", "text-text-primary");
+      setCaption(captionFor(activeMode, a, b, value));
+      formulaEl.textContent = describeFormula(activeMode, a, b, value);
+      copyButton.disabled = false;
+    });
+
+    radios.forEach((radio) => radio.addEventListener("change", applyMode));
+
+    resetButton.addEventListener("click", () => {
+      form.reset();
+      applyMode();
+      inputA.focus();
+    });
+
+    copyButton.addEventListener("click", async () => {
+      if (!lastResult) return;
+      try {
+        await navigator.clipboard.writeText(lastResult);
+        resetCopyFeedback();
+        copyIdle.hidden = true;
+        copyDone.hidden = false;
+        resultCaption.textContent = "Copied";
+        copyTimer = window.setTimeout(() => {
+          copyIdle.hidden = false;
+          copyDone.hidden = true;
+          resultCaption.textContent = currentCaption;
+        }, 2000);
+      } catch {
+        // Clipboard unavailable — keep the idle state.
+      }
+    });
+  }
+</script>
