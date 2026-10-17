@@ -1,0 +1,71 @@
+---
+import ToolLayout from "../layouts/ToolLayout.astro";
+import DiscountCalculator from "../components/DiscountCalculator.astro";
+import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
+---
+
+<ToolLayout
+  title="Discount Calculator — AppKitX"
+  description="Free discount calculator: work out how much you save and the final price after a percentage discount, in any currency."
+  toolName="Discount Calculator"
+  toolDescription="Work out how much you save and the final price after a discount — in any currency."
+  breadcrumb={[{ label: "Home", href: "/" }, { label: "Discount Calculator" }]}
+  relatedTools={[
+    {
+      title: "Percentage Calculator",
+      description: "Percentages, tips, discounts, and percent change.",
+      href: "/percentage-calculator",
+      icon: calculatorIcon,
+    },
+  ]}
+>
+  <DiscountCalculator slot="tool" />
+
+  <h2>How it works</h2>
+  <p>
+    Enter the original price and the discount percentage, then select Calculate.
+    The calculator shows the amount saved and the final price. Both outputs use
+    the same currency units as the price you entered — the calculator never
+    assumes a currency.
+  </p>
+
+  <h3>The formulas</h3>
+  <p>
+    Discount amount: <code>price × percent ÷ 100</code>. Final price:
+    <code>price − discount amount</code>.
+  </p>
+
+  <h3>Worked examples</h3>
+  <p>
+    A 20% discount on a price of 100 saves
+    <code>(100 × 20) ÷ 100 = 20</code>, so the final price is
+    <code>100 − 20 = 80</code>.
+  </p>
+  <p>
+    A 15% discount on a price of 19.99 saves
+    <code>(19.99 × 15) ÷ 100 ≈ 3</code>, so the final price is about
+    <code>16.99</code>.
+  </p>
+
+  <h3>Assumptions and edge cases</h3>
+  <ul>
+    <li>
+      The original price can be zero or more; the discount percentage must be
+      between 0 and 100 inclusive. Values outside these ranges are rejected with
+      an inline message rather than being silently adjusted.
+    </li>
+    <li>
+      Decimal prices and percentages are fully supported. Results are calculated
+      at full precision and rounded only for display — capped at two decimal
+      places, with trailing zeros removed.
+    </li>
+    <li>
+      A 100% discount makes the final price zero, and a 0% discount leaves the
+      price unchanged.
+    </li>
+    <li>
+      Both outputs use the same currency units as the entered price; the
+      calculator is currency-neutral and does no currency conversion.
+    </li>
+  </ul>
+</ToolLayout>

@@ -1,6 +1,7 @@
 ---
 import ToolLayout from "../layouts/ToolLayout.astro";
 import PercentageCalculator from "../components/PercentageCalculator.astro";
+import tagIcon from "lucide-static/icons/tag.svg?raw";
 ---
 
 <ToolLayout
@@ -11,6 +12,14 @@ import PercentageCalculator from "../components/PercentageCalculator.astro";
   breadcrumb={[
     { label: "Home", href: "/" },
     { label: "Percentage Calculator" },
+  ]}
+  relatedTools={[
+    {
+      title: "Discount Calculator",
+      description: "Savings and final price after a percentage discount.",
+      href: "/discount-calculator",
+      icon: tagIcon,
+    },
   ]}
 >
   <PercentageCalculator slot="tool" />

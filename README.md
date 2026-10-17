@@ -8,7 +8,7 @@ The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKi
 
 ## Status
 
-Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). First tool shipped: the [percentage calculator](/percentage-calculator), built on the reusable `ToolLayout` template. Next: more calculators on the same template.
+Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Tools shipped: the [percentage calculator](/percentage-calculator) and the [discount calculator](/discount-calculator), both built on the reusable `ToolLayout` template with cross-linked related tools. Next: more calculators on the same template.
 
 ## Commands
 
