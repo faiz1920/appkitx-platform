@@ -106,6 +106,10 @@
   .btn-ghost:hover {
     background-color: var(--color-accent-subtle);
   }
+  .btn-ghost:active {
+    background-color: var(--color-accent-subtle);
+    color: var(--color-accent-active);
+  }
 
   /* Inputs (AppKitX-Design.md → Inputs & validation) */
   .input {
@@ -132,6 +136,67 @@
     border-radius: var(--radius-lg);
     padding-left: 44px;
     padding-right: 20px;
+  }
+
+  /* Field errors — error border on the control, message with icon below
+     (AppKitX-Design.md → Inputs & validation). Placed after :focus so the
+     error border wins while an invalid field is focused. */
+  .input[aria-invalid="true"] {
+    border-color: var(--color-error);
+  }
+  .field-error {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-error);
+    font-family: var(--font-sans);
+    font-size: var(--text-caption);
+    line-height: var(--text-caption--line-height);
+  }
+  .field-error svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  /* Segmented control — surface-muted track, white selected segment with
+     shadow-sm (AppKitX-Design.md → Calculator interface) */
+  .segmented {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface-muted);
+  }
+  .segmented label {
+    display: flex;
+    flex: 1 1 0%;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 8px;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-family: var(--font-sans);
+    font-size: var(--text-label);
+    font-weight: var(--text-label--font-weight);
+    line-height: var(--text-label--line-height);
+    cursor: pointer;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+  .segmented label:hover {
+    color: var(--color-text-primary);
+  }
+  .segmented label:has(input:checked) {
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-sm);
+  }
+  .segmented label:has(input:focus-visible) {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
   }
 
   /* Category chips (AppKitX-Design.md → Category chips) */
@@ -185,5 +250,61 @@
     .hero-title {
       font-size: var(--text-display);
     }
+  }
+
+  /* Inline code (AppKitX-Design.md → Educational content) */
+  .inline-code,
+  .prose code {
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface-muted);
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+
+  /* Prose column — educational content (AppKitX-Design.md → Educational content) */
+  .prose {
+    max-width: var(--layout-prose);
+    color: var(--color-text-primary);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+  .prose > :first-child {
+    margin-top: 0;
+  }
+  .prose p + p {
+    margin-top: 16px;
+  }
+  .prose h2 {
+    margin-top: 48px;
+    font-family: var(--font-sans);
+    font-size: var(--text-headline);
+    font-weight: var(--text-headline--font-weight);
+    line-height: var(--text-headline--line-height);
+    letter-spacing: var(--text-headline--letter-spacing);
+  }
+  .prose h3 {
+    margin-top: 32px;
+    font-family: var(--font-sans);
+    font-size: var(--text-title);
+    font-weight: var(--text-title--font-weight);
+    line-height: var(--text-title--line-height);
+  }
+  .prose a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .prose a:hover {
+    color: var(--color-accent-hover);
+  }
+  .prose ul {
+    margin-top: 16px;
+    padding-left: 24px;
+    list-style: disc;
+  }
+  .prose li + li {
+    margin-top: 8px;
   }
 }

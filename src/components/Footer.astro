@@ -3,23 +3,33 @@ const columns = [
   {
     heading: "Tools",
     links: [
-      "Percentage Calculator",
-      "Unit Converter",
-      "Loan Calculator",
-      "Date Calculator",
+      { label: "Percentage Calculator", href: "/percentage-calculator" },
+      { label: "Unit Converter", href: "#" },
+      { label: "Loan Calculator", href: "#" },
+      { label: "Date Calculator", href: "#" },
     ],
   },
   {
     heading: "Categories",
-    links: ["Calculators", "Converters", "Developer tools"],
+    links: [
+      { label: "Calculators", href: "#" },
+      { label: "Converters", href: "#" },
+      { label: "Developer tools", href: "#" },
+    ],
   },
   {
     heading: "Company",
-    links: ["About", "Contact"],
+    links: [
+      { label: "About", href: "#" },
+      { label: "Contact", href: "#" },
+    ],
   },
   {
     heading: "Legal",
-    links: ["Privacy", "Terms"],
+    links: [
+      { label: "Privacy", href: "#" },
+      { label: "Terms", href: "#" },
+    ],
   },
 ];
 ---
@@ -33,13 +43,13 @@ const columns = [
             {column.heading}
           </h3>
           <ul class="mt-4 space-y-2">
-            {column.links.map((label) => (
+            {column.links.map((link) => (
               <li>
                 <a
-                  href="#"
+                  href={link.href}
                   class="focus-ring text-small text-text-secondary hover:text-accent"
                 >
-                  {label}
+                  {link.label}
                 </a>
               </li>
             ))}

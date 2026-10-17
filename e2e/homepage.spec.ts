@@ -20,6 +20,7 @@ test("homepage renders the chrome, hero, and token styles", async ({
     .getByRole("link")
     .filter({ hasText: "Percentage Calculator" });
   await expect(card).toHaveCSS("border-radius", "12px");
+  await expect(card).toHaveAttribute("href", "/percentage-calculator");
 
   await expect(page.getByRole("navigation", { name: "Global" })).toHaveCSS(
     "height",

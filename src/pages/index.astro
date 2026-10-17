@@ -17,31 +17,37 @@ const tools = [
     title: "Percentage Calculator",
     description: "Percentages, tips, discounts, and percent change.",
     icon: calculatorIcon,
+    href: "/percentage-calculator",
   },
   {
     title: "Unit Converter",
     description: "Length, weight, temperature, and more.",
     icon: rulerIcon,
+    href: "#",
   },
   {
     title: "Loan Calculator",
     description: "Monthly payments, interest, and total cost.",
     icon: landmarkIcon,
+    href: "#",
   },
   {
     title: "Date Calculator",
     description: "Days between dates, add or subtract time.",
     icon: calendarIcon,
+    href: "#",
   },
   {
     title: "Base64 Encoder",
     description: "Encode and decode Base64 in your browser.",
     icon: binaryIcon,
+    href: "#",
   },
   {
     title: "JSON Formatter",
     description: "Format, validate, and inspect JSON.",
     icon: bracesIcon,
+    href: "#",
   },
 ];
 
@@ -98,14 +104,15 @@ const categories = [
     </section>
 
     <section id="tools" class="bg-surface-subtle">
-      <div class="mx-auto max-w-(--layout-container) px-6 py-16 md:py-24">
+      <div class="mx-auto max-w-(--layout-container) px-6 py-16 md:py-(--layout-section-y)">
         <h2 class="text-headline text-text-primary">Explore the toolkit.</h2>
-        <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+        <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-(--layout-grid-gap) lg:grid-cols-3 xl:grid-cols-4">
           {tools.map((tool) => (
             <ToolCard
               title={tool.title}
               description={tool.description}
               icon={tool.icon}
+              href={tool.href}
             />
           ))}
         </div>

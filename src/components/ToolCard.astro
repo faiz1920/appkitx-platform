@@ -5,14 +5,15 @@ interface Props {
   title: string;
   description: string;
   icon: string;
+  href?: string;
 }
 
-const { title, description, icon } = Astro.props;
+const { title, description, icon, href = "#" } = Astro.props;
 ---
 
 <a
-  href="#"
-  class="focus-ring group block rounded-lg border border-border-subtle bg-surface p-5 hover:border-border-strong hover:shadow-sm"
+  href={href}
+  class="focus-ring group block rounded-lg border border-border-subtle bg-surface p-(--layout-card-padding) hover:border-border-strong hover:shadow-sm"
 >
   <span
     class="flex h-10 w-10 items-center justify-center rounded-md bg-accent-subtle text-accent [&_svg]:h-5 [&_svg]:w-5"
