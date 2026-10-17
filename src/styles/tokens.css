@@ -1,0 +1,165 @@
+/*
+ * Design tokens — single source of truth, transcribed from design.md (version alpha).
+ * Tailwind v4 consumes these through @theme; every value is emitted as a CSS
+ * custom property, so components reference tokens and never re-type values.
+ *
+ * Inter substitution (design.md "Note on Font Substitutes"):
+ * - Display-family tokens (hero-display, display-lg, lead, tagline) carry an
+ *   extra -0.01em tracking tighten for Inter.
+ * - Body line-height tightens 1.47 -> 1.44.
+ * - `font-feature-settings: "ss03"` is applied globally in global.css.
+ *
+ * Note: --color-body has the same hex as --color-ink (per design.md) and shares
+ * the `body` key with --text-body. Avoid the bare `text-body` utility; body copy
+ * inherits the base styles set in global.css.
+ */
+
+@theme {
+  /* Breakpoints — design.md "Responsive Behavior" structural widths */
+  --breakpoint-*: initial;
+  --breakpoint-xs: 420px;
+  --breakpoint-sm: 641px;
+  --breakpoint-tablet: 834px;
+  --breakpoint-desktop: 1069px;
+  --breakpoint-wide: 1441px;
+
+  /* Colors — design.md "Colors" */
+  --color-*: initial;
+  --color-primary: #0066cc;
+  --color-primary-focus: #0071e3;
+  --color-primary-on-dark: #2997ff;
+  --color-ink: #1d1d1f;
+  --color-body: #1d1d1f;
+  --color-body-on-dark: #ffffff;
+  --color-body-muted: #cccccc;
+  --color-ink-muted-80: #333333;
+  --color-ink-muted-48: #7a7a7a;
+  --color-divider-soft: #f0f0f0;
+  --color-hairline: #e0e0e0;
+  --color-canvas: #ffffff;
+  --color-canvas-parchment: #f5f5f7;
+  --color-surface-pearl: #fafafc;
+  --color-surface-tile-1: #272729;
+  --color-surface-tile-2: #2a2a2c;
+  --color-surface-tile-3: #252527;
+  --color-surface-black: #000000;
+  --color-chip-translucent: #d2d2d7;
+  --color-chip-translucent-overlay: rgba(210, 210, 215, 0.64);
+  --color-on-primary: #ffffff;
+  --color-on-dark: #ffffff;
+
+  /* Font families — Inter first per approved approach, then design.md fallback stack */
+  --font-display:
+    "Inter Variable", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-text:
+    "Inter Variable", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Type scale — design.md "Typography" */
+  --text-hero-display: 56px;
+  --text-hero-display--line-height: 1.07;
+  --text-hero-display--letter-spacing: calc(-0.28px - 0.01em);
+  --text-hero-display--font-weight: 600;
+
+  --text-display-lg: 40px;
+  --text-display-lg--line-height: 1.1;
+  --text-display-lg--letter-spacing: -0.01em;
+  --text-display-lg--font-weight: 600;
+
+  --text-display-md: 34px;
+  --text-display-md--line-height: 1.47;
+  --text-display-md--letter-spacing: -0.374px;
+  --text-display-md--font-weight: 600;
+
+  --text-lead: 28px;
+  --text-lead--line-height: 1.14;
+  --text-lead--letter-spacing: calc(0.196px - 0.01em);
+  --text-lead--font-weight: 400;
+
+  --text-lead-airy: 24px;
+  --text-lead-airy--line-height: 1.5;
+  --text-lead-airy--letter-spacing: 0;
+  --text-lead-airy--font-weight: 300;
+
+  --text-tagline: 21px;
+  --text-tagline--line-height: 1.19;
+  --text-tagline--letter-spacing: calc(0.231px - 0.01em);
+  --text-tagline--font-weight: 600;
+
+  --text-body-strong: 17px;
+  --text-body-strong--line-height: 1.24;
+  --text-body-strong--letter-spacing: -0.374px;
+  --text-body-strong--font-weight: 600;
+
+  --text-body: 17px;
+  --text-body--line-height: 1.44; /* Inter substitution: 1.47 -> 1.44 */
+  --text-body--letter-spacing: -0.374px;
+  --text-body--font-weight: 400;
+
+  --text-dense-link: 17px;
+  --text-dense-link--line-height: 2.41;
+  --text-dense-link--letter-spacing: 0;
+  --text-dense-link--font-weight: 400;
+
+  --text-caption: 14px;
+  --text-caption--line-height: 1.43;
+  --text-caption--letter-spacing: -0.224px;
+  --text-caption--font-weight: 400;
+
+  --text-caption-strong: 14px;
+  --text-caption-strong--line-height: 1.29;
+  --text-caption-strong--letter-spacing: -0.224px;
+  --text-caption-strong--font-weight: 600;
+
+  --text-button-large: 18px;
+  --text-button-large--line-height: 1;
+  --text-button-large--letter-spacing: 0;
+  --text-button-large--font-weight: 300;
+
+  --text-button-utility: 14px;
+  --text-button-utility--line-height: 1.29;
+  --text-button-utility--letter-spacing: -0.224px;
+  --text-button-utility--font-weight: 400;
+
+  --text-fine-print: 12px;
+  --text-fine-print--line-height: 1;
+  --text-fine-print--letter-spacing: -0.12px;
+  --text-fine-print--font-weight: 400;
+
+  --text-micro-legal: 10px;
+  --text-micro-legal--line-height: 1.3;
+  --text-micro-legal--letter-spacing: -0.08px;
+  --text-micro-legal--font-weight: 400;
+
+  --text-nav-link: 12px;
+  --text-nav-link--line-height: 1;
+  --text-nav-link--letter-spacing: -0.12px;
+  --text-nav-link--font-weight: 400;
+
+  /* Spacing — design.md "Layout" */
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 17px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-section: 80px;
+
+  /* Radii — design.md "Shapes": the only values in the grammar */
+  --radius-*: initial;
+  --radius-none: 0px;
+  --radius-xs: 5px;
+  --radius-sm: 8px;
+  --radius-md: 11px;
+  --radius-lg: 18px;
+  --radius-pill: 9999px;
+  --radius-full: 9999px;
+
+  /* Elevation — exactly one shadow exists in the system, product imagery only */
+  --shadow-*: initial;
+  --shadow-product: rgba(0, 0, 0, 0.22) 3px 5px 30px;
+
+  /* Container widths — design.md "Grid & Container" */
+  --container-content: 980px;
+  --container-grid: 1440px;
+}

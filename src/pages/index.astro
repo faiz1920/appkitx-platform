@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GlobalNav from "../components/GlobalNav.astro";
+import SubNav from "../components/SubNav.astro";
+import Footer from "../components/Footer.astro";
+import ToolCard from "../components/ToolCard.astro";
+
+const tools = [
+  {
+    title: "Percentage Calculator",
+    description: "Percentages, tips, discounts, and percent change.",
+  },
+  {
+    title: "Unit Converter",
+    description: "Length, weight, temperature, and more.",
+  },
+  {
+    title: "Loan Calculator",
+    description: "Monthly payments, interest, and total cost.",
+  },
+  {
+    title: "Date Calculator",
+    description: "Days between dates, add or subtract time.",
+  },
+  {
+    title: "Base64 Encoder",
+    description: "Encode and decode Base64 in your browser.",
+  },
+  {
+    title: "JSON Formatter",
+    description: "Format, validate, and inspect JSON.",
+  },
+];
+---
+
+<BaseLayout>
+  <GlobalNav />
+  <SubNav />
+  <main>
+    <section class="bg-canvas">
+      <div class="mx-auto max-w-content px-lg py-xxl text-center tablet:py-section">
+        <h1 class="hero-title text-ink">Free tools for everyday work.</h1>
+        <p class="mx-auto mt-lg max-w-content font-display text-lead text-ink">
+          Calculators, converters, and developer utilities — all in one place.
+        </p>
+        <div class="mt-xl flex flex-wrap items-center justify-center gap-md">
+          <a href="#tools" class="btn-primary">
+            Browse tools
+          </a>
+          <a href="#featured" class="btn-secondary-pill">
+            Learn more
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="featured" class="bg-surface-tile-1 text-body-on-dark">
+      <div class="mx-auto max-w-content px-lg py-xxl text-center tablet:py-section">
+        <h2 class="font-display text-display-lg text-body-on-dark">
+          Percentage calculator.
+        </h2>
+        <p class="mx-auto mt-lg font-display text-lead text-body-on-dark">
+          Percentages, tips, discounts, and percent change — solved instantly.
+        </p>
+        <div class="mt-xl flex flex-wrap items-center justify-center gap-md">
+          <a href="#" class="btn-primary">
+            Open tool
+          </a>
+          <a href="#tools" class="text-link-on-dark font-text">
+            See all calculators
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="tools" class="bg-canvas-parchment">
+      <div class="mx-auto max-w-grid px-lg py-xxl tablet:py-section">
+        <h2 class="text-center font-text text-display-md text-ink">
+          Explore the toolkit.
+        </h2>
+        <div class="mt-xl grid grid-cols-1 gap-lg sm:grid-cols-2 tablet:grid-cols-3 desktop:grid-cols-4 wide:grid-cols-5">
+          {tools.map((tool) => (
+            <ToolCard title={tool.title} description={tool.description} />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-surface-tile-1 text-body-on-dark">
+      <div class="mx-auto max-w-content px-lg py-xxl text-center tablet:py-section">
+        <h2 class="font-text text-display-md text-body-on-dark">
+          A growing toolkit for everyday work.
+        </h2>
+        <div class="mt-xl">
+          <a href="#tools" class="btn-primary">
+            Browse tools
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

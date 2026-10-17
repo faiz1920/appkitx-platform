@@ -1,0 +1,16 @@
+---
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<article class="rounded-lg border border-hairline bg-canvas p-lg">
+  <h3 class="font-text text-body-strong text-ink">{title}</h3>
+  <p class="mt-xs text-ink">{description}</p>
+  <a href="#" class="text-link mt-sm inline-block font-text">
+    Open tool
+  </a>
+</article>
