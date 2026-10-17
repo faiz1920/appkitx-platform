@@ -11,97 +11,107 @@ const globalCss = readFileSync(
 );
 
 describe("design tokens", () => {
-  it("defines every color from design.md", () => {
+  it("defines every v1.0 color role", () => {
     const colors = [
-      "#0066cc",
-      "#0071e3",
-      "#2997ff",
-      "#1d1d1f",
+      "#0f766e",
+      "#115e59",
+      "#134e4a",
+      "#f0fdfa",
+      "#ccfbf1",
+      "#0d9488",
+      "#0f172a",
+      "#475569",
+      "#64748b",
+      "#94a3b8",
       "#ffffff",
-      "#cccccc",
-      "#333333",
-      "#7a7a7a",
-      "#f0f0f0",
-      "#e0e0e0",
-      "#f5f5f7",
-      "#fafafc",
-      "#272729",
-      "#2a2a2c",
-      "#252527",
-      "#000000",
-      "#d2d2d7",
-      "rgba(210, 210, 215, 0.64)",
+      "#f8fafc",
+      "#f1f5f9",
+      "#e2e8f0",
+      "#cbd5e1",
+      "rgb(15 23 42 / 0.4)",
+      "#15803d",
+      "#f0fdf4",
+      "#b91c1c",
+      "#fef2f2",
+      "#b45309",
+      "#fffbeb",
     ];
     for (const color of colors) {
       expect(tokens).toContain(color);
     }
   });
 
+  it("does not carry over superseded palette values", () => {
+    const legacy = [
+      "#0066cc",
+      "#0071e3",
+      "#2997ff",
+      "#1d1d1f",
+      "#f5f5f7",
+      "#272729",
+    ];
+    for (const color of legacy) {
+      expect(tokens).not.toContain(color);
+    }
+  });
+
   it("defines the full type scale", () => {
     const names = [
-      "hero-display",
-      "display-lg",
-      "display-md",
-      "lead",
-      "lead-airy",
-      "tagline",
-      "body-strong",
+      "display",
+      "headline",
+      "title",
+      "body-lg",
       "body",
-      "dense-link",
+      "body-strong",
+      "small",
+      "label",
+      "button",
+      "chip",
       "caption",
-      "caption-strong",
-      "button-large",
-      "button-utility",
-      "fine-print",
-      "micro-legal",
-      "nav-link",
+      "overline",
+      "micro",
+      "mono-input",
+      "mono-result",
     ];
     for (const name of names) {
       expect(tokens).toContain(`--text-${name}:`);
     }
   });
 
-  it("keeps the six-value radius grammar", () => {
+  it("keeps the five-value radius grammar", () => {
     const declared = [...tokens.matchAll(/--radius-[\w-]+:\s*([^;]+);/g)].map(
       (match) => match[1].trim(),
     );
-    expect(declared).toEqual([
-      "0px",
-      "5px",
-      "8px",
-      "11px",
-      "18px",
-      "9999px",
-      "9999px",
-    ]);
+    expect(declared).toEqual(["6px", "8px", "12px", "16px", "9999px"]);
   });
 
-  it("defines exactly one shadow", () => {
+  it("defines exactly three functional shadows", () => {
     const shadows = [...tokens.matchAll(/--shadow-[\w-]+:/g)].map(
       (match) => match[0],
     );
-    expect(shadows).toEqual(["--shadow-product:"]);
+    expect(shadows).toEqual(["--shadow-sm:", "--shadow-md:", "--shadow-lg:"]);
   });
 
-  it("defines every spacing step", () => {
-    const declared = [...tokens.matchAll(/--spacing-[\w-]+:\s*([^;]+);/g)].map(
-      (match) => match[1].trim(),
-    );
-    expect(declared).toEqual([
-      "4px",
-      "8px",
-      "12px",
-      "17px",
-      "24px",
-      "32px",
-      "48px",
-      "80px",
-    ]);
+  it("defines the layout constants", () => {
+    const layout = [
+      "--layout-nav-height: 64px",
+      "--layout-container: 1200px",
+      "--layout-prose: 720px",
+      "--layout-tool: 640px",
+      "--layout-control-height: 44px",
+    ];
+    for (const entry of layout) {
+      expect(tokens).toContain(entry);
+    }
   });
 
-  it("applies the Inter substitution adjustments", () => {
-    expect(tokens).toContain("calc(-0.28px - 0.01em)");
-    expect(tokens).toMatch(/--text-body--line-height:\s*1\.44;/);
-    expect(globalCss).toContain('font-feature-settings: "ss03"');
+  it("defines the focus indicator geometry", () => {
+    expect(globalCss).toContain("outline: 2px solid var(--color-focus-ring)");
+    expect(globalCss).toContain("outline-offset: 2px");
+  });
+
+  it("uses the approved font stacks", () => {
+    expect(tokens).toContain('"Inter Variable"');
+    expect(tokens).toContain('"JetBrains Mono Variable"');
   });
 });

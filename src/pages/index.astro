@@ -1,100 +1,113 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import GlobalNav from "../components/GlobalNav.astro";
-import SubNav from "../components/SubNav.astro";
 import Footer from "../components/Footer.astro";
 import ToolCard from "../components/ToolCard.astro";
+
+import searchIcon from "lucide-static/icons/search.svg?raw";
+import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
+import rulerIcon from "lucide-static/icons/ruler.svg?raw";
+import landmarkIcon from "lucide-static/icons/landmark.svg?raw";
+import calendarIcon from "lucide-static/icons/calendar-days.svg?raw";
+import binaryIcon from "lucide-static/icons/binary.svg?raw";
+import bracesIcon from "lucide-static/icons/braces.svg?raw";
 
 const tools = [
   {
     title: "Percentage Calculator",
     description: "Percentages, tips, discounts, and percent change.",
+    icon: calculatorIcon,
   },
   {
     title: "Unit Converter",
     description: "Length, weight, temperature, and more.",
+    icon: rulerIcon,
   },
   {
     title: "Loan Calculator",
     description: "Monthly payments, interest, and total cost.",
+    icon: landmarkIcon,
   },
   {
     title: "Date Calculator",
     description: "Days between dates, add or subtract time.",
+    icon: calendarIcon,
   },
   {
     title: "Base64 Encoder",
     description: "Encode and decode Base64 in your browser.",
+    icon: binaryIcon,
   },
   {
     title: "JSON Formatter",
     description: "Format, validate, and inspect JSON.",
+    icon: bracesIcon,
   },
+];
+
+const categories = [
+  "Calculators",
+  "Converters",
+  "Developer tools",
+  "Date & time",
+  "Text tools",
 ];
 ---
 
 <BaseLayout>
   <GlobalNav />
-  <SubNav />
-  <main>
-    <section class="bg-canvas">
-      <div class="mx-auto max-w-content px-lg py-xxl text-center tablet:py-section">
-        <h1 class="hero-title text-ink">Free tools for everyday work.</h1>
-        <p class="mx-auto mt-lg max-w-content font-display text-lead text-ink">
+  <main id="main">
+    <section class="bg-surface">
+      <div class="mx-auto max-w-(--layout-container) px-6 pt-10 pb-8 md:pt-16 md:pb-12">
+        <h1 class="hero-title max-w-[720px] text-text-primary">
+          Free tools for everyday work.
+        </h1>
+        <p class="mt-4 max-w-[560px] text-body-lg text-text-secondary">
           Calculators, converters, and developer utilities — all in one place.
         </p>
-        <div class="mt-xl flex flex-wrap items-center justify-center gap-md">
-          <a href="#tools" class="btn-primary">
-            Browse tools
-          </a>
-          <a href="#featured" class="btn-secondary-pill">
-            Learn more
-          </a>
+
+        <div class="relative mt-8 max-w-(--layout-tool)">
+          <span
+            class="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-text-muted [&_svg]:h-5 [&_svg]:w-5"
+            aria-hidden="true"
+            set:html={searchIcon}
+          />
+          <input
+            type="search"
+            class="input input-search"
+            placeholder="Search free tools…"
+            aria-label="Search tools"
+          />
+        </div>
+
+        <div class="mt-6">
+          <p class="text-overline text-text-muted uppercase">
+            Browse by category
+          </p>
+          <ul class="mt-3 flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <li>
+                <a href="#tools" class="chip focus-ring">
+                  {category}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
 
-    <section id="featured" class="bg-surface-tile-1 text-body-on-dark">
-      <div class="mx-auto max-w-content px-lg py-xxl text-center tablet:py-section">
-        <h2 class="font-display text-display-lg text-body-on-dark">
-          Percentage calculator.
-        </h2>
-        <p class="mx-auto mt-lg font-display text-lead text-body-on-dark">
-          Percentages, tips, discounts, and percent change — solved instantly.
-        </p>
-        <div class="mt-xl flex flex-wrap items-center justify-center gap-md">
-          <a href="#" class="btn-primary">
-            Open tool
-          </a>
-          <a href="#tools" class="text-link-on-dark font-text">
-            See all calculators
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section id="tools" class="bg-canvas-parchment">
-      <div class="mx-auto max-w-grid px-lg py-xxl tablet:py-section">
-        <h2 class="text-center font-text text-display-md text-ink">
-          Explore the toolkit.
-        </h2>
-        <div class="mt-xl grid grid-cols-1 gap-lg sm:grid-cols-2 tablet:grid-cols-3 desktop:grid-cols-4 wide:grid-cols-5">
+    <section id="tools" class="bg-surface-subtle">
+      <div class="mx-auto max-w-(--layout-container) px-6 py-16 md:py-24">
+        <h2 class="text-headline text-text-primary">Explore the toolkit.</h2>
+        <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
           {tools.map((tool) => (
-            <ToolCard title={tool.title} description={tool.description} />
+            <ToolCard
+              title={tool.title}
+              description={tool.description}
+              icon={tool.icon}
+            />
           ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-surface-tile-1 text-body-on-dark">
-      <div class="mx-auto max-w-content px-lg py-xxl text-center tablet:py-section">
-        <h2 class="font-text text-display-md text-body-on-dark">
-          A growing toolkit for everyday work.
-        </h2>
-        <div class="mt-xl">
-          <a href="#tools" class="btn-primary">
-            Browse tools
-          </a>
         </div>
       </div>
     </section>
