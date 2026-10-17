@@ -26,6 +26,20 @@ test("homepage renders the chrome, hero, and token styles", async ({
   await page.screenshot({ path: "test-results/homepage.png", fullPage: true });
 });
 
+test("nav icon buttons meet the 44px minimum touch target", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 820, height: 900 });
+  await page.goto("/");
+
+  for (const name of ["Search", "Menu"]) {
+    const box = await page.getByRole("button", { name }).boundingBox();
+    if (!box) throw new Error(`${name} button is not visible`);
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+});
+
 test("global nav collapses to a menu on tablet widths", async ({ page }) => {
   await page.setViewportSize({ width: 820, height: 900 });
   await page.goto("/");
