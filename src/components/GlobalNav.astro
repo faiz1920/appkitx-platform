@@ -1,79 +1,83 @@
 ---
+import menuIcon from "lucide-static/icons/menu.svg?raw";
+import searchIcon from "lucide-static/icons/search.svg?raw";
+
 const links = [
-  { href: "#tools", label: "Calculators" },
-  { href: "#tools", label: "Converters" },
-  { href: "#tools", label: "Developer Tools" },
+  { href: "#tools", label: "Tools" },
+  { href: "#tools", label: "Categories" },
+  { href: "#tools", label: "About" },
 ];
 ---
 
-<header class="sticky top-0 z-40 bg-surface-black">
+<header class="sticky top-0 z-40 border-b border-border-subtle bg-surface">
   <nav
     aria-label="Global"
-    class="mx-auto flex h-11 max-w-grid items-center justify-between gap-lg px-lg text-body-on-dark"
+    class="mx-auto flex h-(--layout-nav-height) max-w-(--layout-container) items-center justify-between gap-6 px-6"
   >
-    <a href="/" class="font-text text-nav-link font-semibold text-body-on-dark">
+    <a
+      href="/"
+      class="focus-ring font-sans text-[18px] leading-none font-semibold text-text-primary"
+    >
       AppKitX
     </a>
 
-    <ul class="hidden items-center gap-5 tablet:flex">
-      {links.map((link) => (
-        <li>
-          <a href={link.href} class="font-text text-nav-link text-body-on-dark">
-            {link.label}
-          </a>
-        </li>
-      ))}
-    </ul>
+    <div class="flex items-center gap-2 md:gap-6">
+      <ul class="hidden items-center gap-6 md:flex">
+        {links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="focus-ring text-label text-text-secondary hover:text-text-primary"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
 
-    <div class="flex items-center gap-xs">
       <button
         type="button"
-        class="flex h-11 w-11 items-center justify-center text-body-on-dark"
-        aria-label="Search"
+        class="btn btn-secondary gap-2 px-4"
+        aria-label="Search tools"
       >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
+        <span
+          class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
           aria-hidden="true"
-        >
-          <circle cx="7" cy="7" r="4.5"></circle>
-          <path d="M10.5 10.5 14 14"></path>
-        </svg>
+          set:html={searchIcon}
+        />
+        <span class="hidden text-label font-normal md:inline">Search</span>
+        <kbd class="kbd hidden md:inline-flex">⌘K</kbd>
       </button>
+
       <button
         type="button"
         data-menu-toggle
         aria-expanded="false"
         aria-controls="global-menu"
-        class="flex h-11 w-11 items-center justify-center text-body-on-dark tablet:hidden"
+        class="btn btn-secondary w-11 px-0 md:hidden"
         aria-label="Menu"
       >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
+        <span
+          class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
           aria-hidden="true"
-        >
-          <path d="M2 4.5h12"></path>
-          <path d="M2 8h12"></path>
-          <path d="M2 11.5h12"></path>
-        </svg>
+          set:html={menuIcon}
+        />
       </button>
     </div>
   </nav>
 
-  <div id="global-menu" hidden class="tablet:hidden">
-    <ul class="mx-auto flex max-w-grid flex-col gap-sm px-lg pb-lg">
+  <div
+    id="global-menu"
+    hidden
+    class="border-t border-border-subtle bg-surface md:hidden"
+  >
+    <ul class="mx-auto flex max-w-(--layout-container) flex-col px-6 py-2">
       {links.map((link) => (
         <li>
-          <a href={link.href} class="font-text text-nav-link text-body-on-dark">
+          <a
+            href={link.href}
+            class="focus-ring flex h-12 items-center text-label text-text-secondary hover:text-text-primary"
+          >
             {link.label}
           </a>
         </li>

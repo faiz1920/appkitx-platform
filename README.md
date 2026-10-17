@@ -8,7 +8,7 @@ The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKi
 
 ## Status
 
-Astro scaffold with the centralized design-token layer, base navigation chrome, and the homepage skeleton.
+Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Next: the first calculator tool.
 
 ## Commands
 

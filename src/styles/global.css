@@ -3,105 +3,185 @@
 
 @layer base {
   body {
-    font-family: var(--font-text);
-    font-size: var(--text-body);
+    font-family: var(--font-sans);
+    font-size: 16px; /* --text-body */
     font-weight: 400;
-    line-height: 1.44; /* body token; Inter substitution per design.md */
-    letter-spacing: -0.374px;
-    font-feature-settings: "ss03"; /* Inter substitution per design.md */
-    background-color: var(--color-canvas);
-    color: var(--color-ink);
+    line-height: 1.6;
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
   }
 }
 
 @layer components {
-  /* sub-nav-frosted: parchment at 80% + blur. Blur baseline from design.md
-     "Known Gaps" (saturate(180%) blur(20px)) since no token is formalized. */
-  .nav-frosted {
-    background-color: color-mix(
-      in srgb,
-      var(--color-canvas-parchment) 80%,
-      transparent
-    );
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  /* Focus indicator — 2px ring + 2px offset everywhere
+     (AppKitX-Design.md → Focus indicator) */
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
   }
 
-  /* button-primary — design.md */
-  .btn-primary {
+  /* Skip link — first focusable element on every page */
+  .skip-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateY(-200%);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+    color: var(--color-accent);
+    padding: 10px 16px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    z-index: 100;
+  }
+  .skip-link:focus {
+    transform: translateY(8px);
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Buttons — rectangular (radius-md), 44px default (AppKitX-Design.md → Buttons) */
+  .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius-pill);
-    background-color: var(--color-primary);
-    color: var(--color-on-primary);
-    font-family: var(--font-text);
-    font-size: 17px;
-    font-weight: 400;
-    line-height: 1.44;
-    letter-spacing: -0.374px;
-    padding: 11px 22px;
+    gap: 8px;
+    height: var(--layout-control-height);
+    padding: 0 20px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .btn:disabled {
+    background-color: var(--color-surface-muted);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-disabled);
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background-color: var(--color-accent);
+    color: var(--color-text-on-accent);
+  }
+  .btn-primary:hover {
+    background-color: var(--color-accent-hover);
   }
   .btn-primary:active {
-    transform: scale(0.95);
-  }
-  .btn-primary:focus-visible {
-    outline: 2px solid var(--color-primary-focus);
+    background-color: var(--color-accent-active);
   }
 
-  /* button-secondary-pill — design.md ("ghost pill") */
-  .btn-secondary-pill {
+  .btn-secondary {
+    border: 1px solid var(--color-border-control);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-surface-subtle);
+  }
+  .btn-secondary:active {
+    background-color: var(--color-surface-muted);
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--color-accent);
+  }
+  .btn-ghost:hover {
+    background-color: var(--color-accent-subtle);
+  }
+
+  /* Inputs (AppKitX-Design.md → Inputs & validation) */
+  .input {
+    height: var(--layout-control-height);
+    width: 100%;
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    padding: 0 14px;
+    font-family: var(--font-sans);
+    font-size: 16px;
+  }
+  .input::placeholder {
+    color: var(--color-text-muted);
+  }
+  .input:focus {
+    border-color: var(--color-accent);
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+  .input-search {
+    height: 56px;
+    border-radius: var(--radius-lg);
+    padding-left: 44px;
+    padding-right: 20px;
+  }
+
+  /* Category chips (AppKitX-Design.md → Category chips) */
+  .chip {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    border: 1px solid var(--color-primary);
-    border-radius: var(--radius-pill);
-    background-color: transparent;
-    color: var(--color-primary);
-    font-family: var(--font-text);
-    font-size: 17px;
-    font-weight: 400;
-    line-height: 1.44;
-    letter-spacing: -0.374px;
-    padding: 11px 22px;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
+    background-color: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
   }
-  .btn-secondary-pill:active {
-    transform: scale(0.95);
-  }
-  .btn-secondary-pill:focus-visible {
-    outline: 2px solid var(--color-primary-focus);
+  .chip:hover {
+    border-color: var(--color-border-strong);
+    color: var(--color-text-primary);
   }
 
-  /* text-link / text-link-on-dark — design.md */
-  .text-link {
-    color: var(--color-primary);
-  }
-  .text-link-on-dark {
-    color: var(--color-primary-on-dark);
+  /* Keyboard hint chip (⌘K, Esc) — text-secondary for contrast on surface-muted */
+  .kbd {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface-muted);
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.4;
   }
 
-  /* hero title responsive cascade — design.md "Collapsing Strategy":
-     56px -> 40px at 1068px -> 34px at 640px -> 28px at 419px */
+  /* Hero headline responsive cascade — display type steps 40 → 32 → 28px
+     (AppKitX-Design.md → Collapsing rules) */
   .hero-title {
-    font-family: var(--font-display);
-    font-size: var(--text-hero-display);
+    font-family: var(--font-sans);
+    font-size: 28px;
     font-weight: 600;
-    line-height: 1.07;
-    letter-spacing: calc(-0.28px - 0.01em);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
   }
-  @media (width < 1069px) {
+  @media (min-width: 640px) {
     .hero-title {
-      font-size: var(--text-display-lg);
+      font-size: 32px;
     }
   }
-  @media (width < 641px) {
+  @media (min-width: 1024px) {
     .hero-title {
-      font-size: var(--text-display-md);
-    }
-  }
-  @media (width < 420px) {
-    .hero-title {
-      font-size: var(--text-lead);
+      font-size: var(--text-display);
     }
   }
 }

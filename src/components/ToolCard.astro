@@ -1,16 +1,32 @@
 ---
+import arrowIcon from "lucide-static/icons/arrow-right.svg?raw";
+
 interface Props {
   title: string;
   description: string;
+  icon: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, icon } = Astro.props;
 ---
 
-<article class="rounded-lg border border-hairline bg-canvas p-lg">
-  <h3 class="font-text text-body-strong text-ink">{title}</h3>
-  <p class="mt-xs text-ink">{description}</p>
-  <a href="#" class="text-link mt-sm inline-block font-text">
+<a
+  href="#"
+  class="focus-ring group block rounded-lg border border-border-subtle bg-surface p-5 hover:border-border-strong hover:shadow-sm"
+>
+  <span
+    class="flex h-10 w-10 items-center justify-center rounded-md bg-accent-subtle text-accent [&_svg]:h-5 [&_svg]:w-5"
+    aria-hidden="true"
+    set:html={icon}
+  />
+  <h3 class="mt-4 text-body-strong text-text-primary">{title}</h3>
+  <p class="mt-1 line-clamp-2 text-small text-text-secondary">{description}</p>
+  <span class="mt-4 flex items-center gap-1 text-label text-accent">
     Open tool
-  </a>
-</article>
+    <span
+      class="h-4 w-4 transition-transform group-hover:translate-x-0.5 [&_svg]:h-4 [&_svg]:w-4"
+      aria-hidden="true"
+      set:html={arrowIcon}
+    />
+  </span>
+</a>

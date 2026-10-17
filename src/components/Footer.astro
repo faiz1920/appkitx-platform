@@ -1,7 +1,7 @@
 ---
 const columns = [
   {
-    heading: "Popular tools",
+    heading: "Tools",
     links: [
       "Percentage Calculator",
       "Unit Converter",
@@ -10,28 +10,35 @@ const columns = [
     ],
   },
   {
-    heading: "Developer tools",
-    links: ["Base64 Encoder", "JSON Formatter", "URL Encoder", "Regex Tester"],
+    heading: "Categories",
+    links: ["Calculators", "Converters", "Developer tools"],
   },
   {
     heading: "Company",
-    links: ["About", "Contact", "Privacy", "Terms"],
+    links: ["About", "Contact"],
+  },
+  {
+    heading: "Legal",
+    links: ["Privacy", "Terms"],
   },
 ];
 ---
 
-<footer class="bg-canvas-parchment text-ink-muted-80">
-  <div class="mx-auto max-w-grid px-lg py-16">
-    <div class="grid grid-cols-1 gap-x-lg gap-y-8 sm:grid-cols-2 tablet:grid-cols-3">
+<footer class="border-t border-border-subtle bg-surface-subtle">
+  <div class="mx-auto max-w-(--layout-container) px-6 py-12">
+    <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 md:grid-cols-4">
       {columns.map((column) => (
         <div>
-          <h3 class="font-text text-caption-strong text-ink">
+          <h3 class="text-overline text-text-muted uppercase">
             {column.heading}
           </h3>
-          <ul class="mt-xs">
+          <ul class="mt-4 space-y-2">
             {column.links.map((label) => (
               <li>
-                <a href="#" class="font-text text-dense-link text-ink-muted-80">
+                <a
+                  href="#"
+                  class="focus-ring text-small text-text-secondary hover:text-accent"
+                >
                   {label}
                 </a>
               </li>
@@ -40,8 +47,18 @@ const columns = [
         </div>
       ))}
     </div>
-    <p class="mt-xxl font-text text-fine-print text-ink-muted-48">
-      Copyright © 2026 AppKitX. All rights reserved.
-    </p>
+
+    <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border-subtle pt-6">
+      <p class="text-micro text-text-muted">© 2026 AppKitX</p>
+      <p class="text-micro text-text-muted">
+        <a href="#" class="focus-ring hover:text-accent">
+          Privacy
+        </a>
+        <span aria-hidden="true"> · </span>
+        <a href="#" class="focus-ring hover:text-accent">
+          Terms
+        </a>
+      </p>
+    </div>
   </div>
 </footer>

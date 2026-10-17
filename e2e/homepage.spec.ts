@@ -10,47 +10,69 @@ test("homepage renders the chrome, hero, and token styles", async ({
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Free tools for everyday work.",
   );
+  await expect(page.getByPlaceholder("Search free tools…")).toBeVisible();
 
-  const cta = page.getByRole("link", { name: "Browse tools" }).first();
-  await expect(cta).toBeVisible();
-  await expect(cta).toHaveCSS("background-color", "rgb(0, 102, 204)");
-  await expect(cta).toHaveCSS("border-radius", "9999px");
+  const openLabel = page.getByText("Open tool").first();
+  await expect(openLabel).toHaveCSS("color", "rgb(15, 118, 110)");
 
-  await expect(page.locator("body")).toHaveCSS("font-size", "17px");
-  await expect(page.locator("body")).toHaveCSS("color", "rgb(29, 29, 31)");
+  const card = page
+    .locator("#tools")
+    .getByRole("link")
+    .filter({ hasText: "Percentage Calculator" });
+  await expect(card).toHaveCSS("border-radius", "12px");
+
+  await expect(page.getByRole("navigation", { name: "Global" })).toHaveCSS(
+    "height",
+    "64px",
+  );
+  await expect(page.locator("body")).toHaveCSS("font-size", "16px");
+  await expect(page.locator("body")).toHaveCSS("color", "rgb(15, 23, 42)");
   await expect(page.locator("footer")).toHaveCSS(
     "background-color",
-    "rgb(245, 245, 247)",
+    "rgb(248, 250, 252)",
   );
 
   await page.screenshot({ path: "test-results/homepage.png", fullPage: true });
 });
 
-test("nav icon buttons meet the 44px minimum touch target", async ({
+test("global nav collapses and icon buttons keep 44px targets", async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 820, height: 900 });
-  await page.goto("/");
-
-  for (const name of ["Search", "Menu"]) {
-    const box = await page.getByRole("button", { name }).boundingBox();
-    if (!box) throw new Error(`${name} button is not visible`);
-    expect(box.width).toBeGreaterThanOrEqual(44);
-    expect(box.height).toBeGreaterThanOrEqual(44);
-  }
-});
-
-test("global nav collapses to a menu on tablet widths", async ({ page }) => {
-  await page.setViewportSize({ width: 820, height: 900 });
+  await page.setViewportSize({ width: 720, height: 900 });
   await page.goto("/");
 
   const toggle = page.getByRole("button", { name: "Menu" });
   await expect(toggle).toBeVisible();
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
 
+  for (const name of ["Search tools", "Menu"]) {
+    const box = await page.getByRole("button", { name }).boundingBox();
+    if (!box) throw new Error(`${name} button is not visible`);
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+
+  await page.screenshot({
+    path: "test-results/homepage-mobile.png",
+    fullPage: false,
+  });
+
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
   await expect(
-    page.locator("#global-menu").getByRole("link", { name: "Calculators" }),
+    page.locator("#global-menu").getByRole("link", { name: "Tools" }),
   ).toBeVisible();
+});
+
+test("keyboard focus shows the focus ring on the skip link", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+
+  const skipLink = page.getByRole("link", { name: "Skip to content" });
+  await expect(skipLink).toBeFocused();
+  await expect(skipLink).toBeVisible();
+  await expect(skipLink).toHaveCSS("outline-color", "rgb(13, 148, 136)");
+  await expect(skipLink).toHaveCSS("outline-width", "2px");
 });
