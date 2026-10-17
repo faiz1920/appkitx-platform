@@ -1,0 +1,362 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+import checkIcon from "lucide-static/icons/check.svg?raw";
+import copyIcon from "lucide-static/icons/copy.svg?raw";
+---
+
+<div data-discount-calculator>
+  <form novalidate data-calculator-form>
+    <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)">
+      <div class="space-y-5">
+        <div>
+          <label
+            for="discount-input-price"
+            class="text-label text-text-primary"
+          >
+            Original price
+          </label>
+          <input
+            id="discount-input-price"
+            name="price"
+            type="number"
+            step="any"
+            inputmode="decimal"
+            autocomplete="off"
+            class="input mt-2 font-mono tabular-nums"
+            aria-describedby="discount-hint-price discount-error-price"
+            data-input-price
+          />
+          <p id="discount-hint-price" class="mt-1 text-caption text-text-muted">
+            The price before the discount, in any currency.
+          </p>
+          <p
+            id="discount-error-price"
+            class="field-error mt-1"
+            hidden
+            data-error-price
+          >
+            <span aria-hidden="true" set:html={alertIcon} />
+            <span data-error-text-price></span>
+          </p>
+        </div>
+
+        <div>
+          <label
+            for="discount-input-percent"
+            class="text-label text-text-primary"
+          >
+            Discount percentage (%)
+          </label>
+          <input
+            id="discount-input-percent"
+            name="percent"
+            type="number"
+            step="any"
+            inputmode="decimal"
+            autocomplete="off"
+            class="input mt-2 font-mono tabular-nums"
+            aria-describedby="discount-hint-percent discount-error-percent"
+            data-input-percent
+          />
+          <p
+            id="discount-hint-percent"
+            class="mt-1 text-caption text-text-muted"
+          >
+            A percentage between 0 and 100.
+          </p>
+          <p
+            id="discount-error-percent"
+            class="field-error mt-1"
+            hidden
+            data-error-percent
+          >
+            <span aria-hidden="true" set:html={alertIcon} />
+            <span data-error-text-percent></span>
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <button type="submit" class="btn btn-primary w-full">
+          Calculate
+        </button>
+        <button type="button" class="btn btn-secondary mt-3 w-full" data-reset>
+          Reset
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div
+    class="relative mt-6 rounded-lg bg-accent-subtle p-(--layout-card-padding)"
+    aria-live="polite"
+    data-result-region
+  >
+    <p class="text-overline text-text-secondary uppercase">Result</p>
+    <div class="mt-2 pr-14">
+      <p class="text-caption text-text-secondary">Final price</p>
+      <p class="mt-1 text-mono-result text-text-disabled" data-final-price>
+        —
+      </p>
+    </div>
+    <div class="mt-4 pr-14">
+      <p class="text-caption text-text-secondary">You save</p>
+      <p
+        class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+        data-savings
+      >
+        —
+      </p>
+    </div>
+    <p class="mt-3 pr-14 text-caption text-text-muted" data-result-caption>
+      Results appear here
+    </p>
+    <p
+      class="mt-2 flex items-center gap-1.5 text-caption text-success"
+      hidden
+      data-copy-status-success
+    >
+      <span
+        class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+        aria-hidden="true"
+        set:html={checkIcon}
+      />
+      Copied to clipboard.
+    </p>
+    <p
+      class="mt-2 flex items-center gap-1.5 text-caption text-error"
+      hidden
+      data-copy-status-error
+    >
+      <span
+        class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+        aria-hidden="true"
+        set:html={alertIcon}
+      />
+      Copy failed — select the result text and copy it manually.
+    </p>
+    <button
+      type="button"
+      class="btn btn-ghost absolute top-3 right-3 w-11 px-0"
+      aria-label="Copy result"
+      disabled
+      data-copy
+    >
+      <span
+        class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        data-copy-idle
+        set:html={copyIcon}
+      />
+      <span
+        class="h-5 w-5 text-success [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        hidden
+        data-copy-done
+        set:html={checkIcon}
+      />
+    </button>
+  </div>
+
+  <p class="mt-4 text-small text-text-secondary">
+    Formula:{" "}
+    <code class="inline-code" data-formula>
+      discount = (price × percent) ÷ 100 · final = price − discount
+    </code>
+  </p>
+</div>
+
+<script>
+  import {
+    calculateDiscount,
+    describeFormulas,
+    formatAmount,
+    formulaTemplate,
+  } from "../lib/discount";
+
+  const root = document.querySelector<HTMLElement>(
+    "[data-discount-calculator]",
+  );
+
+  if (root) {
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`Discount calculator: missing ${selector}`);
+      return el;
+    };
+
+    const form = requireEl<HTMLFormElement>("[data-calculator-form]");
+    const inputPrice = requireEl<HTMLInputElement>("[data-input-price]");
+    const inputPercent = requireEl<HTMLInputElement>("[data-input-percent]");
+    const errorPrice = requireEl<HTMLElement>("[data-error-price]");
+    const errorTextPrice = requireEl<HTMLElement>("[data-error-text-price]");
+    const errorPercent = requireEl<HTMLElement>("[data-error-percent]");
+    const errorTextPercent = requireEl<HTMLElement>(
+      "[data-error-text-percent]",
+    );
+    const finalPriceEl = requireEl<HTMLElement>("[data-final-price]");
+    const savingsEl = requireEl<HTMLElement>("[data-savings]");
+    const resultCaption = requireEl<HTMLElement>("[data-result-caption]");
+    const formulaEl = requireEl<HTMLElement>("[data-formula]");
+    const copyButton = requireEl<HTMLButtonElement>("[data-copy]");
+    const copyIdle = requireEl<HTMLElement>("[data-copy-idle]");
+    const copyDone = requireEl<HTMLElement>("[data-copy-done]");
+    const copyStatusSuccess = requireEl<HTMLElement>(
+      "[data-copy-status-success]",
+    );
+    const copyStatusError = requireEl<HTMLElement>("[data-copy-status-error]");
+    const resetButton = requireEl<HTMLButtonElement>("[data-reset]");
+
+    let copyTimer: number | undefined;
+    let copyBusy = false;
+    let lastCopyText = "";
+
+    const resetCopyFeedback = () => {
+      window.clearTimeout(copyTimer);
+      copyIdle.hidden = false;
+      copyDone.hidden = true;
+      copyStatusSuccess.hidden = true;
+      copyStatusError.hidden = true;
+    };
+
+    const clearErrors = () => {
+      for (const [wrap, text, input] of [
+        [errorPrice, errorTextPrice, inputPrice],
+        [errorPercent, errorTextPercent, inputPercent],
+      ] as const) {
+        wrap.hidden = true;
+        text.textContent = "";
+        input.removeAttribute("aria-invalid");
+      }
+    };
+
+    const showError = (
+      input: HTMLInputElement,
+      wrap: HTMLElement,
+      text: HTMLElement,
+      message: string,
+    ) => {
+      wrap.hidden = false;
+      text.textContent = message;
+      input.setAttribute("aria-invalid", "true");
+    };
+
+    const showEmptyResult = () => {
+      lastCopyText = "";
+      resetCopyFeedback();
+      for (const el of [finalPriceEl, savingsEl]) {
+        el.textContent = "—";
+        el.classList.replace("text-text-primary", "text-text-disabled");
+      }
+      resultCaption.textContent = "Results appear here";
+      formulaEl.textContent = formulaTemplate();
+      copyButton.disabled = true;
+    };
+
+    const parseInput = (input: HTMLInputElement): number | null => {
+      if (input.value.trim() === "") return null;
+      return Number.isFinite(input.valueAsNumber) ? input.valueAsNumber : null;
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      clearErrors();
+
+      const price = parseInput(inputPrice);
+      const discountPercent = parseInput(inputPercent);
+
+      if (price === null) {
+        showError(
+          inputPrice,
+          errorPrice,
+          errorTextPrice,
+          "Enter a valid number.",
+        );
+      } else if (price < 0) {
+        showError(
+          inputPrice,
+          errorPrice,
+          errorTextPrice,
+          "Enter a price of 0 or more.",
+        );
+      }
+
+      if (discountPercent === null) {
+        showError(
+          inputPercent,
+          errorPercent,
+          errorTextPercent,
+          "Enter a valid number.",
+        );
+      } else if (discountPercent < 0 || discountPercent > 100) {
+        showError(
+          inputPercent,
+          errorPercent,
+          errorTextPercent,
+          "Enter a discount between 0 and 100.",
+        );
+      }
+
+      if (
+        price === null ||
+        price < 0 ||
+        discountPercent === null ||
+        discountPercent < 0 ||
+        discountPercent > 100
+      ) {
+        showEmptyResult();
+        return;
+      }
+
+      const result = calculateDiscount(price, discountPercent);
+      resetCopyFeedback();
+
+      if (result === null) {
+        showEmptyResult();
+        return;
+      }
+
+      finalPriceEl.textContent = formatAmount(result.finalPrice);
+      finalPriceEl.classList.replace("text-text-disabled", "text-text-primary");
+      savingsEl.textContent = formatAmount(result.savings);
+      savingsEl.classList.replace("text-text-disabled", "text-text-primary");
+      resultCaption.textContent = `${formatAmount(discountPercent)}% off ${formatAmount(price)}.`;
+      formulaEl.textContent = describeFormulas(
+        price,
+        discountPercent,
+        result.savings,
+        result.finalPrice,
+      );
+      lastCopyText = `Final price: ${formatAmount(result.finalPrice)}\nYou save: ${formatAmount(result.savings)}`;
+      copyButton.disabled = false;
+    });
+
+    resetButton.addEventListener("click", () => {
+      form.reset();
+      clearErrors();
+      showEmptyResult();
+      inputPrice.focus();
+    });
+
+    copyButton.addEventListener("click", async () => {
+      if (!lastCopyText || copyBusy) return;
+      copyBusy = true;
+      resetCopyFeedback();
+      try {
+        await navigator.clipboard.writeText(lastCopyText);
+        copyIdle.hidden = true;
+        copyDone.hidden = false;
+        copyStatusSuccess.hidden = false;
+        copyTimer = window.setTimeout(() => {
+          copyIdle.hidden = false;
+          copyDone.hidden = true;
+          copyStatusSuccess.hidden = true;
+        }, 2000);
+      } catch {
+        copyStatusError.hidden = false;
+      } finally {
+        copyBusy = false;
+      }
+    });
+  }
+</script>
