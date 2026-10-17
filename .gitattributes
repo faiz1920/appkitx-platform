@@ -1,0 +1,18 @@
+# Normalize line endings: store LF in the repository and check out LF on
+# every platform. Prettier (endOfLine: lf) and format:check expect LF, so a
+# Windows checkout with CRLF working files fails format:check until files
+# are rewritten. See README for the one-time normalization command.
+* text=auto eol=lf
+
+# Binary assets are never normalized.
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.gif -text
+*.ico -text
+*.webp -text
+*.avif -text
+*.woff -text
+*.woff2 -text
+*.ttf -text
+*.pdf -text
