@@ -23,8 +23,10 @@
 
 @layer components {
   /* Focus indicator — 2px ring + 2px offset everywhere
-     (AppKitX-Design.md → Focus indicator) */
-  .focus-ring:focus-visible {
+     (AppKitX-Design.md → Focus indicator). All buttons inherit it through
+     .btn so no interactive control can miss the ring. */
+  .focus-ring:focus-visible,
+  .btn:focus-visible {
     outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
   }
