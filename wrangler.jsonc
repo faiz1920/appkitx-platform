@@ -2,6 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "appkitx-platform",
   "compatibility_date": "2026-10-17",
+  "previews": {},
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page",
