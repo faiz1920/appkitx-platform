@@ -1,0 +1,47 @@
+---
+const columns = [
+  {
+    heading: "Popular tools",
+    links: [
+      "Percentage Calculator",
+      "Unit Converter",
+      "Loan Calculator",
+      "Date Calculator",
+    ],
+  },
+  {
+    heading: "Developer tools",
+    links: ["Base64 Encoder", "JSON Formatter", "URL Encoder", "Regex Tester"],
+  },
+  {
+    heading: "Company",
+    links: ["About", "Contact", "Privacy", "Terms"],
+  },
+];
+---
+
+<footer class="bg-canvas-parchment text-ink-muted-80">
+  <div class="mx-auto max-w-grid px-lg py-16">
+    <div class="grid grid-cols-1 gap-x-lg gap-y-8 sm:grid-cols-2 tablet:grid-cols-3">
+      {columns.map((column) => (
+        <div>
+          <h3 class="font-text text-caption-strong text-ink">
+            {column.heading}
+          </h3>
+          <ul class="mt-xs">
+            {column.links.map((label) => (
+              <li>
+                <a href="#" class="font-text text-dense-link text-ink-muted-80">
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+    <p class="mt-xxl font-text text-fine-print text-ink-muted-48">
+      Copyright © 2026 AppKitX. All rights reserved.
+    </p>
+  </div>
+</footer>

@@ -1,0 +1,95 @@
+---
+const links = [
+  { href: "#tools", label: "Calculators" },
+  { href: "#tools", label: "Converters" },
+  { href: "#tools", label: "Developer Tools" },
+];
+---
+
+<header class="sticky top-0 z-40 bg-surface-black">
+  <nav
+    aria-label="Global"
+    class="mx-auto flex h-11 max-w-grid items-center justify-between gap-lg px-lg text-body-on-dark"
+  >
+    <a href="/" class="font-text text-nav-link font-semibold text-body-on-dark">
+      AppKitX
+    </a>
+
+    <ul class="hidden items-center gap-5 tablet:flex">
+      {links.map((link) => (
+        <li>
+          <a href={link.href} class="font-text text-nav-link text-body-on-dark">
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="flex items-center gap-lg">
+      <button
+        type="button"
+        class="flex h-4 w-4 items-center justify-center text-body-on-dark"
+        aria-label="Search"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <circle cx="7" cy="7" r="4.5"></circle>
+          <path d="M10.5 10.5 14 14"></path>
+        </svg>
+      </button>
+      <button
+        type="button"
+        data-menu-toggle
+        aria-expanded="false"
+        aria-controls="global-menu"
+        class="flex h-4 w-4 items-center justify-center text-body-on-dark tablet:hidden"
+        aria-label="Menu"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <path d="M2 4.5h12"></path>
+          <path d="M2 8h12"></path>
+          <path d="M2 11.5h12"></path>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <div id="global-menu" hidden class="tablet:hidden">
+    <ul class="mx-auto flex max-w-grid flex-col gap-sm px-lg pb-lg">
+      {links.map((link) => (
+        <li>
+          <a href={link.href} class="font-text text-nav-link text-body-on-dark">
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</header>
+
+<script>
+  const toggle =
+    document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+  const menu = document.querySelector<HTMLElement>("#global-menu");
+
+  toggle?.addEventListener("click", () => {
+    const open = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!open));
+    menu?.toggleAttribute("hidden", open);
+  });
+</script>

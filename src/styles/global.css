@@ -1,0 +1,107 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+@layer base {
+  body {
+    font-family: var(--font-text);
+    font-size: var(--text-body);
+    font-weight: 400;
+    line-height: 1.44; /* body token; Inter substitution per design.md */
+    letter-spacing: -0.374px;
+    font-feature-settings: "ss03"; /* Inter substitution per design.md */
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+  }
+}
+
+@layer components {
+  /* sub-nav-frosted: parchment at 80% + blur. Blur baseline from design.md
+     "Known Gaps" (saturate(180%) blur(20px)) since no token is formalized. */
+  .nav-frosted {
+    background-color: color-mix(
+      in srgb,
+      var(--color-canvas-parchment) 80%,
+      transparent
+    );
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  /* button-primary — design.md */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    font-family: var(--font-text);
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.44;
+    letter-spacing: -0.374px;
+    padding: 11px 22px;
+  }
+  .btn-primary:active {
+    transform: scale(0.95);
+  }
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--color-primary-focus);
+  }
+
+  /* button-secondary-pill — design.md ("ghost pill") */
+  .btn-secondary-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-pill);
+    background-color: transparent;
+    color: var(--color-primary);
+    font-family: var(--font-text);
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.44;
+    letter-spacing: -0.374px;
+    padding: 11px 22px;
+  }
+  .btn-secondary-pill:active {
+    transform: scale(0.95);
+  }
+  .btn-secondary-pill:focus-visible {
+    outline: 2px solid var(--color-primary-focus);
+  }
+
+  /* text-link / text-link-on-dark — design.md */
+  .text-link {
+    color: var(--color-primary);
+  }
+  .text-link-on-dark {
+    color: var(--color-primary-on-dark);
+  }
+
+  /* hero title responsive cascade — design.md "Collapsing Strategy":
+     56px -> 40px at 1068px -> 34px at 640px -> 28px at 419px */
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: var(--text-hero-display);
+    font-weight: 600;
+    line-height: 1.07;
+    letter-spacing: calc(-0.28px - 0.01em);
+  }
+  @media (width < 1069px) {
+    .hero-title {
+      font-size: var(--text-display-lg);
+    }
+  }
+  @media (width < 641px) {
+    .hero-title {
+      font-size: var(--text-display-md);
+    }
+  }
+  @media (width < 420px) {
+    .hero-title {
+      font-size: var(--text-lead);
+    }
+  }
+}
