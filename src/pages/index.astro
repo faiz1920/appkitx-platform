@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import GlobalNav from "../components/GlobalNav.astro";
 import Footer from "../components/Footer.astro";
 import ToolCard from "../components/ToolCard.astro";
+import { tools as registeredTools } from "../lib/tools";
 
 import searchIcon from "lucide-static/icons/search.svg?raw";
 import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
@@ -13,19 +14,18 @@ import calendarIcon from "lucide-static/icons/calendar-days.svg?raw";
 import binaryIcon from "lucide-static/icons/binary.svg?raw";
 import bracesIcon from "lucide-static/icons/braces.svg?raw";
 
+const registryIcons: Record<string, string> = {
+  calculator: calculatorIcon,
+  tag: tagIcon,
+};
+
 const tools = [
-  {
-    title: "Percentage Calculator",
-    description: "Percentages, tips, discounts, and percent change.",
-    icon: calculatorIcon,
-    href: "/percentage-calculator",
-  },
-  {
-    title: "Discount Calculator",
-    description: "Savings and final price after a discount.",
-    icon: tagIcon,
-    href: "/discount-calculator",
-  },
+  ...registeredTools.map((tool) => ({
+    title: tool.title,
+    description: tool.description,
+    icon: registryIcons[tool.icon] ?? "",
+    href: tool.href,
+  })),
   {
     title: "Unit Converter",
     description: "Length, weight, temperature, and more.",
@@ -79,18 +79,24 @@ const categories = [
           Calculators, converters, and developer utilities — all in one place.
         </p>
 
-        <div class="relative mt-8 max-w-(--layout-tool)">
-          <span
-            class="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-text-muted [&_svg]:h-5 [&_svg]:w-5"
-            aria-hidden="true"
-            set:html={searchIcon}
-          />
-          <input
-            type="search"
-            class="input input-search"
-            placeholder="Search free tools…"
-            aria-label="Search tools"
-          />
+        <div class="mt-8 max-w-(--layout-tool)">
+          <label for="hero-search" class="text-label text-text-primary">
+            Search tools
+          </label>
+          <form class="relative mt-2" role="search" data-hero-search>
+            <span
+              class="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-text-muted [&_svg]:h-5 [&_svg]:w-5"
+              aria-hidden="true"
+              set:html={searchIcon}
+            />
+            <input
+              id="hero-search"
+              type="search"
+              class="input input-search"
+              placeholder="Search free tools…"
+              data-hero-search-input
+            />
+          </form>
         </div>
 
         <div class="mt-6">
@@ -128,3 +134,20 @@ const categories = [
   </main>
   <Footer />
 </BaseLayout>
+
+<script>
+  const heroForm =
+    document.querySelector<HTMLFormElement>("[data-hero-search]");
+  const heroInput = document.querySelector<HTMLInputElement>(
+    "[data-hero-search-input]",
+  );
+
+  heroForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const query = heroInput?.value.trim() ?? "";
+    if (query === "") return;
+    document.dispatchEvent(
+      new CustomEvent("appkitx:search-open", { detail: { query } }),
+    );
+  });
+</script>

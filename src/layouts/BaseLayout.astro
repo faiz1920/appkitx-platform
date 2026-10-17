@@ -2,6 +2,7 @@
 import "@fontsource-variable/inter";
 import "@fontsource-variable/jetbrains-mono";
 import "../styles/global.css";
+import SearchPalette from "../components/SearchPalette.astro";
 
 interface Props {
   title?: string;
@@ -28,5 +29,6 @@ const {
       Skip to content
     </a>
     <slot />
+    <SearchPalette />
   </body>
 </html>

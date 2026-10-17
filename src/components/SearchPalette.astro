@@ -1,0 +1,257 @@
+---
+import searchIcon from "lucide-static/icons/search.svg?raw";
+import searchXIcon from "lucide-static/icons/search-x.svg?raw";
+import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
+import tagIcon from "lucide-static/icons/tag.svg?raw";
+
+/* Build-time trusted SVGs keyed by registry icon name. */
+const toolIcons: Record<string, string> = {
+  calculator: calculatorIcon,
+  tag: tagIcon,
+};
+---
+
+<dialog
+  class="search-palette"
+  aria-label="Search tools"
+  data-search-palette
+  data-tool-icons={JSON.stringify(toolIcons)}
+>
+  <div class="flex h-14 shrink-0 items-center gap-3 border-b border-border-subtle px-4">
+    <span
+      class="h-5 w-5 shrink-0 text-text-muted [&_svg]:h-5 [&_svg]:w-5"
+      aria-hidden="true"
+      set:html={searchIcon}
+    />
+    <input
+      type="text"
+      class="search-palette-input min-w-0 flex-1 border-0 bg-transparent font-sans text-body text-text-primary placeholder:text-text-muted"
+      role="combobox"
+      aria-label="Search tools"
+      aria-expanded="true"
+      aria-autocomplete="list"
+      aria-controls="search-palette-results"
+      placeholder="Search tools…"
+      autocomplete="off"
+      spellcheck="false"
+      data-search-input
+    />
+    <kbd class="kbd shrink-0">Esc</kbd>
+  </div>
+
+  <div class="min-h-0 flex-1 overflow-y-auto p-2">
+    <div
+      role="listbox"
+      id="search-palette-results"
+      aria-label="Tools"
+      data-search-results
+    ></div>
+    <div
+      class="flex flex-col items-center gap-2 px-4 py-10 text-center"
+      hidden
+      data-search-empty
+    >
+      <span
+        class="h-6 w-6 text-text-muted [&_svg]:h-6 [&_svg]:w-6"
+        aria-hidden="true"
+        set:html={searchXIcon}
+      />
+      <p class="text-label text-text-primary" data-search-empty-message></p>
+      <p class="text-caption text-text-muted">
+        Try a different word, or{" "}
+        <a href="/" class="focus-ring text-accent hover:text-accent-hover">
+          browse all tools
+        </a>
+        .
+      </p>
+    </div>
+  </div>
+
+  <div class="sr-only" role="status" data-search-status></div>
+</dialog>
+
+<script>
+  import { searchTools } from "../lib/search";
+
+  const dialog = document.querySelector<HTMLDialogElement>(
+    "[data-search-palette]",
+  );
+
+  if (dialog) {
+    const input = dialog.querySelector<HTMLInputElement>("[data-search-input]");
+    const resultsEl = dialog.querySelector<HTMLElement>(
+      "[data-search-results]",
+    );
+    const emptyEl = dialog.querySelector<HTMLElement>("[data-search-empty]");
+    const emptyMessage = dialog.querySelector<HTMLElement>(
+      "[data-search-empty-message]",
+    );
+    const statusEl = dialog.querySelector<HTMLElement>("[data-search-status]");
+
+    if (input && resultsEl && emptyEl && emptyMessage && statusEl) {
+      const toolIcons: Record<string, string> = JSON.parse(
+        dialog.dataset.toolIcons ?? "{}",
+      );
+
+      let opener: HTMLElement | null = null;
+      let restoreFocus = true;
+      let activeIndex = -1;
+      let currentResults: ReturnType<typeof searchTools> = [];
+
+      const updateActive = () => {
+        const options = resultsEl.querySelectorAll<HTMLAnchorElement>(
+          ".search-palette-option",
+        );
+        options.forEach((option, index) => {
+          option.setAttribute(
+            "aria-selected",
+            index === activeIndex ? "true" : "false",
+          );
+        });
+        const active = options[activeIndex];
+        if (active) {
+          input.setAttribute("aria-activedescendant", active.id);
+          active.scrollIntoView({ block: "nearest" });
+        } else {
+          input.removeAttribute("aria-activedescendant");
+        }
+      };
+
+      const render = (query: string) => {
+        currentResults = searchTools(query);
+        activeIndex = -1;
+        input.removeAttribute("aria-activedescendant");
+        resultsEl.replaceChildren();
+
+        for (const [index, tool] of currentResults.entries()) {
+          const option = document.createElement("a");
+          option.href = tool.href;
+          option.id = `search-option-${index}`;
+          option.className = "search-palette-option";
+          option.setAttribute("role", "option");
+          option.setAttribute("aria-selected", "false");
+          option.addEventListener("click", (event) => {
+            event.preventDefault();
+            activate(tool.href);
+          });
+
+          const tile = document.createElement("span");
+          tile.className =
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent-subtle text-accent [&_svg]:h-4 [&_svg]:w-4";
+          tile.setAttribute("aria-hidden", "true");
+          tile.innerHTML = toolIcons[tool.icon] ?? "";
+
+          const text = document.createElement("span");
+          text.className = "flex min-w-0 flex-col";
+          const name = document.createElement("span");
+          name.className = "text-label text-text-primary";
+          name.textContent = tool.title;
+          const category = document.createElement("span");
+          category.className = "text-caption text-text-muted";
+          category.textContent = tool.category;
+          text.append(name, category);
+
+          option.append(tile, text);
+          resultsEl.append(option);
+        }
+
+        const hasResults = currentResults.length > 0;
+        input.setAttribute("aria-expanded", String(hasResults));
+        emptyEl.hidden = hasResults;
+        resultsEl.hidden = !hasResults;
+        if (!hasResults) {
+          emptyMessage.textContent = `No tools match “${query.trim()}”`;
+        }
+        const status = hasResults
+          ? `${currentResults.length} tool${currentResults.length === 1 ? "" : "s"}`
+          : `No tools match ${query.trim()}`;
+        if (statusEl.textContent !== status) statusEl.textContent = status;
+      };
+
+      const activate = (href: string) => {
+        restoreFocus = false;
+        dialog.close();
+        window.location.assign(href);
+      };
+
+      const open = (query = "") => {
+        if (dialog.open) {
+          input.focus();
+          return;
+        }
+        opener =
+          document.activeElement instanceof HTMLElement
+            ? document.activeElement
+            : null;
+        restoreFocus = true;
+        dialog.showModal();
+        input.value = query;
+        render(query);
+        input.focus();
+      };
+
+      dialog.addEventListener("close", () => {
+        if (restoreFocus && opener?.isConnected) opener.focus();
+        opener = null;
+      });
+
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+
+      /* Hard focus trap: cycle Tab/Shift+Tab inside the dialog so focus
+         never leaves to the page (or browser chrome) while open. */
+      dialog.addEventListener("keydown", (event) => {
+        if (event.key !== "Tab") return;
+        const focusables = Array.from(
+          dialog.querySelectorAll<HTMLElement>("input, a[href], button"),
+        ).filter((el) => !el.closest("[hidden]"));
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const active = document.activeElement;
+        if (event.shiftKey && (active === first || active === dialog)) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && active === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+
+      input.addEventListener("input", () => render(input.value));
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          if (currentResults.length === 0) return;
+          const delta = event.key === "ArrowDown" ? 1 : -1;
+          activeIndex =
+            (activeIndex + delta + currentResults.length) %
+            currentResults.length;
+          updateActive();
+        } else if (event.key === "Enter") {
+          event.preventDefault();
+          const active = currentResults[activeIndex];
+          if (active) activate(active.href);
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (
+          (event.metaKey || event.ctrlKey) &&
+          !event.altKey &&
+          event.key.toLowerCase() === "k"
+        ) {
+          event.preventDefault();
+          open();
+        }
+      });
+
+      document.addEventListener("appkitx:search-open", (event) => {
+        const detail = (event as CustomEvent<{ query?: string }>).detail;
+        open(detail?.query ?? "");
+      });
+    }
+  }
+</script>
