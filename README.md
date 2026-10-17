@@ -4,7 +4,7 @@ Global platform for free online calculators, developer utilities, and everyday t
 
 ## Design
 
-The visual system and UI requirements are defined in [design.md](./design.md). All UI work follows that specification.
+The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKitX-Design.md). All UI work follows that specification.
 
 ## Status
 
