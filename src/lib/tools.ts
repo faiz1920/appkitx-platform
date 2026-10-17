@@ -56,3 +56,13 @@ export const tools: readonly Tool[] = [
     icon: "tag",
   },
 ];
+
+/*
+ * Resolve a list of registered tool hrefs, in the requested order.
+ * Unknown references are dropped so pages can never render a broken link.
+ */
+export function resolveTools(hrefs: readonly string[]): Tool[] {
+  return hrefs
+    .map((href) => tools.find((tool) => tool.href === href))
+    .filter((tool): tool is Tool => tool !== undefined);
+}

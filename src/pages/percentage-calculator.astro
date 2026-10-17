@@ -1,7 +1,16 @@
 ---
 import ToolLayout from "../layouts/ToolLayout.astro";
 import PercentageCalculator from "../components/PercentageCalculator.astro";
+import { resolveTools } from "../lib/tools";
 import tagIcon from "lucide-static/icons/tag.svg?raw";
+
+const toolIcons: Record<string, string> = { tag: tagIcon };
+const relatedTools = resolveTools(["/discount-calculator"]).map((tool) => ({
+  title: tool.title,
+  description: tool.description,
+  href: tool.href,
+  icon: toolIcons[tool.icon] ?? "",
+}));
 ---
 
 <ToolLayout
@@ -13,14 +22,7 @@ import tagIcon from "lucide-static/icons/tag.svg?raw";
     { label: "Home", href: "/" },
     { label: "Percentage Calculator" },
   ]}
-  relatedTools={[
-    {
-      title: "Discount Calculator",
-      description: "Savings and final price after a percentage discount.",
-      href: "/discount-calculator",
-      icon: tagIcon,
-    },
-  ]}
+  relatedTools={relatedTools}
 >
   <PercentageCalculator slot="tool" />
 
