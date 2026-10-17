@@ -7,12 +7,17 @@ import SearchPalette from "../components/SearchPalette.astro";
 interface Props {
   title?: string;
   description?: string;
+  /** Error and non-indexable pages: adds noindex and omits the canonical tag. */
+  noindex?: boolean;
 }
 
 const {
   title = "AppKitX — Free Online Tools",
   description = "Free calculators, converters, and developer utilities, all in one place.",
+  noindex = false,
 } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
@@ -22,6 +27,8 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {noindex && <meta name="robots" content="noindex" />}
+    {!noindex && <link rel="canonical" href={canonical.href} />}
     <title>{title}</title>
   </head>
   <body>

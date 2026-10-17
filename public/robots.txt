@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://appkitx.com/sitemap-index.xml
