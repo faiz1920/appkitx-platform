@@ -347,7 +347,7 @@ Compact and functional — not a full-viewport marketing block.
 
 - Left-aligned composition, padding 64px top / 48px bottom desktop (40/32 mobile).
 - Headline `--text-display`; subline `--text-body-lg` in `--color-text-secondary`, max-width 560px.
-- **Hero search input**: 56px tall, `--radius-lg`, `--color-border-control` border, search icon, placeholder "Search free tools…", full focus ring. Submits to the search results page; `⌘K` opens the palette from anywhere.
+- **Hero search input**: visible `--text-label` label above the field (per the Forms rule), 56px tall, `--radius-lg`, `--color-border-control` border, search icon, placeholder "Search free tools…", full focus ring. Submitting a non-empty query opens the search palette pre-filled; `⌘K` opens the palette from anywhere.
 - Category chip rail below (24px gap): overline label "Browse by category" + chips.
 
 ### Category chips

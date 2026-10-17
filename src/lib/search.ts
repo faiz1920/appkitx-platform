@@ -1,0 +1,42 @@
+import { tools, type Tool } from "./tools";
+
+/*
+ * Pure client-side search over the tool registry. Contract:
+ * - Case-insensitive substring match on title, keywords, category, description.
+ * - Whitespace-only queries return the full catalog in registry order.
+ * - Ranking: title prefix > title substring > keyword > category > description,
+ *   with registry order as a stable tiebreak.
+ */
+
+export function normalizeQuery(query: string): string {
+  return query.trim().toLowerCase();
+}
+
+function scoreTool(tool: Tool, query: string): number | null {
+  const title = tool.title.toLowerCase();
+  if (title.startsWith(query)) return 0;
+  if (title.includes(query)) return 1;
+  if (tool.keywords.some((keyword) => keyword.toLowerCase().includes(query)))
+    return 2;
+  if (tool.category.toLowerCase().includes(query)) return 3;
+  if (tool.description.toLowerCase().includes(query)) return 4;
+  return null;
+}
+
+export function searchTools(
+  query: string,
+  catalog: readonly Tool[] = tools,
+): Tool[] {
+  const normalized = normalizeQuery(query);
+  if (normalized === "") return [...catalog];
+
+  const scored: { tool: Tool; index: number; score: number }[] = [];
+  catalog.forEach((tool, index) => {
+    const score = scoreTool(tool, normalized);
+    if (score !== null) scored.push({ tool, index, score });
+  });
+
+  return scored
+    .sort((a, b) => a.score - b.score || a.index - b.index)
+    .map((entry) => entry.tool);
+}

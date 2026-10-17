@@ -39,6 +39,7 @@ const links = [
         type="button"
         class="btn btn-secondary gap-2 px-4"
         aria-label="Search tools"
+        data-search-trigger
       >
         <span
           class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
@@ -95,5 +96,12 @@ const links = [
     const open = toggle.getAttribute("aria-expanded") === "true";
     toggle.setAttribute("aria-expanded", String(!open));
     menu?.toggleAttribute("hidden", open);
+  });
+
+  const searchTrigger = document.querySelector<HTMLButtonElement>(
+    "[data-search-trigger]",
+  );
+  searchTrigger?.addEventListener("click", () => {
+    document.dispatchEvent(new CustomEvent("appkitx:search-open"));
   });
 </script>
