@@ -105,3 +105,25 @@ test("navigation buttons show the design-system focus ring", async ({
   await expect(menu).toHaveCSS("outline-color", "rgb(13, 148, 136)");
   await expect(menu).toHaveCSS("outline-offset", "2px");
 });
+
+test("navigation and footer links show pressed states", async ({ page }) => {
+  await page.goto("/");
+
+  const navLink = page.getByRole("banner").getByRole("link", { name: "Tools" });
+  await navLink.hover();
+  await expect(navLink).toHaveCSS("color", "rgb(15, 23, 42)");
+  await page.mouse.down();
+  await expect(navLink).toHaveCSS("color", "rgb(19, 78, 74)");
+  await page.mouse.move(4, 4);
+  await page.mouse.up();
+
+  const footerLink = page
+    .getByRole("contentinfo")
+    .getByRole("link", { name: "About" });
+  await footerLink.hover();
+  await expect(footerLink).toHaveCSS("color", "rgb(15, 118, 110)");
+  await page.mouse.down();
+  await expect(footerLink).toHaveCSS("color", "rgb(19, 78, 74)");
+  await page.mouse.move(4, 4);
+  await page.mouse.up();
+});

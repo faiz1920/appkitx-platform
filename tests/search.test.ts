@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { normalizeQuery, searchTools } from "../src/lib/search";
-import { tools, type Tool } from "../src/lib/tools";
+import { resolveTools, tools, type Tool } from "../src/lib/tools";
 
 const fixture: Tool[] = [
   {
@@ -53,6 +53,27 @@ describe("tool registry", () => {
       expect(tool.href.startsWith("/")).toBe(true);
       expect(tool.href).not.toBe("#");
     }
+  });
+});
+
+describe("resolveTools", () => {
+  it("resolves registered hrefs in the requested order", () => {
+    expect(
+      resolveTools(["/discount-calculator", "/percentage-calculator"]).map(
+        (tool) => tool.href,
+      ),
+    ).toEqual(["/discount-calculator", "/percentage-calculator"]);
+  });
+
+  it("drops unknown references instead of creating broken links", () => {
+    expect(resolveTools(["/nope", "/percentage-calculator"])).toEqual([
+      tools.find((tool) => tool.href === "/percentage-calculator"),
+    ]);
+    expect(resolveTools(["#", "/unit-converter"])).toEqual([]);
+  });
+
+  it("returns an empty list for an empty request", () => {
+    expect(resolveTools([])).toEqual([]);
   });
 });
 

@@ -18,3 +18,5 @@ Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (
 - `npm test` — Vitest unit tests
 - `npm run test:e2e` — Playwright smoke tests (run `npm run build` first; the suite starts its own `astro preview` on port 4399 and never attaches to a dev server on 4321)
 - `npm run format` / `npm run format:check` — Prettier
+
+Line endings: the repository stores and checks out LF on every platform (`* text=auto eol=lf` in `.gitattributes`). If `format:check` reports CRLF files after a fresh Windows checkout, run `npx prettier --write .` once — it rewrites the working files to LF without changing any committed content.
