@@ -64,8 +64,10 @@ import PercentageCalculator from "../components/PercentageCalculator.astro";
     </li>
     <li>
       Dividing by zero is undefined: the "What %" mode requires a non-zero
-      whole, and percentage change requires a non-zero original value. The
-      calculator explains this instead of showing Infinity or NaN.
+      whole. Percentage change requires a positive original value — a zero
+      baseline divides by zero, and a negative baseline would produce a
+      misleading increase or decrease. The calculator explains these cases
+      instead of showing Infinity, NaN, or a misleading percentage.
     </li>
     <li>
       An increase and a decrease of the same amount are not symmetrical — going

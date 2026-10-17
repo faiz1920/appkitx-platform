@@ -130,6 +130,30 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
     <p class="mt-1 pr-14 text-caption text-text-muted" data-result-caption>
       Results appear here
     </p>
+    <p
+      class="mt-2 flex items-center gap-1.5 text-caption text-success"
+      hidden
+      data-copy-status-success
+    >
+      <span
+        class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+        aria-hidden="true"
+        set:html={checkIcon}
+      />
+      Copied to clipboard.
+    </p>
+    <p
+      class="mt-2 flex items-center gap-1.5 text-caption text-error"
+      hidden
+      data-copy-status-error
+    >
+      <span
+        class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+        aria-hidden="true"
+        set:html={alertIcon}
+      />
+      Copy failed — select the result text and copy it manually.
+    </p>
     <button
       type="button"
       class="btn btn-ghost absolute top-3 right-3 w-11 px-0"
@@ -199,6 +223,10 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
     const copyButton = requireEl<HTMLButtonElement>("[data-copy]");
     const copyIdle = requireEl<HTMLElement>("[data-copy-idle]");
     const copyDone = requireEl<HTMLElement>("[data-copy-done]");
+    const copyStatusSuccess = requireEl<HTMLElement>(
+      "[data-copy-status-success]",
+    );
+    const copyStatusError = requireEl<HTMLElement>("[data-copy-status-error]");
     const resetButton = requireEl<HTMLButtonElement>("[data-reset]");
     const radios =
       root.querySelectorAll<HTMLInputElement>('input[name="mode"]');
@@ -221,14 +249,14 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
       },
       "percent-change": {
         labelA: "From (original value)",
-        hintA: "The starting value.",
+        hintA: "The starting value. Must be greater than zero.",
         labelB: "To (new value)",
         hintB: "The value after the change.",
       },
     };
 
     let copyTimer: number | undefined;
-    let currentCaption = "Results appear here";
+    let copyBusy = false;
     let lastResult = "";
 
     const mode = (): Mode =>
@@ -236,7 +264,6 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
         ?.value as Mode | undefined) ?? "percent-of";
 
     const setCaption = (text: string) => {
-      currentCaption = text;
       resultCaption.textContent = text;
     };
 
@@ -244,6 +271,8 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
       window.clearTimeout(copyTimer);
       copyIdle.hidden = false;
       copyDone.hidden = true;
+      copyStatusSuccess.hidden = true;
+      copyStatusError.hidden = true;
     };
 
     const clearErrors = () => {
@@ -333,7 +362,9 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
         );
         setCaption(
           activeMode === "percent-change"
-            ? "Can't compute a percentage change from 0 — the original value must not be zero."
+            ? a === 0
+              ? "Can't compute a percentage change from 0 — the original value must not be zero."
+              : "Percentage change is undefined for a negative original value — use a positive starting value."
             : "Can't divide by 0 — the whole must not be zero.",
         );
         formulaEl.textContent = formulaTemplate(activeMode);
@@ -358,20 +389,23 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
     });
 
     copyButton.addEventListener("click", async () => {
-      if (!lastResult) return;
+      if (!lastResult || copyBusy) return;
+      copyBusy = true;
+      resetCopyFeedback();
       try {
         await navigator.clipboard.writeText(lastResult);
-        resetCopyFeedback();
         copyIdle.hidden = true;
         copyDone.hidden = false;
-        resultCaption.textContent = "Copied";
+        copyStatusSuccess.hidden = false;
         copyTimer = window.setTimeout(() => {
           copyIdle.hidden = false;
           copyDone.hidden = true;
-          resultCaption.textContent = currentCaption;
+          copyStatusSuccess.hidden = true;
         }, 2000);
       } catch {
-        // Clipboard unavailable — keep the idle state.
+        copyStatusError.hidden = false;
+      } finally {
+        copyBusy = false;
       }
     });
   }

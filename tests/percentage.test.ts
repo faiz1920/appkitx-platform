@@ -79,12 +79,21 @@ describe("percentChange", () => {
     expect(percentChange(50, 0)).toBe(-100);
   });
 
-  it("applies the formula literally to negative originals", () => {
-    expect(percentChange(-50, 50)).toBe(-200);
+  it("allows a negative target value with a positive baseline", () => {
+    expect(percentChange(50, -50)).toBe(-200);
+  });
+
+  it("accepts a positive decimal baseline", () => {
+    expect(percentChange(0.5, 1)).toBe(100);
   });
 
   it("returns null for a zero original value", () => {
     expect(percentChange(0, 50)).toBeNull();
+  });
+
+  it("returns null for a negative original value", () => {
+    expect(percentChange(-50, 50)).toBeNull();
+    expect(percentChange(-10, -5)).toBeNull();
   });
 
   it("returns null for non-finite inputs", () => {
@@ -99,6 +108,7 @@ describe("calculate", () => {
     expect(calculate("what-percent", 20, 80)).toBe(25);
     expect(calculate("percent-change", 80, 100)).toBe(25);
     expect(calculate("percent-change", 0, 100)).toBeNull();
+    expect(calculate("percent-change", -50, 100)).toBeNull();
   });
 });
 

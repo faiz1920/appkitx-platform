@@ -100,7 +100,7 @@ test("computes percentage increase, decrease, and no change", async ({
   await expect(resultCaption(page)).toHaveText("No change from 80 to 80.");
 });
 
-test("handles zero denominators with an accessible explanation", async ({
+test("explains undefined baselines for division by zero and percent change", async ({
   page,
 }) => {
   await page.goto("/percentage-calculator");
@@ -124,6 +124,19 @@ test("handles zero denominators with an accessible explanation", async ({
   await expect(resultCaption(page)).toHaveText(
     "Can't compute a percentage change from 0 — the original value must not be zero.",
   );
+
+  await page.getByLabel("From (original value)").fill("-50");
+  await page.getByRole("button", { name: "Calculate" }).click();
+
+  await expect(resultValue(page)).toHaveText("Undefined");
+  await expect(resultCaption(page)).toHaveText(
+    "Percentage change is undefined for a negative original value — use a positive starting value.",
+  );
+
+  await page.getByLabel("From (original value)").fill("25");
+  await page.getByRole("button", { name: "Calculate" }).click();
+
+  await expect(resultValue(page)).toHaveText("100% increase");
 });
 
 test("shows inline validation for empty or invalid inputs", async ({
@@ -202,22 +215,85 @@ test("shows the design-system focus ring on interactive controls", async ({
   await ring(calculate);
 });
 
-test("copies the result to the clipboard with success feedback", async ({
+test("copies the result with accessible success feedback", async ({ page }) => {
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/percentage-calculator");
+
+  const copy = page.getByRole("button", { name: "Copy result" });
+  const success = page.locator("[data-copy-status-success]");
+  const failure = page.locator("[data-copy-status-error]");
+
+  await expect(copy).toBeDisabled();
+  await expect(page.locator("[data-copy-done]")).toBeHidden();
+
+  await page.getByLabel("Percentage (X%)").fill("25");
+  await page.getByLabel("Value (Y)").fill("80");
+  await page.getByRole("button", { name: "Calculate" }).click();
+  await expect(copy).toBeEnabled();
+
+  await copy.click();
+  await copy.click(); // rapid repeat must stay safe
+
+  await expect(success).toBeVisible();
+  await expect(success).toContainText("Copied to clipboard.");
+  await expect(page.locator("[data-copy-done]")).toBeVisible();
+  await expect(failure).toBeHidden();
+  await expect(resultCaption(page)).toHaveText("25% of 80.");
+
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toBe("20");
+});
+
+test("reports a copy failure when the Clipboard API is unavailable", async ({
   page,
 }) => {
-  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: undefined,
+      configurable: true,
+    });
+  });
   await page.goto("/percentage-calculator");
 
   await page.getByLabel("Percentage (X%)").fill("25");
   await page.getByLabel("Value (Y)").fill("80");
   await page.getByRole("button", { name: "Calculate" }).click();
-
   await page.getByRole("button", { name: "Copy result" }).click();
 
-  await expect(resultCaption(page)).toHaveText("Copied");
-  await expect(page.locator("[data-copy-done]")).toBeVisible();
-  const copied = await page.evaluate(() => navigator.clipboard.readText());
-  expect(copied).toBe("20");
+  const failure = page.locator("[data-copy-status-error]");
+  await expect(failure).toBeVisible();
+  await expect(failure).toContainText(
+    "Copy failed — select the result text and copy it manually.",
+  );
+  await expect(page.locator("[data-copy-status-success]")).toBeHidden();
+  await expect(page.locator("[data-copy-done]")).toBeHidden();
+});
+
+test("reports a copy failure when the clipboard write is rejected", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: () => Promise.reject(new Error("permission denied")),
+      },
+      configurable: true,
+    });
+  });
+  await page.goto("/percentage-calculator");
+
+  await page.getByLabel("Percentage (X%)").fill("25");
+  await page.getByLabel("Value (Y)").fill("80");
+  await page.getByRole("button", { name: "Calculate" }).click();
+  await page.getByRole("button", { name: "Copy result" }).click();
+
+  const failure = page.locator("[data-copy-status-error]");
+  await expect(failure).toBeVisible();
+  await expect(page.locator("[data-copy-status-success]")).toBeHidden();
+
+  await page.getByLabel("Value (Y)").fill("40");
+  await page.getByRole("button", { name: "Calculate" }).click();
+  await expect(failure).toBeHidden();
 });
 
 test("has no horizontal overflow at 320px", async ({ page }) => {

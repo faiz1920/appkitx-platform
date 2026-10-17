@@ -3,7 +3,9 @@ export type Mode = "percent-of" | "what-percent" | "percent-change";
 /*
  * Pure percentage arithmetic. Contract:
  * - Inputs must be finite numbers; non-finite inputs return null.
- * - Zero denominators return null instead of Infinity or NaN.
+ * - whatPercent requires a non-zero whole; percentChange requires a positive
+ *   baseline. Undefined cases return null instead of Infinity, NaN, or a
+ *   misleading result.
  * - Full precision is kept here; rounding happens only in formatNumber.
  */
 
@@ -20,7 +22,7 @@ export function whatPercent(part: number, whole: number): number | null {
 
 export function percentChange(from: number, to: number): number | null {
   if (!Number.isFinite(from) || !Number.isFinite(to)) return null;
-  if (from === 0) return null;
+  if (from <= 0) return null;
   return ((to - from) / from) * 100;
 }
 
