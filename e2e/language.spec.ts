@@ -196,7 +196,12 @@ test("localized pages and the switcher keep layout at 320px", async ({
 }) => {
   await page.setViewportSize({ width: 320, height: 700 });
 
-  for (const path of ["/", "/es/", "/es/percentage-calculator/"]) {
+  for (const path of [
+    "/",
+    "/es/",
+    "/es/percentage-calculator/",
+    "/es/calculators/",
+  ]) {
     await page.goto(path);
     const overflow = await page.evaluate(
       () =>

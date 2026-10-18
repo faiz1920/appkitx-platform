@@ -86,13 +86,6 @@ export const es: Dictionary = {
       "Calculadoras, conversores y utilidades para desarrolladores, todo en un solo lugar.",
     browseByCategory: "Explorar por categoría",
     exploreHeading: "Explora el conjunto de herramientas.",
-    categories: {
-      Calculators: "Calculadoras",
-      Converters: "Conversores",
-      "Developer tools": "Herramientas de desarrollo",
-      "Date & time": "Fecha y hora",
-      "Text tools": "Herramientas de texto",
-    },
     placeholderTools: {
       unitConverter: {
         title: "Conversor de unidades",
@@ -116,10 +109,33 @@ export const es: Dictionary = {
       },
     },
   },
+  categories: {
+    Calculators: {
+      name: "Calculadoras",
+      page: {
+        title: "Calculadoras online gratis — AppKitX",
+        metaDescription:
+          "Calculadoras gratis de porcentajes y descuentos: calcula el X % de un número, la variación porcentual o el precio final tras un descuento.",
+        toolsHeading: "Calculadoras online gratis",
+        intro: [
+          "Dos calculadoras cubren las cuentas de porcentajes del día a día: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales y comprueba cuánto ahorras con un descuento y el precio final.",
+          "Ambas funcionan por completo en tu navegador, muestran la fórmula de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes: la calculadora de descuentos es neutral respecto a la moneda y los resultados solo se redondean para mostrarlos.",
+        ],
+      },
+    },
+    Converters: { name: "Conversores" },
+    "Developer tools": { name: "Herramientas de desarrollo" },
+    "Date & time": { name: "Fecha y hora" },
+    "Text tools": { name: "Herramientas de texto" },
+  },
   toolLayout: {
     breadcrumbLabel: "Ruta de navegación",
     breadcrumbHome: "Inicio",
     relatedTools: "Herramientas relacionadas",
+    seeAll: "Ver todas",
+  },
+  categoryLayout: {
+    breadcrumbLabel: "Ruta de navegación",
   },
   toolCard: {
     openTool: "Abrir herramienta",

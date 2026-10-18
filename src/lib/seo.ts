@@ -53,12 +53,24 @@ export interface WebApplicationJsonLd {
   inLanguage: string;
 }
 
+export interface CollectionPageJsonLd {
+  "@context": "https://schema.org";
+  "@type": "CollectionPage";
+  name: string;
+  description: string;
+  url: string;
+  inLanguage: string;
+}
+
 /**
  * Every JSON-LD document the site can render into a page head. New document
  * types join this union so BaseLayout's prop surface stays closed.
  */
 export type JsonLdDocument =
-  BreadcrumbListJsonLd | WebSiteJsonLd | WebApplicationJsonLd;
+  | BreadcrumbListJsonLd
+  | WebSiteJsonLd
+  | WebApplicationJsonLd
+  | CollectionPageJsonLd;
 
 function requireNonEmpty(value: string, field: string): string {
   if (value.trim() === "") {
@@ -186,6 +198,34 @@ export function buildWebApplicationJsonLd(options: {
     inLanguage: requireNonEmpty(
       options.inLanguage,
       "WebApplication inLanguage",
+    ),
+  };
+}
+
+/*
+ * Category landing pages are collections of tool pages: CollectionPage is the
+ * factual Schema.org type for a page that primarily links a set of related
+ * items. It carries only the same fields as WebSite/WebApplication — no
+ * ItemList, ratings, or other unverifiable claims.
+ */
+export function buildCollectionPageJsonLd(options: {
+  name: string;
+  description: string;
+  url: string;
+  inLanguage: string;
+}): CollectionPageJsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: requireNonEmpty(options.name, "CollectionPage name"),
+    description: requireNonEmpty(
+      options.description,
+      "CollectionPage description",
+    ),
+    url: requireAbsoluteUrl(options.url, "CollectionPage url"),
+    inLanguage: requireNonEmpty(
+      options.inLanguage,
+      "CollectionPage inLanguage",
     ),
   };
 }

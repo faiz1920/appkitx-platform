@@ -24,7 +24,12 @@ describe("locale preference configuration", () => {
       storageKey: PREFERENCE_STORAGE_KEY,
       defaultLocale: "en",
       nonDefaultLocales: ["es"],
-      translatedPaths: ["/", "/percentage-calculator", "/discount-calculator"],
+      translatedPaths: [
+        "/",
+        "/percentage-calculator",
+        "/discount-calculator",
+        "/calculators",
+      ],
       detectBrowserLanguage: false,
     });
   });

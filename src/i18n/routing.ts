@@ -1,4 +1,5 @@
 import { defaultLocale, locales, type LocaleCode } from "./config";
+import { publishedCategoryPaths } from "../lib/categories";
 import { tools } from "../lib/tools";
 
 /*
@@ -85,12 +86,13 @@ export function swapLocalePath(pathname: string, locale: LocaleCode): string {
 
 /*
  * Every page that exists in every supported locale. Registry-derived: the
- * homepage plus the tools registry. The [locale] route generation, the
- * preference script guard, and the language-switcher fallback all consume
- * this list, so a page can never be advertised for a locale that lacks it.
+ * homepage, the tools registry, and the published category pages. The
+ * [locale] route generation, the preference script guard, and the
+ * language-switcher fallback all consume this list, so a page can never be
+ * advertised for a locale that lacks it.
  */
 export function translatedPagePaths(): string[] {
-  return ["/", ...tools.map((tool) => tool.href)];
+  return ["/", ...tools.map((tool) => tool.href), ...publishedCategoryPaths()];
 }
 
 /** One hreflang alternate: BCP-47 code (or "x-default") plus locale-less path. */

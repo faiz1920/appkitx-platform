@@ -1,0 +1,135 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GlobalNav from "../components/GlobalNav.astro";
+import Footer from "../components/Footer.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import ToolCard from "../components/ToolCard.astro";
+import { getDictionary, getLocale, type LocaleCode } from "../i18n/config";
+import { resolveLocalizedTools } from "../i18n/tool-catalog";
+import { localizedPath } from "../i18n/routing";
+import {
+  categoryPath,
+  isCategoryPublished,
+  toolsInCategory,
+  type ToolCategory,
+} from "../lib/categories";
+import {
+  buildBreadcrumbJsonLd,
+  buildCollectionPageJsonLd,
+  siteUrl,
+} from "../lib/seo";
+
+import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
+import tagIcon from "lucide-static/icons/tag.svg?raw";
+
+interface Props {
+  locale: LocaleCode;
+  category: ToolCategory;
+}
+
+const { locale, category } = Astro.props;
+const t = getDictionary(locale);
+const localeMeta = getLocale(locale);
+
+/*
+ * Publication is registry-derived: a category page may only build with at
+ * least CATEGORY_PAGE_MIN_TOOLS registered tools. Failing the build here is
+ * deliberate — a thin or empty category page must never ship.
+ */
+if (!isCategoryPublished(category)) {
+  throw new Error(
+    `Category page requires at least two registered tools: ${category}`,
+  );
+}
+
+const strings = t.categories[category];
+const page = strings.page;
+if (page === undefined) {
+  throw new Error(
+    `Missing dictionary copy for category page: ${category} (${locale})`,
+  );
+}
+
+/* Build-time trusted SVGs keyed by registry icon name. */
+const registryIcons: Record<string, string> = {
+  calculator: calculatorIcon,
+  tag: tagIcon,
+};
+
+/* Tools come from the registry, localized and with locale-aware hrefs. */
+const categoryTools = resolveLocalizedTools(
+  locale,
+  toolsInCategory(category).map((tool) => tool.href),
+).map((tool) => ({
+  title: tool.title,
+  description: tool.description,
+  icon: registryIcons[tool.icon] ?? "",
+  href: localizedPath(tool.href, locale),
+}));
+
+const breadcrumb = [
+  { label: t.toolLayout.breadcrumbHome, href: localizedPath("/", locale) },
+  { label: strings.name },
+];
+
+const jsonLd = [
+  buildBreadcrumbJsonLd({ entries: breadcrumb, site: Astro.site }),
+  buildCollectionPageJsonLd({
+    name: strings.name,
+    description: page.metaDescription,
+    url: siteUrl(Astro.url.pathname, Astro.site),
+    inLanguage: localeMeta.hreflang,
+  }),
+];
+
+/* Guard against an unreachable internal link drifting from the URL helpers. */
+const expectedPath = localizedPath(categoryPath(category), locale);
+if (expectedPath !== Astro.url.pathname.replace(/\/$/, "")) {
+  throw new Error(
+    `Category route mismatch: ${Astro.url.pathname} is not ${expectedPath}`,
+  );
+}
+---
+
+<BaseLayout
+  title={page.title}
+  description={page.metaDescription}
+  locale={locale}
+  jsonLd={jsonLd}
+>
+  <GlobalNav locale={locale} />
+  <main id="main">
+    <section class="bg-surface">
+      <div class="mx-auto max-w-(--layout-container) px-6 pt-10 pb-8 md:pt-16 md:pb-12">
+        <Breadcrumbs
+          label={t.categoryLayout.breadcrumbLabel}
+          items={breadcrumb}
+        />
+        <h1 class="hero-title mt-4 text-text-primary">{strings.name}</h1>
+        {page.intro.map((paragraph) => (
+          <p class="mt-4 max-w-[560px] text-body-lg text-text-secondary">
+            {paragraph}
+          </p>
+        ))}
+      </div>
+    </section>
+
+    <section class="bg-surface-subtle">
+      <div class="mx-auto max-w-(--layout-container) px-6 py-16 md:py-(--layout-section-y)">
+        <h2 class="text-headline text-text-primary">{page.toolsHeading}</h2>
+        <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-(--layout-grid-gap) lg:grid-cols-3 xl:grid-cols-4">
+          {categoryTools.map((tool) => (
+            <ToolCard
+              title={tool.title}
+              description={tool.description}
+              icon={tool.icon}
+              href={tool.href}
+              locale={locale}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer locale={locale} />
+</BaseLayout>

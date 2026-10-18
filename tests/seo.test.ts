@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildBreadcrumbJsonLd,
+  buildCollectionPageJsonLd,
   buildWebApplicationJsonLd,
   buildWebSiteJsonLd,
   serializeJsonLd,
@@ -191,6 +192,57 @@ describe("buildWebApplicationJsonLd", () => {
   });
 });
 
+describe("buildCollectionPageJsonLd", () => {
+  const input = {
+    name: "Calculators",
+    description:
+      "Free calculators for percentages and discounts: find a percentage of a number, work out percent change, or see the final price after a discount.",
+    url: "https://appkitx.com/calculators/",
+    inLanguage: "en",
+  };
+
+  it("emits the approved factual fields", () => {
+    expect(buildCollectionPageJsonLd(input)).toEqual({
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: input.name,
+      description: input.description,
+      url: input.url,
+      inLanguage: "en",
+    });
+  });
+
+  it("never emits ratings, reviews, prices, offers, or item lists", () => {
+    const keys = Object.keys(buildCollectionPageJsonLd(input));
+    for (const forbidden of [
+      "aggregateRating",
+      "review",
+      "offers",
+      "price",
+      "author",
+      "mainEntity",
+      "hasPart",
+    ]) {
+      expect(keys).not.toContain(forbidden);
+    }
+  });
+
+  it("rejects empty or non-absolute required fields", () => {
+    expect(() => buildCollectionPageJsonLd({ ...input, name: " " })).toThrow(
+      /must not be empty/,
+    );
+    expect(() =>
+      buildCollectionPageJsonLd({ ...input, description: "" }),
+    ).toThrow(/must not be empty/);
+    expect(() => buildCollectionPageJsonLd({ ...input, url: "nope" })).toThrow(
+      /absolute URL/,
+    );
+    expect(() =>
+      buildCollectionPageJsonLd({ ...input, inLanguage: "" }),
+    ).toThrow(/must not be empty/);
+  });
+});
+
 describe("canonical consistency", () => {
   it("matches the canonical URL form for every shipped page", () => {
     const pages = [
@@ -211,6 +263,14 @@ describe("canonical consistency", () => {
       {
         path: "/es/discount-calculator/",
         canonical: "https://appkitx.com/es/discount-calculator/",
+      },
+      {
+        path: "/calculators/",
+        canonical: "https://appkitx.com/calculators/",
+      },
+      {
+        path: "/es/calculators/",
+        canonical: "https://appkitx.com/es/calculators/",
       },
     ];
     for (const { path, canonical } of pages) {

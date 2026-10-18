@@ -21,6 +21,7 @@ const LOCALIZED_PAGES = [
   "/es/",
   "/es/percentage-calculator/",
   "/es/discount-calculator/",
+  "/es/calculators/",
 ];
 
 /* Every logical page paired with the same page in each locale. */
@@ -36,6 +37,10 @@ const TRANSLATED_PAGES = [
   {
     en: "https://appkitx.com/discount-calculator/",
     es: "https://appkitx.com/es/discount-calculator/",
+  },
+  {
+    en: "https://appkitx.com/calculators/",
+    es: "https://appkitx.com/es/calculators/",
   },
 ];
 
@@ -145,7 +150,7 @@ test("sitemap lists every translated page with reciprocal en/es alternates", asy
     xml.matchAll(/<url>([\s\S]*?)<\/url>/g),
     (match) => match[1],
   );
-  expect(blocks).toHaveLength(6);
+  expect(blocks).toHaveLength(TRANSLATED_PAGES.length * 2);
 
   for (const pair of TRANSLATED_PAGES) {
     const enBlock = blocks.find((block) =>

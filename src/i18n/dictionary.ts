@@ -116,8 +116,6 @@ export interface HomeStrings {
   browseByCategory: string;
   /** Heading above the tool grid. */
   exploreHeading: string;
-  /** Category chip labels keyed by the registry's internal category name. */
-  categories: Record<ToolCategory, string>;
   /**
    * Visible but nonfunctional homepage preview cards. They are never added
    * to the tools registry and never appear in search results.
@@ -131,11 +129,41 @@ export interface HomeStrings {
   };
 }
 
+/** Landing-page copy for one published category (CategoryView). */
+export interface CategoryPageStrings {
+  /** Browser and Open Graph title, including the brand. */
+  title: string;
+  metaDescription: string;
+  /** Section heading above the category's tool grid. */
+  toolsHeading: string;
+  /** Short, category-specific intro paragraphs (never template boilerplate). */
+  intro: readonly string[];
+}
+
+/** One taxonomy category: its visible name plus optional landing-page copy. */
+export interface CategoryStrings {
+  name: string;
+  /**
+   * Landing-page copy. Required for every published category (at least
+   * CATEGORY_PAGE_MIN_TOOLS registered tools) in every locale — enforced by
+   * the category tests and by CategoryView's build-time guard. Categories
+   * without a published page omit it.
+   */
+  page?: CategoryPageStrings;
+}
+
+/** Category landing page chrome (CategoryView). */
+export interface CategoryLayoutStrings {
+  breadcrumbLabel: string;
+}
+
 /** Tool page chrome (ToolLayout). */
 export interface ToolLayoutStrings {
   breadcrumbLabel: string;
   breadcrumbHome: string;
   relatedTools: string;
+  /** Link from Related tools to the tool's category landing page. */
+  seeAll: string;
 }
 
 /** Tool card (ToolCard). */
@@ -292,7 +320,9 @@ export interface Dictionary {
   search: SearchStrings;
   notFound: NotFoundStrings;
   home: HomeStrings;
+  categories: Record<ToolCategory, CategoryStrings>;
   toolLayout: ToolLayoutStrings;
+  categoryLayout: CategoryLayoutStrings;
   toolCard: ToolCardStrings;
   calculator: CalculatorStrings;
   tools: ToolsStrings;
