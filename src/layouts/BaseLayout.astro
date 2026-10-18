@@ -3,29 +3,44 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/jetbrains-mono";
 import "../styles/global.css";
 import SearchPalette from "../components/SearchPalette.astro";
+import {
+  defaultLocale,
+  getDictionary,
+  getLocale,
+  type LocaleCode,
+} from "../i18n/config";
 
 interface Props {
   title?: string;
   description?: string;
   /** Error and non-indexable pages: adds noindex and omits the canonical tag. */
   noindex?: boolean;
+  /** Registered locale for the document language and direction. */
+  locale?: LocaleCode;
 }
 
 const {
-  title = "AppKitX — Free Online Tools",
-  description = "Free calculators, converters, and developer utilities, all in one place.",
+  title,
+  description,
   noindex = false,
+  locale = defaultLocale,
 } = Astro.props;
+
+const t = getDictionary(locale);
+const localeMeta = getLocale(locale);
+
+const pageTitle = title ?? t.layout.defaultTitle;
+const pageDescription = description ?? t.layout.defaultDescription;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={localeMeta.code} dir={localeMeta.dir}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
+    <meta name="description" content={pageDescription} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     {noindex && <meta name="robots" content="noindex" />}
     {!noindex && <link rel="canonical" href={canonical.href} />}
@@ -33,13 +48,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       name="google-site-verification"
       content="FqtwFyw8U6onLFiInewftYVJ-kJePykEmuxN2SwOe0c"
     />
-    <title>{title}</title>
+    <title>{pageTitle}</title>
   </head>
   <body>
     <a href="#main" class="skip-link">
-      Skip to content
+      {t.layout.skipToContent}
     </a>
     <slot />
-    <SearchPalette />
+    <SearchPalette locale={locale} />
   </body>
 </html>

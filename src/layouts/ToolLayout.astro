@@ -3,6 +3,7 @@ import BaseLayout from "./BaseLayout.astro";
 import GlobalNav from "../components/GlobalNav.astro";
 import Footer from "../components/Footer.astro";
 import ToolCard from "../components/ToolCard.astro";
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
 
 interface BreadcrumbItem {
   label: string;
@@ -23,6 +24,7 @@ interface Props {
   toolDescription: string;
   breadcrumb?: BreadcrumbItem[];
   relatedTools?: RelatedTool[];
+  locale?: LocaleCode;
 }
 
 const {
@@ -32,15 +34,21 @@ const {
   toolDescription,
   breadcrumb = [],
   relatedTools = [],
+  locale = defaultLocale,
 } = Astro.props;
+
+const t = getDictionary(locale);
 ---
 
-<BaseLayout title={title} description={description}>
-  <GlobalNav />
+<BaseLayout title={title} description={description} locale={locale}>
+  <GlobalNav locale={locale} />
   <main id="main">
     <div class="mx-auto max-w-(--layout-prose) px-6 py-10 md:py-12">
       {breadcrumb.length > 0 && (
-        <nav aria-label="Breadcrumb" class="text-caption text-text-muted">
+        <nav
+          aria-label={t.toolLayout.breadcrumbLabel}
+          class="text-caption text-text-muted"
+        >
           <ol class="flex flex-wrap items-center gap-2">
             {breadcrumb.map((item, index) => (
               <li class="flex items-center gap-2">
@@ -78,7 +86,9 @@ const {
     {relatedTools.length > 0 && (
       <section class="bg-surface-subtle">
         <div class="mx-auto max-w-(--layout-container) px-6 py-16 md:py-(--layout-section-y)">
-          <h2 class="text-title text-text-primary">Related tools</h2>
+          <h2 class="text-title text-text-primary">
+            {t.toolLayout.relatedTools}
+          </h2>
           <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-(--layout-grid-gap) lg:grid-cols-3">
             {relatedTools.map((tool) => (
               <ToolCard
@@ -86,6 +96,7 @@ const {
                 description={tool.description}
                 icon={tool.icon}
                 href={tool.href}
+                locale={locale}
               />
             ))}
           </div>
@@ -93,5 +104,5 @@ const {
       </section>
     )}
   </main>
-  <Footer />
+  <Footer locale={locale} />
 </BaseLayout>

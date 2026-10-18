@@ -1,17 +1,25 @@
 ---
 import menuIcon from "lucide-static/icons/menu.svg?raw";
 import searchIcon from "lucide-static/icons/search.svg?raw";
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
 
 const links = [
-  { href: "#tools", label: "Tools" },
-  { href: "#tools", label: "Categories" },
-  { href: "#tools", label: "About" },
+  { href: "#tools", label: t.nav.tools },
+  { href: "#tools", label: t.nav.categories },
+  { href: "#tools", label: t.nav.about },
 ];
 ---
 
 <header class="sticky top-0 z-40 border-b border-border-subtle bg-surface">
   <nav
-    aria-label="Global"
+    aria-label={t.nav.ariaLabel}
     class="mx-auto flex h-(--layout-nav-height) max-w-(--layout-container) items-center justify-between gap-6 px-6"
   >
     <a
@@ -38,7 +46,7 @@ const links = [
       <button
         type="button"
         class="btn btn-secondary gap-2 px-4"
-        aria-label="Search tools"
+        aria-label={t.search.label}
         data-search-trigger
       >
         <span
@@ -46,8 +54,10 @@ const links = [
           aria-hidden="true"
           set:html={searchIcon}
         />
-        <span class="hidden text-label font-normal md:inline">Search</span>
-        <kbd class="kbd hidden md:inline-flex">⌘K</kbd>
+        <span class="hidden text-label font-normal md:inline">
+          {t.nav.searchLabel}
+        </span>
+        <kbd class="kbd hidden md:inline-flex">{t.nav.searchShortcut}</kbd>
       </button>
 
       <button
@@ -56,7 +66,7 @@ const links = [
         aria-expanded="false"
         aria-controls="global-menu"
         class="btn btn-secondary w-11 px-0 md:hidden"
-        aria-label="Menu"
+        aria-label={t.nav.menuAriaLabel}
       >
         <span
           class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"

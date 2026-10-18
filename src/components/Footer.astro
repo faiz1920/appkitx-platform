@@ -1,35 +1,48 @@
 ---
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const footer = t.footer.columns;
+
 const columns = [
   {
-    heading: "Tools",
+    heading: footer.tools.heading,
     links: [
-      { label: "Percentage Calculator", href: "/percentage-calculator" },
-      { label: "Discount Calculator", href: "/discount-calculator" },
-      { label: "Unit Converter", href: "#" },
-      { label: "Loan Calculator", href: "#" },
-      { label: "Date Calculator", href: "#" },
+      {
+        label: footer.tools.percentageCalculator,
+        href: "/percentage-calculator",
+      },
+      { label: footer.tools.discountCalculator, href: "/discount-calculator" },
+      { label: footer.tools.unitConverter, href: "#" },
+      { label: footer.tools.loanCalculator, href: "#" },
+      { label: footer.tools.dateCalculator, href: "#" },
     ],
   },
   {
-    heading: "Categories",
+    heading: footer.categories.heading,
     links: [
-      { label: "Calculators", href: "#" },
-      { label: "Converters", href: "#" },
-      { label: "Developer tools", href: "#" },
+      { label: footer.categories.calculators, href: "#" },
+      { label: footer.categories.converters, href: "#" },
+      { label: footer.categories.developerTools, href: "#" },
     ],
   },
   {
-    heading: "Company",
+    heading: footer.company.heading,
     links: [
-      { label: "About", href: "#" },
-      { label: "Contact", href: "#" },
+      { label: footer.company.about, href: "#" },
+      { label: footer.company.contact, href: "#" },
     ],
   },
   {
-    heading: "Legal",
+    heading: footer.legal.heading,
     links: [
-      { label: "Privacy", href: "#" },
-      { label: "Terms", href: "#" },
+      { label: footer.legal.privacy, href: "#" },
+      { label: footer.legal.terms, href: "#" },
     ],
   },
 ];
@@ -60,14 +73,14 @@ const columns = [
     </div>
 
     <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border-subtle pt-6">
-      <p class="text-micro text-text-muted">© 2026 AppKitX</p>
+      <p class="text-micro text-text-muted">{t.footer.copyright}</p>
       <p class="text-micro text-text-muted">
         <a href="#" class="focus-ring hover:text-accent">
-          Privacy
+          {footer.legal.privacy}
         </a>
         <span aria-hidden="true"> · </span>
         <a href="#" class="focus-ring hover:text-accent">
-          Terms
+          {footer.legal.terms}
         </a>
       </p>
     </div>
