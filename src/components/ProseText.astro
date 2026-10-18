@@ -1,0 +1,41 @@
+---
+import { splitCodeSpans, type ProseSegment } from "../i18n/prose";
+import type { ProseSectionStrings } from "../i18n/dictionary";
+
+interface Props {
+  sections: readonly ProseSectionStrings[];
+}
+
+const { sections } = Astro.props;
+
+/* Render prose segments as text nodes and <code> elements — no raw HTML. */
+const renderSegments = (text: string): ProseSegment[] => splitCodeSpans(text);
+const paragraph = (section: ProseSectionStrings): readonly string[] =>
+  section.paragraphs ?? [];
+const items = (section: ProseSectionStrings): readonly string[] =>
+  section.items ?? [];
+---
+
+{sections.map((section, index) => (
+  <>
+    {index === 0 ? <h2>{section.heading}</h2> : <h3>{section.heading}</h3>}
+    {paragraph(section).map((text) => (
+      <p>
+        {renderSegments(text).map((segment) =>
+          segment.code ? <code>{segment.text}</code> : segment.text,
+        )}
+      </p>
+    ))}
+    {items(section).length > 0 && (
+      <ul>
+        {items(section).map((text) => (
+          <li>
+            {renderSegments(text).map((segment) =>
+              segment.code ? <code>{segment.text}</code> : segment.text,
+            )}
+          </li>
+        ))}
+      </ul>
+    )}
+  </>
+))}

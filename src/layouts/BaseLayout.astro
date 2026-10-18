@@ -7,8 +7,14 @@ import {
   defaultLocale,
   getDictionary,
   getLocale,
+  locales,
   type LocaleCode,
 } from "../i18n/config";
+import {
+  buildLocalePreferenceScript,
+  localePreferenceConfig,
+} from "../i18n/preferences";
+import { alternateLinks } from "../i18n/routing";
 import {
   serializeJsonLd,
   siteUrl,
@@ -42,23 +48,52 @@ const pageTitle = title ?? t.layout.defaultTitle;
 const pageDescription = description ?? t.layout.defaultDescription;
 
 const canonical = siteUrl(Astro.url.pathname, Astro.site);
+
+/*
+ * hreflang alternates and the locale preference script are for indexable
+ * pages only — the 404 stays noindex with no alternates and no navigation.
+ */
+const alternates = noindex
+  ? []
+  : alternateLinks(Astro.url.pathname).map(({ hreflang, path }) => ({
+      hreflang,
+      href: siteUrl(path, Astro.site),
+    }));
+const alternateOgLocales = noindex
+  ? []
+  : Object.values(locales).filter((meta) => meta.code !== localeMeta.code);
+const preferenceScript = noindex
+  ? ""
+  : buildLocalePreferenceScript({
+      ...localePreferenceConfig(),
+      currentLocale: locale,
+    });
 ---
 
 <!doctype html>
-<html lang={localeMeta.code} dir={localeMeta.dir}>
+<html lang={localeMeta.code} dir={localeMeta.dir} data-locale={localeMeta.code}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {preferenceScript !== "" && (
+      <script is:inline set:html={preferenceScript} />
+    )}
     <meta name="description" content={pageDescription} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     {noindex && <meta name="robots" content="noindex" />}
     {!noindex && <link rel="canonical" href={canonical} />}
+    {alternates.map((link) => (
+      <link rel="alternate" hreflang={link.hreflang} href={link.href} />
+    ))}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
     {!noindex && <meta property="og:url" content={canonical} />}
     <meta property="og:locale" content={localeMeta.ogLocale} />
+    {alternateOgLocales.map((meta) => (
+      <meta property="og:locale:alternate" content={meta.ogLocale} />
+    ))}
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />

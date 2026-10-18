@@ -1,3 +1,5 @@
+import type { ToolStringsKey } from "../i18n/dictionary";
+
 export type ToolCategory =
   | "Calculators"
   | "Converters"
@@ -13,6 +15,8 @@ export interface Tool {
   keywords: string[];
   /** Lucide icon name, resolved to an SVG by the rendering component. */
   icon: string;
+  /** Dictionary key holding this tool's translated strings. */
+  dictionaryKey: ToolStringsKey;
 }
 
 /*
@@ -37,6 +41,7 @@ export const tools: readonly Tool[] = [
       "of",
     ],
     icon: "calculator",
+    dictionaryKey: "percentage",
   },
   {
     title: "Discount Calculator",
@@ -54,6 +59,7 @@ export const tools: readonly Tool[] = [
       "final",
     ],
     icon: "tag",
+    dictionaryKey: "discount",
   },
 ];
 

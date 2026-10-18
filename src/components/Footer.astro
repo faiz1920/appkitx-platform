@@ -1,5 +1,6 @@
 ---
 import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+import { localizedPath } from "../i18n/routing";
 
 interface Props {
   locale?: LocaleCode;
@@ -15,9 +16,12 @@ const columns = [
     links: [
       {
         label: footer.tools.percentageCalculator,
-        href: "/percentage-calculator",
+        href: localizedPath("/percentage-calculator", locale),
       },
-      { label: footer.tools.discountCalculator, href: "/discount-calculator" },
+      {
+        label: footer.tools.discountCalculator,
+        href: localizedPath("/discount-calculator", locale),
+      },
       { label: footer.tools.unitConverter, href: "#" },
       { label: footer.tools.loanCalculator, href: "#" },
       { label: footer.tools.dateCalculator, href: "#" },

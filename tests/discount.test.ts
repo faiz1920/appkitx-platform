@@ -3,8 +3,12 @@ import {
   calculateDiscount,
   describeFormulas,
   formatAmount,
-  formulaTemplate,
 } from "../src/lib/discount";
+import { en } from "../src/i18n/dictionaries/en";
+import { es } from "../src/i18n/dictionaries/es";
+
+const enDescribe = en.tools.discount.formulas.describe;
+const esDescribe = es.tools.discount.formulas.describe;
 
 describe("calculateDiscount", () => {
   it("computes savings and final price for a standard discount", () => {
@@ -100,21 +104,36 @@ describe("formatAmount", () => {
   it("normalizes negative zero", () => {
     expect(formatAmount(-0)).toBe("0");
   });
+
+  it("formats with the locale's number conventions", () => {
+    expect(formatAmount(16.9915, "es-ES")).toBe("16,99");
+    expect(formatAmount(0.5, "es-ES")).toBe("0,5");
+    expect(formatAmount(12345.6, "es-ES")).toBe("12.345,6");
+  });
 });
 
 describe("formula helpers", () => {
   it("returns the unsubstituted template", () => {
-    expect(formulaTemplate()).toBe(
+    expect(en.tools.discount.formulas.template).toBe(
       "discount = (price × percent) ÷ 100 · final = price − discount",
+    );
+    expect(es.tools.discount.formulas.template).toBe(
+      "descuento = (precio × porcentaje) ÷ 100 · final = precio − descuento",
     );
   });
 
   it("substitutes entered and computed values", () => {
-    expect(describeFormulas(100, 20, 20, 80)).toBe(
+    expect(describeFormulas(100, 20, 20, 80, enDescribe)).toBe(
       "discount = (100 × 20) ÷ 100 = 20 · final = 100 − 20 = 80",
     );
-    expect(describeFormulas(19.99, 15, 2.9985, 16.9915)).toBe(
+    expect(describeFormulas(19.99, 15, 2.9985, 16.9915, enDescribe)).toBe(
       "discount = (19.99 × 15) ÷ 100 = 3 · final = 19.99 − 3 = 16.99",
     );
+  });
+
+  it("uses the locale's template and number format", () => {
+    expect(
+      describeFormulas(19.99, 15, 2.9985, 16.9915, esDescribe, "es-ES"),
+    ).toBe("descuento = (19,99 × 15) ÷ 100 = 3 · final = 19,99 − 3 = 16,99");
   });
 });

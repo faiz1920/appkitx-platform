@@ -245,3 +245,53 @@ test("uses the full-screen sheet at 320px without horizontal overflow", async ({
   await expect(searchInput(page)).toBeVisible();
   await expect(page.getByRole("option")).toHaveCount(2);
 });
+
+test("the Spanish palette searches localized tools and stays localized", async ({
+  page,
+}) => {
+  await page.goto("/es/");
+  await openWithShortcut(page);
+
+  await expect(page.getByPlaceholder("Buscar herramientas…")).toBeVisible();
+  await searchInput(page).fill("rebaja");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("option")).toContainText(
+    "Calculadora de descuentos",
+  );
+  await expect(page.getByRole("option")).toContainText("Calculadoras");
+
+  await page.getByRole("option").click();
+  await expect(page).toHaveURL(/\/es\/discount-calculator\/?$/);
+});
+
+test("the Spanish palette shows the localized empty state", async ({
+  page,
+}) => {
+  await page.goto("/es/");
+  await openWithShortcut(page);
+
+  await searchInput(page).fill("zzz");
+  await expect(page.getByRole("option")).toHaveCount(0);
+  await expect(page.locator("[data-search-empty]")).toBeVisible();
+  await expect(page.locator("[data-search-empty-message]")).toHaveText(
+    "Ninguna herramienta coincide con «zzz»",
+  );
+});
+
+test("Spanish placeholder cards never appear in search results", async ({
+  page,
+}) => {
+  await page.goto("/es/");
+  await openWithShortcut(page);
+
+  for (const query of ["unidades", "préstamo", "codificador", "formateador"]) {
+    await searchInput(page).fill(query);
+    await expect(
+      page.getByRole("option"),
+      `${query} must not match`,
+    ).toHaveCount(0);
+  }
+
+  await searchInput(page).fill("");
+  await expect(page.getByRole("option")).toHaveCount(2);
+});

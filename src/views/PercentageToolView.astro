@@ -1,0 +1,44 @@
+---
+import ToolLayout from "../layouts/ToolLayout.astro";
+import PercentageCalculator from "../components/PercentageCalculator.astro";
+import ProseText from "../components/ProseText.astro";
+import { getDictionary, type LocaleCode } from "../i18n/config";
+import { resolveLocalizedTools } from "../i18n/tool-catalog";
+import { localizedPath } from "../i18n/routing";
+import tagIcon from "lucide-static/icons/tag.svg?raw";
+
+interface Props {
+  locale: LocaleCode;
+}
+
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.percentage;
+
+const toolIcons: Record<string, string> = { tag: tagIcon };
+const relatedTools = resolveLocalizedTools(locale, [
+  "/discount-calculator",
+]).map((related) => ({
+  title: related.title,
+  description: related.description,
+  href: localizedPath(related.href, locale),
+  icon: toolIcons[related.icon] ?? "",
+}));
+---
+
+<ToolLayout
+  title={tool.title}
+  description={tool.metaDescription}
+  toolName={tool.name}
+  toolDescription={tool.description}
+  locale={locale}
+  breadcrumb={[
+    { label: t.toolLayout.breadcrumbHome, href: localizedPath("/", locale) },
+    { label: tool.name },
+  ]}
+  relatedTools={relatedTools}
+>
+  <PercentageCalculator slot="tool" locale={locale} />
+
+  <ProseText sections={tool.sections} />
+</ToolLayout>

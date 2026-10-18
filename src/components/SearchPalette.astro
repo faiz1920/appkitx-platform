@@ -4,6 +4,8 @@ import searchXIcon from "lucide-static/icons/search-x.svg?raw";
 import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
 import tagIcon from "lucide-static/icons/tag.svg?raw";
 import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+import { localizedPath } from "../i18n/routing";
+import { localizedToolCatalog } from "../i18n/tool-catalog";
 
 interface Props {
   locale?: LocaleCode;
@@ -18,6 +20,17 @@ const toolIcons: Record<string, string> = {
   tag: tagIcon,
 };
 
+/*
+ * Localized, registry-derived search catalog. Only implemented tools exist
+ * here (src/i18n/tool-catalog.ts), so the palette can never surface a tool
+ * without a page. Hrefs are localized for this page's locale because the
+ * client script navigates with them directly.
+ */
+const catalog = localizedToolCatalog(locale).map((tool) => ({
+  ...tool,
+  href: localizedPath(tool.href, locale),
+}));
+
 /* Strings for the client script — JSON-safe slice of the dictionary. */
 const scriptStrings = { search: t.search };
 ---
@@ -27,6 +40,7 @@ const scriptStrings = { search: t.search };
   aria-label={t.search.label}
   data-search-palette
   data-tool-icons={JSON.stringify(toolIcons)}
+  data-search-catalog={JSON.stringify(catalog)}
   data-i18n={JSON.stringify(scriptStrings)}
 >
   <div class="flex h-14 shrink-0 items-center gap-3 border-b border-border-subtle px-4">
@@ -71,7 +85,10 @@ const scriptStrings = { search: t.search };
       <p class="text-label text-text-primary" data-search-empty-message></p>
       <p class="text-caption text-text-muted">
         {t.search.suggestion}{" "}
-        <a href="/" class="focus-ring text-accent hover:text-accent-hover">
+        <a
+          href={localizedPath("/", locale)}
+          class="focus-ring text-accent hover:text-accent-hover"
+        >
           {t.search.browseAll}
         </a>
         .
@@ -83,7 +100,7 @@ const scriptStrings = { search: t.search };
 </dialog>
 
 <script>
-  import { searchTools } from "../lib/search";
+  import { searchTools, type SearchableTool } from "../lib/search";
   import { interpolate } from "../i18n/interpolate";
   import type { SearchStrings } from "../i18n/dictionary";
 
@@ -106,6 +123,9 @@ const scriptStrings = { search: t.search };
     const statusEl = dialog.querySelector<HTMLElement>("[data-search-status]");
 
     if (input && resultsEl && emptyEl && emptyMessage && statusEl) {
+      const catalog = JSON.parse(
+        dialog.dataset.searchCatalog ?? "[]",
+      ) as SearchableTool[];
       const toolIcons: Record<string, string> = JSON.parse(
         dialog.dataset.toolIcons ?? "{}",
       );
@@ -113,7 +133,7 @@ const scriptStrings = { search: t.search };
       let opener: HTMLElement | null = null;
       let restoreFocus = true;
       let activeIndex = -1;
-      let currentResults: ReturnType<typeof searchTools> = [];
+      let currentResults: SearchableTool[] = [];
 
       const updateActive = () => {
         const options = resultsEl.querySelectorAll<HTMLAnchorElement>(
@@ -135,7 +155,7 @@ const scriptStrings = { search: t.search };
       };
 
       const render = (query: string) => {
-        currentResults = searchTools(query);
+        currentResults = searchTools(query, catalog);
         activeIndex = -1;
         input.removeAttribute("aria-activedescendant");
         resultsEl.replaceChildren();

@@ -21,6 +21,10 @@ export const en: Dictionary = {
     searchShortcut: "⌘K",
     menuAriaLabel: "Menu",
   },
+  language: {
+    label: "Language",
+    ariaLabel: "Language",
+  },
   footer: {
     columns: {
       tools: {
@@ -71,6 +75,42 @@ export const en: Dictionary = {
     body: "The page you're looking for doesn't exist or may have moved.",
     goHome: "Go to homepage",
   },
+  home: {
+    heroTitle: "Free tools for everyday work.",
+    heroSubline:
+      "Calculators, converters, and developer utilities — all in one place.",
+    browseByCategory: "Browse by category",
+    exploreHeading: "Explore the toolkit.",
+    categories: {
+      Calculators: "Calculators",
+      Converters: "Converters",
+      "Developer tools": "Developer tools",
+      "Date & time": "Date & time",
+      "Text tools": "Text tools",
+    },
+    placeholderTools: {
+      unitConverter: {
+        title: "Unit Converter",
+        description: "Length, weight, temperature, and more.",
+      },
+      loanCalculator: {
+        title: "Loan Calculator",
+        description: "Monthly payments, interest, and total cost.",
+      },
+      dateCalculator: {
+        title: "Date Calculator",
+        description: "Days between dates, add or subtract time.",
+      },
+      base64Encoder: {
+        title: "Base64 Encoder",
+        description: "Encode and decode Base64 in your browser.",
+      },
+      jsonFormatter: {
+        title: "JSON Formatter",
+        description: "Format, validate, and inspect JSON.",
+      },
+    },
+  },
   toolLayout: {
     breadcrumbLabel: "Breadcrumb",
     breadcrumbHome: "Home",
@@ -98,6 +138,17 @@ export const en: Dictionary = {
       name: "Percentage Calculator",
       description:
         "Find a percentage of a number, work out what percent one number is of another, or measure the change between two values.",
+      cardDescription: "Percentages, tips, discounts, and percent change.",
+      keywords: [
+        "percentage",
+        "percent",
+        "tip",
+        "increase",
+        "decrease",
+        "change",
+        "share",
+        "of",
+      ],
       modeLegend: "Mode",
       modes: {
         "percent-of": {
@@ -134,6 +185,65 @@ export const en: Dictionary = {
         changeFromNegative:
           "Percentage change is undefined for a negative original value — use a positive starting value.",
       },
+      formulas: {
+        "percent-of": {
+          template: "(X ÷ 100) × Y",
+          describe: "({a} ÷ 100) × {b} = {result}",
+        },
+        "what-percent": {
+          template: "(X ÷ Y) × 100",
+          describe: "({a} ÷ {b}) × 100 = {result}",
+        },
+        "percent-change": {
+          template: "((To − From) ÷ From) × 100",
+          describe: "(({b} − {a}) ÷ {a}) × 100 = {result}",
+        },
+      },
+      results: {
+        plain: "{value}",
+        percent: "{value}%",
+        increase: "{value}% increase",
+        decrease: "{value}% decrease",
+        zero: "0%",
+      },
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "The calculator covers three common percentage problems. Pick a mode, enter two numbers, and select Calculate. Results update in place — no page reload — and can be copied with one click.",
+          ],
+        },
+        {
+          heading: "Find X% of Y",
+          paragraphs: [
+            "Multiplies the value by the percentage and divides by 100 — the standard way to take a percentage of a number.",
+            "Formula: `(X ÷ 100) × Y`. Example: 25% of 80 is `(25 ÷ 100) × 80 = 20`.",
+          ],
+        },
+        {
+          heading: "X is what percentage of Y?",
+          paragraphs: [
+            "Divides the first number by the second and multiplies by 100 to express it as a share of the whole.",
+            "Formula: `(X ÷ Y) × 100`. Example: 20 out of 80 is `(20 ÷ 80) × 100 = 25%`.",
+          ],
+        },
+        {
+          heading: "Percentage change",
+          paragraphs: [
+            "Measures the increase or decrease from an original value to a new value, as a percentage of the original.",
+            "Formula: `((To − From) ÷ From) × 100`. Example: from 80 to 100 is `((100 − 80) ÷ 80) × 100 = 25%`, a 25% increase.",
+          ],
+        },
+        {
+          heading: "Assumptions and edge cases",
+          items: [
+            "Results are calculated at full precision and rounded only for display — up to six decimal places, with trailing zeros removed.",
+            "Negative and decimal inputs are allowed and applied literally; nothing is clamped.",
+            'Dividing by zero is undefined: the "What %" mode requires a non-zero whole. Percentage change requires a positive original value — a zero baseline divides by zero, and a negative baseline would produce a misleading increase or decrease. The calculator explains these cases instead of showing Infinity, NaN, or a misleading percentage.',
+            "An increase and a decrease of the same amount are not symmetrical — going from 80 to 100 is a 25% increase, but going back from 100 to 80 is a 20% decrease, because the change is always relative to the original value.",
+          ],
+        },
+      ],
     },
     discount: {
       title: "Discount Calculator — AppKitX",
@@ -142,6 +252,17 @@ export const en: Dictionary = {
       name: "Discount Calculator",
       description:
         "Work out how much you save and the final price after a discount — in any currency.",
+      cardDescription: "Savings and final price after a discount.",
+      keywords: [
+        "discount",
+        "sale",
+        "savings",
+        "price",
+        "off",
+        "markdown",
+        "reduction",
+        "final",
+      ],
       priceLabel: "Original price",
       priceHint: "The price before the discount, in any currency.",
       percentLabel: "Discount percentage (%)",
@@ -154,6 +275,42 @@ export const en: Dictionary = {
       },
       caption: "{percent}% off {price}.",
       copyText: "Final price: {price}\nYou save: {savings}",
+      formulas: {
+        template:
+          "discount = (price × percent) ÷ 100 · final = price − discount",
+        describe:
+          "discount = ({price} × {percent}) ÷ 100 = {savings} · final = {price} − {savings} = {final}",
+      },
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Enter the original price and the discount percentage, then select Calculate. The calculator shows the amount saved and the final price. Both outputs use the same currency units as the price you entered — the calculator never assumes a currency.",
+          ],
+        },
+        {
+          heading: "The formulas",
+          paragraphs: [
+            "Discount amount: `price × percent ÷ 100`. Final price: `price − discount amount`.",
+          ],
+        },
+        {
+          heading: "Worked examples",
+          paragraphs: [
+            "A 20% discount on a price of 100 saves `(100 × 20) ÷ 100 = 20`, so the final price is `100 − 20 = 80`.",
+            "A 15% discount on a price of 19.99 saves `(19.99 × 15) ÷ 100 ≈ 3`, so the final price is about `16.99`.",
+          ],
+        },
+        {
+          heading: "Assumptions and edge cases",
+          items: [
+            "The original price can be zero or more; the discount percentage must be between 0 and 100 inclusive. Values outside these ranges are rejected with an inline message rather than being silently adjusted.",
+            "Decimal prices and percentages are fully supported. Results are calculated at full precision and rounded only for display — capped at two decimal places, with trailing zeros removed.",
+            "A 100% discount makes the final price zero, and a 0% discount leaves the price unchanged.",
+            "Both outputs use the same currency units as the entered price; the calculator is currency-neutral and does no currency conversion.",
+          ],
+        },
+      ],
     },
   },
 };

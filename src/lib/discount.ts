@@ -1,3 +1,5 @@
+import { interpolate } from "../i18n/interpolate";
+
 export interface DiscountResult {
   savings: number;
   finalPrice: number;
@@ -9,6 +11,8 @@ export interface DiscountResult {
  * - price must be >= 0 and discountPercent must be within 0-100 inclusive;
  *   out-of-range inputs return null instead of NaN, Infinity, or a clamped value.
  * - Full precision is kept here; rounding happens only in formatAmount.
+ * - Arithmetic never depends on the locale: only the display helpers
+ *   (formatAmount, describeFormulas) take an Intl locale.
  */
 
 export function calculateDiscount(
@@ -22,24 +26,28 @@ export function calculateDiscount(
   return { savings, finalPrice: price - savings };
 }
 
-export function formatAmount(value: number): string {
+export function formatAmount(value: number, intlLocale = "en-US"): string {
   const safe = value === 0 ? 0 : value;
-  return safe.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  return safe.toLocaleString(intlLocale, { maximumFractionDigits: 2 });
 }
 
-export function formulaTemplate(): string {
-  return "discount = (price × percent) ÷ 100 · final = price − discount";
-}
-
+/*
+ * Substitute the entered and computed values into a localized formula line.
+ * The template comes from the dictionary (FormulaStrings.describe) so the
+ * words are translatable; only the numbers are localized here.
+ */
 export function describeFormulas(
   price: number,
   discountPercent: number,
   savings: number,
   finalPrice: number,
+  describe: string,
+  intlLocale = "en-US",
 ): string {
-  const p = formatAmount(price);
-  const d = formatAmount(discountPercent);
-  const s = formatAmount(savings);
-  const f = formatAmount(finalPrice);
-  return `discount = (${p} × ${d}) ÷ 100 = ${s} · final = ${p} − ${s} = ${f}`;
+  return interpolate(describe, {
+    price: formatAmount(price, intlLocale),
+    percent: formatAmount(discountPercent, intlLocale),
+    savings: formatAmount(savings, intlLocale),
+    final: formatAmount(finalPrice, intlLocale),
+  });
 }

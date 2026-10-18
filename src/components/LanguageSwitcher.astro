@@ -1,0 +1,160 @@
+---
+import globeIcon from "lucide-static/icons/globe.svg?raw";
+import chevronDownIcon from "lucide-static/icons/chevron-down.svg?raw";
+import checkIcon from "lucide-static/icons/check.svg?raw";
+import {
+  defaultLocale,
+  getDictionary,
+  getLocale,
+  locales,
+  type LocaleCode,
+} from "../i18n/config";
+import {
+  localizedPath,
+  stripLocalePrefix,
+  translatedPagePaths,
+} from "../i18n/routing";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const current = getLocale(locale);
+
+/*
+ * Same page in every supported locale; paths without a translated sibling
+ * (for example the 404 page) fall back to that locale's homepage. The
+ * translated page set is registry-derived (src/i18n/routing.ts).
+ */
+const { path } = stripLocalePrefix(Astro.url.pathname);
+const translated = translatedPagePaths().includes(path);
+const options = Object.values(locales).map((meta) => ({
+  code: meta.code,
+  hreflang: meta.hreflang,
+  nativeName: meta.nativeName,
+  englishName: meta.englishName,
+  isCurrent: meta.code === locale,
+  href: translated
+    ? localizedPath(path, meta.code)
+    : localizedPath("/", meta.code),
+}));
+---
+
+<details class="lang-switcher relative" data-language-switcher>
+  <summary class="btn btn-secondary cursor-pointer list-none gap-2 px-3 [&::-webkit-details-marker]:hidden">
+    <span
+      class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+      aria-hidden="true"
+      set:html={globeIcon}
+    />
+    <span class="text-label font-normal">
+      {t.language.label}:{" "}
+      <span lang={current.hreflang}>{current.nativeName}</span>
+    </span>
+    <span
+      class="lang-chevron h-4 w-4 [&_svg]:h-4 [&_svg]:w-4"
+      aria-hidden="true"
+      set:html={chevronDownIcon}
+    />
+  </summary>
+
+  <nav
+    aria-label={t.language.ariaLabel}
+    class="absolute top-full right-0 z-50 mt-2 w-56 rounded-md border border-border-subtle bg-surface p-2 shadow-md"
+  >
+    <ul class="flex flex-col">
+      {options.map((option) => (
+        <li>
+          <a
+            href={option.href}
+            hreflang={option.hreflang}
+            lang={option.hreflang}
+            aria-current={option.isCurrent ? "true" : undefined}
+            data-locale-choice={option.code}
+            class:list={[
+              "focus-ring flex min-h-11 items-center justify-between gap-2 rounded-md px-3 py-2",
+              option.isCurrent
+                ? "bg-accent-subtle text-accent"
+                : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary",
+            ]}
+          >
+            <span class="flex flex-col">
+              <span class="text-label">{option.nativeName}</span>
+              <span class="text-caption text-text-muted" lang="en">
+                {option.englishName}
+              </span>
+            </span>
+            {option.isCurrent && (
+              <span
+                class="h-4 w-4 [&_svg]:h-4 [&_svg]:w-4"
+                aria-hidden="true"
+                set:html={checkIcon}
+              />
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</details>
+
+<style>
+  .lang-switcher summary {
+    list-style: none;
+  }
+  .lang-switcher summary::-webkit-details-marker {
+    display: none;
+  }
+  .lang-switcher .lang-chevron {
+    transition: transform 150ms ease;
+  }
+  .lang-switcher[open] .lang-chevron {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script>
+  import { PREFERENCE_STORAGE_KEY } from "../i18n/preferences";
+
+  /*
+   * Remember the explicit choice; the pre-paint script in BaseLayout honors
+   * it on later visits. Storage failure (private mode) degrades to no-op —
+   * the link itself still navigates.
+   */
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const link = target.closest<HTMLElement>("[data-locale-choice]");
+    const choice = link?.dataset.localeChoice;
+    if (choice === undefined) return;
+    try {
+      window.localStorage.setItem(PREFERENCE_STORAGE_KEY, choice);
+    } catch {
+      /* Storage unavailable — the link still navigates. */
+    }
+  });
+
+  /* Light dismiss: clicking outside an open switcher closes it. */
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    document
+      .querySelectorAll<HTMLDetailsElement>("[data-language-switcher][open]")
+      .forEach((switcher) => {
+        if (!switcher.contains(target)) switcher.open = false;
+      });
+  });
+
+  /* Escape closes and returns focus to the trigger (disclosure pattern). */
+  document
+    .querySelectorAll<HTMLDetailsElement>("[data-language-switcher]")
+    .forEach((switcher) => {
+      switcher.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        switcher.open = false;
+        switcher.querySelector("summary")?.focus();
+      });
+    });
+</script>

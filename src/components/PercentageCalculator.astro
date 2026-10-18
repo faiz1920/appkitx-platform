@@ -2,7 +2,12 @@
 import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
 import checkIcon from "lucide-static/icons/check.svg?raw";
 import copyIcon from "lucide-static/icons/copy.svg?raw";
-import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+import {
+  defaultLocale,
+  getDictionary,
+  getLocale,
+  type LocaleCode,
+} from "../i18n/config";
 
 interface Props {
   locale?: LocaleCode;
@@ -11,9 +16,17 @@ interface Props {
 const { locale = defaultLocale } = Astro.props;
 const t = getDictionary(locale);
 const tool = t.tools.percentage;
+const localeMeta = getLocale(locale);
 
-/* Strings for the client script — JSON-safe slice of the dictionary. */
-const scriptStrings = { calculator: t.calculator, tool };
+/*
+ * Strings for the client script — JSON-safe slice of the dictionary plus
+ * the locale's Intl formatting locale (calculation stays locale-free).
+ */
+const scriptStrings = {
+  calculator: t.calculator,
+  tool,
+  intlLocale: localeMeta.intlLocale,
+};
 ---
 
 <div data-percentage-calculator data-i18n={JSON.stringify(scriptStrings)}>
@@ -194,7 +207,7 @@ const scriptStrings = { calculator: t.calculator, tool };
   <p class="mt-4 text-small text-text-secondary">
     {t.calculator.formulaLabel}{" "}
     <code class="inline-code" data-formula>
-      (X ÷ 100) × Y
+      {tool.formulas["percent-of"].template}
     </code>
   </p>
 </div>
@@ -205,7 +218,6 @@ const scriptStrings = { calculator: t.calculator, tool };
     describeFormula,
     describeResult,
     formatNumber,
-    formulaTemplate,
     type Mode,
   } from "../lib/percentage";
   import type {
@@ -219,8 +231,11 @@ const scriptStrings = { calculator: t.calculator, tool };
   );
 
   if (root) {
-    const i18n: { calculator: CalculatorStrings; tool: PercentageToolStrings } =
-      JSON.parse(root.dataset.i18n ?? "{}");
+    const i18n: {
+      calculator: CalculatorStrings;
+      tool: PercentageToolStrings;
+      intlLocale: string;
+    } = JSON.parse(root.dataset.i18n ?? "{}");
 
     const requireEl = <T extends Element>(selector: string): T => {
       const el = root.querySelector<T>(selector);
@@ -254,6 +269,9 @@ const scriptStrings = { calculator: t.calculator, tool };
       root.querySelectorAll<HTMLInputElement>('input[name="mode"]');
 
     const MODES = i18n.tool.modes;
+    const FORMULAS = i18n.tool.formulas;
+    const RESULTS = i18n.tool.results;
+    const intlLocale = i18n.intlLocale;
 
     let copyTimer: number | undefined;
     let copyBusy = false;
@@ -302,7 +320,7 @@ const scriptStrings = { calculator: t.calculator, tool };
       resultValue.textContent = "—";
       resultValue.classList.replace("text-text-primary", "text-text-disabled");
       setCaption(i18n.calculator.resultsPlaceholder);
-      formulaEl.textContent = formulaTemplate(mode());
+      formulaEl.textContent = FORMULAS[mode()].template;
       copyButton.disabled = true;
     };
 
@@ -329,22 +347,22 @@ const scriptStrings = { calculator: t.calculator, tool };
     ) => {
       if (activeMode === "percent-of")
         return interpolate(i18n.tool.captions.percentOf, {
-          percent: formatNumber(a),
-          value: formatNumber(b),
+          percent: formatNumber(a, intlLocale),
+          value: formatNumber(b, intlLocale),
         });
       if (activeMode === "what-percent")
         return interpolate(i18n.tool.captions.whatPercent, {
-          part: formatNumber(a),
-          whole: formatNumber(b),
+          part: formatNumber(a, intlLocale),
+          whole: formatNumber(b, intlLocale),
         });
       return value === 0
         ? interpolate(i18n.tool.captions.noChange, {
-            from: formatNumber(a),
-            to: formatNumber(b),
+            from: formatNumber(a, intlLocale),
+            to: formatNumber(b, intlLocale),
           })
         : interpolate(i18n.tool.captions.change, {
-            from: formatNumber(a),
-            to: formatNumber(b),
+            from: formatNumber(a, intlLocale),
+            to: formatNumber(b, intlLocale),
           });
     };
 
@@ -379,16 +397,22 @@ const scriptStrings = { calculator: t.calculator, tool };
               : i18n.tool.captions.changeFromNegative
             : i18n.tool.captions.divideByZero,
         );
-        formulaEl.textContent = formulaTemplate(activeMode);
+        formulaEl.textContent = FORMULAS[activeMode].template;
         copyButton.disabled = true;
         return;
       }
 
-      lastResult = describeResult(activeMode, value);
+      lastResult = describeResult(activeMode, value, RESULTS, intlLocale);
       resultValue.textContent = lastResult;
       resultValue.classList.replace("text-text-disabled", "text-text-primary");
       setCaption(captionFor(activeMode, a, b, value));
-      formulaEl.textContent = describeFormula(activeMode, a, b, value);
+      formulaEl.textContent = describeFormula(
+        a,
+        b,
+        value,
+        FORMULAS[activeMode].describe,
+        intlLocale,
+      );
       copyButton.disabled = false;
     });
 

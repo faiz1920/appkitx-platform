@@ -1,0 +1,175 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GlobalNav from "../components/GlobalNav.astro";
+import Footer from "../components/Footer.astro";
+import ToolCard from "../components/ToolCard.astro";
+import { getDictionary, getLocale, type LocaleCode } from "../i18n/config";
+import { localizedToolCatalog } from "../i18n/tool-catalog";
+import { localizedPath } from "../i18n/routing";
+import type { ToolCategory } from "../lib/tools";
+import { buildWebSiteJsonLd, siteUrl } from "../lib/seo";
+
+import searchIcon from "lucide-static/icons/search.svg?raw";
+import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
+import tagIcon from "lucide-static/icons/tag.svg?raw";
+import rulerIcon from "lucide-static/icons/ruler.svg?raw";
+import landmarkIcon from "lucide-static/icons/landmark.svg?raw";
+import calendarIcon from "lucide-static/icons/calendar-days.svg?raw";
+import binaryIcon from "lucide-static/icons/binary.svg?raw";
+import bracesIcon from "lucide-static/icons/braces.svg?raw";
+
+interface Props {
+  locale: LocaleCode;
+}
+
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const localeMeta = getLocale(locale);
+
+const registryIcons: Record<string, string> = {
+  calculator: calculatorIcon,
+  tag: tagIcon,
+};
+
+/* Registered tools come from the localized catalog; hrefs stay locale-aware. */
+const tools = [
+  ...localizedToolCatalog(locale).map((tool) => ({
+    title: tool.title,
+    description: tool.description,
+    icon: registryIcons[tool.icon] ?? "",
+    href: localizedPath(tool.href, locale),
+  })),
+  {
+    title: t.home.placeholderTools.unitConverter.title,
+    description: t.home.placeholderTools.unitConverter.description,
+    icon: rulerIcon,
+    href: "#",
+  },
+  {
+    title: t.home.placeholderTools.loanCalculator.title,
+    description: t.home.placeholderTools.loanCalculator.description,
+    icon: landmarkIcon,
+    href: "#",
+  },
+  {
+    title: t.home.placeholderTools.dateCalculator.title,
+    description: t.home.placeholderTools.dateCalculator.description,
+    icon: calendarIcon,
+    href: "#",
+  },
+  {
+    title: t.home.placeholderTools.base64Encoder.title,
+    description: t.home.placeholderTools.base64Encoder.description,
+    icon: binaryIcon,
+    href: "#",
+  },
+  {
+    title: t.home.placeholderTools.jsonFormatter.title,
+    description: t.home.placeholderTools.jsonFormatter.description,
+    icon: bracesIcon,
+    href: "#",
+  },
+];
+
+const categoryKeys = [
+  "Calculators",
+  "Converters",
+  "Developer tools",
+  "Date & time",
+  "Text tools",
+] as const satisfies readonly ToolCategory[];
+const categories = categoryKeys.map((key) => t.home.categories[key]);
+
+const jsonLd = [
+  buildWebSiteJsonLd({
+    url: siteUrl(localizedPath("/", locale), Astro.site),
+    inLanguage: localeMeta.hreflang,
+  }),
+];
+---
+
+<BaseLayout locale={locale} jsonLd={jsonLd}>
+  <GlobalNav locale={locale} />
+  <main id="main">
+    <section class="bg-surface">
+      <div class="mx-auto max-w-(--layout-container) px-6 pt-10 pb-8 md:pt-16 md:pb-12">
+        <h1 class="hero-title max-w-[720px] text-text-primary">
+          {t.home.heroTitle}
+        </h1>
+        <p class="mt-4 max-w-[560px] text-body-lg text-text-secondary">
+          {t.home.heroSubline}
+        </p>
+
+        <div class="mt-8 max-w-(--layout-tool)">
+          <label for="hero-search" class="text-label text-text-primary">
+            {t.search.label}
+          </label>
+          <form class="relative mt-2" role="search" data-hero-search>
+            <span
+              class="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-text-muted [&_svg]:h-5 [&_svg]:w-5"
+              aria-hidden="true"
+              set:html={searchIcon}
+            />
+            <input
+              id="hero-search"
+              type="search"
+              class="input input-search"
+              placeholder={t.search.pagePlaceholder}
+              data-hero-search-input
+            />
+          </form>
+        </div>
+
+        <div class="mt-6">
+          <p class="text-overline text-text-muted uppercase">
+            {t.home.browseByCategory}
+          </p>
+          <ul class="mt-3 flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <li>
+                <a href="#tools" class="chip focus-ring">
+                  {category}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="tools" class="bg-surface-subtle">
+      <div class="mx-auto max-w-(--layout-container) px-6 py-16 md:py-(--layout-section-y)">
+        <h2 class="text-headline text-text-primary">{t.home.exploreHeading}</h2>
+        <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-(--layout-grid-gap) lg:grid-cols-3 xl:grid-cols-4">
+          {tools.map((tool) => (
+            <ToolCard
+              title={tool.title}
+              description={tool.description}
+              icon={tool.icon}
+              href={tool.href}
+              locale={locale}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer locale={locale} />
+</BaseLayout>
+
+<script>
+  const heroForm =
+    document.querySelector<HTMLFormElement>("[data-hero-search]");
+  const heroInput = document.querySelector<HTMLInputElement>(
+    "[data-hero-search-input]",
+  );
+
+  heroForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const query = heroInput?.value.trim() ?? "";
+    if (query === "") return;
+    document.dispatchEvent(
+      new CustomEvent("appkitx:search-open", { detail: { query } }),
+    );
+  });
+</script>

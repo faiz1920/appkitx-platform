@@ -1,18 +1,31 @@
-import { tools, type Tool } from "./tools";
+import { tools } from "./tools";
 
 /*
- * Pure client-side search over the tool registry. Contract:
+ * Pure client-side search over the tool catalog. Contract:
  * - Case-insensitive substring match on title, keywords, category, description.
  * - Whitespace-only queries return the full catalog in registry order.
  * - Ranking: title prefix > title substring > keyword > category > description,
  *   with registry order as a stable tiebreak.
+ *
+ * The catalog parameter is the localized view built by
+ * src/i18n/tool-catalog.ts, which maps over the tools registry — so search
+ * can only ever surface implemented tools, in the current page's language.
  */
+
+export interface SearchableTool {
+  title: string;
+  href: string;
+  description: string;
+  category: string;
+  keywords: readonly string[];
+  icon: string;
+}
 
 export function normalizeQuery(query: string): string {
   return query.trim().toLowerCase();
 }
 
-function scoreTool(tool: Tool, query: string): number | null {
+function scoreTool(tool: SearchableTool, query: string): number | null {
   const title = tool.title.toLowerCase();
   if (title.startsWith(query)) return 0;
   if (title.includes(query)) return 1;
@@ -25,12 +38,12 @@ function scoreTool(tool: Tool, query: string): number | null {
 
 export function searchTools(
   query: string,
-  catalog: readonly Tool[] = tools,
-): Tool[] {
+  catalog: readonly SearchableTool[] = tools,
+): SearchableTool[] {
   const normalized = normalizeQuery(query);
   if (normalized === "") return [...catalog];
 
-  const scored: { tool: Tool; index: number; score: number }[] = [];
+  const scored: { tool: SearchableTool; index: number; score: number }[] = [];
   catalog.forEach((tool, index) => {
     const score = scoreTool(tool, normalized);
     if (score !== null) scored.push({ tool, index, score });
