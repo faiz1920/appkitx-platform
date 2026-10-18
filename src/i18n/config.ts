@@ -18,8 +18,14 @@ export interface LocaleMeta {
   nativeName: string;
   /** Language name written in English. */
   englishName: string;
-  /** BCP-47 value emitted in hreflang alternates. */
+  /** BCP-47 value emitted in hreflang alternates and JSON-LD inLanguage. */
   hreflang: string;
+  /**
+   * Open Graph locale in language_TERRITORY form (e.g. "en_US"). Explicitly
+   * mapped per locale — distinct from the BCP-47 hreflang code, never derived
+   * at render time.
+   */
+  ogLocale: string;
   dir: TextDirection;
   /** Locale passed to Intl number and date formatting. */
   intlLocale: string;
@@ -37,6 +43,7 @@ export const locales = {
     nativeName: "English",
     englishName: "English",
     hreflang: "en",
+    ogLocale: "en_US",
     dir: "ltr",
     intlLocale: "en-US",
     status: "supported",

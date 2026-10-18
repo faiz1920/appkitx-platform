@@ -4,6 +4,8 @@ import GlobalNav from "../components/GlobalNav.astro";
 import Footer from "../components/Footer.astro";
 import ToolCard from "../components/ToolCard.astro";
 import { tools as registeredTools } from "../lib/tools";
+import { getLocale } from "../i18n/config";
+import { buildWebSiteJsonLd, siteUrl } from "../lib/seo";
 
 import searchIcon from "lucide-static/icons/search.svg?raw";
 import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
@@ -65,9 +67,17 @@ const categories = [
   "Date & time",
   "Text tools",
 ];
+
+const localeMeta = getLocale();
+const jsonLd = [
+  buildWebSiteJsonLd({
+    url: siteUrl("/", Astro.site),
+    inLanguage: localeMeta.hreflang,
+  }),
+];
 ---
 
-<BaseLayout>
+<BaseLayout jsonLd={jsonLd}>
   <GlobalNav />
   <main id="main">
     <section class="bg-surface">

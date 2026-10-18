@@ -50,11 +50,18 @@ describe("locale registry", () => {
         meta.nativeName,
         meta.englishName,
         meta.hreflang,
+        meta.ogLocale,
         meta.intlLocale,
       ]) {
         expect(value.trim().length).toBeGreaterThan(0);
       }
     }
+  });
+
+  it("keeps BCP 47 codes and Open Graph locales explicitly distinct", () => {
+    const meta = getLocale(defaultLocale);
+    expect(meta.hreflang).toBe("en");
+    expect(meta.ogLocale).toBe("en_US");
   });
 
   it("ships a dictionary for every registered locale and nothing else", () => {
