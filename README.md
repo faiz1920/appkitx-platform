@@ -8,7 +8,33 @@ The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKi
 
 ## Status
 
-Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Tools shipped: the [percentage calculator](/percentage-calculator) and the [discount calculator](/discount-calculator), both built on the reusable `ToolLayout` template with cross-linked related tools. Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches a typed tool registry. Next: more calculators on the same template.
+Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Tools shipped: the [percentage calculator](/percentage-calculator) and the [discount calculator](/discount-calculator), both built on the reusable `ToolLayout` template with cross-linked related tools. Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches a typed tool registry, localized per page. English and Spanish (`/es/…`) are shipped as the first supported locales. Next: more calculators on the same template.
+
+## Languages
+
+Locale support is registry-driven: `src/i18n/config.ts` is the single source of truth, and the Astro i18n routing, the sitemap `i18n` option, the hreflang alternates, and the language switcher all derive from it. English is the default locale and stays unprefixed; every other locale is served under its prefix (for example `/es/`).
+
+### Adding a language
+
+1. Add a `LocaleMeta` entry to `locales` in `src/i18n/config.ts` (code, native name, English name, hreflang, `ogLocale`, direction, `intlLocale`).
+2. Create a complete dictionary at `src/i18n/dictionaries/<code>.ts` and register it in `dictionaries`. The `Record<LocaleCode, Dictionary>` type makes a missing or partial dictionary a compile error, and the `[locale]` pages plus the sitemap pick the locale up automatically.
+3. Run `npm run check`, `npm test`, `npm run build`, and `npm run test:e2e` — the routing, dictionary-completeness, alternates, and sitemap tests cover the new locale without edits.
+4. **Merge gate**: a native speaker must review the complete user-facing copy — calculator labels, hints, errors, formulas, homepage, tool prose, metadata titles/descriptions, and navigation — and the review verdict must be recorded in the pull request before merge. Automated tests prove completeness, never translation quality.
+
+Do not mark a language supported (step 1) or expose it in the switcher until its translations are complete and reviewed.
+
+### Language behavior
+
+- **Manual switcher**: a `<details>` disclosure in the navigation (and mobile drawer) lists every supported locale and links to the same page in that language. Choosing a language stores it under `appkitx.locale` in `localStorage`; the stored choice is honored on later visits, in both directions.
+- **Browser-language detection ships disabled.** `AUTO_DETECT_ENABLED` in `src/i18n/preferences.ts` is the single kill switch. While it is `false` no detection code is emitted at all and a first visit never navigates, regardless of the browser's language. Enabling it (only after an SEO review) makes the pre-paint script match `navigator.languages` against supported locales on first visit.
+- **No HTTP redirects, no server-side `Accept-Language` handling.** The only client-side navigation is the pre-paint preference script honoring an explicit choice (or, if enabled, a first-visit language match), and it only ever targets pages that exist in the target locale.
+- **SEO trade-off (for review)**: both locale versions are fully rendered static HTML; non-JS crawlers always see exactly the requested URL. The preference script runs in `<head>` before paint, so there is no layout flash, and detection navigation is one-way (English pages may navigate to a matched locale; `/es/` pages never auto-navigate), so the Spanish URLs can never present as redirects to JavaScript-executing crawlers. `hreflang` alternates and `x-default` in the page head remain the primary language signals. If this trade-off is rejected, set `AUTO_DETECT_ENABLED` to `false` (already the default) and the site is free of all client-side navigation for visitors without a stored choice.
+
+### SEO output
+
+- Every indexable page carries a self-referencing canonical, reciprocal `hreflang` alternates for every supported locale, and `x-default` pointing at the unprefixed English URL — in the HTML head only.
+- The sitemap pairs each translated page with its `en`/`es` alternates (emitted by `@astrojs/sitemap` from the registry via `sitemapI18n()`); it never contains `x-default` — the plugin has no support for it — and never lists `/en` URLs.
+- **404 limitation**: static output has a single `404.html`, so unknown paths — including `/es/…` paths — serve the English noindex 404 page. Localized 404s are a future enhancement.
 
 ## Commands
 

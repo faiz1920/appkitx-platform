@@ -2,7 +2,12 @@
 import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
 import checkIcon from "lucide-static/icons/check.svg?raw";
 import copyIcon from "lucide-static/icons/copy.svg?raw";
-import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+import {
+  defaultLocale,
+  getDictionary,
+  getLocale,
+  type LocaleCode,
+} from "../i18n/config";
 
 interface Props {
   locale?: LocaleCode;
@@ -11,9 +16,17 @@ interface Props {
 const { locale = defaultLocale } = Astro.props;
 const t = getDictionary(locale);
 const tool = t.tools.discount;
+const localeMeta = getLocale(locale);
 
-/* Strings for the client script — JSON-safe slice of the dictionary. */
-const scriptStrings = { calculator: t.calculator, tool };
+/*
+ * Strings for the client script — JSON-safe slice of the dictionary plus
+ * the locale's Intl formatting locale (calculation stays locale-free).
+ */
+const scriptStrings = {
+  calculator: t.calculator,
+  tool,
+  intlLocale: localeMeta.intlLocale,
+};
 ---
 
 <div data-discount-calculator data-i18n={JSON.stringify(scriptStrings)}>
@@ -175,7 +188,7 @@ const scriptStrings = { calculator: t.calculator, tool };
   <p class="mt-4 text-small text-text-secondary">
     {t.calculator.formulaLabel}{" "}
     <code class="inline-code" data-formula>
-      discount = (price × percent) ÷ 100 · final = price − discount
+      {tool.formulas.template}
     </code>
   </p>
 </div>
@@ -185,7 +198,6 @@ const scriptStrings = { calculator: t.calculator, tool };
     calculateDiscount,
     describeFormulas,
     formatAmount,
-    formulaTemplate,
   } from "../lib/discount";
   import type {
     CalculatorStrings,
@@ -198,8 +210,11 @@ const scriptStrings = { calculator: t.calculator, tool };
   );
 
   if (root) {
-    const i18n: { calculator: CalculatorStrings; tool: DiscountToolStrings } =
-      JSON.parse(root.dataset.i18n ?? "{}");
+    const i18n: {
+      calculator: CalculatorStrings;
+      tool: DiscountToolStrings;
+      intlLocale: string;
+    } = JSON.parse(root.dataset.i18n ?? "{}");
 
     const requireEl = <T extends Element>(selector: string): T => {
       const el = root.querySelector<T>(selector);
@@ -228,6 +243,9 @@ const scriptStrings = { calculator: t.calculator, tool };
     );
     const copyStatusError = requireEl<HTMLElement>("[data-copy-status-error]");
     const resetButton = requireEl<HTMLButtonElement>("[data-reset]");
+
+    const FORMULAS = i18n.tool.formulas;
+    const intlLocale = i18n.intlLocale;
 
     let copyTimer: number | undefined;
     let copyBusy = false;
@@ -271,7 +289,7 @@ const scriptStrings = { calculator: t.calculator, tool };
         el.classList.replace("text-text-primary", "text-text-disabled");
       }
       resultCaption.textContent = i18n.calculator.resultsPlaceholder;
-      formulaEl.textContent = formulaTemplate();
+      formulaEl.textContent = FORMULAS.template;
       copyButton.disabled = true;
     };
 
@@ -338,23 +356,25 @@ const scriptStrings = { calculator: t.calculator, tool };
         return;
       }
 
-      finalPriceEl.textContent = formatAmount(result.finalPrice);
+      finalPriceEl.textContent = formatAmount(result.finalPrice, intlLocale);
       finalPriceEl.classList.replace("text-text-disabled", "text-text-primary");
-      savingsEl.textContent = formatAmount(result.savings);
+      savingsEl.textContent = formatAmount(result.savings, intlLocale);
       savingsEl.classList.replace("text-text-disabled", "text-text-primary");
       resultCaption.textContent = interpolate(i18n.tool.caption, {
-        percent: formatAmount(discountPercent),
-        price: formatAmount(price),
+        percent: formatAmount(discountPercent, intlLocale),
+        price: formatAmount(price, intlLocale),
       });
       formulaEl.textContent = describeFormulas(
         price,
         discountPercent,
         result.savings,
         result.finalPrice,
+        FORMULAS.describe,
+        intlLocale,
       );
       lastCopyText = interpolate(i18n.tool.copyText, {
-        price: formatAmount(result.finalPrice),
-        savings: formatAmount(result.savings),
+        price: formatAmount(result.finalPrice, intlLocale),
+        savings: formatAmount(result.savings, intlLocale),
       });
       copyButton.disabled = false;
     });

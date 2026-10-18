@@ -1,9 +1,14 @@
 import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { normalizeQuery, searchTools } from "../src/lib/search";
-import { resolveTools, tools, type Tool } from "../src/lib/tools";
+import {
+  normalizeQuery,
+  searchTools,
+  type SearchableTool,
+} from "../src/lib/search";
+import { resolveTools, tools } from "../src/lib/tools";
+import { localizedToolCatalog } from "../src/i18n/tool-catalog";
 
-const fixture: Tool[] = [
+const fixture: SearchableTool[] = [
   {
     title: "Alpha Tool",
     href: "/alpha",
@@ -175,6 +180,48 @@ describe("searchTools", () => {
   it("does not match placeholder homepage cards", () => {
     for (const query of ["unit converter", "loan", "base64", "json", "date"]) {
       expect(searchTools(query, tools)).toEqual([]);
+    }
+  });
+});
+
+describe("localized search catalogs", () => {
+  it("finds tools with Spanish terms", () => {
+    const catalog = localizedToolCatalog("es");
+    expect(searchTools("rebaja", catalog).map((tool) => tool.href)).toEqual([
+      "/discount-calculator",
+    ]);
+    expect(searchTools("porcentaje", catalog).map((tool) => tool.href)).toEqual(
+      ["/percentage-calculator"],
+    );
+    /* "descuento" also appears in the percentage card copy, like English. */
+    expect(searchTools("descuento", catalog).map((tool) => tool.href)).toEqual([
+      "/discount-calculator",
+      "/percentage-calculator",
+    ]);
+  });
+
+  it("searches localized category labels", () => {
+    expect(
+      searchTools("calculadoras", localizedToolCatalog("es")).map(
+        (tool) => tool.href,
+      ),
+    ).toEqual(["/percentage-calculator", "/discount-calculator"]);
+  });
+
+  it("keeps placeholder cards out of every localized catalog", () => {
+    for (const locale of ["en", "es"] as const) {
+      const catalog = localizedToolCatalog(locale);
+      for (const query of [
+        "unit converter",
+        "loan",
+        "base64",
+        "json",
+        "unidades",
+        "préstamo",
+        "codificador",
+      ]) {
+        expect(searchTools(query, catalog)).toEqual([]);
+      }
     }
   });
 });

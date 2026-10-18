@@ -1,5 +1,6 @@
 import type { Dictionary } from "./dictionary";
 import { en } from "./dictionaries/en";
+import { es } from "./dictionaries/es";
 
 /** Text direction for a locale. */
 export type TextDirection = "ltr" | "rtl";
@@ -48,6 +49,16 @@ export const locales = {
     intlLocale: "en-US",
     status: "supported",
   },
+  es: {
+    code: "es",
+    nativeName: "Español",
+    englishName: "Spanish",
+    hreflang: "es",
+    ogLocale: "es_ES",
+    dir: "ltr",
+    intlLocale: "es-ES",
+    status: "supported",
+  },
 } as const satisfies Record<string, LocaleMeta>;
 
 export type LocaleCode = keyof typeof locales;
@@ -60,7 +71,7 @@ export const defaultLocale = "en" satisfies LocaleCode;
  * compile-time error: a locale can never be registered without one, and a
  * dictionary can never be partially typed with fallback entries.
  */
-export const dictionaries: Record<LocaleCode, Dictionary> = { en };
+export const dictionaries: Record<LocaleCode, Dictionary> = { en, es };
 
 export function getLocale(locale: LocaleCode = defaultLocale): LocaleMeta {
   return locales[locale];
@@ -68,4 +79,9 @@ export function getLocale(locale: LocaleCode = defaultLocale): LocaleMeta {
 
 export function getDictionary(locale: LocaleCode = defaultLocale): Dictionary {
   return dictionaries[locale];
+}
+
+/** Runtime guard for route params and client-side locale values. */
+export function isLocaleCode(value: string): value is LocaleCode {
+  return Object.hasOwn(locales, value);
 }

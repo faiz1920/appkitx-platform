@@ -1,18 +1,31 @@
 import type { AstroIntegration } from "astro";
 import { describe, expect, it } from "vitest";
 import { defaultLocale, locales } from "../src/i18n/config";
-import { astroI18nLocales, sitemapI18n } from "../src/i18n/routing";
+import {
+  alternateLinks,
+  astroI18nLocales,
+  localizedPath,
+  nonDefaultLocales,
+  sitemapI18n,
+  stripLocalePrefix,
+  swapLocalePath,
+  translatedPagePaths,
+} from "../src/i18n/routing";
 import { tools } from "../src/lib/tools";
 
 /*
- * M3 wiring guarantees: the locale registry is the single source of truth
- * for both Astro's i18n routing and the @astrojs/sitemap i18n option. These
- * tests fail when the registry and the build configuration drift apart.
+ * M3/M4 wiring guarantees: the locale registry is the single source of
+ * truth for Astro's i18n routing, the @astrojs/sitemap i18n option, the
+ * hreflang alternates, and the URL helpers. These tests fail when the
+ * registry and the derivations drift apart.
  */
 
 describe("Astro i18n locales", () => {
   it("derives exactly the registry locales", () => {
-    expect(astroI18nLocales()).toEqual([{ path: "en", codes: ["en"] }]);
+    expect(astroI18nLocales()).toEqual([
+      { path: "en", codes: ["en"] },
+      { path: "es", codes: ["es"] },
+    ]);
   });
 
   it("includes the default locale as its own path", () => {
@@ -34,7 +47,7 @@ describe("sitemap i18n", () => {
   it("maps URL prefixes to hreflang codes with the registry default", () => {
     expect(sitemapI18n()).toEqual({
       defaultLocale: "en",
-      locales: { en: "en" },
+      locales: { en: "en", es: "es" },
     });
   });
 
@@ -64,6 +77,88 @@ describe("locale prefix invariants", () => {
         prefixes.has(firstSegment),
         `${tool.href} must not start with a locale prefix`,
       ).toBe(false);
+    }
+  });
+});
+
+describe("locale path helpers", () => {
+  it("returns non-default locales from the registry", () => {
+    expect(nonDefaultLocales()).toEqual(["es"]);
+  });
+
+  it("localizes paths without touching English", () => {
+    expect(localizedPath("/", "en")).toBe("/");
+    expect(localizedPath("/percentage-calculator", "en")).toBe(
+      "/percentage-calculator",
+    );
+    expect(localizedPath("/", "es")).toBe("/es/");
+    expect(localizedPath("/percentage-calculator", "es")).toBe(
+      "/es/percentage-calculator",
+    );
+  });
+
+  it("strips locale prefixes with and without trailing slashes", () => {
+    expect(stripLocalePrefix("/")).toEqual({ locale: "en", path: "/" });
+    expect(stripLocalePrefix("/percentage-calculator/")).toEqual({
+      locale: "en",
+      path: "/percentage-calculator",
+    });
+    expect(stripLocalePrefix("/es")).toEqual({ locale: "es", path: "/" });
+    expect(stripLocalePrefix("/es/")).toEqual({ locale: "es", path: "/" });
+    expect(stripLocalePrefix("/es/percentage-calculator/")).toEqual({
+      locale: "es",
+      path: "/percentage-calculator",
+    });
+  });
+
+  it("swaps the locale of a pathname in both directions", () => {
+    expect(swapLocalePath("/percentage-calculator", "es")).toBe(
+      "/es/percentage-calculator",
+    );
+    expect(swapLocalePath("/es/percentage-calculator", "en")).toBe(
+      "/percentage-calculator",
+    );
+    expect(swapLocalePath("/es/", "en")).toBe("/");
+    expect(swapLocalePath("/", "es")).toBe("/es/");
+  });
+
+  it("keeps the translated page set registry-derived", () => {
+    expect(translatedPagePaths()).toEqual([
+      "/",
+      "/percentage-calculator",
+      "/discount-calculator",
+    ]);
+  });
+});
+
+describe("alternateLinks", () => {
+  it("lists every locale plus x-default for the English homepage", () => {
+    expect(alternateLinks("/")).toEqual([
+      { hreflang: "en", path: "/" },
+      { hreflang: "es", path: "/es/" },
+      { hreflang: "x-default", path: "/" },
+    ]);
+  });
+
+  it("is reciprocal from a localized page", () => {
+    expect(alternateLinks("/es/percentage-calculator/")).toEqual([
+      { hreflang: "en", path: "/percentage-calculator" },
+      { hreflang: "es", path: "/es/percentage-calculator" },
+      { hreflang: "x-default", path: "/percentage-calculator" },
+    ]);
+  });
+
+  it("points x-default at the unprefixed English URL from every page", () => {
+    for (const pathname of [
+      "/",
+      "/es/",
+      "/percentage-calculator/",
+      "/es/discount-calculator/",
+    ]) {
+      const xDefault = alternateLinks(pathname).find(
+        (link) => link.hreflang === "x-default",
+      );
+      expect(xDefault?.path.startsWith("/es")).toBe(false);
     }
   });
 });

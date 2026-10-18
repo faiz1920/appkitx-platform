@@ -140,20 +140,127 @@ for (const tool of TOOLS) {
   });
 }
 
-test("the 404 page stays noindex and emits no canonical or structured data", async ({
+test("the 404 page stays noindex for every locale path", async ({ page }) => {
+  for (const path of [
+    "/definitely-not-a-real-page",
+    "/es/definitely-not-a-real-page",
+    "/fr/nope",
+  ]) {
+    const response = await page.goto(path);
+    expect(response?.status(), `${path} must 404`).toBe(404);
+
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      "noindex",
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+    await expect(page.locator('meta[property="og:url"]')).toHaveCount(0);
+    await expect(page.locator('link[rel="alternate"]')).toHaveCount(0);
+    await expect(jsonLdScripts(page)).toHaveCount(0);
+    await expect(
+      page.locator('meta[name="google-site-verification"]'),
+    ).toHaveCount(1);
+  }
+});
+
+test("Spanish homepage exposes localized metadata and structured data", async ({
   page,
 }) => {
-  const response = await page.goto("/definitely-not-a-real-page");
-  expect(response?.status()).toBe(404);
+  await page.goto("/es/");
 
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  await expect(page.locator("html")).toHaveAttribute("data-locale", "es");
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
     "content",
-    "noindex",
+    "AppKitX — Herramientas online gratuitas",
   );
-  await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
-  await expect(page.locator('meta[property="og:url"]')).toHaveCount(0);
-  await expect(jsonLdScripts(page)).toHaveCount(0);
+  await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute(
+    "content",
+    "es_ES",
+  );
   await expect(
-    page.locator('meta[name="google-site-verification"]'),
-  ).toHaveCount(1);
+    page.locator('meta[property="og:locale:alternate"]'),
+  ).toHaveAttribute("content", "en_US");
+
+  const canonical = page.locator('link[rel="canonical"]');
+  await expect(canonical).toHaveAttribute("href", "https://appkitx.com/es/");
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+    "content",
+    "https://appkitx.com/es/",
+  );
+
+  const documents = await readJsonLd(page);
+  expect(documents).toHaveLength(1);
+  expect(documents[0]).toEqual({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "AppKitX",
+    url: "https://appkitx.com/es/",
+    inLanguage: "es",
+  });
+
+  await page.screenshot({
+    path: "test-results/es-homepage.png",
+    fullPage: true,
+  });
 });
+
+for (const tool of [
+  {
+    path: "/es/percentage-calculator",
+    name: "Calculadora de porcentajes",
+    canonical: "https://appkitx.com/es/percentage-calculator/",
+  },
+  {
+    path: "/es/discount-calculator",
+    name: "Calculadora de descuentos",
+    canonical: "https://appkitx.com/es/discount-calculator/",
+  },
+]) {
+  test(`Spanish ${tool.name} exposes localized canonical, breadcrumb, and structured data`, async ({
+    page,
+  }) => {
+    await page.goto(tool.path);
+
+    await expect(page.locator("html")).toHaveAttribute("lang", "es");
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      tool.canonical,
+    );
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+      "content",
+      tool.canonical,
+    );
+
+    const documents = await readJsonLd(page);
+    expect(documents).toHaveLength(2);
+
+    const breadcrumb = documents.find(
+      (document) => document["@type"] === "BreadcrumbList",
+    );
+    expect(breadcrumb).toMatchObject({
+      "@context": "https://schema.org",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Inicio",
+          item: "https://appkitx.com/es/",
+        },
+        { "@type": "ListItem", position: 2, name: tool.name },
+      ],
+    });
+
+    const webApplication = documents.find(
+      (document) => document["@type"] === "WebApplication",
+    );
+    expect(webApplication).toMatchObject({
+      "@context": "https://schema.org",
+      name: tool.name,
+      url: tool.canonical,
+      applicationCategory: "UtilitiesApplication",
+      isAccessibleForFree: true,
+      inLanguage: "es",
+    });
+  });
+}

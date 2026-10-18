@@ -31,7 +31,13 @@ const collectStrings = (
     out.push([path, value]);
     return;
   }
-  if (value !== null && typeof value === "object" && !Array.isArray(value)) {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => {
+      collectStrings(item, `${path}[${index}]`, out);
+    });
+    return;
+  }
+  if (value !== null && typeof value === "object") {
     for (const [key, child] of Object.entries(value)) {
       collectStrings(child, `${path}.${key}`, out);
     }
@@ -62,6 +68,13 @@ describe("locale registry", () => {
     const meta = getLocale(defaultLocale);
     expect(meta.hreflang).toBe("en");
     expect(meta.ogLocale).toBe("en_US");
+
+    const spanish = getLocale("es");
+    expect(spanish.hreflang).toBe("es");
+    expect(spanish.ogLocale).toBe("es_ES");
+    expect(spanish.intlLocale).toBe("es-ES");
+    expect(spanish.nativeName).toBe("Español");
+    expect(spanish.dir).toBe("ltr");
   });
 
   it("ships a dictionary for every registered locale and nothing else", () => {
@@ -85,20 +98,27 @@ describe("locale registry", () => {
   });
 });
 
-describe("English dictionary", () => {
-  it("populates every leaf with a non-empty string", () => {
-    const leaves: Array<[string, string]> = [];
-    collectStrings(en, "en", leaves);
-    expect(leaves.length).toBeGreaterThan(80);
-    for (const [path, value] of leaves) {
-      expect(value.trim().length, `${path} must not be empty`).toBeGreaterThan(
-        0,
-      );
-    }
-  });
+describe("dictionaries", () => {
+  for (const [code, dictionary] of Object.entries(dictionaries)) {
+    it(`${code} populates every leaf with a non-empty string`, () => {
+      const leaves: Array<[string, string]> = [];
+      collectStrings(dictionary, code, leaves);
+      expect(leaves.length).toBeGreaterThan(80);
+      for (const [path, value] of leaves) {
+        expect(
+          value.trim().length,
+          `${path} must not be empty`,
+        ).toBeGreaterThan(0);
+      }
+    });
 
-  it("stays JSON-serializable for client scripts", () => {
-    expect(JSON.parse(JSON.stringify(en))).toEqual(en);
+    it(`${code} stays JSON-serializable for client scripts`, () => {
+      expect(JSON.parse(JSON.stringify(dictionary))).toEqual(dictionary);
+    });
+  }
+
+  it("ships the English reference unchanged", () => {
+    expect(dictionaries.en).toBe(en);
   });
 });
 

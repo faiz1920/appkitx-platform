@@ -1,11 +1,18 @@
+import type { ToolCategory } from "../lib/tools";
 import type { Mode } from "../lib/percentage";
 
 /*
- * Shared dictionary contract for every registered locale (audit M1).
+ * Shared dictionary contract for every registered locale (audit M1, extended
+ * by the M4 Spanish pilot).
  *
- * - Every entry is a plain string. Composed strings use {token} placeholders
- *   filled by src/i18n/interpolate.ts, so dictionaries stay JSON-serializable
- *   and client scripts can receive their strings through data attributes.
+ * - Leaf values are plain strings. Containers are objects or readonly arrays
+ *   of strings (search keywords, prose paragraphs and list items), so every
+ *   dictionary stays JSON-serializable and client scripts can receive their
+ *   strings through data attributes.
+ * - Composed strings use {token} placeholders filled by
+ *   src/i18n/interpolate.ts.
+ * - Prose strings may mark inline code with backticks; ProseText splits them
+ *   into text and <code> nodes (src/i18n/prose.ts).
  * - A locale's dictionary is typed as Dictionary, so the compiler rejects a
  *   missing or unknown key instead of silently falling back to English.
  */
@@ -26,6 +33,14 @@ export interface NavStrings {
   searchLabel: string;
   searchShortcut: string;
   menuAriaLabel: string;
+}
+
+/** Language switcher (LanguageSwitcher). */
+export interface LanguageStrings {
+  /** Visible summary label, e.g. "Language". */
+  label: string;
+  /** Panel landmark label. */
+  ariaLabel: string;
 }
 
 /** Footer columns and legal row. */
@@ -93,6 +108,29 @@ export interface NotFoundStrings {
   goHome: string;
 }
 
+/** Homepage hero, category rail, and preview cards (HomeView). */
+export interface HomeStrings {
+  heroTitle: string;
+  heroSubline: string;
+  /** Overline label above the category chip rail. */
+  browseByCategory: string;
+  /** Heading above the tool grid. */
+  exploreHeading: string;
+  /** Category chip labels keyed by the registry's internal category name. */
+  categories: Record<ToolCategory, string>;
+  /**
+   * Visible but nonfunctional homepage preview cards. They are never added
+   * to the tools registry and never appear in search results.
+   */
+  placeholderTools: {
+    unitConverter: { title: string; description: string };
+    loanCalculator: { title: string; description: string };
+    dateCalculator: { title: string; description: string };
+    base64Encoder: { title: string; description: string };
+    jsonFormatter: { title: string; description: string };
+  };
+}
+
 /** Tool page chrome (ToolLayout). */
 export interface ToolLayoutStrings {
   breadcrumbLabel: string;
@@ -142,18 +180,66 @@ export interface PercentageCaptionsStrings {
   changeFromNegative: string;
 }
 
+/** Formula display templates for a tool. */
+export interface FormulaStrings {
+  /** Unsubstituted template shown before any calculation. */
+  template: string;
+  /**
+   * Result line template. Tokens: {a}, {b} (entered values, in order) and
+   * {result} — formatted with the locale's number conventions.
+   */
+  describe: string;
+}
+
+/**
+ * Display templates for a calculated result; token: {value} (formatted).
+ * Separate templates per meaning so locales can reorder words and spacing
+ * (for example "25% increase" vs "25 % de aumento"); never concatenated.
+ */
+export interface ResultStrings {
+  /** Plain number, no unit. */
+  plain: string;
+  /** Bare percentage (the "what percent" mode). */
+  percent: string;
+  /** Positive percentage change. */
+  increase: string;
+  /** Negative percentage change; {value} is the absolute value. */
+  decrease: string;
+  /** Exactly zero percent change. */
+  zero: string;
+}
+
+/** One prose section on a tool page (ToolLayout explanation area). */
+export interface ProseSectionStrings {
+  heading: string;
+  /** Body paragraphs; inline code marked with backticks. */
+  paragraphs?: readonly string[];
+  /** List items rendered as a <ul>; inline code marked with backticks. */
+  items?: readonly string[];
+}
+
 /** Percentage Calculator page labels and interface strings. */
 export interface PercentageToolStrings {
   title: string;
   metaDescription: string;
   /** H1, breadcrumb, and related-tools label. */
   name: string;
+  /** Tool page subline (long form). */
   description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
   modeLegend: string;
   modes: Record<Mode, PercentageModeStrings>;
   /** Result value when the operation is undefined. */
   undefinedResult: string;
   captions: PercentageCaptionsStrings;
+  /** Unsubstituted template and result line per mode. */
+  formulas: Record<Mode, FormulaStrings>;
+  results: ResultStrings;
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
 }
 
 /** Discount Calculator page labels and interface strings. */
@@ -162,7 +248,12 @@ export interface DiscountToolStrings {
   metaDescription: string;
   /** H1, breadcrumb, and related-tools label. */
   name: string;
+  /** Tool page subline (long form). */
   description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
   priceLabel: string;
   priceHint: string;
   percentLabel: string;
@@ -177,6 +268,10 @@ export interface DiscountToolStrings {
   caption: string;
   /** Clipboard text template; tokens: {price}, {savings}. */
   copyText: string;
+  /** Unsubstituted template and result line. */
+  formulas: FormulaStrings;
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
 }
 
 /** Per-tool dictionaries, keyed by tool. */
@@ -185,13 +280,18 @@ export interface ToolsStrings {
   discount: DiscountToolStrings;
 }
 
+/** Registry tool keys that have dictionary strings (src/lib/tools.ts). */
+export type ToolStringsKey = keyof ToolsStrings;
+
 /** The complete dictionary contract every registered locale must satisfy. */
 export interface Dictionary {
   layout: LayoutStrings;
   nav: NavStrings;
+  language: LanguageStrings;
   footer: FooterStrings;
   search: SearchStrings;
   notFound: NotFoundStrings;
+  home: HomeStrings;
   toolLayout: ToolLayoutStrings;
   toolCard: ToolCardStrings;
   calculator: CalculatorStrings;

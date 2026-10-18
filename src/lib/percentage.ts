@@ -1,3 +1,6 @@
+import type { ResultStrings } from "../i18n/dictionary";
+import { interpolate } from "../i18n/interpolate";
+
 export type Mode = "percent-of" | "what-percent" | "percent-change";
 
 /*
@@ -7,6 +10,8 @@ export type Mode = "percent-of" | "what-percent" | "percent-change";
  *   baseline. Undefined cases return null instead of Infinity, NaN, or a
  *   misleading result.
  * - Full precision is kept here; rounding happens only in formatNumber.
+ * - Arithmetic never depends on the locale: only the display helpers
+ *   (formatNumber, describeFormula, describeResult) take an Intl locale.
  */
 
 export function percentOf(percent: number, value: number): number | null {
@@ -37,51 +42,63 @@ export function calculate(mode: Mode, a: number, b: number): number | null {
   }
 }
 
-export function formatNumber(value: number): string {
+export function formatNumber(value: number, intlLocale = "en-US"): string {
   const safe = value === 0 ? 0 : value;
-  return safe.toLocaleString("en-US", { maximumFractionDigits: 6 });
+  return safe.toLocaleString(intlLocale, { maximumFractionDigits: 6 });
 }
 
-export function formulaTemplate(mode: Mode): string {
-  switch (mode) {
-    case "percent-of":
-      return "(X ÷ 100) × Y";
-    case "what-percent":
-      return "(X ÷ Y) × 100";
-    case "percent-change":
-      return "((To − From) ÷ From) × 100";
-  }
-}
-
+/*
+ * Substitute the entered and computed values into a localized formula line.
+ * The template comes from the dictionary (FormulaStrings.describe) so word
+ * order and symbols are translatable; only the numbers are localized here.
+ */
 export function describeFormula(
-  mode: Mode,
   a: number,
   b: number,
   value: number,
+  describe: string,
+  intlLocale = "en-US",
 ): string {
-  const x = formatNumber(a);
-  const y = formatNumber(b);
-  const result = formatNumber(value);
-  switch (mode) {
-    case "percent-of":
-      return `(${x} ÷ 100) × ${y} = ${result}`;
-    case "what-percent":
-      return `(${x} ÷ ${y}) × 100 = ${result}`;
-    case "percent-change":
-      return `((${y} − ${x}) ÷ ${x}) × 100 = ${result}`;
-  }
+  return interpolate(describe, {
+    a: formatNumber(a, intlLocale),
+    b: formatNumber(b, intlLocale),
+    result: formatNumber(value, intlLocale),
+  });
 }
 
-export function describeResult(mode: Mode, value: number): string {
+/*
+ * Display string for a calculated result. Result words come from the
+ * dictionary templates so locales can reorder them ("25% increase" vs
+ * "25 % de aumento"); the numeric part is formatted with the locale's
+ * conventions.
+ */
+export function describeResult(
+  mode: Mode,
+  value: number,
+  results: ResultStrings,
+  intlLocale = "en-US",
+): string {
   switch (mode) {
     case "percent-of":
-      return formatNumber(value);
+      return interpolate(results.plain, {
+        value: formatNumber(value, intlLocale),
+      });
     case "what-percent":
-      return `${formatNumber(value)}%`;
+      return interpolate(results.percent, {
+        value: formatNumber(value, intlLocale),
+      });
     case "percent-change": {
-      if (value > 0) return `${formatNumber(value)}% increase`;
-      if (value < 0) return `${formatNumber(Math.abs(value))}% decrease`;
-      return "0%";
+      if (value > 0) {
+        return interpolate(results.increase, {
+          value: formatNumber(value, intlLocale),
+        });
+      }
+      if (value < 0) {
+        return interpolate(results.decrease, {
+          value: formatNumber(-value, intlLocale),
+        });
+      }
+      return results.zero;
     }
   }
 }

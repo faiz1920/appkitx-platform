@@ -4,11 +4,17 @@ import {
   describeFormula,
   describeResult,
   formatNumber,
-  formulaTemplate,
   percentChange,
   percentOf,
   whatPercent,
 } from "../src/lib/percentage";
+import { en } from "../src/i18n/dictionaries/en";
+import { es } from "../src/i18n/dictionaries/es";
+
+const enFormulas = en.tools.percentage.formulas;
+const enResults = en.tools.percentage.results;
+const esFormulas = es.tools.percentage.formulas;
+const esResults = es.tools.percentage.results;
 
 describe("percentOf", () => {
   it("computes a percentage of a positive number", () => {
@@ -131,41 +137,80 @@ describe("formatNumber", () => {
   it("normalizes negative zero", () => {
     expect(formatNumber(-0)).toBe("0");
   });
+
+  it("formats with the locale's number conventions", () => {
+    expect(formatNumber(0.3, "es-ES")).toBe("0,3");
+    expect(formatNumber(1234567.89, "es-ES")).toBe("1.234.567,89");
+    // es-ES groups only from five digits up (CLDR minimumGroupingDigits).
+    expect(formatNumber(1234.5, "es-ES")).toBe("1234,5");
+    expect(formatNumber(12345.6, "es-ES")).toBe("12.345,6");
+  });
+});
+
+describe("formula templates", () => {
+  it("returns the unsubstituted formula for each mode", () => {
+    expect(enFormulas["percent-of"].template).toBe("(X ÷ 100) × Y");
+    expect(enFormulas["what-percent"].template).toBe("(X ÷ Y) × 100");
+    expect(enFormulas["percent-change"].template).toBe(
+      "((To − From) ÷ From) × 100",
+    );
+    expect(esFormulas["percent-change"].template).toBe("((A − De) ÷ De) × 100");
+  });
 });
 
 describe("describeFormula", () => {
   it("substitutes entered values per mode", () => {
-    expect(describeFormula("percent-of", 25, 80, 20)).toBe(
+    expect(describeFormula(25, 80, 20, enFormulas["percent-of"].describe)).toBe(
       "(25 ÷ 100) × 80 = 20",
     );
-    expect(describeFormula("what-percent", 20, 80, 25)).toBe(
-      "(20 ÷ 80) × 100 = 25",
-    );
-    expect(describeFormula("percent-change", 80, 100, 25)).toBe(
-      "((100 − 80) ÷ 80) × 100 = 25",
-    );
+    expect(
+      describeFormula(20, 80, 25, enFormulas["what-percent"].describe),
+    ).toBe("(20 ÷ 80) × 100 = 25");
+    expect(
+      describeFormula(80, 100, 25, enFormulas["percent-change"].describe),
+    ).toBe("((100 − 80) ÷ 80) × 100 = 25");
   });
-});
 
-describe("formulaTemplate", () => {
-  it("returns the unsubstituted formula for each mode", () => {
-    expect(formulaTemplate("percent-of")).toBe("(X ÷ 100) × Y");
-    expect(formulaTemplate("what-percent")).toBe("(X ÷ Y) × 100");
-    expect(formulaTemplate("percent-change")).toBe(
-      "((To − From) ÷ From) × 100",
-    );
+  it("formats substituted values with the locale conventions", () => {
+    expect(
+      describeFormula(
+        12345.6,
+        20000,
+        24691.2,
+        esFormulas["percent-of"].describe,
+        "es-ES",
+      ),
+    ).toBe("(12.345,6 ÷ 100) × 20.000 = 24.691,2");
   });
 });
 
 describe("describeResult", () => {
   it("formats each mode for display", () => {
-    expect(describeResult("percent-of", 20)).toBe("20");
-    expect(describeResult("what-percent", 25)).toBe("25%");
+    expect(describeResult("percent-of", 20, enResults)).toBe("20");
+    expect(describeResult("what-percent", 25, enResults)).toBe("25%");
   });
 
   it("distinguishes increase, decrease, and no change", () => {
-    expect(describeResult("percent-change", 25)).toBe("25% increase");
-    expect(describeResult("percent-change", -20)).toBe("20% decrease");
-    expect(describeResult("percent-change", 0)).toBe("0%");
+    expect(describeResult("percent-change", 25, enResults)).toBe(
+      "25% increase",
+    );
+    expect(describeResult("percent-change", -20, enResults)).toBe(
+      "20% decrease",
+    );
+    expect(describeResult("percent-change", 0, enResults)).toBe("0%");
+  });
+
+  it("uses the locale's templates and number format", () => {
+    expect(describeResult("percent-of", 12345.6, esResults, "es-ES")).toBe(
+      "12.345,6",
+    );
+    expect(describeResult("what-percent", 25, esResults, "es-ES")).toBe("25 %");
+    expect(describeResult("percent-change", 25, esResults, "es-ES")).toBe(
+      "25 % de aumento",
+    );
+    expect(describeResult("percent-change", -20, esResults, "es-ES")).toBe(
+      "20 % de disminución",
+    );
+    expect(describeResult("percent-change", 0, esResults, "es-ES")).toBe("0 %");
   });
 });

@@ -328,8 +328,20 @@ WCAG 2.2 AA baseline. These are requirements, not guidelines:
 - Left: AppKitX logo (original mark + wordmark, Inter 600 18px, `--color-text-primary`).
 - Center/right: primary links (Tools, Categories, About) in `--text-label`, `--color-text-secondary`; hover → `--color-text-primary`.
 - Right: **search trigger** — the visual anchor of the nav: 44px outlined button (border-control, radius-md) with search icon, "Search" label, and a `⌘K` hint in a `--color-surface-muted` chip with `--color-text-secondary` text. Opens the search palette.
-- Mobile (<768px): logo + icon-only search button + menu button (44×44). Menu opens a drawer with full-width 48px link rows.
+- Next to the search trigger (desktop): **language switcher** — 44px outlined disclosure button with a globe icon, the visible current language, and a chevron. See Language switcher.
+- Mobile (<768px): logo + icon-only search button + menu button (44×44). Menu opens a drawer with full-width 48px link rows and the language switcher grouped below them.
 - Active page link: `--color-text-primary` + `2px` accent underline offset below the label.
+
+### Language switcher
+
+Compact locale selector in the global navigation — desktop cluster and mobile drawer. Renders as a native `<details>` disclosure so it works without JavaScript.
+
+- **Trigger**: 44px outlined button (border-control, radius-md — the same grammar as the search trigger): globe icon (20px), the visible label `"<Language>: <current native name>"` in `--text-label`, and a 16px chevron that rotates 180° while open.
+- **Panel**: right-aligned dropdown below the trigger, width 224px, `--radius-md`, `1px solid --color-border-subtle`, `--shadow-md`, 8px padding.
+- **Rows**: real links to the same page in that language, minimum 44px tall: native name (`--text-label`, text-primary) over the English name (`--text-caption`, muted); links carry `hreflang` and `lang`. Current language: `--color-accent-subtle` fill, `--color-accent` text, check icon, `aria-current="true"`.
+- **States**: hover — row fill `--color-surface-subtle`, text-primary; focus — the standard `2px` ring + `2px` offset on the trigger and on every row; open panel keeps the trigger's pressed treatment. `prefers-reduced-motion` disables the chevron rotation transition.
+- **Behavior**: Enter/Space toggles (native), Escape closes and returns focus to the trigger, clicking outside light-dismisses. Selecting a language stores it as the explicit preference (`appkitx.locale`) and navigates to the same page in that locale; paths without a translation (for example the 404) link to that locale's homepage instead.
+- **Automatic detection** of browser language is intentionally not a visual behavior: it ships disabled behind a single kill switch (see README → Languages) and never changes this component's rendering.
 
 ### Search palette (⌘K)
 

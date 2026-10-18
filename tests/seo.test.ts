@@ -203,6 +203,15 @@ describe("canonical consistency", () => {
         path: "/discount-calculator/",
         canonical: "https://appkitx.com/discount-calculator/",
       },
+      { path: "/es/", canonical: "https://appkitx.com/es/" },
+      {
+        path: "/es/percentage-calculator/",
+        canonical: "https://appkitx.com/es/percentage-calculator/",
+      },
+      {
+        path: "/es/discount-calculator/",
+        canonical: "https://appkitx.com/es/discount-calculator/",
+      },
     ];
     for (const { path, canonical } of pages) {
       expect(siteUrl(path, SITE)).toBe(canonical);
