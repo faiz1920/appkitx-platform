@@ -95,6 +95,15 @@ export function translatedPagePaths(): string[] {
   return ["/", ...tools.map((tool) => tool.href), ...publishedCategoryPaths()];
 }
 
+/**
+ * True when a pathname exists in every supported locale. Alternates are
+ * emitted only for these pages, so an English-only page added later can never
+ * advertise a locale URL that was not built.
+ */
+export function isTranslatedPage(pathname: string): boolean {
+  return translatedPagePaths().includes(stripLocalePrefix(pathname).path);
+}
+
 /** One hreflang alternate: BCP-47 code (or "x-default") plus locale-less path. */
 export interface AlternateLink {
   hreflang: string;
@@ -107,6 +116,7 @@ export interface AlternateLink {
  * page head only; the sitemap keeps the plugin's native en/es pairs.
  */
 export function alternateLinks(pathname: string): AlternateLink[] {
+  if (!isTranslatedPage(pathname)) return [];
   return [
     ...Object.values(locales).map((meta) => ({
       hreflang: meta.hreflang,

@@ -2,7 +2,8 @@ import { tools } from "./tools";
 
 /*
  * Pure client-side search over the tool catalog. Contract:
- * - Case-insensitive substring match on title, keywords, category, description.
+ * - Case- and diacritic-insensitive substring match on title, keywords,
+ *   category, description (Spanish users routinely type "variacion").
  * - Whitespace-only queries return the full catalog in registry order.
  * - Ranking: title prefix > title substring > keyword > category > description,
  *   with registry order as a stable tiebreak.
@@ -21,18 +22,26 @@ export interface SearchableTool {
   icon: string;
 }
 
+/** Fold case and combining diacritics for matching only; display is untouched. */
+export function foldSearchText(value: string): string {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
 export function normalizeQuery(query: string): string {
-  return query.trim().toLowerCase();
+  return foldSearchText(query.trim());
 }
 
 function scoreTool(tool: SearchableTool, query: string): number | null {
-  const title = tool.title.toLowerCase();
+  const title = foldSearchText(tool.title);
   if (title.startsWith(query)) return 0;
   if (title.includes(query)) return 1;
-  if (tool.keywords.some((keyword) => keyword.toLowerCase().includes(query)))
+  if (tool.keywords.some((keyword) => foldSearchText(keyword).includes(query)))
     return 2;
-  if (tool.category.toLowerCase().includes(query)) return 3;
-  if (tool.description.toLowerCase().includes(query)) return 4;
+  if (foldSearchText(tool.category).includes(query)) return 3;
+  if (foldSearchText(tool.description).includes(query)) return 4;
   return null;
 }
 

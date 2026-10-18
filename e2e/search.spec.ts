@@ -264,6 +264,21 @@ test("the Spanish palette searches localized tools and stays localized", async (
   await expect(page).toHaveURL(/\/es\/discount-calculator\/?$/);
 });
 
+test("the Spanish palette matches accented terms with or without accents", async ({
+  page,
+}) => {
+  await page.goto("/es/");
+  await openWithShortcut(page);
+
+  for (const query of ["variacion", "variación", "VARIACION"]) {
+    await searchInput(page).fill(query);
+    await expect(page.getByRole("option"), query).toHaveCount(1);
+    await expect(page.getByRole("option")).toContainText(
+      "Calculadora de porcentajes",
+    );
+  }
+});
+
 test("the Spanish palette shows the localized empty state", async ({
   page,
 }) => {

@@ -43,10 +43,10 @@ const scriptStrings = {
           <input
             id="discount-input-price"
             name="price"
-            type="number"
-            step="any"
+            type="text"
             inputmode="decimal"
             autocomplete="off"
+            spellcheck="false"
             class="input mt-2 font-mono tabular-nums"
             aria-describedby="discount-hint-price discount-error-price"
             data-input-price
@@ -75,10 +75,10 @@ const scriptStrings = {
           <input
             id="discount-input-percent"
             name="percent"
-            type="number"
-            step="any"
+            type="text"
             inputmode="decimal"
             autocomplete="off"
+            spellcheck="false"
             class="input mt-2 font-mono tabular-nums"
             aria-describedby="discount-hint-percent discount-error-percent"
             data-input-percent
@@ -199,6 +199,7 @@ const scriptStrings = {
     describeFormulas,
     formatAmount,
   } from "../lib/discount";
+  import { parseLocaleNumber } from "../lib/number-input";
   import type {
     CalculatorStrings,
     DiscountToolStrings,
@@ -293,10 +294,13 @@ const scriptStrings = {
       copyButton.disabled = true;
     };
 
-    const parseInput = (input: HTMLInputElement): number | null => {
-      if (input.value.trim() === "") return null;
-      return Number.isFinite(input.valueAsNumber) ? input.valueAsNumber : null;
-    };
+    const parseInput = (input: HTMLInputElement) =>
+      parseLocaleNumber(input.value, intlLocale);
+
+    const errorMessage = (issue: "invalid" | "ambiguous") =>
+      issue === "ambiguous"
+        ? i18n.calculator.ambiguousNumber
+        : i18n.calculator.invalidNumber;
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -305,14 +309,14 @@ const scriptStrings = {
       const price = parseInput(inputPrice);
       const discountPercent = parseInput(inputPercent);
 
-      if (price === null) {
+      if (!price.ok) {
         showError(
           inputPrice,
           errorPrice,
           errorTextPrice,
-          i18n.calculator.invalidNumber,
+          errorMessage(price.issue),
         );
-      } else if (price < 0) {
+      } else if (price.value < 0) {
         showError(
           inputPrice,
           errorPrice,
@@ -321,14 +325,14 @@ const scriptStrings = {
         );
       }
 
-      if (discountPercent === null) {
+      if (!discountPercent.ok) {
         showError(
           inputPercent,
           errorPercent,
           errorTextPercent,
-          i18n.calculator.invalidNumber,
+          errorMessage(discountPercent.issue),
         );
-      } else if (discountPercent < 0 || discountPercent > 100) {
+      } else if (discountPercent.value < 0 || discountPercent.value > 100) {
         showError(
           inputPercent,
           errorPercent,
@@ -338,17 +342,17 @@ const scriptStrings = {
       }
 
       if (
-        price === null ||
-        price < 0 ||
-        discountPercent === null ||
-        discountPercent < 0 ||
-        discountPercent > 100
+        !price.ok ||
+        price.value < 0 ||
+        !discountPercent.ok ||
+        discountPercent.value < 0 ||
+        discountPercent.value > 100
       ) {
         showEmptyResult();
         return;
       }
 
-      const result = calculateDiscount(price, discountPercent);
+      const result = calculateDiscount(price.value, discountPercent.value);
       resetCopyFeedback();
 
       if (result === null) {
@@ -361,12 +365,12 @@ const scriptStrings = {
       savingsEl.textContent = formatAmount(result.savings, intlLocale);
       savingsEl.classList.replace("text-text-disabled", "text-text-primary");
       resultCaption.textContent = interpolate(i18n.tool.caption, {
-        percent: formatAmount(discountPercent, intlLocale),
-        price: formatAmount(price, intlLocale),
+        percent: formatAmount(discountPercent.value, intlLocale),
+        price: formatAmount(price.value, intlLocale),
       });
       formulaEl.textContent = describeFormulas(
-        price,
-        discountPercent,
+        price.value,
+        discountPercent.value,
         result.savings,
         result.finalPrice,
         FORMULAS.describe,

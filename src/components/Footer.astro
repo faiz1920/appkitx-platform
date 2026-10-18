@@ -1,5 +1,6 @@
 ---
 import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+import { resolveLocalizedTools } from "../i18n/tool-catalog";
 import { localizedPath } from "../i18n/routing";
 import {
   categoryPath,
@@ -16,36 +17,43 @@ const t = getDictionary(locale);
 const footer = t.footer.columns;
 
 /*
+ * Labels have one canonical source: shipped tool names come from the tool
+ * dictionaries (via the localized catalog), shipped category names from the
+ * category map, and the placeholder tool titles from the homepage copy.
+ */
+const shippedTools = resolveLocalizedTools(locale, [
+  "/percentage-calculator",
+  "/discount-calculator",
+]).map((tool) => ({
+  label: tool.title,
+  href: localizedPath(tool.href, locale),
+}));
+
+const placeholderTools = [
+  t.home.placeholderTools.unitConverter.title,
+  t.home.placeholderTools.loanCalculator.title,
+  t.home.placeholderTools.dateCalculator.title,
+].map((label) => ({ label, href: "#" }));
+
+/*
  * Category links become real links as categories publish; unpublished
  * categories keep the placeholder href they have always had.
  */
-const footerCategories: { label: string; category: ToolCategory }[] = [
-  { label: footer.categories.calculators, category: "Calculators" },
-  { label: footer.categories.converters, category: "Converters" },
-  { label: footer.categories.developerTools, category: "Developer tools" },
+const footerCategories: ToolCategory[] = [
+  "Calculators",
+  "Converters",
+  "Developer tools",
 ];
 
 const columns = [
   {
     heading: footer.tools.heading,
-    links: [
-      {
-        label: footer.tools.percentageCalculator,
-        href: localizedPath("/percentage-calculator", locale),
-      },
-      {
-        label: footer.tools.discountCalculator,
-        href: localizedPath("/discount-calculator", locale),
-      },
-      { label: footer.tools.unitConverter, href: "#" },
-      { label: footer.tools.loanCalculator, href: "#" },
-      { label: footer.tools.dateCalculator, href: "#" },
-    ],
+    links: [...shippedTools, ...placeholderTools],
   },
   {
     heading: footer.categories.heading,
-    links: footerCategories.map(({ label, category }) => ({
-      label,
+    links: footerCategories.map((category) => ({
+      label: t.categories[category].name,
       href: isCategoryPublished(category)
         ? localizedPath(categoryPath(category), locale)
         : "#",

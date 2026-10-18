@@ -1,12 +1,40 @@
 import { expect, test } from "@playwright/test";
+import { defaultLocale, locales } from "../src/i18n/config";
+import { localizedPath, translatedPagePaths } from "../src/i18n/routing";
+import { siteUrl } from "../src/lib/seo";
 
 /*
- * M3/M4 routing guarantees, checked against the built production output
+ * M3/M4/M6 routing guarantees, checked against the built production output
  * served through `astro preview`: English stays the unprefixed default,
- * Spanish is served at /es/..., unsupported prefixes 404 without redirects,
- * and the sitemap pairs every translated page with reciprocal en/es
- * alternates (x-default lives in the HTML head only).
+ * every registered locale is served under its prefix, unsupported prefixes
+ * 404 without redirects, and the sitemap pairs every translated page with
+ * reciprocal alternates (x-default lives in the HTML head only).
+ *
+ * The locale sets derive from the registry; explicit English/Spanish
+ * regressions are kept below so a derivation bug cannot hide.
  */
+
+const SITE = "https://appkitx.com";
+const ALL_LOCALES = Object.keys(locales) as Array<keyof typeof locales>;
+const NON_DEFAULT_LOCALES = ALL_LOCALES.filter(
+  (code) => code !== defaultLocale,
+);
+const TRANSLATED_PATHS = translatedPagePaths();
+
+const pageUrl = (path: string, locale: (typeof ALL_LOCALES)[number]): string =>
+  siteUrl(localizedPath(path, locale), SITE);
+
+const TRANSLATED_PAGES = TRANSLATED_PATHS.map((path) => ({
+  path,
+  urls: Object.fromEntries(
+    ALL_LOCALES.map((locale) => [locale, pageUrl(path, locale)]),
+  ) as Record<(typeof ALL_LOCALES)[number], string>,
+}));
+
+/* Request paths for every non-default locale page. */
+const LOCALIZED_PAGES = TRANSLATED_PATHS.flatMap((path) =>
+  NON_DEFAULT_LOCALES.map((locale) => new URL(pageUrl(path, locale)).pathname),
+);
 
 const UNSUPPORTED_PREFIXES = [
   "/en",
@@ -17,56 +45,46 @@ const UNSUPPORTED_PREFIXES = [
   "/de",
 ];
 
-const LOCALIZED_PAGES = [
-  "/es/",
-  "/es/percentage-calculator/",
-  "/es/discount-calculator/",
-  "/es/calculators/",
-];
-
-/* Every logical page paired with the same page in each locale. */
-const TRANSLATED_PAGES = [
-  {
-    en: "https://appkitx.com/",
-    es: "https://appkitx.com/es/",
-  },
-  {
-    en: "https://appkitx.com/percentage-calculator/",
-    es: "https://appkitx.com/es/percentage-calculator/",
-  },
-  {
-    en: "https://appkitx.com/discount-calculator/",
-    es: "https://appkitx.com/es/discount-calculator/",
-  },
-  {
-    en: "https://appkitx.com/calculators/",
-    es: "https://appkitx.com/es/calculators/",
-  },
-];
-
 const ALTERNATE_EXPECTATIONS: Record<
   string,
   { hreflang: string; href: string }[]
 > = Object.fromEntries(
-  TRANSLATED_PAGES.flatMap(({ en, es }) => [
-    [
-      new URL(en).pathname,
-      [
-        { hreflang: "en", href: en },
-        { hreflang: "es", href: es },
-        { hreflang: "x-default", href: en },
-      ],
-    ],
-    [
-      new URL(es).pathname,
-      [
-        { hreflang: "en", href: en },
-        { hreflang: "es", href: es },
-        { hreflang: "x-default", href: en },
-      ],
-    ],
-  ]),
+  TRANSLATED_PAGES.flatMap(({ urls }) => {
+    const links = [
+      ...ALL_LOCALES.map((locale) => ({
+        hreflang: locales[locale].hreflang,
+        href: urls[locale],
+      })),
+      { hreflang: "x-default", href: urls[defaultLocale] },
+    ];
+    return [
+      [new URL(urls[defaultLocale]).pathname, links],
+      ...NON_DEFAULT_LOCALES.map((locale) => [
+        new URL(urls[locale]).pathname,
+        links,
+      ]),
+    ];
+  }),
 );
+
+test("English URLs stay unprefixed and Spanish keeps its prefix", async () => {
+  expect(NON_DEFAULT_LOCALES).toContain("es");
+  expect(pageUrl("/percentage-calculator", defaultLocale)).toBe(
+    "https://appkitx.com/percentage-calculator/",
+  );
+  expect(pageUrl("/percentage-calculator", "es")).toBe(
+    "https://appkitx.com/es/percentage-calculator/",
+  );
+  expect(pageUrl("/", "es")).toBe("https://appkitx.com/es/");
+  expect(TRANSLATED_PATHS).toEqual(
+    expect.arrayContaining([
+      "/",
+      "/percentage-calculator",
+      "/discount-calculator",
+      "/calculators",
+    ]),
+  );
+});
 
 test("unsupported locale prefixes return 404 without redirects", async ({
   request,
@@ -109,15 +127,15 @@ test("a locale-prefixed URL outside the supported set renders the noindex 404 pa
   );
 });
 
-test("every indexable page advertises reciprocal en/es alternates and x-default", async ({
+test("every indexable page advertises reciprocal alternates and x-default", async ({
   page,
 }) => {
   for (const [path, links] of Object.entries(ALTERNATE_EXPECTATIONS)) {
     await page.goto(path);
     await expect(
       page.locator('link[rel="alternate"]'),
-      `${path} must advertise three alternates`,
-    ).toHaveCount(3);
+      `${path} must advertise every locale plus x-default`,
+    ).toHaveCount(ALL_LOCALES.length + 1);
     for (const link of links) {
       await expect(
         page.locator(`link[rel="alternate"][hreflang="${link.hreflang}"]`),
@@ -127,7 +145,7 @@ test("every indexable page advertises reciprocal en/es alternates and x-default"
   }
 });
 
-test("sitemap lists every translated page with reciprocal en/es alternates", async ({
+test("sitemap lists every translated page with reciprocal alternates", async ({
   request,
 }) => {
   const response = await request.get("/sitemap-0.xml");
@@ -137,9 +155,10 @@ test("sitemap lists every translated page with reciprocal en/es alternates", asy
   const locs = Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g), (match) => {
     return match[1];
   });
-  expect(locs.sort()).toEqual(
-    TRANSLATED_PAGES.flatMap((pair) => [pair.en, pair.es]).sort(),
-  );
+  const expectedLocs = TRANSLATED_PAGES.flatMap(({ urls }) =>
+    ALL_LOCALES.map((locale) => urls[locale]),
+  ).sort();
+  expect(locs.sort()).toEqual(expectedLocs);
 
   for (const loc of locs) {
     const pathname = new URL(loc).pathname;
@@ -150,35 +169,28 @@ test("sitemap lists every translated page with reciprocal en/es alternates", asy
     xml.matchAll(/<url>([\s\S]*?)<\/url>/g),
     (match) => match[1],
   );
-  expect(blocks).toHaveLength(TRANSLATED_PAGES.length * 2);
+  expect(blocks).toHaveLength(TRANSLATED_PATHS.length * ALL_LOCALES.length);
 
-  for (const pair of TRANSLATED_PAGES) {
-    const enBlock = blocks.find((block) =>
-      block.includes(`<loc>${pair.en}</loc>`),
-    );
-    const esBlock = blocks.find((block) =>
-      block.includes(`<loc>${pair.es}</loc>`),
-    );
-    expect(enBlock, `sitemap must list ${pair.en}`).toBeDefined();
-    expect(esBlock, `sitemap must list ${pair.es}`).toBeDefined();
+  for (const { urls } of TRANSLATED_PAGES) {
+    for (const locale of ALL_LOCALES) {
+      const loc = urls[locale];
+      const block = blocks.find((candidate) =>
+        candidate.includes(`<loc>${loc}</loc>`),
+      );
+      expect(block, `sitemap must list ${loc}`).toBeDefined();
 
-    for (const block of [enBlock ?? "", esBlock ?? ""]) {
-      const links = block.match(/<xhtml:link[^>]*\/>/g) ?? [];
-      expect(links).toHaveLength(2);
-      expect(
-        links.some(
-          (link) =>
-            link.includes('hreflang="en"') &&
-            link.includes(`href="${pair.en}"`),
-        ),
-      ).toBe(true);
-      expect(
-        links.some(
-          (link) =>
-            link.includes('hreflang="es"') &&
-            link.includes(`href="${pair.es}"`),
-        ),
-      ).toBe(true);
+      const links = block?.match(/<xhtml:link[^>]*\/>/g) ?? [];
+      expect(links).toHaveLength(ALL_LOCALES.length);
+      for (const alternate of ALL_LOCALES) {
+        expect(
+          links.some(
+            (link) =>
+              link.includes(`hreflang="${locales[alternate].hreflang}"`) &&
+              link.includes(`href="${urls[alternate]}"`),
+          ),
+          `${loc} must reference ${urls[alternate]}`,
+        ).toBe(true);
+      }
     }
   }
 

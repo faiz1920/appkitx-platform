@@ -8,20 +8,31 @@ The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKi
 
 ## Status
 
-Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Tools shipped: the [percentage calculator](/percentage-calculator) and the [discount calculator](/discount-calculator), both built on the reusable `ToolLayout` template with cross-linked related tools. Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches a typed tool registry, localized per page. English and Spanish (`/es/…`) are shipped as the first supported locales, and the registry-derived [calculators category page](/calculators) is live in both. Next: more calculators on the same template.
+Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Tools shipped: the [percentage calculator](/percentage-calculator) and the [discount calculator](/discount-calculator), both built on the reusable `ToolLayout` template with cross-linked related tools. Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches a typed tool registry, localized per page. English is the source locale and Spanish (`/es/…`) is shipped as a provisional translation; the registry-derived [calculators category page](/calculators) is live in both. Next: more calculators on the same template.
 
 ## Languages
 
 Locale support is registry-driven: `src/i18n/config.ts` is the single source of truth, and the Astro i18n routing, the sitemap `i18n` option, the hreflang alternates, and the language switcher all derive from it. English is the default locale and stays unprefixed; every other locale is served under its prefix (for example `/es/`).
 
+### Translation status
+
+Each locale carries machine-readable provenance in `src/i18n/config.ts`: `source` (the language the copy is written in), `provisional` (served, but no human review recorded), or `reviewed` (a complete review record exists). Automated tests prove structural completeness and token parity; they never prove linguistic quality.
+
+| Locale  | URL     | Status      | Review                                                                                                                                                               |
+| ------- | ------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| English | `/`     | Source      | —                                                                                                                                                                    |
+| Spanish | `/es/…` | Provisional | Copy compared against the English source using an online translation service. No native-speaker review has been recorded, and no native-speaker approval is claimed. |
+
+Spanish is the only entry in the explicit `PROVISIONAL_LOCALES` allowlist. The outstanding review, record template, and review checklist live in [TRANSLATION-REVIEWS.md](./TRANSLATION-REVIEWS.md). While Spanish remains provisional, the language switcher shows a “Traducción provisional” caption.
+
 ### Adding a language
 
-1. Add a `LocaleMeta` entry to `locales` in `src/i18n/config.ts` (code, native name, English name, hreflang, `ogLocale`, direction, `intlLocale`).
+1. Add a `LocaleMeta` entry to `locales` in `src/i18n/config.ts` (code, native name, English name, hreflang, `ogLocale`, direction, `intlLocale`) with `translation.status: "reviewed"` and a complete `review` record.
 2. Create a complete dictionary at `src/i18n/dictionaries/<code>.ts` and register it in `dictionaries`. The `Record<LocaleCode, Dictionary>` type makes a missing or partial dictionary a compile error, and the `[locale]` pages plus the sitemap pick the locale up automatically.
-3. Run `npm run check`, `npm test`, `npm run build`, and `npm run test:e2e` — the routing, dictionary-completeness, alternates, and sitemap tests cover the new locale without edits.
-4. **Merge gate**: a native speaker must review the complete user-facing copy — calculator labels, hints, errors, formulas, homepage, tool prose, metadata titles/descriptions, and navigation — and the review verdict must be recorded in the pull request before merge. Automated tests prove completeness, never translation quality.
+3. Run `npm run check`, `npm test`, `npm run build`, and `npm run test:e2e`. Dictionary completeness and token parity are enforced generically; the routing and language-switcher end-to-end suites derive their locale sets from the registry, while explicit English/Spanish regression assertions remain.
+4. **Merge gate**: a native speaker must review the complete user-facing copy — calculator labels, hints, errors, formulas, homepage, tool prose, metadata titles/descriptions, category copy, and navigation — and the review record (reviewer identity, reviewer type, date, scope, verdict) must be committed with the locale. A review by a fluent or professional reviewer is recorded as exactly that, never as native-speaker approval. Automated tests prove completeness, never translation quality.
 
-Do not mark a language supported (step 1) or expose it in the switcher until its translations are complete and reviewed.
+Do not register a language or expose it in the switcher until its translations are complete and reviewed. A `provisional` locale is an explicit, allowlisted exception with a documented caveat — not a shortcut for new locales.
 
 ### Language behavior
 

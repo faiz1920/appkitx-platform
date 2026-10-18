@@ -41,24 +41,27 @@ export interface LanguageStrings {
   label: string;
   /** Panel landmark label. */
   ariaLabel: string;
+  /**
+   * Caption shown for a locale whose translation has not been reviewed.
+   * Written in that locale and rendered only while its provenance is
+   * "provisional".
+   */
+  provisional: string;
 }
 
-/** Footer columns and legal row. */
+/**
+ * Footer columns and legal row. Tool and category labels are derived from
+ * their canonical sources (the tool dictionaries and the category map);
+ * only column headings and the placeholder tools that live on the homepage
+ * remain here.
+ */
 export interface FooterStrings {
   columns: {
     tools: {
       heading: string;
-      percentageCalculator: string;
-      discountCalculator: string;
-      unitConverter: string;
-      loanCalculator: string;
-      dateCalculator: string;
     };
     categories: {
       heading: string;
-      calculators: string;
-      converters: string;
-      developerTools: string;
     };
     company: {
       heading: string;
@@ -179,6 +182,8 @@ export interface CalculatorStrings {
   resultsPlaceholder: string;
   formulaLabel: string;
   invalidNumber: string;
+  /** Shown when separators cannot be interpreted without guessing. */
+  ambiguousNumber: string;
   copyResult: string;
   copied: string;
   copyFailed: string;

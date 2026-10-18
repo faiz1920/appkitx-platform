@@ -36,6 +36,8 @@ const options = Object.values(locales).map((meta) => ({
   nativeName: meta.nativeName,
   englishName: meta.englishName,
   isCurrent: meta.code === locale,
+  translationStatus: meta.translation.status,
+  provisionalLabel: getDictionary(meta.code).language.provisional,
   href: translated
     ? localizedPath(path, meta.code)
     : localizedPath("/", meta.code),
@@ -73,6 +75,7 @@ const options = Object.values(locales).map((meta) => ({
             lang={option.hreflang}
             aria-current={option.isCurrent ? "true" : undefined}
             data-locale-choice={option.code}
+            data-translation-status={option.translationStatus}
             class:list={[
               "focus-ring flex min-h-11 items-center justify-between gap-2 rounded-md px-3 py-2",
               option.isCurrent
@@ -85,6 +88,15 @@ const options = Object.values(locales).map((meta) => ({
               <span class="text-caption text-text-muted" lang="en">
                 {option.englishName}
               </span>
+              {option.translationStatus === "provisional" && (
+                <span
+                  class="text-micro text-text-muted"
+                  lang={option.hreflang}
+                  data-provisional-caption
+                >
+                  {option.provisionalLabel}
+                </span>
+              )}
             </span>
             {option.isCurrent && (
               <span
