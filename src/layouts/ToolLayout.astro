@@ -3,7 +3,17 @@ import BaseLayout from "./BaseLayout.astro";
 import GlobalNav from "../components/GlobalNav.astro";
 import Footer from "../components/Footer.astro";
 import ToolCard from "../components/ToolCard.astro";
-import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+import {
+  defaultLocale,
+  getDictionary,
+  getLocale,
+  type LocaleCode,
+} from "../i18n/config";
+import {
+  buildBreadcrumbJsonLd,
+  buildWebApplicationJsonLd,
+  siteUrl,
+} from "../lib/seo";
 
 interface BreadcrumbItem {
   label: string;
@@ -38,9 +48,32 @@ const {
 } = Astro.props;
 
 const t = getDictionary(locale);
+const localeMeta = getLocale(locale);
+
+/*
+ * Structured data mirrors the visible page: BreadcrumbList when breadcrumbs
+ * are rendered, plus the tool itself as a free browser-based application.
+ * Every current and future tool page inherits both automatically.
+ */
+const jsonLd = [
+  ...(breadcrumb.length > 0
+    ? [buildBreadcrumbJsonLd({ entries: breadcrumb, site: Astro.site })]
+    : []),
+  buildWebApplicationJsonLd({
+    name: toolName,
+    description: toolDescription,
+    url: siteUrl(Astro.url.pathname, Astro.site),
+    inLanguage: localeMeta.hreflang,
+  }),
+];
 ---
 
-<BaseLayout title={title} description={description} locale={locale}>
+<BaseLayout
+  title={title}
+  description={description}
+  locale={locale}
+  jsonLd={jsonLd}
+>
   <GlobalNav locale={locale} />
   <main id="main">
     <div class="mx-auto max-w-(--layout-prose) px-6 py-10 md:py-12">

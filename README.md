@@ -21,21 +21,21 @@ Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (
 
 Line endings: the repository stores and checks out LF on every platform (`* text=auto eol=lf` in `.gitattributes`). If `format:check` reports CRLF files after a fresh Windows checkout, run `npx prettier --write .` once — it rewrites the working files to LF without changing any committed content.
 
-## Deployment (Cloudflare Pages)
+## Deployment (Cloudflare Workers Static Assets)
 
-The site is a static Astro build with no server-side runtime, API endpoints, or environment variables.
+The site is a static Astro build deployed as Cloudflare Workers Static Assets. `wrangler.jsonc` is the deployment contract: it serves the build output and renders the branded 404 page for unknown routes. There is no server-side runtime, API, or environment variable in the repository.
 
-| Setting                | Value                                                  |
-| ---------------------- | ------------------------------------------------------ |
-| Framework preset       | Astro                                                  |
-| Root directory         | repository root                                        |
-| Build command          | `npm run build`                                        |
-| Build output directory | `dist`                                                 |
-| Production branch      | `main`                                                 |
-| Node.js                | 22.22.0 or newer (`NODE_VERSION` environment variable) |
-| Environment variables  | none required                                          |
+| Setting            | Value                                                                    |
+| ------------------ | ------------------------------------------------------------------------ |
+| Build command      | `npm run build`                                                          |
+| Assets directory   | `dist` (configured in `wrangler.jsonc`)                                  |
+| Unknown routes     | `not_found_handling: "404-page"` (branded `404.html`)                    |
+| Compatibility date | `2026-10-17` (configured in `wrangler.jsonc`)                            |
+| Node.js            | 22.22.0 or newer (the `engines` requirement of the pinned Astro release) |
 
-Validate a Cloudflare Pages **preview deployment** before connecting the production domain.
+Deployments run through the Wrangler CLI against `wrangler.jsonc`; the `previews` block in that file is required by the external deploy command. The exact invocation and any CI wiring are maintained outside this repository — no deploy script, workflow, or Wrangler dependency is checked in, so this file does not pin a command.
+
+Validate a preview deployment before promoting to production.
 
 The intended production domain is `appkitx.com` (canonical), with `www.appkitx.com` redirecting to it. Domain binding and DNS setup are manual Cloudflare steps and are not configured by this repository.
 
