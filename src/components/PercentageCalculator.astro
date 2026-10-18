@@ -78,10 +78,10 @@ const scriptStrings = {
           <input
             id="calc-input-a"
             name="a"
-            type="number"
-            step="any"
+            type="text"
             inputmode="decimal"
             autocomplete="off"
+            spellcheck="false"
             class="input mt-2 font-mono tabular-nums"
             aria-describedby="calc-hint-a calc-error-a"
             data-input-a
@@ -110,10 +110,10 @@ const scriptStrings = {
           <input
             id="calc-input-b"
             name="b"
-            type="number"
-            step="any"
+            type="text"
             inputmode="decimal"
             autocomplete="off"
+            spellcheck="false"
             class="input mt-2 font-mono tabular-nums"
             aria-describedby="calc-hint-b calc-error-b"
             data-input-b
@@ -220,6 +220,7 @@ const scriptStrings = {
     formatNumber,
     type Mode,
   } from "../lib/percentage";
+  import { parseLocaleNumber } from "../lib/number-input";
   import type {
     CalculatorStrings,
     PercentageToolStrings,
@@ -308,9 +309,10 @@ const scriptStrings = {
       input: HTMLInputElement,
       wrap: HTMLElement,
       text: HTMLElement,
+      message: string,
     ) => {
       wrap.hidden = false;
-      text.textContent = i18n.calculator.invalidNumber;
+      text.textContent = message;
       input.setAttribute("aria-invalid", "true");
     };
 
@@ -334,10 +336,8 @@ const scriptStrings = {
       showEmptyResult();
     };
 
-    const parseInput = (input: HTMLInputElement): number | null => {
-      if (input.value.trim() === "") return null;
-      return Number.isFinite(input.valueAsNumber) ? input.valueAsNumber : null;
-    };
+    const parseInput = (input: HTMLInputElement) =>
+      parseLocaleNumber(input.value, intlLocale);
 
     const captionFor = (
       activeMode: Mode,
@@ -372,15 +372,23 @@ const scriptStrings = {
 
       const a = parseInput(inputA);
       const b = parseInput(inputB);
-      if (a === null) showError(inputA, errorA, errorTextA);
-      if (b === null) showError(inputB, errorB, errorTextB);
-      if (a === null || b === null) {
+      const errorMessage = (issue: "invalid" | "ambiguous") =>
+        issue === "ambiguous"
+          ? i18n.calculator.ambiguousNumber
+          : i18n.calculator.invalidNumber;
+      if (!a.ok) {
+        showError(inputA, errorA, errorTextA, errorMessage(a.issue));
+      }
+      if (!b.ok) {
+        showError(inputB, errorB, errorTextB, errorMessage(b.issue));
+      }
+      if (!a.ok || !b.ok) {
         showEmptyResult();
         return;
       }
 
       const activeMode = mode();
-      const value = calculate(activeMode, a, b);
+      const value = calculate(activeMode, a.value, b.value);
       resetCopyFeedback();
 
       if (value === null) {
@@ -392,7 +400,7 @@ const scriptStrings = {
         );
         setCaption(
           activeMode === "percent-change"
-            ? a === 0
+            ? a.value === 0
               ? i18n.tool.captions.changeFromZero
               : i18n.tool.captions.changeFromNegative
             : i18n.tool.captions.divideByZero,
@@ -405,10 +413,10 @@ const scriptStrings = {
       lastResult = describeResult(activeMode, value, RESULTS, intlLocale);
       resultValue.textContent = lastResult;
       resultValue.classList.replace("text-text-disabled", "text-text-primary");
-      setCaption(captionFor(activeMode, a, b, value));
+      setCaption(captionFor(activeMode, a.value, b.value, value));
       formulaEl.textContent = describeFormula(
-        a,
-        b,
+        a.value,
+        b.value,
         value,
         FORMULAS[activeMode].describe,
         intlLocale,

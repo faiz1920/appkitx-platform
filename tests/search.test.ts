@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  foldSearchText,
   normalizeQuery,
   searchTools,
   type SearchableTool,
@@ -85,6 +86,13 @@ describe("resolveTools", () => {
 describe("normalizeQuery", () => {
   it("trims and lowercases", () => {
     expect(normalizeQuery("  DisCount  ")).toBe("discount");
+  });
+
+  it("folds diacritics for matching only", () => {
+    expect(normalizeQuery("  Variación  ")).toBe("variacion");
+    expect(foldSearchText("Número")).toBe("numero");
+    expect(foldSearchText("Añadir")).toBe("anadir");
+    expect(foldSearchText("Discount")).toBe("discount");
   });
 });
 
@@ -206,6 +214,19 @@ describe("localized search catalogs", () => {
         (tool) => tool.href,
       ),
     ).toEqual(["/percentage-calculator", "/discount-calculator"]);
+  });
+
+  it("matches Spanish accented terms with or without accents", () => {
+    const catalog = localizedToolCatalog("es");
+    expect(searchTools("variación", catalog).map((tool) => tool.href)).toEqual([
+      "/percentage-calculator",
+    ]);
+    expect(searchTools("variacion", catalog).map((tool) => tool.href)).toEqual([
+      "/percentage-calculator",
+    ]);
+    expect(searchTools("VARIACION", catalog).map((tool) => tool.href)).toEqual([
+      "/percentage-calculator",
+    ]);
   });
 
   it("keeps placeholder cards out of every localized catalog", () => {

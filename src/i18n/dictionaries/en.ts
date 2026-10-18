@@ -24,22 +24,15 @@ export const en: Dictionary = {
   language: {
     label: "Language",
     ariaLabel: "Language",
+    provisional: "Provisional translation",
   },
   footer: {
     columns: {
       tools: {
         heading: "Tools",
-        percentageCalculator: "Percentage Calculator",
-        discountCalculator: "Discount Calculator",
-        unitConverter: "Unit Converter",
-        loanCalculator: "Loan Calculator",
-        dateCalculator: "Date Calculator",
       },
       categories: {
         heading: "Categories",
-        calculators: "Calculators",
-        converters: "Converters",
-        developerTools: "Developer tools",
       },
       company: {
         heading: "Company",
@@ -142,6 +135,8 @@ export const en: Dictionary = {
     resultsPlaceholder: "Results appear here",
     formulaLabel: "Formula:",
     invalidNumber: "Enter a valid number.",
+    ambiguousNumber:
+      "Check the number format: use one decimal separator, for example 19.99.",
     copyResult: "Copy result",
     copied: "Copied to clipboard.",
     copyFailed: "Copy failed — select the result text and copy it manually.",

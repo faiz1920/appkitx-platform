@@ -14,7 +14,7 @@ import {
   buildLocalePreferenceScript,
   localePreferenceConfig,
 } from "../i18n/preferences";
-import { alternateLinks } from "../i18n/routing";
+import { alternateLinks, isTranslatedPage } from "../i18n/routing";
 import {
   serializeJsonLd,
   siteUrl,
@@ -52,16 +52,19 @@ const canonical = siteUrl(Astro.url.pathname, Astro.site);
 /*
  * hreflang alternates and the locale preference script are for indexable
  * pages only — the 404 stays noindex with no alternates and no navigation.
+ * Alternates additionally require the page to exist in every locale; an
+ * English-only page must not advertise locale URLs that were never built.
  */
-const alternates = noindex
-  ? []
-  : alternateLinks(Astro.url.pathname).map(({ hreflang, path }) => ({
+const translatedPage = !noindex && isTranslatedPage(Astro.url.pathname);
+const alternates = translatedPage
+  ? alternateLinks(Astro.url.pathname).map(({ hreflang, path }) => ({
       hreflang,
       href: siteUrl(path, Astro.site),
-    }));
-const alternateOgLocales = noindex
-  ? []
-  : Object.values(locales).filter((meta) => meta.code !== localeMeta.code);
+    }))
+  : [];
+const alternateOgLocales = translatedPage
+  ? Object.values(locales).filter((meta) => meta.code !== localeMeta.code)
+  : [];
 const preferenceScript = noindex
   ? ""
   : buildLocalePreferenceScript({

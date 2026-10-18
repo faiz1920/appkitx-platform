@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { defaultLocale, locales } from "../src/i18n/config";
 import {
   AUTO_DETECT_ENABLED,
   PREFERENCE_STORAGE_KEY,
   buildLocalePreferenceScript,
   localePreferenceConfig,
 } from "../src/i18n/preferences";
+import { translatedPagePaths } from "../src/i18n/routing";
 
 /*
  * M4 decision: browser-language detection ships disabled (single kill
@@ -20,18 +22,25 @@ describe("locale preference configuration", () => {
   });
 
   it("derives every value from the locale registry and page registry", () => {
-    expect(localePreferenceConfig()).toEqual({
-      storageKey: PREFERENCE_STORAGE_KEY,
-      defaultLocale: "en",
-      nonDefaultLocales: ["es"],
-      translatedPaths: [
+    const config = localePreferenceConfig();
+    expect(config.storageKey).toBe(PREFERENCE_STORAGE_KEY);
+    expect(config.defaultLocale).toBe(defaultLocale);
+    expect(config.nonDefaultLocales).toEqual(
+      (Object.keys(locales) as Array<keyof typeof locales>).filter(
+        (code) => code !== defaultLocale,
+      ),
+    );
+    expect(config.nonDefaultLocales).toContain("es");
+    expect(config.translatedPaths).toEqual(translatedPagePaths());
+    expect(config.translatedPaths).toEqual(
+      expect.arrayContaining([
         "/",
         "/percentage-calculator",
         "/discount-calculator",
         "/calculators",
-      ],
-      detectBrowserLanguage: false,
-    });
+      ]),
+    );
+    expect(config.detectBrowserLanguage).toBe(false);
   });
 });
 

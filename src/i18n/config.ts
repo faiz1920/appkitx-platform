@@ -12,6 +12,39 @@ export type TextDirection = "ltr" | "rtl";
  */
 export type LocaleStatus = "supported";
 
+/*
+ * Translation provenance. This is deliberately separate from LocaleStatus:
+ * a locale can be served and listed while its translation is still
+ * provisional. "source" is the language the product copy is written in,
+ * "provisional" has no recorded human review, and "reviewed" requires a
+ * complete TranslationReview record. Automated tests prove structural
+ * completeness, never linguistic quality.
+ */
+export type TranslationStatus = "source" | "provisional" | "reviewed";
+
+export type ReviewerType =
+  "native-speaker" | "professional-translator" | "fluent-reviewer";
+
+export type TranslationVerdict = "approved" | "approved-with-fixes";
+
+export interface TranslationReview {
+  /** Reviewer name or verified handle. Never inferred from a locale. */
+  reviewer: string;
+  reviewerType: ReviewerType;
+  /** ISO 8601 calendar date, e.g. "2026-10-18". */
+  reviewedAt: string;
+  /** What was reviewed, including the dictionary file and commit/PR. */
+  scope: string;
+  verdict: TranslationVerdict;
+  notes?: string;
+}
+
+export interface TranslationMeta {
+  status: TranslationStatus;
+  /** Required for "reviewed"; forbidden for "source" and "provisional". */
+  review?: TranslationReview;
+}
+
 export interface LocaleMeta {
   /** BCP-47 language code: registry key and future URL prefix. */
   code: string;
@@ -31,6 +64,8 @@ export interface LocaleMeta {
   /** Locale passed to Intl number and date formatting. */
   intlLocale: string;
   status: LocaleStatus;
+  /** Machine-readable translation provenance; see TranslationMeta. */
+  translation: TranslationMeta;
 }
 
 /*
@@ -48,6 +83,7 @@ export const locales = {
     dir: "ltr",
     intlLocale: "en-US",
     status: "supported",
+    translation: { status: "source" },
   },
   es: {
     code: "es",
@@ -58,12 +94,26 @@ export const locales = {
     dir: "ltr",
     intlLocale: "es-ES",
     status: "supported",
+    translation: { status: "provisional" },
   },
 } as const satisfies Record<string, LocaleMeta>;
 
 export type LocaleCode = keyof typeof locales;
 
 export const defaultLocale = "en" satisfies LocaleCode;
+
+/*
+ * The only locales allowed to remain "provisional" while they are served.
+ * Every entry must explain how the copy was checked and what review is still
+ * outstanding. Adding an entry is a deliberate, reviewable exception — new
+ * locales must ship with a complete TranslationReview instead.
+ */
+export const PROVISIONAL_LOCALES = {
+  es: {
+    reason:
+      "Spanish copy was compared against the English source with an online translation service; native-speaker review has not been recorded.",
+  },
+} as const satisfies Partial<Record<LocaleCode, { reason: string }>>;
 
 /*
  * Dictionaries for every registered locale. Typing the map as

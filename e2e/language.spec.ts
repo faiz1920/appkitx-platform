@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { locales } from "../src/i18n/config";
 import { PREFERENCE_STORAGE_KEY } from "../src/i18n/preferences";
 
 /*
@@ -37,7 +38,9 @@ test("the switcher shows a visible label, the current language, and 44px targets
 
   await summary(page).click();
   await expect(switcher(page).locator("nav")).toBeVisible();
-  await expect(switcher(page).locator("[data-locale-choice]")).toHaveCount(2);
+  await expect(switcher(page).locator("[data-locale-choice]")).toHaveCount(
+    Object.keys(locales).length,
+  );
   await expect(switcher(page).locator('[aria-current="true"]')).toHaveAttribute(
     "data-locale-choice",
     "en",
@@ -52,6 +55,39 @@ test("the switcher shows a visible label, the current language, and 44px targets
   await page.screenshot({
     path: "test-results/language-switcher-en.png",
   });
+});
+
+test("the switcher marks provisional translations without hiding the language", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await summary(page).click();
+
+  const spanish = switcher(page).locator('[data-locale-choice="es"]');
+  await expect(spanish).toHaveAttribute(
+    "data-translation-status",
+    "provisional",
+  );
+  await expect(spanish.locator("[data-provisional-caption]")).toHaveText(
+    "Traducción provisional",
+  );
+  await expect(spanish.locator("[data-provisional-caption]")).toHaveAttribute(
+    "lang",
+    "es",
+  );
+  await expect(spanish).toContainText("Español");
+
+  const english = switcher(page).locator('[data-locale-choice="en"]');
+  await expect(english).toHaveAttribute("data-translation-status", "source");
+  await expect(english.locator("[data-provisional-caption]")).toHaveCount(0);
+
+  await page.goto("/es/");
+  await summary(page).click();
+  const current = switcher(page).locator('[data-locale-choice="es"]');
+  await expect(current).toHaveAttribute("aria-current", "true");
+  await expect(current.locator("[data-provisional-caption]")).toHaveText(
+    "Traducción provisional",
+  );
 });
 
 test("the switcher is keyboard operable with the design-system focus ring", async ({
@@ -262,6 +298,54 @@ test("decimal results format with Spanish conventions", async ({ page }) => {
   await expect(page.locator("[data-savings]")).toHaveText("3");
 });
 
+test("a Spanish decimal comma is parsed as a decimal, not as thousands", async ({
+  page,
+}) => {
+  await page.goto("/es/discount-calculator/");
+
+  await page.getByLabel("Precio original").fill("19,99");
+  await page.getByLabel("Porcentaje de descuento (%)").fill("15");
+  await page.getByRole("button", { name: "Calcular" }).click();
+
+  await expect(page.locator("[data-final-price]")).toHaveText("16,99");
+  await expect(page.locator("[data-savings]")).toHaveText("3");
+  await expect(page.locator("[data-result-caption]")).toHaveText(
+    "15 % de descuento sobre 19,99.",
+  );
+});
+
+test("grouped Spanish input is parsed without losing the decimal part", async ({
+  page,
+}) => {
+  await page.goto("/es/discount-calculator/");
+
+  await page.getByLabel("Precio original").fill("12.345,67");
+  await page.getByLabel("Porcentaje de descuento (%)").fill("10");
+  await page.getByRole("button", { name: "Calcular" }).click();
+
+  await expect(page.locator("[data-final-price]")).toHaveText("11.111,1");
+  await expect(page.locator("[data-savings]")).toHaveText("1234,57");
+  await expect(page.locator("[data-result-caption]")).toHaveText(
+    "10 % de descuento sobre 12.345,67.",
+  );
+});
+
+test("ambiguous number separators show the localized error instead of a result", async ({
+  page,
+}) => {
+  await page.goto("/es/discount-calculator/");
+
+  await page.getByLabel("Precio original").fill("1.23.456");
+  await page.getByLabel("Porcentaje de descuento (%)").fill("15");
+  await page.getByRole("button", { name: "Calcular" }).click();
+
+  await expect(page.locator("[data-error-price]")).toBeVisible();
+  await expect(page.locator("[data-error-text-price]")).toHaveText(
+    "Revisa el formato del número: usa un solo separador decimal, por ejemplo 19,99.",
+  );
+  await expect(page.locator("[data-final-price]")).toHaveText("—");
+});
+
 test("the percentage calculator works in Spanish", async ({ page }) => {
   await page.goto("/es/percentage-calculator/");
 
@@ -273,6 +357,15 @@ test("the percentage calculator works in Spanish", async ({ page }) => {
   await expect(page.locator("[data-result-caption]")).toHaveText("25 % de 80.");
   await expect(page.locator("[data-formula]")).toHaveText(
     "(25 ÷ 100) × 80 = 20",
+  );
+
+  await page.getByLabel("Porcentaje (X %)").fill("2,5");
+  await page.getByLabel("Valor (Y)").fill("80");
+  await page.getByRole("button", { name: "Calcular" }).click();
+
+  await expect(page.locator("[data-result-value]")).toHaveText("2");
+  await expect(page.locator("[data-result-caption]")).toHaveText(
+    "2,5 % de 80.",
   );
 
   await page.screenshot({

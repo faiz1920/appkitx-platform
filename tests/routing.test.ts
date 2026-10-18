@@ -4,6 +4,7 @@ import { defaultLocale, locales } from "../src/i18n/config";
 import {
   alternateLinks,
   astroI18nLocales,
+  isTranslatedPage,
   localizedPath,
   nonDefaultLocales,
   sitemapI18n,
@@ -23,10 +24,13 @@ import { tools } from "../src/lib/tools";
 
 describe("Astro i18n locales", () => {
   it("derives exactly the registry locales", () => {
-    expect(astroI18nLocales()).toEqual([
-      { path: "en", codes: ["en"] },
-      { path: "es", codes: ["es"] },
-    ]);
+    const expected = Object.values(locales).map(({ code, hreflang }) => ({
+      path: code,
+      codes: [hreflang],
+    }));
+    expect(astroI18nLocales()).toEqual(expected);
+    expect(astroI18nLocales()).toContainEqual({ path: "en", codes: ["en"] });
+    expect(astroI18nLocales()).toContainEqual({ path: "es", codes: ["es"] });
   });
 
   it("includes the default locale as its own path", () => {
@@ -46,10 +50,11 @@ describe("Astro i18n locales", () => {
 
 describe("sitemap i18n", () => {
   it("maps URL prefixes to hreflang codes with the registry default", () => {
-    expect(sitemapI18n()).toEqual({
-      defaultLocale: "en",
-      locales: { en: "en", es: "es" },
-    });
+    const localesMap = Object.fromEntries(
+      Object.values(locales).map(({ code, hreflang }) => [code, hreflang]),
+    );
+    expect(sitemapI18n()).toEqual({ defaultLocale, locales: localesMap });
+    expect(sitemapI18n().locales).toMatchObject({ en: "en", es: "es" });
   });
 
   it("covers every registered locale in both derivations", () => {
@@ -84,7 +89,11 @@ describe("locale prefix invariants", () => {
 
 describe("locale path helpers", () => {
   it("returns non-default locales from the registry", () => {
-    expect(nonDefaultLocales()).toEqual(["es"]);
+    const expected = (
+      Object.keys(locales) as Array<keyof typeof locales>
+    ).filter((code) => code !== defaultLocale);
+    expect(nonDefaultLocales()).toEqual(expected);
+    expect(nonDefaultLocales()).toContain("es");
   });
 
   it("localizes paths without touching English", () => {
@@ -124,12 +133,28 @@ describe("locale path helpers", () => {
   });
 
   it("keeps the translated page set registry-derived", () => {
-    expect(translatedPagePaths()).toEqual([
+    const expected = [
       "/",
-      "/percentage-calculator",
-      "/discount-calculator",
-      "/calculators",
-    ]);
+      ...tools.map((tool) => tool.href),
+      ...publishedCategoryPaths(),
+    ];
+    expect(translatedPagePaths()).toEqual(expected);
+    expect(translatedPagePaths()).toEqual(
+      expect.arrayContaining([
+        "/",
+        "/percentage-calculator",
+        "/discount-calculator",
+        "/calculators",
+      ]),
+    );
+  });
+
+  it("recognizes translated pages with or without a locale prefix", () => {
+    expect(isTranslatedPage("/")).toBe(true);
+    expect(isTranslatedPage("/percentage-calculator/")).toBe(true);
+    expect(isTranslatedPage("/es/calculators/")).toBe(true);
+    expect(isTranslatedPage("/privacy")).toBe(false);
+    expect(isTranslatedPage("/es/privacy/")).toBe(false);
   });
 
   it("includes every published category path in the translated set", () => {
@@ -183,6 +208,12 @@ describe("alternateLinks", () => {
       );
       expect(xDefault?.path.startsWith("/es")).toBe(false);
     }
+  });
+
+  it("emits no alternates for pages outside the translated set", () => {
+    expect(alternateLinks("/privacy")).toEqual([]);
+    expect(alternateLinks("/privacy/")).toEqual([]);
+    expect(alternateLinks("/es/privacy/")).toEqual([]);
   });
 });
 

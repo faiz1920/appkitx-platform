@@ -162,6 +162,25 @@ test("shows inline validation for empty or invalid inputs", async ({
   await expect(resultValue(page)).toHaveText("20");
 });
 
+test("rejects ambiguous separators with the localized format error", async ({
+  page,
+}) => {
+  await page.goto("/percentage-calculator");
+
+  const inputA = page.getByLabel("Percentage (X%)");
+  await inputA.fill("1,23,456");
+  await page.getByLabel("Value (Y)").fill("80");
+  await page.getByRole("button", { name: "Calculate" }).click();
+
+  await expect(inputA).toHaveAttribute("aria-invalid", "true");
+  await expect(
+    page.getByText(
+      "Check the number format: use one decimal separator, for example 19.99.",
+    ),
+  ).toBeVisible();
+  await expect(resultValue(page)).toHaveText("—");
+});
+
 test("resets inputs, result, and mode", async ({ page }) => {
   await page.goto("/percentage-calculator");
 

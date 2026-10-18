@@ -70,6 +70,16 @@ test("handles decimal prices and percentages", async ({ page }) => {
   );
 });
 
+test("parses grouped English input without changing the result", async ({
+  page,
+}) => {
+  await page.goto("/discount-calculator");
+  await calculate(page, "1,234.56", "10");
+
+  await expect(finalPrice(page)).toHaveText("1,111.1");
+  await expect(savings(page)).toHaveText("123.46");
+});
+
 test("handles zero price, zero discount, and a full discount", async ({
   page,
 }) => {
@@ -114,6 +124,25 @@ test("validates inputs accessibly without clamping", async ({ page }) => {
   await expect(price).not.toHaveAttribute("aria-invalid", "true");
   await expect(percent).not.toHaveAttribute("aria-invalid", "true");
   await expect(finalPrice(page)).toHaveText("60");
+});
+
+test("rejects ambiguous separators with the localized format error", async ({
+  page,
+}) => {
+  await page.goto("/discount-calculator");
+
+  await page.getByLabel("Original price").fill("1,23,456");
+  await page.getByLabel("Discount percentage (%)").fill("15");
+  await page.getByRole("button", { name: "Calculate" }).click();
+
+  await expect(page.getByLabel("Original price")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  await expect(page.locator("[data-error-text-price]")).toHaveText(
+    "Check the number format: use one decimal separator, for example 19.99.",
+  );
+  await expect(finalPrice(page)).toHaveText("—");
 });
 
 test("resets inputs and results", async ({ page }) => {

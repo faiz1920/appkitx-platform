@@ -3,12 +3,19 @@ import type { Dictionary } from "../dictionary";
 /*
  * Spanish (es-ES) dictionary — the M4 pilot locale. Complete translation of
  * every user-facing string; the compiler enforces completeness through the
- * Dictionary type in src/i18n/config.ts.
+ * Dictionary type in src/i18n/config.ts and the parity tests compare tokens
+ * and inline-code markers against English.
+ *
+ * TRANSLATION STATUS: provisional. The copy was compared against the English
+ * source using an online translation service, but it has not received
+ * native-speaker review. src/i18n/config.ts records the machine-readable
+ * status, and TRANSLATION-REVIEWS.md tracks the outstanding review. Automated
+ * tests prove structural completeness, never linguistic quality.
  *
  * Conventions: figures and the percent sign keep the typographic space
  * recommended by RAE ("25 %"), numbers in prose use the Spanish decimal
  * comma and thousands point, and inline code in prose is marked with
- * backticks. A native-speaker review is a merge gate — see the PR.
+ * backticks.
  */
 export const es: Dictionary = {
   layout: {
@@ -29,22 +36,15 @@ export const es: Dictionary = {
   language: {
     label: "Idioma",
     ariaLabel: "Idioma",
+    provisional: "Traducción provisional",
   },
   footer: {
     columns: {
       tools: {
         heading: "Herramientas",
-        percentageCalculator: "Calculadora de porcentajes",
-        discountCalculator: "Calculadora de descuentos",
-        unitConverter: "Conversor de unidades",
-        loanCalculator: "Calculadora de préstamos",
-        dateCalculator: "Calculadora de fechas",
       },
       categories: {
         heading: "Categorías",
-        calculators: "Calculadoras",
-        converters: "Conversores",
-        developerTools: "Herramientas de desarrollo",
       },
       company: {
         heading: "Empresa",
@@ -147,6 +147,8 @@ export const es: Dictionary = {
     resultsPlaceholder: "Los resultados aparecen aquí",
     formulaLabel: "Fórmula:",
     invalidNumber: "Introduce un número válido.",
+    ambiguousNumber:
+      "Revisa el formato del número: usa un solo separador decimal, por ejemplo 19,99.",
     copyResult: "Copiar resultado",
     copied: "Copiado al portapapeles.",
     copyFailed:
