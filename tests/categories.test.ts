@@ -73,11 +73,17 @@ describe("category membership", () => {
     expect(toolsInCategory("Developer tools").map((tool) => tool.href)).toEqual(
       ["/base64-encoder", "/json-formatter"],
     );
+    expect(toolsInCategory("Date & time").map((tool) => tool.href)).toEqual([
+      "/date-calculator",
+      "/age-calculator",
+    ]);
   });
 
   it("derives a tool's category from the registry and fails fast otherwise", () => {
     expect(toolCategory("/percentage-calculator")).toBe("Calculators");
     expect(toolCategory("/discount-calculator")).toBe("Calculators");
+    expect(toolCategory("/date-calculator")).toBe("Date & time");
+    expect(toolCategory("/age-calculator")).toBe("Date & time");
     expect(() => toolCategory("/unit-converter")).toThrow(/unregistered tool/i);
   });
 });
@@ -87,8 +93,8 @@ describe("category page publication", () => {
     expect(CATEGORY_PAGE_MIN_TOOLS).toBe(2);
     expect(isCategoryPublished("Calculators")).toBe(true);
     expect(isCategoryPublished("Developer tools")).toBe(true);
+    expect(isCategoryPublished("Date & time")).toBe(true);
     expect(isCategoryPublished("Converters")).toBe(false);
-    expect(isCategoryPublished("Date & time")).toBe(false);
     expect(isCategoryPublished("Text tools")).toBe(false);
   });
 
@@ -100,7 +106,11 @@ describe("category page publication", () => {
     expect(publishedCategoryPaths()).toEqual(
       expected.map((category) => categoryPath(category)),
     );
-    expect(publishedCategories()).toEqual(["Calculators", "Developer tools"]);
+    expect(publishedCategories()).toEqual([
+      "Calculators",
+      "Developer tools",
+      "Date & time",
+    ]);
   });
 });
 

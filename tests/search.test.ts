@@ -170,6 +170,8 @@ describe("searchTools", () => {
     expect(first.map((tool) => tool.href)).toEqual([
       "/percentage-calculator",
       "/discount-calculator",
+      "/date-calculator",
+      "/age-calculator",
     ]);
     expect(second.map((tool) => tool.href)).toEqual(
       first.map((tool) => tool.href),
@@ -186,7 +188,7 @@ describe("searchTools", () => {
   });
 
   it("does not match placeholder homepage cards", () => {
-    for (const query of ["unit converter", "loan", "date calculator"]) {
+    for (const query of ["unit converter", "loan"]) {
       expect(searchTools(query, tools)).toEqual([]);
     }
   });
@@ -201,6 +203,25 @@ describe("searchTools", () => {
     expect(
       searchTools("developer tools", tools).map((tool) => tool.href),
     ).toEqual(["/base64-encoder", "/json-formatter"]);
+  });
+
+  it("finds the date and age tools by name and keyword", () => {
+    expect(
+      searchTools("date calculator", tools).map((tool) => tool.href),
+    ).toEqual(["/date-calculator"]);
+    expect(searchTools("duration", tools).map((tool) => tool.href)).toEqual([
+      "/date-calculator",
+    ]);
+    expect(searchTools("birthday", tools).map((tool) => tool.href)).toEqual([
+      "/age-calculator",
+    ]);
+    expect(searchTools("how old", tools).map((tool) => tool.href)).toEqual([
+      "/age-calculator",
+    ]);
+    expect(searchTools("date & time", tools).map((tool) => tool.href)).toEqual([
+      "/date-calculator",
+      "/age-calculator",
+    ]);
   });
 });
 
@@ -244,17 +265,26 @@ describe("localized search catalogs", () => {
   it("keeps placeholder cards out of every localized catalog", () => {
     for (const locale of ["en", "es"] as const) {
       const catalog = localizedToolCatalog(locale);
-      for (const query of [
-        "unit converter",
-        "loan",
-        "date calculator",
-        "unidades",
-        "préstamo",
-        "calculadora de fechas",
-      ]) {
+      for (const query of ["unit converter", "loan", "unidades", "préstamo"]) {
         expect(searchTools(query, catalog)).toEqual([]);
       }
     }
+  });
+
+  it("finds the date and age tools with localized terms", () => {
+    const catalog = localizedToolCatalog("es");
+    expect(
+      searchTools("calculadora de fechas", catalog).map((tool) => tool.href),
+    ).toEqual(["/date-calculator"]);
+    expect(searchTools("días entre", catalog).map((tool) => tool.href)).toEqual(
+      ["/date-calculator"],
+    );
+    expect(searchTools("edad", catalog).map((tool) => tool.href)).toEqual([
+      "/age-calculator",
+    ]);
+    expect(
+      searchTools("fecha y hora", catalog).map((tool) => tool.href),
+    ).toEqual(["/date-calculator", "/age-calculator"]);
   });
 
   it("finds the developer tools with localized terms", () => {

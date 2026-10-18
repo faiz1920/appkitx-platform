@@ -41,6 +41,16 @@ const TOOLS = [
     name: "JSON Formatter",
     canonical: "https://appkitx.com/json-formatter/",
   },
+  {
+    path: "/date-calculator",
+    name: "Date Calculator",
+    canonical: "https://appkitx.com/date-calculator/",
+  },
+  {
+    path: "/age-calculator",
+    name: "Age Calculator",
+    canonical: "https://appkitx.com/age-calculator/",
+  },
 ];
 
 test("homepage exposes Open Graph, Twitter, and WebSite structured data", async ({
@@ -236,6 +246,16 @@ for (const tool of [
     name: "Formateador JSON",
     canonical: "https://appkitx.com/es/json-formatter/",
   },
+  {
+    path: "/es/date-calculator",
+    name: "Calculadora de fechas",
+    canonical: "https://appkitx.com/es/date-calculator/",
+  },
+  {
+    path: "/es/age-calculator",
+    name: "Calculadora de edad",
+    canonical: "https://appkitx.com/es/age-calculator/",
+  },
 ]) {
   test(`Spanish ${tool.name} exposes localized canonical, breadcrumb, and structured data`, async ({
     page,
@@ -316,6 +336,22 @@ const CATEGORY_PAGES = [
     homeName: "Inicio",
     homeUrl: "https://appkitx.com/es/",
     canonical: "https://appkitx.com/es/developer-tools/",
+    inLanguage: "es",
+  },
+  {
+    path: "/date-time",
+    name: "Date & time",
+    homeName: "Home",
+    homeUrl: "https://appkitx.com/",
+    canonical: "https://appkitx.com/date-time/",
+    inLanguage: "en",
+  },
+  {
+    path: "/es/date-time",
+    name: "Fecha y hora",
+    homeName: "Inicio",
+    homeUrl: "https://appkitx.com/es/",
+    canonical: "https://appkitx.com/es/date-time/",
     inLanguage: "es",
   },
 ];

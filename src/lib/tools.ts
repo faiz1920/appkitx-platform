@@ -95,6 +95,42 @@ export const tools: readonly Tool[] = [
     icon: "braces",
     dictionaryKey: "json",
   },
+  {
+    title: "Date Calculator",
+    href: "/date-calculator",
+    description: "Days between dates, and add or subtract time.",
+    category: "Date & time",
+    keywords: [
+      "date",
+      "days between",
+      "difference",
+      "add",
+      "subtract",
+      "weeks",
+      "months",
+      "years",
+      "duration",
+    ],
+    icon: "calendar-days",
+    dictionaryKey: "dateCalculator",
+  },
+  {
+    title: "Age Calculator",
+    href: "/age-calculator",
+    description: "Age in years, months, and days from a birth date.",
+    category: "Date & time",
+    keywords: [
+      "age",
+      "birthday",
+      "date of birth",
+      "how old",
+      "years",
+      "months",
+      "days",
+    ],
+    icon: "cake",
+    dictionaryKey: "ageCalculator",
+  },
 ];
 
 /*

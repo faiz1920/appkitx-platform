@@ -148,6 +148,9 @@ describe("locale path helpers", () => {
         "/base64-encoder",
         "/json-formatter",
         "/developer-tools",
+        "/date-calculator",
+        "/age-calculator",
+        "/date-time",
       ]),
     );
   });

@@ -1,0 +1,55 @@
+---
+import ToolLayout from "../layouts/ToolLayout.astro";
+import DateCalculator from "../components/DateCalculator.astro";
+import ProseText from "../components/ProseText.astro";
+import { getDictionary, type LocaleCode } from "../i18n/config";
+import { resolveLocalizedTools } from "../i18n/tool-catalog";
+import { localizedPath } from "../i18n/routing";
+import {
+  categoryPath,
+  isCategoryPublished,
+  toolCategory,
+} from "../lib/categories";
+import cakeIcon from "lucide-static/icons/cake.svg?raw";
+
+interface Props {
+  locale: LocaleCode;
+}
+
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.dateCalculator;
+
+const category = toolCategory("/date-calculator");
+const relatedHref = isCategoryPublished(category)
+  ? localizedPath(categoryPath(category), locale)
+  : undefined;
+
+const toolIcons: Record<string, string> = { cake: cakeIcon };
+const relatedTools = resolveLocalizedTools(locale, ["/age-calculator"]).map(
+  (related) => ({
+    title: related.title,
+    description: related.description,
+    href: localizedPath(related.href, locale),
+    icon: toolIcons[related.icon] ?? "",
+  }),
+);
+---
+
+<ToolLayout
+  title={tool.title}
+  description={tool.metaDescription}
+  toolName={tool.name}
+  toolDescription={tool.description}
+  locale={locale}
+  breadcrumb={[
+    { label: t.toolLayout.breadcrumbHome, href: localizedPath("/", locale) },
+    { label: tool.name },
+  ]}
+  relatedTools={relatedTools}
+  relatedHref={relatedHref}
+>
+  <DateCalculator slot="tool" locale={locale} />
+
+  <ProseText sections={tool.sections} />
+</ToolLayout>
