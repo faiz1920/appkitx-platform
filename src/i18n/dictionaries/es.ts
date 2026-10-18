@@ -151,6 +151,7 @@ export const es: Dictionary = {
   },
   toolCard: {
     openTool: "Abrir herramienta",
+    comingSoon: "Próximamente",
   },
   calculator: {
     calculate: "Calcular",

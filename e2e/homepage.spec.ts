@@ -36,6 +36,37 @@ test("homepage renders the chrome, hero, and token styles", async ({
   await page.screenshot({ path: "test-results/homepage.png", fullPage: true });
 });
 
+test("planned tools are non-interactive coming-soon cards", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const grid = page.locator("#tools");
+  await expect(grid.getByText("Open tool")).toHaveCount(6);
+  await expect(grid.getByText("Coming soon")).toHaveCount(2);
+  for (const name of ["Unit Converter", "Loan Calculator"]) {
+    await expect(grid.getByRole("link", { name })).toHaveCount(0);
+    await expect(grid.getByText(name)).toBeVisible();
+  }
+
+  const footer = page.getByRole("contentinfo");
+  for (const name of ["Unit Converter", "Loan Calculator"]) {
+    await expect(footer.getByRole("link", { name })).toHaveCount(0);
+    await expect(footer.getByText(name)).toBeVisible();
+  }
+
+  await page.goto("/es/");
+  const gridEs = page.locator("#tools");
+  await expect(gridEs.getByText("Abrir herramienta")).toHaveCount(6);
+  await expect(gridEs.getByText("Próximamente")).toHaveCount(2);
+  await expect(
+    gridEs.getByRole("link", { name: "Conversor de unidades" }),
+  ).toHaveCount(0);
+  await expect(
+    gridEs.getByRole("link", { name: "Calculadora de préstamos" }),
+  ).toHaveCount(0);
+});
+
 test("global nav collapses and icon buttons keep 44px targets", async ({
   page,
 }) => {

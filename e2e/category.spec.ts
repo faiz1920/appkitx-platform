@@ -301,13 +301,17 @@ test("the homepage chip and footer link the published categories", async ({
     ).toHaveAttribute("href", href);
   }
 
-  /* Unpublished categories keep their in-page anchor and placeholder href. */
+  /* Unpublished categories keep their in-page anchor on the homepage and
+     render as plain text (never a link) in the footer. */
   await expect(
     page.getByRole("main").getByRole("link", { name: "Converters" }),
   ).toHaveAttribute("href", "#tools");
   await expect(
     page.getByRole("contentinfo").getByRole("link", { name: "Converters" }),
-  ).toHaveAttribute("href", "#");
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("contentinfo").getByText("Converters"),
+  ).toBeVisible();
 
   await page.goto("/es/");
   for (const [name, href] of [

@@ -169,6 +169,7 @@ export interface ToolLayoutStrings {
 /** Tool card (ToolCard). */
 export interface ToolCardStrings {
   openTool: string;
+  comingSoon: string;
 }
 
 /** Interface strings shared by calculator tools. */
