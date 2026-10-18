@@ -37,6 +37,17 @@ test("search from the 404 page opens the palette", async ({ page }) => {
   await expect(page.locator("[data-search-input]")).toHaveValue("markdown");
 });
 
+test("indexable pages expose the Google site verification tag", async ({
+  page,
+}) => {
+  for (const path of ["/", "/percentage-calculator", "/discount-calculator"]) {
+    await page.goto(path);
+    await expect(
+      page.locator('meta[name="google-site-verification"]'),
+    ).toHaveAttribute("content", "FqtwFyw8U6onLFiInewftYVJ-kJePykEmuxN2SwOe0c");
+  }
+});
+
 test("public pages expose absolute canonical URLs", async ({ page }) => {
   const pages = [
     { path: "/", canonical: "https://appkitx.com/" },
