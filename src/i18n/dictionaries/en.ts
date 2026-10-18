@@ -139,6 +139,7 @@ export const en: Dictionary = {
   },
   toolCard: {
     openTool: "Open tool",
+    comingSoon: "Coming soon",
   },
   calculator: {
     calculate: "Calculate",

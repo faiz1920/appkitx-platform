@@ -40,8 +40,19 @@ const registryIcons: Record<string, string> = {
   cake: cakeIcon,
 };
 
-/* Registered tools come from the localized catalog; hrefs stay locale-aware. */
-const tools = [
+/*
+ * Registered tools come from the localized catalog with locale-aware hrefs.
+ * The two remaining planned tools render as non-interactive "Coming soon"
+ * cards (no href) so the grid never presents a placeholder as a working
+ * tool.
+ */
+const tools: Array<{
+  title: string;
+  description: string;
+  icon: string;
+  href?: string;
+  comingSoon?: boolean;
+}> = [
   ...localizedToolCatalog(locale).map((tool) => ({
     title: tool.title,
     description: tool.description,
@@ -52,13 +63,13 @@ const tools = [
     title: t.home.placeholderTools.unitConverter.title,
     description: t.home.placeholderTools.unitConverter.description,
     icon: rulerIcon,
-    href: "#",
+    comingSoon: true,
   },
   {
     title: t.home.placeholderTools.loanCalculator.title,
     description: t.home.placeholderTools.loanCalculator.description,
     icon: landmarkIcon,
-    href: "#",
+    comingSoon: true,
   },
 ];
 
@@ -140,6 +151,7 @@ const jsonLd = [
               description={tool.description}
               icon={tool.icon}
               href={tool.href}
+              comingSoon={tool.comingSoon}
               locale={locale}
             />
           ))}

@@ -33,15 +33,15 @@ const shippedTools = resolveLocalizedTools(locale, [
   href: localizedPath(tool.href, locale),
 }));
 
+/*
+ * Planned tools and unpublished categories render as plain muted text, not
+ * links, so the footer never presents a placeholder as a working tool.
+ */
 const placeholderTools = [
   t.home.placeholderTools.unitConverter.title,
   t.home.placeholderTools.loanCalculator.title,
-].map((label) => ({ label, href: "#" }));
+].map((label) => ({ label }));
 
-/*
- * Category links become real links as categories publish; unpublished
- * categories keep the placeholder href they have always had.
- */
 const footerCategories: ToolCategory[] = [
   "Calculators",
   "Converters",
@@ -49,7 +49,10 @@ const footerCategories: ToolCategory[] = [
   "Date & time",
 ];
 
-const columns = [
+const columns: Array<{
+  heading: string;
+  links: Array<{ label: string; href?: string }>;
+}> = [
   {
     heading: footer.tools.heading,
     links: [...shippedTools, ...placeholderTools],
@@ -58,9 +61,9 @@ const columns = [
     heading: footer.categories.heading,
     links: footerCategories.map((category) => ({
       label: t.categories[category].name,
-      href: isCategoryPublished(category)
-        ? localizedPath(categoryPath(category), locale)
-        : "#",
+      ...(isCategoryPublished(category)
+        ? { href: localizedPath(categoryPath(category), locale) }
+        : {}),
     })),
   },
   {
@@ -91,12 +94,16 @@ const columns = [
           <ul class="mt-4 space-y-2">
             {column.links.map((link) => (
               <li>
-                <a
-                  href={link.href}
-                  class="focus-ring text-small text-text-secondary hover:text-accent active:text-accent-active"
-                >
-                  {link.label}
-                </a>
+                {link.href ? (
+                  <a
+                    href={link.href}
+                    class="focus-ring text-small text-text-secondary hover:text-accent active:text-accent-active"
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <span class="text-small text-text-muted">{link.label}</span>
+                )}
               </li>
             ))}
           </ul>

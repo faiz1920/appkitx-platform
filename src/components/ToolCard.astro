@@ -8,6 +8,13 @@ interface Props {
   icon: string;
   href?: string;
   locale?: LocaleCode;
+  /**
+   * Renders a planned tool as a non-interactive "Coming soon" card. A
+   * placeholder must never carry the working-tool affordances (whole-card
+   * link, teal tile, "Open tool" row), so this variant drops all of them
+   * and uses the design-system disabled tokens for the icon tile instead.
+   */
+  comingSoon?: boolean;
 }
 
 const {
@@ -16,27 +23,47 @@ const {
   icon,
   href = "#",
   locale = defaultLocale,
+  comingSoon = false,
 } = Astro.props;
 const t = getDictionary(locale);
 ---
 
-<a
-  href={href}
-  class="focus-ring group block rounded-lg border border-border-subtle bg-surface p-(--layout-card-padding) hover:border-border-strong hover:shadow-sm"
->
-  <span
-    class="flex h-10 w-10 items-center justify-center rounded-md bg-accent-subtle text-accent [&_svg]:h-5 [&_svg]:w-5"
-    aria-hidden="true"
-    set:html={icon}
-  />
-  <h3 class="mt-4 text-body-strong text-text-primary">{title}</h3>
-  <p class="mt-1 line-clamp-2 text-small text-text-secondary">{description}</p>
-  <span class="mt-4 flex items-center gap-1 text-label text-accent">
-    {t.toolCard.openTool}
+{comingSoon ? (
+  <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-card-padding)">
     <span
-      class="h-4 w-4 transition-transform group-hover:translate-x-0.5 [&_svg]:h-4 [&_svg]:w-4"
+      class="flex h-10 w-10 items-center justify-center rounded-md bg-surface-muted text-text-disabled [&_svg]:h-5 [&_svg]:w-5"
       aria-hidden="true"
-      set:html={arrowIcon}
+      set:html={icon}
     />
-  </span>
-</a>
+    <h3 class="mt-4 text-body-strong text-text-primary">{title}</h3>
+    <p class="mt-1 line-clamp-2 text-small text-text-secondary">
+      {description}
+    </p>
+    <span class="mt-4 flex items-center text-label text-text-muted">
+      {t.toolCard.comingSoon}
+    </span>
+  </div>
+) : (
+  <a
+    href={href}
+    class="focus-ring group block rounded-lg border border-border-subtle bg-surface p-(--layout-card-padding) hover:border-border-strong hover:shadow-sm"
+  >
+    <span
+      class="flex h-10 w-10 items-center justify-center rounded-md bg-accent-subtle text-accent [&_svg]:h-5 [&_svg]:w-5"
+      aria-hidden="true"
+      set:html={icon}
+    />
+    <h3 class="mt-4 text-body-strong text-text-primary">{title}</h3>
+    <p class="mt-1 line-clamp-2 text-small text-text-secondary">
+      {description}
+    </p>
+    <span class="mt-4 flex items-center gap-1 text-label text-accent">
+      {t.toolCard.openTool}
+      <span
+        class="h-4 w-4 transition-transform group-hover:translate-x-0.5 [&_svg]:h-4 [&_svg]:w-4"
+        aria-hidden="true"
+        set:html={arrowIcon}
+      />
+    </span>
+  </a>
+)}
