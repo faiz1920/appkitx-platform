@@ -30,7 +30,7 @@ export function localizedToolCatalog(locale: LocaleCode): LocalizedTool[] {
       icon: tool.icon,
       title: strings.name,
       description: strings.cardDescription,
-      category: t.home.categories[tool.category],
+      category: t.categories[tool.category].name,
       keywords: strings.keywords,
     };
   });

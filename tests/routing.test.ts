@@ -11,6 +11,7 @@ import {
   swapLocalePath,
   translatedPagePaths,
 } from "../src/i18n/routing";
+import { publishedCategoryPaths } from "../src/lib/categories";
 import { tools } from "../src/lib/tools";
 
 /*
@@ -127,7 +128,14 @@ describe("locale path helpers", () => {
       "/",
       "/percentage-calculator",
       "/discount-calculator",
+      "/calculators",
     ]);
+  });
+
+  it("includes every published category path in the translated set", () => {
+    for (const path of publishedCategoryPaths()) {
+      expect(translatedPagePaths()).toContain(path);
+    }
   });
 });
 
@@ -148,12 +156,27 @@ describe("alternateLinks", () => {
     ]);
   });
 
+  it("pairs category landing pages across locales", () => {
+    expect(alternateLinks("/calculators/")).toEqual([
+      { hreflang: "en", path: "/calculators" },
+      { hreflang: "es", path: "/es/calculators" },
+      { hreflang: "x-default", path: "/calculators" },
+    ]);
+    expect(alternateLinks("/es/calculators/")).toEqual([
+      { hreflang: "en", path: "/calculators" },
+      { hreflang: "es", path: "/es/calculators" },
+      { hreflang: "x-default", path: "/calculators" },
+    ]);
+  });
+
   it("points x-default at the unprefixed English URL from every page", () => {
     for (const pathname of [
       "/",
       "/es/",
       "/percentage-calculator/",
       "/es/discount-calculator/",
+      "/calculators/",
+      "/es/calculators/",
     ]) {
       const xDefault = alternateLinks(pathname).find(
         (link) => link.hreflang === "x-default",

@@ -81,13 +81,6 @@ export const en: Dictionary = {
       "Calculators, converters, and developer utilities — all in one place.",
     browseByCategory: "Browse by category",
     exploreHeading: "Explore the toolkit.",
-    categories: {
-      Calculators: "Calculators",
-      Converters: "Converters",
-      "Developer tools": "Developer tools",
-      "Date & time": "Date & time",
-      "Text tools": "Text tools",
-    },
     placeholderTools: {
       unitConverter: {
         title: "Unit Converter",
@@ -111,10 +104,33 @@ export const en: Dictionary = {
       },
     },
   },
+  categories: {
+    Calculators: {
+      name: "Calculators",
+      page: {
+        title: "Free Online Calculators — AppKitX",
+        metaDescription:
+          "Free calculators for percentages and discounts: find a percentage of a number, work out percent change, or see the final price after a discount.",
+        toolsHeading: "Free online calculators",
+        intro: [
+          "Two calculators cover the everyday percentage math: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, and see what a discount saves and its final price.",
+          "Both run entirely in your browser, show the formula behind each result, and let you copy it with one click. Amounts are treated exactly as you enter them — the discount calculator is currency-neutral, and results are rounded only for display.",
+        ],
+      },
+    },
+    Converters: { name: "Converters" },
+    "Developer tools": { name: "Developer tools" },
+    "Date & time": { name: "Date & time" },
+    "Text tools": { name: "Text tools" },
+  },
   toolLayout: {
     breadcrumbLabel: "Breadcrumb",
     breadcrumbHome: "Home",
     relatedTools: "Related tools",
+    seeAll: "See all",
+  },
+  categoryLayout: {
+    breadcrumbLabel: "Breadcrumb",
   },
   toolCard: {
     openTool: "Open tool",

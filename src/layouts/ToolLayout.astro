@@ -2,6 +2,7 @@
 import BaseLayout from "./BaseLayout.astro";
 import GlobalNav from "../components/GlobalNav.astro";
 import Footer from "../components/Footer.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
 import ToolCard from "../components/ToolCard.astro";
 import {
   defaultLocale,
@@ -34,6 +35,8 @@ interface Props {
   toolDescription: string;
   breadcrumb?: BreadcrumbItem[];
   relatedTools?: RelatedTool[];
+  /** Category landing page for the related-tools "See all" link, when published. */
+  relatedHref?: string;
   locale?: LocaleCode;
 }
 
@@ -44,6 +47,7 @@ const {
   toolDescription,
   breadcrumb = [],
   relatedTools = [],
+  relatedHref,
   locale = defaultLocale,
 } = Astro.props;
 
@@ -78,28 +82,7 @@ const jsonLd = [
   <main id="main">
     <div class="mx-auto max-w-(--layout-prose) px-6 py-10 md:py-12">
       {breadcrumb.length > 0 && (
-        <nav
-          aria-label={t.toolLayout.breadcrumbLabel}
-          class="text-caption text-text-muted"
-        >
-          <ol class="flex flex-wrap items-center gap-2">
-            {breadcrumb.map((item, index) => (
-              <li class="flex items-center gap-2">
-                {index > 0 && <span aria-hidden="true">/</span>}
-                {item.href ? (
-                  <a
-                    href={item.href}
-                    class="focus-ring text-accent hover:text-accent-hover active:text-accent-active"
-                  >
-                    {item.label}
-                  </a>
-                ) : (
-                  <span aria-current="page">{item.label}</span>
-                )}
-              </li>
-            ))}
-          </ol>
-        </nav>
+        <Breadcrumbs label={t.toolLayout.breadcrumbLabel} items={breadcrumb} />
       )}
 
       <h1 class="mt-4 text-headline text-text-primary">{toolName}</h1>
@@ -119,9 +102,19 @@ const jsonLd = [
     {relatedTools.length > 0 && (
       <section class="bg-surface-subtle">
         <div class="mx-auto max-w-(--layout-container) px-6 py-16 md:py-(--layout-section-y)">
-          <h2 class="text-title text-text-primary">
-            {t.toolLayout.relatedTools}
-          </h2>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="text-title text-text-primary">
+              {t.toolLayout.relatedTools}
+            </h2>
+            {relatedHref && (
+              <a
+                href={relatedHref}
+                class="focus-ring inline-flex h-11 items-center text-label text-accent hover:text-accent-hover active:text-accent-active"
+              >
+                {t.toolLayout.seeAll}
+              </a>
+            )}
+          </div>
           <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-(--layout-grid-gap) lg:grid-cols-3">
             {relatedTools.map((tool) => (
               <ToolCard

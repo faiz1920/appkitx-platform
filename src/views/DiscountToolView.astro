@@ -5,6 +5,11 @@ import ProseText from "../components/ProseText.astro";
 import { getDictionary, type LocaleCode } from "../i18n/config";
 import { resolveLocalizedTools } from "../i18n/tool-catalog";
 import { localizedPath } from "../i18n/routing";
+import {
+  categoryPath,
+  isCategoryPublished,
+  toolCategory,
+} from "../lib/categories";
 import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
 
 interface Props {
@@ -14,6 +19,11 @@ interface Props {
 const { locale } = Astro.props;
 const t = getDictionary(locale);
 const tool = t.tools.discount;
+
+const category = toolCategory("/discount-calculator");
+const relatedHref = isCategoryPublished(category)
+  ? localizedPath(categoryPath(category), locale)
+  : undefined;
 
 const toolIcons: Record<string, string> = { calculator: calculatorIcon };
 const relatedTools = resolveLocalizedTools(locale, [
@@ -37,6 +47,7 @@ const relatedTools = resolveLocalizedTools(locale, [
     { label: tool.name },
   ]}
   relatedTools={relatedTools}
+  relatedHref={relatedHref}
 >
   <DiscountCalculator slot="tool" locale={locale} />
 

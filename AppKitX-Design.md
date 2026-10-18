@@ -366,8 +366,18 @@ Compact and functional — not a full-viewport marketing block.
 
 - Height 32px, `--radius-full`, `1px solid --color-border-subtle`, white surface, `--text-chip`, `--color-text-secondary`.
 - Hover: border-strong, text-primary. Selected: accent-subtle fill, accent border and text.
-- Rendered as links on category pages; as filter toggles inside tool UIs (e.g., unit type).
+- Rendered as links: on the homepage, published categories link to their landing page while unpublished categories keep the in-page tool anchor; inside tool UIs they act as filter toggles (e.g., unit type).
 - Wrap on desktop; horizontally scrollable on mobile with visible first/last chips.
+
+### Category landing page
+
+A category hub lists every tool in one taxonomy category. It is composed from existing components and tokens — no new visual assets.
+
+- **Breadcrumb rail**: above the H1, `--text-caption` in `--color-text-muted`; links use `--color-accent` with the standard focus ring; the current page is a plain span with `aria-current="page"`.
+- **Header**: H1 at hero scale (`--text-display` cascade, `.hero-title`) followed by 1–2 intro paragraphs at `--text-body-lg` / `--color-text-secondary`, max-width 560px. Copy is category-specific; template boilerplate is not permitted.
+- **Tool section**: `--color-surface-subtle` band with an H2 at `--text-headline` and the standard tool-card grid (4 → 3 → 2 → 1). Cards are the same component as on the homepage and in related-tools sections.
+- **Heading order** is strict: H1 (category) → H2 (tools section) → H3 (card titles).
+- **Structured data**: `BreadcrumbList` plus a factual `CollectionPage` document (name, description, URL, inLanguage). Canonical, hreflang, and sitemap entries follow the site-wide rules. Categories publish only when they list at least two registered tools; unpublished categories 404 and never appear in the sitemap.
 
 ### Tool card
 

@@ -264,3 +264,78 @@ for (const tool of [
     });
   });
 }
+
+const CATEGORY_PAGES = [
+  {
+    path: "/calculators",
+    name: "Calculators",
+    homeName: "Home",
+    homeUrl: "https://appkitx.com/",
+    canonical: "https://appkitx.com/calculators/",
+    inLanguage: "en",
+  },
+  {
+    path: "/es/calculators",
+    name: "Calculadoras",
+    homeName: "Inicio",
+    homeUrl: "https://appkitx.com/es/",
+    canonical: "https://appkitx.com/es/calculators/",
+    inLanguage: "es",
+  },
+];
+
+for (const categoryPage of CATEGORY_PAGES) {
+  test(`the ${categoryPage.path} category page exposes breadcrumb and CollectionPage structured data`, async ({
+    page,
+  }) => {
+    await page.goto(categoryPage.path);
+
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      categoryPage.canonical,
+    );
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+      "content",
+      categoryPage.canonical,
+    );
+
+    const documents = await readJsonLd(page);
+    expect(documents).toHaveLength(2);
+
+    const breadcrumb = documents.find(
+      (document) => document["@type"] === "BreadcrumbList",
+    );
+    expect(breadcrumb).toMatchObject({
+      "@context": "https://schema.org",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: categoryPage.homeName,
+          item: categoryPage.homeUrl,
+        },
+        { "@type": "ListItem", position: 2, name: categoryPage.name },
+      ],
+    });
+
+    const collection = documents.find(
+      (document) => document["@type"] === "CollectionPage",
+    );
+    expect(collection).toMatchObject({
+      "@context": "https://schema.org",
+      name: categoryPage.name,
+      url: categoryPage.canonical,
+      inLanguage: categoryPage.inLanguage,
+    });
+    for (const forbidden of [
+      "aggregateRating",
+      "review",
+      "offers",
+      "price",
+      "author",
+      "mainEntity",
+    ]) {
+      expect(collection).not.toHaveProperty(forbidden);
+    }
+  });
+}

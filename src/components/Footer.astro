@@ -1,6 +1,11 @@
 ---
 import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
 import { localizedPath } from "../i18n/routing";
+import {
+  categoryPath,
+  isCategoryPublished,
+  type ToolCategory,
+} from "../lib/categories";
 
 interface Props {
   locale?: LocaleCode;
@@ -9,6 +14,16 @@ interface Props {
 const { locale = defaultLocale } = Astro.props;
 const t = getDictionary(locale);
 const footer = t.footer.columns;
+
+/*
+ * Category links become real links as categories publish; unpublished
+ * categories keep the placeholder href they have always had.
+ */
+const footerCategories: { label: string; category: ToolCategory }[] = [
+  { label: footer.categories.calculators, category: "Calculators" },
+  { label: footer.categories.converters, category: "Converters" },
+  { label: footer.categories.developerTools, category: "Developer tools" },
+];
 
 const columns = [
   {
@@ -29,11 +44,12 @@ const columns = [
   },
   {
     heading: footer.categories.heading,
-    links: [
-      { label: footer.categories.calculators, href: "#" },
-      { label: footer.categories.converters, href: "#" },
-      { label: footer.categories.developerTools, href: "#" },
-    ],
+    links: footerCategories.map(({ label, category }) => ({
+      label,
+      href: isCategoryPublished(category)
+        ? localizedPath(categoryPath(category), locale)
+        : "#",
+    })),
   },
   {
     heading: footer.company.heading,

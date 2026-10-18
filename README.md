@@ -8,7 +8,7 @@ The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKi
 
 ## Status
 
-Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Tools shipped: the [percentage calculator](/percentage-calculator) and the [discount calculator](/discount-calculator), both built on the reusable `ToolLayout` template with cross-linked related tools. Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches a typed tool registry, localized per page. English and Spanish (`/es/…`) are shipped as the first supported locales. Next: more calculators on the same template.
+Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Tools shipped: the [percentage calculator](/percentage-calculator) and the [discount calculator](/discount-calculator), both built on the reusable `ToolLayout` template with cross-linked related tools. Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches a typed tool registry, localized per page. English and Spanish (`/es/…`) are shipped as the first supported locales, and the registry-derived [calculators category page](/calculators) is live in both. Next: more calculators on the same template.
 
 ## Languages
 
@@ -35,6 +35,15 @@ Do not mark a language supported (step 1) or expose it in the switcher until its
 - Every indexable page carries a self-referencing canonical, reciprocal `hreflang` alternates for every supported locale, and `x-default` pointing at the unprefixed English URL — in the HTML head only.
 - The sitemap pairs each translated page with its `en`/`es` alternates (emitted by `@astrojs/sitemap` from the registry via `sitemapI18n()`); it never contains `x-default` — the plugin has no support for it — and never lists `/en` URLs.
 - **404 limitation**: static output has a single `404.html`, so unknown paths — including `/es/…` paths — serve the English noindex 404 page. Localized 404s are a future enhancement.
+
+## Categories
+
+Category landing pages are registry-driven. `src/lib/categories.ts` owns the taxonomy: an explicit `CATEGORY_SLUGS` map (stable English URL slugs, shared by every locale), the `CATEGORY_IDS` order, and membership helpers that read the `category` field on each tool in `src/lib/tools.ts`. There is no second list of tools per category, so a category page can only ever list registered, shipped tools.
+
+- **Publication rule**: a category page ships when the category has at least `CATEGORY_PAGE_MIN_TOOLS` (2) registered tools. One-tool categories stay unpublished — a single-card page adds crawl surface without discovery value — and their URLs 404. `/calculators/` (English) and `/es/calculators/` (Spanish) are live.
+- **Adding a category page**: add localized `categories.<Category>.page` copy to every dictionary — title, metaDescription, toolsHeading, and genuinely category-specific intro paragraphs (no repeated SEO templates, no claims the tools do not support) — then add the thin route wrappers `src/pages/<slug>.astro` and `src/pages/[locale]/<slug>.astro` for the shared `CategoryView` and run the standard validation. The dictionary-parity test fails until every locale has the page copy, and `CategoryView` fails the build if the category is under the two-tool threshold or missing copy.
+- **Linking**: homepage chips and the footer Categories column activate automatically for published categories; each tool page links its category from the Related tools section ("See all"). Unpublished categories keep their existing in-page anchors and placeholder links.
+- **SEO**: category pages are indexable and carry a self-canonical, reciprocal `hreflang` alternates plus `x-default`, `BreadcrumbList` and `CollectionPage` JSON-LD, and the standard en/es sitemap pairing. Unpublished categories are never built, listed, or linked.
 
 ## Commands
 
