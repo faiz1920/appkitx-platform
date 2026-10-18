@@ -61,6 +61,40 @@ export const tools: readonly Tool[] = [
     icon: "tag",
     dictionaryKey: "discount",
   },
+  {
+    title: "Base64 Encoder",
+    href: "/base64-encoder",
+    description: "Encode text to Base64 and decode Base64 back to text.",
+    category: "Developer tools",
+    keywords: [
+      "base64",
+      "encode",
+      "decode",
+      "encoder",
+      "decoder",
+      "convert",
+      "text",
+    ],
+    icon: "binary",
+    dictionaryKey: "base64",
+  },
+  {
+    title: "JSON Formatter",
+    href: "/json-formatter",
+    description: "Format, minify, and validate JSON in your browser.",
+    category: "Developer tools",
+    keywords: [
+      "json",
+      "format",
+      "formatter",
+      "minify",
+      "validate",
+      "pretty print",
+      "beautify",
+    ],
+    icon: "braces",
+    dictionaryKey: "json",
+  },
 ];
 
 /*

@@ -127,8 +127,6 @@ export interface HomeStrings {
     unitConverter: { title: string; description: string };
     loanCalculator: { title: string; description: string };
     dateCalculator: { title: string; description: string };
-    base64Encoder: { title: string; description: string };
-    jsonFormatter: { title: string; description: string };
   };
 }
 
@@ -307,10 +305,93 @@ export interface DiscountToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** One Base64 Encoder mode: pane labels, hint, and the action button label. */
+export interface Base64ModeStrings {
+  optionLabel: string;
+  inputLabel: string;
+  inputHint: string;
+  outputLabel: string;
+  action: string;
+}
+
+/** Base64 Encoder page labels and interface strings. */
+export interface Base64ToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  modeLegend: string;
+  modes: {
+    encode: Base64ModeStrings;
+    decode: Base64ModeStrings;
+  };
+  clear: string;
+  errors: {
+    emptyEncode: string;
+    emptyDecode: string;
+    invalid: string;
+  };
+  /** Status line templates; token: {count}. */
+  statusIn: string;
+  statusOut: string;
+  /** Explanation sections rendered by ProseText below the tool. */
+  sections: readonly ProseSectionStrings[];
+}
+
+/** One JSON Formatter mode: option label and the action button label. */
+export interface JsonModeStrings {
+  optionLabel: string;
+  action: string;
+}
+
+/** JSON Formatter page labels and interface strings. */
+export interface JsonFormatterToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  modeLegend: string;
+  modes: {
+    format: JsonModeStrings;
+    minify: JsonModeStrings;
+  };
+  inputLabel: string;
+  inputHint: string;
+  outputLabel: string;
+  clear: string;
+  errors: {
+    empty: string;
+    invalid: string;
+    /** Positioned parse error; tokens: {line}, {column}. */
+    invalidAt: string;
+  };
+  /** Status line templates and validity labels; tokens: {count}. */
+  statusIn: string;
+  statusOut: string;
+  statusValid: string;
+  statusInvalid: string;
+  /** Explanation sections rendered by ProseText below the tool. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** Per-tool dictionaries, keyed by tool. */
 export interface ToolsStrings {
   percentage: PercentageToolStrings;
   discount: DiscountToolStrings;
+  base64: Base64ToolStrings;
+  json: JsonFormatterToolStrings;
 }
 
 /** Registry tool keys that have dictionary strings (src/lib/tools.ts). */

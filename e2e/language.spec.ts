@@ -237,6 +237,8 @@ test("localized pages and the switcher keep layout at 320px", async ({
     "/es/",
     "/es/percentage-calculator/",
     "/es/calculators/",
+    "/es/base64-encoder/",
+    "/es/developer-tools/",
   ]) {
     await page.goto(path);
     const overflow = await page.evaluate(

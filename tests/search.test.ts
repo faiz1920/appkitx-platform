@@ -186,9 +186,21 @@ describe("searchTools", () => {
   });
 
   it("does not match placeholder homepage cards", () => {
-    for (const query of ["unit converter", "loan", "base64", "json", "date"]) {
+    for (const query of ["unit converter", "loan", "date calculator"]) {
       expect(searchTools(query, tools)).toEqual([]);
     }
+  });
+
+  it("finds the developer tools by name and keyword", () => {
+    expect(searchTools("base64", tools).map((tool) => tool.href)).toEqual([
+      "/base64-encoder",
+    ]);
+    expect(searchTools("minify", tools).map((tool) => tool.href)).toEqual([
+      "/json-formatter",
+    ]);
+    expect(
+      searchTools("developer tools", tools).map((tool) => tool.href),
+    ).toEqual(["/base64-encoder", "/json-formatter"]);
   });
 });
 
@@ -235,14 +247,28 @@ describe("localized search catalogs", () => {
       for (const query of [
         "unit converter",
         "loan",
-        "base64",
-        "json",
+        "date calculator",
         "unidades",
         "préstamo",
-        "codificador",
+        "calculadora de fechas",
       ]) {
         expect(searchTools(query, catalog)).toEqual([]);
       }
     }
+  });
+
+  it("finds the developer tools with localized terms", () => {
+    const catalog = localizedToolCatalog("es");
+    expect(
+      searchTools("codificador", catalog).map((tool) => tool.href),
+    ).toEqual(["/base64-encoder"]);
+    expect(searchTools("minimizar", catalog).map((tool) => tool.href)).toEqual([
+      "/json-formatter",
+    ]);
+    expect(
+      searchTools("herramientas de desarrollo", catalog).map(
+        (tool) => tool.href,
+      ),
+    ).toEqual(["/base64-encoder", "/json-formatter"]);
   });
 });

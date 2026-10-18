@@ -87,14 +87,6 @@ export const en: Dictionary = {
         title: "Date Calculator",
         description: "Days between dates, add or subtract time.",
       },
-      base64Encoder: {
-        title: "Base64 Encoder",
-        description: "Encode and decode Base64 in your browser.",
-      },
-      jsonFormatter: {
-        title: "JSON Formatter",
-        description: "Format, validate, and inspect JSON.",
-      },
     },
   },
   categories: {
@@ -112,7 +104,19 @@ export const en: Dictionary = {
       },
     },
     Converters: { name: "Converters" },
-    "Developer tools": { name: "Developer tools" },
+    "Developer tools": {
+      name: "Developer tools",
+      page: {
+        title: "Free Developer Tools — AppKitX",
+        metaDescription:
+          "Free browser-based developer tools: encode and decode Base64, and format, minify, or validate JSON. Nothing you paste is uploaded.",
+        toolsHeading: "Free developer tools",
+        intro: [
+          "Two browser-based utilities for everyday developer work: convert text to Base64 and back, and format, minify, or validate JSON.",
+          "Both run entirely in your browser — nothing you paste is uploaded anywhere. Each tool documents its behavior and edge cases, and every result can be copied with one click.",
+        ],
+      },
+    },
     "Date & time": { name: "Date & time" },
     "Text tools": { name: "Text tools" },
   },
@@ -319,6 +323,153 @@ export const en: Dictionary = {
             "Decimal prices and percentages are fully supported. Results are calculated at full precision and rounded only for display — capped at two decimal places, with trailing zeros removed.",
             "A 100% discount makes the final price zero, and a 0% discount leaves the price unchanged.",
             "Both outputs use the same currency units as the entered price; the calculator is currency-neutral and does no currency conversion.",
+          ],
+        },
+      ],
+    },
+    base64: {
+      title: "Base64 Encoder — AppKitX",
+      metaDescription:
+        "Free Base64 encoder and decoder: convert text to Base64 and decode Base64 back to text, with UTF-8 support — everything runs in your browser.",
+      name: "Base64 Encoder",
+      description:
+        "Convert text to Base64 and decode Base64 back to text — UTF-8 safe, with optional padding and URL-safe input.",
+      cardDescription: "Encode text to Base64 and decode Base64 back to text.",
+      keywords: [
+        "base64",
+        "encode",
+        "decode",
+        "encoder",
+        "decoder",
+        "convert",
+        "text",
+      ],
+      modeLegend: "Mode",
+      modes: {
+        encode: {
+          optionLabel: "Encode",
+          inputLabel: "Text",
+          inputHint: "Text is encoded as UTF-8 before converting to Base64.",
+          outputLabel: "Base64",
+          action: "Encode",
+        },
+        decode: {
+          optionLabel: "Decode",
+          inputLabel: "Base64",
+          inputHint:
+            "Standard or URL-safe Base64; padding is optional and whitespace is ignored.",
+          outputLabel: "Text",
+          action: "Decode",
+        },
+      },
+      clear: "Clear",
+      errors: {
+        emptyEncode: "Enter the text you want to encode.",
+        emptyDecode: "Enter the Base64 you want to decode.",
+        invalid: "This isn't valid Base64 — check the characters and padding.",
+      },
+      statusIn: "Input: {count} characters",
+      statusOut: "Output: {count} characters",
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Paste or type into the input pane, choose Encode or Decode, and select the action. The result appears in the output pane and can be copied with one click.",
+            "Everything runs in your browser: the text you paste is never sent to a server.",
+          ],
+        },
+        {
+          heading: "What Base64 is",
+          paragraphs: [
+            "Base64 represents data as 64 printable characters — `A–Z`, `a–z`, `0–9`, `+`, and `/` — so binary content can travel through text-only formats such as JSON, XML, email, and URLs.",
+            "Base64 is an encoding, not encryption: anyone can decode it, so it must not be used to protect data.",
+          ],
+        },
+        {
+          heading: "Encoding text safely",
+          paragraphs: [
+            "Text is first converted to UTF-8 bytes and then to Base64, so accented characters, CJK text, and emoji convert correctly.",
+            "Decoding converts the bytes back as UTF-8. Input whose bytes are not valid UTF-8 is rejected instead of producing garbled characters.",
+          ],
+        },
+        {
+          heading: "Assumptions and edge cases",
+          items: [
+            "Whitespace and line breaks in Base64 input are ignored, so wrapped output from other tools decodes as-is.",
+            "Padding is optional: both `aGVsbG8=` and `aGVsbG8` decode to the same text.",
+            "The URL-safe alphabet replaces `+` and `/` with `-` and `_`; it is accepted when decoding, while encoded output always uses the standard alphabet with padding.",
+            "Characters outside the alphabet, misplaced padding, and byte sequences that are not valid UTF-8 are rejected with an inline message.",
+            "Nothing is compressed, encrypted, or uploaded: text is converted entirely in your browser.",
+          ],
+        },
+      ],
+    },
+    json: {
+      title: "JSON Formatter — AppKitX",
+      metaDescription:
+        "Free JSON formatter: format JSON with two-space indentation, minify it, and get clear errors with line and column when the input is invalid.",
+      name: "JSON Formatter",
+      description:
+        "Format JSON with two-space indentation, minify it, or check it for errors with line and column positions.",
+      cardDescription: "Format, minify, and validate JSON in your browser.",
+      keywords: [
+        "json",
+        "format",
+        "formatter",
+        "minify",
+        "validate",
+        "pretty print",
+        "beautify",
+      ],
+      modeLegend: "Mode",
+      modes: {
+        format: { optionLabel: "Format", action: "Format" },
+        minify: { optionLabel: "Minify", action: "Minify" },
+      },
+      inputLabel: "JSON",
+      inputHint:
+        "Paste or type JSON; invalid input is reported with a position when available.",
+      outputLabel: "Output",
+      clear: "Clear",
+      errors: {
+        empty: "Enter JSON to format.",
+        invalid:
+          "This isn't valid JSON — check for missing quotes, commas, or brackets.",
+        invalidAt: "Invalid JSON at line {line}, column {column}.",
+      },
+      statusIn: "Input: {count} characters",
+      statusOut: "Output: {count} characters",
+      statusValid: "Valid JSON",
+      statusInvalid: "Invalid JSON",
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Paste or type JSON into the input pane, choose Format or Minify, and select the action. The result appears in the output pane, ready to copy.",
+            "Everything runs in your browser: the JSON you paste is never sent to a server.",
+          ],
+        },
+        {
+          heading: "Formatting",
+          paragraphs: [
+            "Format re-prints the document with two-space indentation and line breaks, so nested objects and arrays are easy to read. Keys keep their original order.",
+          ],
+        },
+        {
+          heading: "Minifying",
+          paragraphs: [
+            "Minify removes all insignificant whitespace and produces the smallest text that represents the same data — useful before pasting JSON into configuration files or API payloads.",
+          ],
+        },
+        {
+          heading: "Assumptions and edge cases",
+          items: [
+            "Only whitespace changes: keys, values, and their order are preserved exactly as parsed.",
+            "Any valid JSON value works — objects, arrays, strings, numbers, booleans, and `null`.",
+            "Numbers are parsed as JavaScript numbers, so very large integers may lose precision when the result is re-printed.",
+            "Duplicate keys keep the last value, matching `JSON.parse` behavior in browsers.",
+            "When the input is invalid, the message shows the line and column where parsing stopped when the browser reports one, and the last valid output stays in the output pane.",
+            "The input is only parsed as data — never evaluated — and results are rendered as plain text.",
           ],
         },
       ],

@@ -24,6 +24,8 @@ const footer = t.footer.columns;
 const shippedTools = resolveLocalizedTools(locale, [
   "/percentage-calculator",
   "/discount-calculator",
+  "/base64-encoder",
+  "/json-formatter",
 ]).map((tool) => ({
   label: tool.title,
   href: localizedPath(tool.href, locale),

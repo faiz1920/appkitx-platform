@@ -3,6 +3,8 @@ import searchIcon from "lucide-static/icons/search.svg?raw";
 import searchXIcon from "lucide-static/icons/search-x.svg?raw";
 import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
 import tagIcon from "lucide-static/icons/tag.svg?raw";
+import binaryIcon from "lucide-static/icons/binary.svg?raw";
+import bracesIcon from "lucide-static/icons/braces.svg?raw";
 import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
 import { localizedPath } from "../i18n/routing";
 import { localizedToolCatalog } from "../i18n/tool-catalog";
@@ -18,6 +20,8 @@ const t = getDictionary(locale);
 const toolIcons: Record<string, string> = {
   calculator: calculatorIcon,
   tag: tagIcon,
+  binary: binaryIcon,
+  braces: bracesIcon,
 };
 
 /*

@@ -144,6 +144,33 @@
   .input[aria-invalid="true"] {
     border-color: var(--color-error);
   }
+
+  /* Textareas (AppKitX-Design.md → Inputs & validation / Developer tool
+     interface). Same geometry as .input; the minimum height is a local
+     value per use (developer panes use 240px). */
+  .textarea {
+    width: 100%;
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    padding: 10px 14px;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    resize: vertical;
+  }
+  .textarea::placeholder {
+    color: var(--color-text-muted);
+  }
+  .textarea:focus {
+    border-color: var(--color-accent);
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+  .textarea[aria-invalid="true"] {
+    border-color: var(--color-error);
+  }
   .field-error {
     display: flex;
     align-items: center;
