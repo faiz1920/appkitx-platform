@@ -1,0 +1,278 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+import checkIcon from "lucide-static/icons/check.svg?raw";
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.json;
+
+/*
+ * Strings for the client script — JSON-safe slice of the dictionary. Copy
+ * button label and clipboard feedback reuse the shared calculator interface
+ * strings (approved M7 decision: renaming that block is out of scope).
+ */
+const scriptStrings = {
+  calculator: t.calculator,
+  tool,
+};
+---
+
+<div data-json-tool data-i18n={JSON.stringify(scriptStrings)}>
+  <form novalidate data-tool-form>
+    <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)">
+      <fieldset class="min-w-0">
+        <legend class="text-label text-text-primary">{tool.modeLegend}</legend>
+        <div class="segmented mt-2">
+          <label>
+            <input
+              type="radio"
+              name="mode"
+              value="format"
+              class="sr-only"
+              checked
+            />
+            {tool.modes.format.optionLabel}
+          </label>
+          <label>
+            <input type="radio" name="mode" value="minify" class="sr-only" />
+            {tool.modes.minify.optionLabel}
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <button type="submit" class="btn btn-primary" data-action>
+          {tool.modes.format.action}
+        </button>
+        <button type="button" class="btn btn-ghost" disabled data-copy>
+          {t.calculator.copyResult}
+        </button>
+        <button type="button" class="btn btn-secondary" data-clear>
+          {tool.clear}
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <div>
+      <label for="json-input" class="text-label text-text-primary">
+        {tool.inputLabel}
+      </label>
+      <textarea
+        id="json-input"
+        class="textarea mt-2 min-h-[240px] font-mono text-[15px]"
+        spellcheck="false"
+        data-input
+        aria-describedby="json-hint json-error"
+      ></textarea>
+      <p id="json-hint" class="mt-1 text-caption text-text-muted">
+        {tool.inputHint}
+      </p>
+      <p id="json-error" class="field-error mt-1" hidden data-error>
+        <span aria-hidden="true" set:html={alertIcon} />
+        <span data-error-text></span>
+      </p>
+    </div>
+
+    <div>
+      <label for="json-output" class="text-label text-text-primary">
+        {tool.outputLabel}
+      </label>
+      <textarea
+        id="json-output"
+        class="textarea mt-2 min-h-[240px] bg-surface-subtle font-mono text-[15px]"
+        readonly
+        data-output
+      ></textarea>
+    </div>
+  </div>
+
+  <p
+    class="mt-3 text-caption text-text-muted"
+    aria-live="polite"
+    data-status
+  ></p>
+  <p
+    class="mt-2 flex items-center gap-1.5 text-caption text-success"
+    hidden
+    data-copy-status-success
+  >
+    <span
+      class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+      aria-hidden="true"
+      set:html={checkIcon}
+    />
+    {t.calculator.copied}
+  </p>
+  <p
+    class="mt-2 flex items-center gap-1.5 text-caption text-error"
+    hidden
+    data-copy-status-error
+  >
+    <span
+      class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+      aria-hidden="true"
+      set:html={alertIcon}
+    />
+    {t.calculator.copyFailed}
+  </p>
+</div>
+
+<script>
+  import { formatJson, minifyJson, parseJson } from "../lib/json-format";
+  import { interpolate } from "../i18n/interpolate";
+  import type {
+    CalculatorStrings,
+    JsonFormatterToolStrings,
+  } from "../i18n/dictionary";
+
+  const root = document.querySelector<HTMLElement>("[data-json-tool]");
+
+  if (root) {
+    const i18n: {
+      calculator: CalculatorStrings;
+      tool: JsonFormatterToolStrings;
+    } = JSON.parse(root.dataset.i18n ?? "{}");
+
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`JSON formatter: missing ${selector}`);
+      return el;
+    };
+
+    const form = requireEl<HTMLFormElement>("[data-tool-form]");
+    const input = requireEl<HTMLTextAreaElement>("[data-input]");
+    const output = requireEl<HTMLTextAreaElement>("[data-output]");
+    const errorWrap = requireEl<HTMLElement>("[data-error]");
+    const errorText = requireEl<HTMLElement>("[data-error-text]");
+    const status = requireEl<HTMLElement>("[data-status]");
+    const actionButton = requireEl<HTMLButtonElement>("[data-action]");
+    const copyButton = requireEl<HTMLButtonElement>("[data-copy]");
+    const clearButton = requireEl<HTMLButtonElement>("[data-clear]");
+    const copyStatusSuccess = requireEl<HTMLElement>(
+      "[data-copy-status-success]",
+    );
+    const copyStatusError = requireEl<HTMLElement>("[data-copy-status-error]");
+    const radios =
+      root.querySelectorAll<HTMLInputElement>('input[name="mode"]');
+
+    const MODES = i18n.tool.modes;
+
+    let copyTimer: number | undefined;
+    let copyBusy = false;
+
+    const mode = (): "format" | "minify" =>
+      (root.querySelector<HTMLInputElement>('input[name="mode"]:checked')
+        ?.value as "format" | "minify" | undefined) ?? "format";
+
+    const resetCopyFeedback = () => {
+      window.clearTimeout(copyTimer);
+      copyStatusSuccess.hidden = true;
+      copyStatusError.hidden = true;
+    };
+
+    const clearError = () => {
+      errorWrap.hidden = true;
+      errorText.textContent = "";
+      input.removeAttribute("aria-invalid");
+    };
+
+    const showError = (message: string) => {
+      errorWrap.hidden = false;
+      errorText.textContent = message;
+      input.setAttribute("aria-invalid", "true");
+    };
+
+    const setStatus = (valid: boolean | undefined, inCount: number) => {
+      const parts = [interpolate(i18n.tool.statusIn, { count: inCount })];
+      if (output.value !== "") {
+        parts.push(
+          interpolate(i18n.tool.statusOut, { count: output.value.length }),
+        );
+      }
+      if (valid !== undefined) {
+        parts.push(valid ? i18n.tool.statusValid : i18n.tool.statusInvalid);
+      }
+      status.textContent = parts.join(" · ");
+    };
+
+    const resetOutput = () => {
+      output.value = "";
+      status.textContent = "";
+      resetCopyFeedback();
+      copyButton.disabled = true;
+    };
+
+    const applyMode = () => {
+      actionButton.textContent = MODES[mode()].action;
+      clearError();
+      resetOutput();
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      clearError();
+      resetCopyFeedback();
+
+      const value = input.value;
+      const result = parseJson(value);
+
+      if (!result.ok && result.issue === "empty") {
+        showError(i18n.tool.errors.empty);
+        return;
+      }
+
+      if (!result.ok) {
+        showError(
+          result.line !== undefined && result.column !== undefined
+            ? interpolate(i18n.tool.errors.invalidAt, {
+                line: result.line,
+                column: result.column,
+              })
+            : i18n.tool.errors.invalid,
+        );
+        setStatus(false, value.length);
+        return;
+      }
+
+      output.value =
+        mode() === "format"
+          ? formatJson(result.value)
+          : minifyJson(result.value);
+      setStatus(true, value.length);
+      copyButton.disabled = false;
+    });
+
+    radios.forEach((radio) => radio.addEventListener("change", applyMode));
+
+    clearButton.addEventListener("click", () => {
+      input.value = "";
+      clearError();
+      resetOutput();
+      input.focus();
+    });
+
+    copyButton.addEventListener("click", async () => {
+      if (output.value === "" || copyBusy) return;
+      copyBusy = true;
+      resetCopyFeedback();
+      try {
+        await navigator.clipboard.writeText(output.value);
+        copyStatusSuccess.hidden = false;
+        copyTimer = window.setTimeout(() => {
+          copyStatusSuccess.hidden = true;
+        }, 2000);
+      } catch {
+        copyStatusError.hidden = false;
+      } finally {
+        copyBusy = false;
+      }
+    });
+  }
+</script>

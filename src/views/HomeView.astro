@@ -33,6 +33,8 @@ const localeMeta = getLocale(locale);
 const registryIcons: Record<string, string> = {
   calculator: calculatorIcon,
   tag: tagIcon,
+  binary: binaryIcon,
+  braces: bracesIcon,
 };
 
 /* Registered tools come from the localized catalog; hrefs stay locale-aware. */
@@ -59,18 +61,6 @@ const tools = [
     title: t.home.placeholderTools.dateCalculator.title,
     description: t.home.placeholderTools.dateCalculator.description,
     icon: calendarIcon,
-    href: "#",
-  },
-  {
-    title: t.home.placeholderTools.base64Encoder.title,
-    description: t.home.placeholderTools.base64Encoder.description,
-    icon: binaryIcon,
-    href: "#",
-  },
-  {
-    title: t.home.placeholderTools.jsonFormatter.title,
-    description: t.home.placeholderTools.jsonFormatter.description,
-    icon: bracesIcon,
     href: "#",
   },
 ];

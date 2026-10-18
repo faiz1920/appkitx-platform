@@ -31,6 +31,16 @@ const TOOLS = [
     name: "Discount Calculator",
     canonical: "https://appkitx.com/discount-calculator/",
   },
+  {
+    path: "/base64-encoder",
+    name: "Base64 Encoder",
+    canonical: "https://appkitx.com/base64-encoder/",
+  },
+  {
+    path: "/json-formatter",
+    name: "JSON Formatter",
+    canonical: "https://appkitx.com/json-formatter/",
+  },
 ];
 
 test("homepage exposes Open Graph, Twitter, and WebSite structured data", async ({
@@ -216,6 +226,16 @@ for (const tool of [
     name: "Calculadora de descuentos",
     canonical: "https://appkitx.com/es/discount-calculator/",
   },
+  {
+    path: "/es/base64-encoder",
+    name: "Codificador Base64",
+    canonical: "https://appkitx.com/es/base64-encoder/",
+  },
+  {
+    path: "/es/json-formatter",
+    name: "Formateador JSON",
+    canonical: "https://appkitx.com/es/json-formatter/",
+  },
 ]) {
   test(`Spanish ${tool.name} exposes localized canonical, breadcrumb, and structured data`, async ({
     page,
@@ -280,6 +300,22 @@ const CATEGORY_PAGES = [
     homeName: "Inicio",
     homeUrl: "https://appkitx.com/es/",
     canonical: "https://appkitx.com/es/calculators/",
+    inLanguage: "es",
+  },
+  {
+    path: "/developer-tools",
+    name: "Developer tools",
+    homeName: "Home",
+    homeUrl: "https://appkitx.com/",
+    canonical: "https://appkitx.com/developer-tools/",
+    inLanguage: "en",
+  },
+  {
+    path: "/es/developer-tools",
+    name: "Herramientas de desarrollo",
+    homeName: "Inicio",
+    homeUrl: "https://appkitx.com/es/",
+    canonical: "https://appkitx.com/es/developer-tools/",
     inLanguage: "es",
   },
 ];

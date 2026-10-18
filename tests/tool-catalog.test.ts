@@ -46,6 +46,15 @@ describe("localizedToolCatalog", () => {
     expect(discount?.description).toBe(
       "Ahorro y precio final tras un descuento.",
     );
+    const base64 = catalog.find((tool) => tool.href === "/base64-encoder");
+    const json = catalog.find((tool) => tool.href === "/json-formatter");
+    expect(base64?.title).toBe("Codificador Base64");
+    expect(base64?.category).toBe("Herramientas de desarrollo");
+    expect(base64?.keywords).toContain("codificar");
+    expect(json?.title).toBe("Formateador JSON");
+    expect(json?.description).toBe(
+      "Formatea, minimiza y valida JSON en tu navegador.",
+    );
   });
 
   it("keeps the English card text identical to the registry descriptions", () => {

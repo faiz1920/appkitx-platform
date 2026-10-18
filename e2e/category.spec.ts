@@ -95,12 +95,90 @@ test("the Spanish category page is fully localized", async ({ page }) => {
   });
 });
 
+test("the English developer tools page lists both registered tools", async ({
+  page,
+}) => {
+  const response = await page.goto("/developer-tools/");
+  expect(response?.status()).toBe(200);
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Developer tools",
+  );
+  await expect(page.getByRole("heading", { level: 2 })).toHaveText(
+    "Free developer tools",
+  );
+
+  const breadcrumb = page.getByRole("navigation", { name: "Breadcrumb" });
+  await expect(breadcrumb.getByRole("link", { name: "Home" })).toHaveAttribute(
+    "href",
+    "/",
+  );
+  await expect(breadcrumb.locator('[aria-current="page"]')).toHaveText(
+    "Developer tools",
+  );
+
+  const cards = page
+    .getByRole("main")
+    .getByRole("link")
+    .filter({ hasText: "Open tool" });
+  await expect(cards).toHaveCount(2);
+  await expect(cards.nth(0)).toContainText("Base64 Encoder");
+  await expect(cards.nth(0)).toHaveAttribute("href", "/base64-encoder");
+  await expect(cards.nth(1)).toContainText("JSON Formatter");
+  await expect(cards.nth(1)).toHaveAttribute("href", "/json-formatter");
+
+  await page.screenshot({
+    path: "test-results/category-developer-tools-en.png",
+    fullPage: true,
+  });
+});
+
+test("the Spanish developer tools page is fully localized", async ({
+  page,
+}) => {
+  const response = await page.goto("/es/developer-tools/");
+  expect(response?.status()).toBe(200);
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Herramientas de desarrollo",
+  );
+  await expect(page.getByRole("heading", { level: 2 })).toHaveText(
+    "Herramientas de desarrollo gratis",
+  );
+
+  const breadcrumb = page.getByRole("navigation", {
+    name: "Ruta de navegación",
+  });
+  await expect(
+    breadcrumb.getByRole("link", { name: "Inicio" }),
+  ).toHaveAttribute("href", "/es/");
+  await expect(breadcrumb.locator('[aria-current="page"]')).toHaveText(
+    "Herramientas de desarrollo",
+  );
+
+  const cards = page
+    .getByRole("main")
+    .getByRole("link")
+    .filter({ hasText: "Abrir herramienta" });
+  await expect(cards).toHaveCount(2);
+  await expect(cards.nth(0)).toContainText("Codificador Base64");
+  await expect(cards.nth(0)).toHaveAttribute("href", "/es/base64-encoder");
+  await expect(cards.nth(1)).toContainText("Formateador JSON");
+  await expect(cards.nth(1)).toHaveAttribute("href", "/es/json-formatter");
+
+  await page.screenshot({
+    path: "test-results/category-developer-tools-es.png",
+    fullPage: true,
+  });
+});
+
 test("unpublished categories return 404 without redirects", async ({
   request,
 }) => {
   for (const path of [
     "/converters/",
-    "/developer-tools/",
     "/date-time/",
     "/text-tools/",
     "/es/converters/",
@@ -129,20 +207,22 @@ test("an unpublished category path renders the noindex 404 page", async ({
   );
 });
 
-test("the homepage chip and footer link the published category", async ({
+test("the homepage chip and footer link the published categories", async ({
   page,
 }) => {
   await page.goto("/");
 
-  const chip = page
-    .getByRole("main")
-    .getByRole("link", { name: "Calculators" });
-  await expect(chip).toHaveAttribute("href", "/calculators");
-
-  const footerLink = page
-    .getByRole("contentinfo")
-    .getByRole("link", { name: "Calculators" });
-  await expect(footerLink).toHaveAttribute("href", "/calculators");
+  for (const [name, href] of [
+    ["Calculators", "/calculators"],
+    ["Developer tools", "/developer-tools"],
+  ] as const) {
+    await expect(
+      page.getByRole("main").getByRole("link", { name }),
+    ).toHaveAttribute("href", href);
+    await expect(
+      page.getByRole("contentinfo").getByRole("link", { name }),
+    ).toHaveAttribute("href", href);
+  }
 
   /* Unpublished categories keep their in-page anchor and placeholder href. */
   await expect(
@@ -153,12 +233,17 @@ test("the homepage chip and footer link the published category", async ({
   ).toHaveAttribute("href", "#");
 
   await page.goto("/es/");
-  await expect(
-    page.getByRole("main").getByRole("link", { name: "Calculadoras" }),
-  ).toHaveAttribute("href", "/es/calculators");
-  await expect(
-    page.getByRole("contentinfo").getByRole("link", { name: "Calculadoras" }),
-  ).toHaveAttribute("href", "/es/calculators");
+  for (const [name, href] of [
+    ["Calculadoras", "/es/calculators"],
+    ["Herramientas de desarrollo", "/es/developer-tools"],
+  ] as const) {
+    await expect(
+      page.getByRole("main").getByRole("link", { name }),
+    ).toHaveAttribute("href", href);
+    await expect(
+      page.getByRole("contentinfo").getByRole("link", { name }),
+    ).toHaveAttribute("href", href);
+  }
 });
 
 test("tool pages link to their published category", async ({ page }) => {
@@ -174,6 +259,16 @@ test("tool pages link to their published category", async ({ page }) => {
       href: "/calculators",
     },
     {
+      path: "/base64-encoder/",
+      label: "See all",
+      href: "/developer-tools",
+    },
+    {
+      path: "/json-formatter/",
+      label: "See all",
+      href: "/developer-tools",
+    },
+    {
       path: "/es/percentage-calculator/",
       label: "Ver todas",
       href: "/es/calculators",
@@ -182,6 +277,16 @@ test("tool pages link to their published category", async ({ page }) => {
       path: "/es/discount-calculator/",
       label: "Ver todas",
       href: "/es/calculators",
+    },
+    {
+      path: "/es/base64-encoder/",
+      label: "Ver todas",
+      href: "/es/developer-tools",
+    },
+    {
+      path: "/es/json-formatter/",
+      label: "Ver todas",
+      href: "/es/developer-tools",
     },
   ]) {
     await page.goto(item.path);
@@ -208,10 +313,28 @@ test("the language switcher preserves the category page", async ({ page }) => {
   await expect(page).toHaveURL(/\/es\/calculators\/?$/);
 });
 
+test("the language switcher preserves the developer tools page", async ({
+  page,
+}) => {
+  await page.goto("/developer-tools/");
+
+  const switcher = page.locator("[data-language-switcher]:visible");
+  await switcher.locator("summary").click();
+  await switcher.locator('[data-locale-choice="es"]').click();
+
+  await expect(page).toHaveURL(/\/es\/developer-tools\/?$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+});
+
 test("category pages keep layout at 320px", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
 
-  for (const path of ["/calculators/", "/es/calculators/"]) {
+  for (const path of [
+    "/calculators/",
+    "/developer-tools/",
+    "/es/calculators/",
+    "/es/developer-tools/",
+  ]) {
     await page.goto(path);
     const overflow = await page.evaluate(
       () =>

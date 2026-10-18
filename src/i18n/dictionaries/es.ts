@@ -99,14 +99,6 @@ export const es: Dictionary = {
         title: "Calculadora de fechas",
         description: "Días entre fechas, sumar o restar tiempo.",
       },
-      base64Encoder: {
-        title: "Codificador Base64",
-        description: "Codifica y descodifica Base64 en tu navegador.",
-      },
-      jsonFormatter: {
-        title: "Formateador JSON",
-        description: "Formatea, valida e inspecciona JSON.",
-      },
     },
   },
   categories: {
@@ -124,7 +116,19 @@ export const es: Dictionary = {
       },
     },
     Converters: { name: "Conversores" },
-    "Developer tools": { name: "Herramientas de desarrollo" },
+    "Developer tools": {
+      name: "Herramientas de desarrollo",
+      page: {
+        title: "Herramientas de desarrollo gratis — AppKitX",
+        metaDescription:
+          "Herramientas de desarrollo gratis en tu navegador: codifica y descodifica Base64 y formatea, minimiza o valida JSON. Nada de lo que pegas se sube.",
+        toolsHeading: "Herramientas de desarrollo gratis",
+        intro: [
+          "Dos utilidades en el navegador para el trabajo diario de desarrollo: convierte texto a Base64 y viceversa, y formatea, minimiza o valida JSON.",
+          "Ambas se ejecutan por completo en tu navegador: nada de lo que pegas se sube a ningún sitio. Cada herramienta documenta su comportamiento y sus casos límite, y todos los resultados se pueden copiar con un clic.",
+        ],
+      },
+    },
     "Date & time": { name: "Fecha y hora" },
     "Text tools": { name: "Herramientas de texto" },
   },
@@ -336,6 +340,154 @@ export const es: Dictionary = {
             "Se admiten precios y porcentajes decimales. Los resultados se calculan con precisión completa y solo se redondean para mostrarlos: como máximo dos decimales y sin ceros finales.",
             "Un descuento del 100 % deja el precio final en cero, y un descuento del 0 % deja el precio sin cambios.",
             "Ambos resultados usan las mismas unidades monetarias que el precio introducido; la calculadora es neutral respecto a la moneda y no hace conversión de divisas.",
+          ],
+        },
+      ],
+    },
+    base64: {
+      title: "Codificador Base64 — AppKitX",
+      metaDescription:
+        "Codificador y descodificador Base64 gratis: convierte texto a Base64 y descodifica Base64 a texto, con soporte UTF-8, todo en tu navegador.",
+      name: "Codificador Base64",
+      description:
+        "Convierte texto a Base64 y descodifica Base64 a texto: compatible con UTF-8, con relleno opcional y entrada URL-safe.",
+      cardDescription: "Codifica texto a Base64 y descodifica Base64 a texto.",
+      keywords: [
+        "base64",
+        "codificar",
+        "descodificar",
+        "codificador",
+        "descodificador",
+        "convertir",
+        "texto",
+      ],
+      modeLegend: "Modo",
+      modes: {
+        encode: {
+          optionLabel: "Codificar",
+          inputLabel: "Texto",
+          inputHint:
+            "El texto se codifica en UTF-8 antes de convertirlo a Base64.",
+          outputLabel: "Base64",
+          action: "Codificar",
+        },
+        decode: {
+          optionLabel: "Descodificar",
+          inputLabel: "Base64",
+          inputHint:
+            "Base64 estándar o URL-safe; el relleno es opcional y los espacios se ignoran.",
+          outputLabel: "Texto",
+          action: "Descodificar",
+        },
+      },
+      clear: "Limpiar",
+      errors: {
+        emptyEncode: "Introduce el texto que quieres codificar.",
+        emptyDecode: "Introduce el Base64 que quieres descodificar.",
+        invalid: "No es Base64 válido: revisa los caracteres y el relleno.",
+      },
+      statusIn: "Entrada: {count} caracteres",
+      statusOut: "Salida: {count} caracteres",
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Pega o escribe en el panel de entrada, elige Codificar o Descodificar y pulsa la acción. El resultado aparece en el panel de salida y puedes copiarlo con un clic.",
+            "Todo se ejecuta en tu navegador: el texto que pegas no se envía a ningún servidor.",
+          ],
+        },
+        {
+          heading: "Qué es Base64",
+          paragraphs: [
+            "Base64 representa datos como 64 caracteres imprimibles — `A–Z`, `a–z`, `0–9`, `+` y `/` — para que el contenido binario pueda viajar por formatos solo de texto como JSON, XML, el correo electrónico y las URL.",
+            "Base64 es una codificación, no un cifrado: cualquiera puede descodificarla, así que no debe usarse para proteger datos.",
+          ],
+        },
+        {
+          heading: "Codificar texto de forma segura",
+          paragraphs: [
+            "El texto se convierte primero en bytes UTF-8 y luego en Base64, de modo que los caracteres acentuados, el texto CJK y los emoji se convierten correctamente.",
+            "La descodificación convierte los bytes de vuelta como UTF-8. La entrada cuyos bytes no son UTF-8 válido se rechaza en lugar de producir caracteres corruptos.",
+          ],
+        },
+        {
+          heading: "Supuestos y casos límite",
+          items: [
+            "Los espacios y los saltos de línea de la entrada Base64 se ignoran, así que el texto dividido en líneas por otras herramientas se descodifica tal cual.",
+            "El relleno es opcional: tanto `aGVsbG8=` como `aGVsbG8` descodifican al mismo texto.",
+            "El alfabeto URL-safe sustituye `+` y `/` por `-` y `_`; se acepta al descodificar, mientras que la salida codificada siempre usa el alfabeto estándar con relleno.",
+            "Los caracteres fuera del alfabeto, el relleno mal colocado y las secuencias de bytes que no son UTF-8 válido se rechazan con un mensaje en línea.",
+            "No se comprime, cifra ni sube nada: el texto se convierte por completo en tu navegador.",
+          ],
+        },
+      ],
+    },
+    json: {
+      title: "Formateador JSON — AppKitX",
+      metaDescription:
+        "Formateador JSON gratis: formatea JSON con sangría de dos espacios, minimízalo y obtén errores claros con línea y columna cuando la entrada no es válida.",
+      name: "Formateador JSON",
+      description:
+        "Formatea JSON con sangría de dos espacios, minimízalo o comprueba si tiene errores con la línea y la columna.",
+      cardDescription: "Formatea, minimiza y valida JSON en tu navegador.",
+      keywords: [
+        "json",
+        "formatear",
+        "formateador",
+        "minimizar",
+        "validar",
+        "formato",
+        "embellecer",
+      ],
+      modeLegend: "Modo",
+      modes: {
+        format: { optionLabel: "Formatear", action: "Formatear" },
+        minify: { optionLabel: "Minimizar", action: "Minimizar" },
+      },
+      inputLabel: "JSON",
+      inputHint:
+        "Pega o escribe JSON; la entrada no válida se indica con una posición cuando está disponible.",
+      outputLabel: "Resultado",
+      clear: "Limpiar",
+      errors: {
+        empty: "Introduce JSON para formatear.",
+        invalid:
+          "El JSON no es válido: revisa las comillas, las comas o las llaves.",
+        invalidAt: "JSON no válido en la línea {line}, columna {column}.",
+      },
+      statusIn: "Entrada: {count} caracteres",
+      statusOut: "Salida: {count} caracteres",
+      statusValid: "JSON válido",
+      statusInvalid: "JSON no válido",
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Pega o escribe JSON en el panel de entrada, elige Formatear o Minimizar y pulsa la acción. El resultado aparece en el panel de salida, listo para copiar.",
+            "Todo se ejecuta en tu navegador: el JSON que pegas no se envía a ningún servidor.",
+          ],
+        },
+        {
+          heading: "Formatear",
+          paragraphs: [
+            "Formatear vuelve a imprimir el documento con sangría de dos espacios y saltos de línea, para que los objetos y arrays anidados se lean con facilidad. Las claves conservan su orden original.",
+          ],
+        },
+        {
+          heading: "Minimizar",
+          paragraphs: [
+            "Minimizar elimina todos los espacios insignificantes y produce el texto más pequeño que representa los mismos datos: útil antes de pegar JSON en archivos de configuración o cargas de API.",
+          ],
+        },
+        {
+          heading: "Supuestos y casos límite",
+          items: [
+            "Solo cambian los espacios: las claves, los valores y su orden se conservan exactamente como se han analizado.",
+            "Sirve cualquier valor JSON válido: objetos, arrays, cadenas, números, booleanos y `null`.",
+            "Los números se analizan como números de JavaScript, así que los enteros muy grandes pueden perder precisión al volver a imprimirlos.",
+            "Las claves duplicadas conservan el último valor, igual que el comportamiento de `JSON.parse` en los navegadores.",
+            "Cuando la entrada no es válida, el mensaje muestra la línea y la columna donde se detuvo el análisis cuando el navegador la indica, y el último resultado válido permanece en el panel de salida.",
+            "La entrada solo se analiza como datos (nunca se evalúa) y los resultados se muestran como texto sin formato.",
           ],
         },
       ],

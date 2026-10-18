@@ -70,6 +70,9 @@ describe("category membership", () => {
       "/percentage-calculator",
       "/discount-calculator",
     ]);
+    expect(toolsInCategory("Developer tools").map((tool) => tool.href)).toEqual(
+      ["/base64-encoder", "/json-formatter"],
+    );
   });
 
   it("derives a tool's category from the registry and fails fast otherwise", () => {
@@ -83,8 +86,10 @@ describe("category page publication", () => {
   it("requires at least two registered tools", () => {
     expect(CATEGORY_PAGE_MIN_TOOLS).toBe(2);
     expect(isCategoryPublished("Calculators")).toBe(true);
+    expect(isCategoryPublished("Developer tools")).toBe(true);
     expect(isCategoryPublished("Converters")).toBe(false);
-    expect(isCategoryPublished("Developer tools")).toBe(false);
+    expect(isCategoryPublished("Date & time")).toBe(false);
+    expect(isCategoryPublished("Text tools")).toBe(false);
   });
 
   it("derives the published set from the registry", () => {
@@ -95,7 +100,7 @@ describe("category page publication", () => {
     expect(publishedCategoryPaths()).toEqual(
       expected.map((category) => categoryPath(category)),
     );
-    expect(publishedCategories()).toEqual(["Calculators"]);
+    expect(publishedCategories()).toEqual(["Calculators", "Developer tools"]);
   });
 });
 

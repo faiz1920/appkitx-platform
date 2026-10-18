@@ -93,7 +93,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.goto("/");
   await openWithShortcut(page);
 
-  await expect(page.getByRole("option")).toHaveCount(2);
+  await expect(page.getByRole("option")).toHaveCount(4);
 
   await page.keyboard.press("ArrowDown");
   await expect(searchInput(page)).toHaveAttribute(
@@ -108,7 +108,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.keyboard.press("ArrowUp");
   await expect(searchInput(page)).toHaveAttribute(
     "aria-activedescendant",
-    "search-option-1",
+    "search-option-3",
   );
 
   await page.keyboard.press("ArrowDown");
@@ -139,7 +139,7 @@ test("typing filters results and shows the empty state", async ({ page }) => {
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "false");
 
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(2);
+  await expect(page.getByRole("option")).toHaveCount(4);
   await expect(empty).toBeHidden();
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "true");
 });
@@ -215,14 +215,37 @@ test("only lists registered tools with unique routes", async ({ page }) => {
     );
 
   expect([...hrefs].sort()).toEqual([
+    "/base64-encoder",
     "/discount-calculator",
+    "/json-formatter",
     "/percentage-calculator",
   ]);
   expect(new Set(hrefs).size).toBe(hrefs.length);
 
   await expect(palette(page).getByText("Unit Converter")).toHaveCount(0);
   await expect(palette(page).getByText("Loan Calculator")).toHaveCount(0);
-  await expect(palette(page).getByText("Base64 Encoder")).toHaveCount(0);
+  await expect(palette(page).getByText("Date Calculator")).toHaveCount(0);
+});
+
+test("finds and opens the developer tools by keyword", async ({ page }) => {
+  await page.goto("/");
+  await openWithShortcut(page);
+
+  await searchInput(page).fill("base64");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("option")).toContainText("Base64 Encoder");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+
+  await expect(page).toHaveURL(/\/base64-encoder$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Base64 Encoder",
+  );
+
+  await openWithShortcut(page);
+  await searchInput(page).fill("minify");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("option")).toContainText("JSON Formatter");
 });
 
 test("uses the full-screen sheet at 320px without horizontal overflow", async ({
@@ -243,7 +266,7 @@ test("uses the full-screen sheet at 320px without horizontal overflow", async ({
   if (!box) throw new Error("palette is not visible");
   expect(box.width).toBeGreaterThanOrEqual(319);
   await expect(searchInput(page)).toBeVisible();
-  await expect(page.getByRole("option")).toHaveCount(2);
+  await expect(page.getByRole("option")).toHaveCount(4);
 });
 
 test("the Spanish palette searches localized tools and stays localized", async ({
@@ -299,7 +322,7 @@ test("Spanish placeholder cards never appear in search results", async ({
   await page.goto("/es/");
   await openWithShortcut(page);
 
-  for (const query of ["unidades", "préstamo", "codificador", "formateador"]) {
+  for (const query of ["unidades", "préstamo", "calculadora de fechas"]) {
     await searchInput(page).fill(query);
     await expect(
       page.getByRole("option"),
@@ -307,6 +330,12 @@ test("Spanish placeholder cards never appear in search results", async ({
     ).toHaveCount(0);
   }
 
+  /* Shipped tools are searchable in Spanish… */
+  await searchInput(page).fill("codificador");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("option")).toContainText("Codificador Base64");
+
+  /* …while the remaining placeholders stay out of the catalog. */
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(2);
+  await expect(page.getByRole("option")).toHaveCount(4);
 });
