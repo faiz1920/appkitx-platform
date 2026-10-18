@@ -95,10 +95,6 @@ export const es: Dictionary = {
         title: "Calculadora de préstamos",
         description: "Cuotas mensuales, intereses y coste total.",
       },
-      dateCalculator: {
-        title: "Calculadora de fechas",
-        description: "Días entre fechas, sumar o restar tiempo.",
-      },
     },
   },
   categories: {
@@ -129,7 +125,19 @@ export const es: Dictionary = {
         ],
       },
     },
-    "Date & time": { name: "Fecha y hora" },
+    "Date & time": {
+      name: "Fecha y hora",
+      page: {
+        title: "Herramientas de fecha y hora gratis — AppKitX",
+        metaDescription:
+          "Calculadoras de fechas y de edad gratis: cuenta los días entre dos fechas, suma o resta días, semanas, meses y años y calcula la edad en años, meses y días.",
+        toolsHeading: "Herramientas de fecha y hora gratis",
+        intro: [
+          "Dos herramientas en el navegador para cuentas con el calendario: cuenta los días entre dos fechas con un desglose en años, meses y días, o suma y resta días, semanas, meses y años con ajuste de fin de mes.",
+          "La calculadora de edad convierte una fecha de nacimiento en años, meses y días, además de los días vividos totales, contados a fecha del calendario local de tu dispositivo. Ambas trabajan con fechas de calendario simples: sin zonas horarias, sin subir nada y con todos los resultados copiables con un clic.",
+        ],
+      },
+    },
     "Text tools": { name: "Herramientas de texto" },
   },
   toolLayout: {
@@ -488,6 +496,150 @@ export const es: Dictionary = {
             "Las claves duplicadas conservan el último valor, igual que el comportamiento de `JSON.parse` en los navegadores.",
             "Cuando la entrada no es válida, el mensaje muestra la línea y la columna donde se detuvo el análisis cuando el navegador la indica, y el último resultado válido permanece en el panel de salida.",
             "La entrada solo se analiza como datos (nunca se evalúa) y los resultados se muestran como texto sin formato.",
+          ],
+        },
+      ],
+    },
+    dateCalculator: {
+      title: "Calculadora de fechas — AppKitX",
+      metaDescription:
+        "Calculadora de fechas gratis: cuenta los días entre dos fechas o suma y resta días, semanas, meses y años, con ajuste de fin de mes y el día de la semana resultante.",
+      name: "Calculadora de fechas",
+      description:
+        "Cuenta los días entre dos fechas o suma y resta días, semanas, meses y años.",
+      cardDescription: "Días entre fechas, sumar o restar tiempo.",
+      keywords: [
+        "fecha",
+        "días entre",
+        "diferencia",
+        "sumar",
+        "restar",
+        "semanas",
+        "meses",
+        "años",
+        "duración",
+      ],
+      modeLegend: "Modo",
+      modes: {
+        difference: { optionLabel: "Diferencia" },
+        shift: { optionLabel: "Sumar o restar" },
+      },
+      startLabel: "Fecha de inicio",
+      endLabel: "Fecha de fin",
+      dateLabel: "Fecha",
+      amountLabel: "Cantidad",
+      amountHint: "Un número entero; las cantidades negativas restan.",
+      unitLabel: "Unidad",
+      units: {
+        days: "Días",
+        weeks: "Semanas",
+        months: "Meses",
+        years: "Años",
+      },
+      daysLabel: "Días entre",
+      breakdownLabel: "Años, meses y días",
+      resultDateLabel: "Fecha resultante",
+      weekdayLabel: "Día de la semana",
+      errors: {
+        emptyStart: "Introduce una fecha de inicio.",
+        emptyEnd: "Introduce una fecha de fin.",
+        emptyDate: "Introduce una fecha.",
+        amountRange: "Introduce un número entero.",
+      },
+      differenceCaption: "De {from} a {to}.",
+      shiftAddCaption: "Resultado de sumar {amount} a {date}.",
+      shiftSubtractCaption: "Resultado de restar {amount} a {date}.",
+      differenceCopy:
+        "{days} entre {from} y {to}.\nAños, meses y días: {breakdown}",
+      shiftCopy: "{date} ({weekday})",
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Elige Diferencia para contar los días entre dos fechas, o Sumar o restar para desplazar una fecha en días, semanas, meses o años. Introduce las fechas, pulsa Calcular y el resultado aparece debajo: todo se ejecuta en tu navegador.",
+          ],
+        },
+        {
+          heading: "Contar los días entre fechas",
+          paragraphs: [
+            "La diferencia es un recuento exclusivo de días: del 1 de enero al 2 de enero hay un día, y la misma fecha son cero. Si inviertes las fechas, la respuesta es la misma: el recuento siempre es absoluto.",
+            "Bajo el recuento de días, el resultado también desglosa el intervalo en años, meses y días de calendario completos, con la misma aritmética de meses que el modo de sumar o restar.",
+          ],
+        },
+        {
+          heading: "Sumar y restar tiempo",
+          paragraphs: [
+            "Los días y las semanas suman recuentos exactos de días, así que no les afectan las longitudes de los meses. Los meses y los años avanzan meses de calendario completos y se ajustan al último día válido del mes de destino: `31 de enero + 1 mes` es `28 de febrero`, o `29 de febrero` en un año bisiesto.",
+            "Introduce una cantidad negativa para restar: `31 de marzo − 1 mes` es `28 de febrero`, o `29 de febrero` en un año bisiesto, con el mismo ajuste aplicado hacia atrás.",
+          ],
+        },
+        {
+          heading: "Supuestos y casos límite",
+          items: [
+            "Las fechas se tratan como fechas de calendario simples — `2026-03-01` — sin hora del día ni zona horaria, así que los cambios de horario de verano nunca desplazan un resultado.",
+            "Las cantidades son números enteros; las cantidades negativas restan. Las cantidades fraccionarias se rechazan con un mensaje en línea.",
+            "El resultado incluye el día de la semana de la fecha resultante en el modo de sumar o restar.",
+            "El ajuste de fin de mes se aplica siempre que se mueven meses o años: `31 de agosto + 1 mes` es `30 de septiembre`, y `29 de febrero de 2024 + 1 año` es `28 de febrero de 2025`.",
+            "No se sube nada: el cálculo se ejecuta por completo en tu navegador.",
+          ],
+        },
+      ],
+    },
+    ageCalculator: {
+      title: "Calculadora de edad — AppKitX",
+      metaDescription:
+        "Calculadora de edad gratis: calcula la edad en años, meses y días a partir de la fecha de nacimiento, además de los días vividos, a fecha de hoy.",
+      name: "Calculadora de edad",
+      description:
+        "Calcula la edad en años, meses y días a partir de una fecha de nacimiento, además de los días vividos.",
+      cardDescription:
+        "Edad en años, meses y días desde la fecha de nacimiento.",
+      keywords: [
+        "edad",
+        "cumpleaños",
+        "fecha de nacimiento",
+        "cuántos años",
+        "años",
+        "meses",
+        "días",
+      ],
+      birthLabel: "Fecha de nacimiento",
+      birthHint:
+        "La edad se calcula a fecha de hoy. Los nacidos el 29 de febrero cumplen el 28 de febrero en años no bisiestos.",
+      ageLabel: "Edad",
+      totalDaysLabel: "Días vividos",
+      caption: "A fecha de {date}.",
+      copyText: "Edad: {age}\nDías vividos: {days}",
+      errors: {
+        empty: "Introduce una fecha de nacimiento.",
+        future: "La fecha de nacimiento no puede ser futura.",
+      },
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Introduce la fecha de nacimiento y pulsa Calcular. El resultado muestra la edad en años, meses y días a fecha de hoy, además del número total de días vividos: todo se ejecuta en tu navegador.",
+          ],
+        },
+        {
+          heading: "Cómo se calcula la edad",
+          paragraphs: [
+            "La edad se mide en años, meses y días de calendario completos: aumenta el día del cumpleaños, así que el día del nacimiento cuenta como cero. El total de días es un recuento exacto desde la fecha de nacimiento hasta hoy.",
+            "Hoy significa la fecha del calendario local de tu dispositivo, no un reloj de servidor: la leyenda bajo el resultado muestra la fecha exacta utilizada.",
+          ],
+        },
+        {
+          heading: "Cumpleaños el 29 de febrero",
+          paragraphs: [
+            "Para quien nace un 29 de febrero, el cumpleaños se cuenta el 28 de febrero en los años no bisiestos. Esta es la convención que usa esta herramienta: no es una regla legal universal para la edad oficial.",
+          ],
+        },
+        {
+          heading: "Supuestos y casos límite",
+          items: [
+            "La fecha de nacimiento no puede ser futura; se rechaza con un mensaje en línea.",
+            "Solo se cuentan días completos: no intervienen horas, minutos ni zonas horarias, así que el resultado nunca depende de dónde estés.",
+            "El cálculo se hace por completo en tu navegador; la fecha que introduces no se sube nunca.",
           ],
         },
       ],

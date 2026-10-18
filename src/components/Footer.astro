@@ -26,6 +26,8 @@ const shippedTools = resolveLocalizedTools(locale, [
   "/discount-calculator",
   "/base64-encoder",
   "/json-formatter",
+  "/date-calculator",
+  "/age-calculator",
 ]).map((tool) => ({
   label: tool.title,
   href: localizedPath(tool.href, locale),
@@ -34,7 +36,6 @@ const shippedTools = resolveLocalizedTools(locale, [
 const placeholderTools = [
   t.home.placeholderTools.unitConverter.title,
   t.home.placeholderTools.loanCalculator.title,
-  t.home.placeholderTools.dateCalculator.title,
 ].map((label) => ({ label, href: "#" }));
 
 /*
@@ -45,6 +46,7 @@ const footerCategories: ToolCategory[] = [
   "Calculators",
   "Converters",
   "Developer tools",
+  "Date & time",
 ];
 
 const columns = [

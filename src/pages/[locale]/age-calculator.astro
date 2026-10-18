@@ -1,0 +1,16 @@
+---
+import AgeCalculatorToolView from "../../views/AgeCalculatorToolView.astro";
+import { isLocaleCode } from "../../i18n/config";
+import { nonDefaultLocales } from "../../i18n/routing";
+
+export function getStaticPaths() {
+  return nonDefaultLocales().map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale ?? "";
+if (!isLocaleCode(locale)) {
+  throw new Error(`Unsupported locale route: ${locale}`);
+}
+---
+
+<AgeCalculatorToolView locale={locale} />

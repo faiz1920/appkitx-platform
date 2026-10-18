@@ -126,7 +126,6 @@ export interface HomeStrings {
   placeholderTools: {
     unitConverter: { title: string; description: string };
     loanCalculator: { title: string; description: string };
-    dateCalculator: { title: string; description: string };
   };
 }
 
@@ -386,12 +385,101 @@ export interface JsonFormatterToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** One Date Calculator mode: option label only (fields are shared). */
+export interface DateCalculatorModeStrings {
+  optionLabel: string;
+}
+
+/** Date Calculator page labels and interface strings. */
+export interface DateCalculatorToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  modeLegend: string;
+  modes: {
+    difference: DateCalculatorModeStrings;
+    shift: DateCalculatorModeStrings;
+  };
+  startLabel: string;
+  endLabel: string;
+  dateLabel: string;
+  amountLabel: string;
+  amountHint: string;
+  unitLabel: string;
+  /** Option labels for the amount unit select. */
+  units: {
+    days: string;
+    weeks: string;
+    months: string;
+    years: string;
+  };
+  daysLabel: string;
+  breakdownLabel: string;
+  resultDateLabel: string;
+  weekdayLabel: string;
+  errors: {
+    emptyStart: string;
+    emptyEnd: string;
+    emptyDate: string;
+    amountRange: string;
+  };
+  /** Difference caption template; tokens: {from}, {to}. */
+  differenceCaption: string;
+  /** Shift caption template for positive amounts; tokens: {amount}, {date}. */
+  shiftAddCaption: string;
+  /** Shift caption template for negative amounts; tokens: {amount}, {date}. */
+  shiftSubtractCaption: string;
+  /** Clipboard text template; tokens: {days}, {from}, {to}, {breakdown}. */
+  differenceCopy: string;
+  /** Clipboard text template; tokens: {date}, {weekday}. */
+  shiftCopy: string;
+  /** Explanation sections rendered by ProseText below the tool. */
+  sections: readonly ProseSectionStrings[];
+}
+
+/** Age Calculator page labels and interface strings. */
+export interface AgeCalculatorToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  birthLabel: string;
+  birthHint: string;
+  ageLabel: string;
+  totalDaysLabel: string;
+  /** Result caption template; tokens: {date}. */
+  caption: string;
+  /** Clipboard text template; tokens: {age}, {days}. */
+  copyText: string;
+  errors: {
+    empty: string;
+    future: string;
+  };
+  /** Explanation sections rendered by ProseText below the tool. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** Per-tool dictionaries, keyed by tool. */
 export interface ToolsStrings {
   percentage: PercentageToolStrings;
   discount: DiscountToolStrings;
   base64: Base64ToolStrings;
   json: JsonFormatterToolStrings;
+  dateCalculator: DateCalculatorToolStrings;
+  ageCalculator: AgeCalculatorToolStrings;
 }
 
 /** Registry tool keys that have dictionary strings (src/lib/tools.ts). */

@@ -55,6 +55,18 @@ describe("localizedToolCatalog", () => {
     expect(json?.description).toBe(
       "Formatea, minimiza y valida JSON en tu navegador.",
     );
+    const dateCalculator = catalog.find(
+      (tool) => tool.href === "/date-calculator",
+    );
+    const ageCalculator = catalog.find(
+      (tool) => tool.href === "/age-calculator",
+    );
+    expect(dateCalculator?.title).toBe("Calculadora de fechas");
+    expect(dateCalculator?.category).toBe("Fecha y hora");
+    expect(dateCalculator?.keywords).toContain("días entre");
+    expect(ageCalculator?.title).toBe("Calculadora de edad");
+    expect(ageCalculator?.category).toBe("Fecha y hora");
+    expect(ageCalculator?.keywords).toContain("cumpleaños");
   });
 
   it("keeps the English card text identical to the registry descriptions", () => {

@@ -19,6 +19,7 @@ import tagIcon from "lucide-static/icons/tag.svg?raw";
 import rulerIcon from "lucide-static/icons/ruler.svg?raw";
 import landmarkIcon from "lucide-static/icons/landmark.svg?raw";
 import calendarIcon from "lucide-static/icons/calendar-days.svg?raw";
+import cakeIcon from "lucide-static/icons/cake.svg?raw";
 import binaryIcon from "lucide-static/icons/binary.svg?raw";
 import bracesIcon from "lucide-static/icons/braces.svg?raw";
 
@@ -35,6 +36,8 @@ const registryIcons: Record<string, string> = {
   tag: tagIcon,
   binary: binaryIcon,
   braces: bracesIcon,
+  "calendar-days": calendarIcon,
+  cake: cakeIcon,
 };
 
 /* Registered tools come from the localized catalog; hrefs stay locale-aware. */
@@ -55,12 +58,6 @@ const tools = [
     title: t.home.placeholderTools.loanCalculator.title,
     description: t.home.placeholderTools.loanCalculator.description,
     icon: landmarkIcon,
-    href: "#",
-  },
-  {
-    title: t.home.placeholderTools.dateCalculator.title,
-    description: t.home.placeholderTools.dateCalculator.description,
-    icon: calendarIcon,
     href: "#",
   },
 ];

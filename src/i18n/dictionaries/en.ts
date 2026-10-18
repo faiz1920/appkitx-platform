@@ -83,10 +83,6 @@ export const en: Dictionary = {
         title: "Loan Calculator",
         description: "Monthly payments, interest, and total cost.",
       },
-      dateCalculator: {
-        title: "Date Calculator",
-        description: "Days between dates, add or subtract time.",
-      },
     },
   },
   categories: {
@@ -117,7 +113,19 @@ export const en: Dictionary = {
         ],
       },
     },
-    "Date & time": { name: "Date & time" },
+    "Date & time": {
+      name: "Date & time",
+      page: {
+        title: "Free Date & Time Tools — AppKitX",
+        metaDescription:
+          "Free date and age calculators: count the days between two dates, add or subtract days, weeks, months, and years, and work out your age in years, months, and days.",
+        toolsHeading: "Free date & time tools",
+        intro: [
+          "Two browser-based tools for calendar math: count the days between two dates with a years, months, and days breakdown, or add and subtract days, weeks, months, and years with month-end clamping.",
+          "The age calculator turns a date of birth into years, months, and days plus total days lived, counted as of your device's local calendar date. Both tools work with plain calendar dates — no timezones, nothing uploaded, and every result can be copied with one click.",
+        ],
+      },
+    },
     "Text tools": { name: "Text tools" },
   },
   toolLayout: {
@@ -470,6 +478,149 @@ export const en: Dictionary = {
             "Duplicate keys keep the last value, matching `JSON.parse` behavior in browsers.",
             "When the input is invalid, the message shows the line and column where parsing stopped when the browser reports one, and the last valid output stays in the output pane.",
             "The input is only parsed as data — never evaluated — and results are rendered as plain text.",
+          ],
+        },
+      ],
+    },
+    dateCalculator: {
+      title: "Date Calculator — AppKitX",
+      metaDescription:
+        "Free date calculator: count the days between two dates, or add and subtract days, weeks, months, and years — with month-end clamping and the resulting weekday.",
+      name: "Date Calculator",
+      description:
+        "Count the days between two dates, or add and subtract days, weeks, months, and years.",
+      cardDescription: "Days between dates, and add or subtract time.",
+      keywords: [
+        "date",
+        "days between",
+        "difference",
+        "add",
+        "subtract",
+        "weeks",
+        "months",
+        "years",
+        "duration",
+      ],
+      modeLegend: "Mode",
+      modes: {
+        difference: { optionLabel: "Difference" },
+        shift: { optionLabel: "Add or subtract" },
+      },
+      startLabel: "Start date",
+      endLabel: "End date",
+      dateLabel: "Date",
+      amountLabel: "Amount",
+      amountHint: "A whole number; negative amounts subtract.",
+      unitLabel: "Unit",
+      units: {
+        days: "Days",
+        weeks: "Weeks",
+        months: "Months",
+        years: "Years",
+      },
+      daysLabel: "Days between",
+      breakdownLabel: "Years, months, days",
+      resultDateLabel: "Resulting date",
+      weekdayLabel: "Weekday",
+      errors: {
+        emptyStart: "Enter a start date.",
+        emptyEnd: "Enter an end date.",
+        emptyDate: "Enter a date.",
+        amountRange: "Enter a whole number.",
+      },
+      differenceCaption: "From {from} to {to}.",
+      shiftAddCaption: "Result of adding {amount} to {date}.",
+      shiftSubtractCaption: "Result of subtracting {amount} from {date}.",
+      differenceCopy:
+        "{days} between {from} and {to}.\nYears, months, days: {breakdown}",
+      shiftCopy: "{date} ({weekday})",
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Pick Difference to count the days between two dates, or Add or subtract to shift a date by days, weeks, months, or years. Enter the dates, select Calculate, and the result appears below — everything runs in your browser.",
+          ],
+        },
+        {
+          heading: "Counting the days between dates",
+          paragraphs: [
+            "The difference is an exclusive day count: January 1 to January 2 is one day, and the same date is zero. Reversed dates give the same answer — the count is always absolute.",
+            "Below the day count, the result also breaks the span into whole calendar years, months, and days, using the same month arithmetic as the add or subtract mode.",
+          ],
+        },
+        {
+          heading: "Adding and subtracting time",
+          paragraphs: [
+            "Days and weeks add exact day counts, so they are unaffected by month lengths. Months and years move whole calendar months and clamp to the last valid day of the target month: `January 31 + 1 month` is `February 28`, or `February 29` in a leap year.",
+            "Enter a negative amount to subtract: `March 31 − 1 month` is `February 28`, or `February 29` in a leap year, with the same clamping applied backwards.",
+          ],
+        },
+        {
+          heading: "Assumptions and edge cases",
+          items: [
+            "Dates are treated as plain calendar dates — `2026-03-01` — with no time of day and no timezone, so daylight-saving changes can never shift a result.",
+            "Amounts are whole numbers; negative amounts subtract. Fractional amounts are rejected with an inline message.",
+            "The result includes the weekday of the resulting date in the add or subtract mode.",
+            "Month-end clamping applies wherever months or years are moved: `August 31 + 1 month` is `September 30`, and `February 29, 2024 + 1 year` is `February 28, 2025`.",
+            "Nothing is uploaded: the calculation runs entirely in your browser.",
+          ],
+        },
+      ],
+    },
+    ageCalculator: {
+      title: "Age Calculator — AppKitX",
+      metaDescription:
+        "Free age calculator: work out age in years, months, and days from a date of birth, plus total days lived — calculated as of your local calendar date.",
+      name: "Age Calculator",
+      description:
+        "Work out age in years, months, and days from a date of birth, plus total days lived.",
+      cardDescription: "Age in years, months, and days from a birth date.",
+      keywords: [
+        "age",
+        "birthday",
+        "date of birth",
+        "how old",
+        "years",
+        "months",
+        "days",
+      ],
+      birthLabel: "Date of birth",
+      birthHint:
+        "Age is calculated as of today. Feb 29 birthdays count on Feb 28 in non-leap years.",
+      ageLabel: "Age",
+      totalDaysLabel: "Total days lived",
+      caption: "As of {date}.",
+      copyText: "Age: {age}\nTotal days lived: {days}",
+      errors: {
+        empty: "Enter a date of birth.",
+        future: "Date of birth can't be in the future.",
+      },
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Enter the date of birth and select Calculate. The result shows the age in years, months, and days as of today, plus the total number of days lived — everything runs in your browser.",
+          ],
+        },
+        {
+          heading: "How age is counted",
+          paragraphs: [
+            "The age is measured in whole calendar years, months, and days: it increments on the birthday itself, so the day of birth counts as zero. The total days figure is an exact day count from the date of birth to today.",
+            "Today means your device's local calendar date, not a server clock — the caption under the result shows the exact date used.",
+          ],
+        },
+        {
+          heading: "Leap day birthdays",
+          paragraphs: [
+            "For someone born on February 29, the birthday is counted on February 28 in non-leap years. This is the convention this tool uses — it is not a universal legal rule for official age.",
+          ],
+        },
+        {
+          heading: "Assumptions and edge cases",
+          items: [
+            "The date of birth must not be in the future; it is rejected with an inline message.",
+            "Only whole days are counted — no hours, minutes, or timezones are involved, so the result never depends on where you are.",
+            "The calculation is done entirely in your browser; the date you enter is never uploaded.",
           ],
         },
       ],
