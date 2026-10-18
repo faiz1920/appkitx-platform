@@ -3,25 +3,26 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import GlobalNav from "../components/GlobalNav.astro";
 import Footer from "../components/Footer.astro";
 import { tools } from "../lib/tools";
+import { getDictionary } from "../i18n/config";
 import searchIcon from "lucide-static/icons/search.svg?raw";
+
+const t = getDictionary();
 ---
 
 <BaseLayout
-  title="Page not found — AppKitX"
-  description="The page you are looking for does not exist. Search for a tool or browse the AppKitX calculators."
+  title={t.notFound.title}
+  description={t.notFound.metaDescription}
   noindex
 >
   <GlobalNav />
   <main id="main">
     <div class="mx-auto max-w-(--layout-tool) px-6 py-16 text-center md:py-24">
-      <h1 class="text-headline text-text-primary">Page not found</h1>
-      <p class="mt-3 text-body text-text-secondary">
-        The page you're looking for doesn't exist or may have moved.
-      </p>
+      <h1 class="text-headline text-text-primary">{t.notFound.heading}</h1>
+      <p class="mt-3 text-body text-text-secondary">{t.notFound.body}</p>
 
       <div class="mt-8 text-left">
         <label for="not-found-search" class="text-label text-text-primary">
-          Search tools
+          {t.search.label}
         </label>
         <form class="relative mt-2" role="search" data-not-found-search>
           <span
@@ -33,7 +34,7 @@ import searchIcon from "lucide-static/icons/search.svg?raw";
             id="not-found-search"
             type="search"
             class="input input-search"
-            placeholder="Search free tools…"
+            placeholder={t.search.pagePlaceholder}
             data-not-found-search-input
           />
         </form>
@@ -50,7 +51,7 @@ import searchIcon from "lucide-static/icons/search.svg?raw";
       </ul>
 
       <a href="/" class="btn btn-primary mt-8">
-        Go to homepage
+        {t.notFound.goHome}
       </a>
     </div>
   </main>

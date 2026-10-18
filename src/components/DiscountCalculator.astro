@@ -2,9 +2,21 @@
 import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
 import checkIcon from "lucide-static/icons/check.svg?raw";
 import copyIcon from "lucide-static/icons/copy.svg?raw";
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.discount;
+
+/* Strings for the client script — JSON-safe slice of the dictionary. */
+const scriptStrings = { calculator: t.calculator, tool };
 ---
 
-<div data-discount-calculator>
+<div data-discount-calculator data-i18n={JSON.stringify(scriptStrings)}>
   <form novalidate data-calculator-form>
     <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)">
       <div class="space-y-5">
@@ -13,7 +25,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
             for="discount-input-price"
             class="text-label text-text-primary"
           >
-            Original price
+            {tool.priceLabel}
           </label>
           <input
             id="discount-input-price"
@@ -27,7 +39,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
             data-input-price
           />
           <p id="discount-hint-price" class="mt-1 text-caption text-text-muted">
-            The price before the discount, in any currency.
+            {tool.priceHint}
           </p>
           <p
             id="discount-error-price"
@@ -45,7 +57,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
             for="discount-input-percent"
             class="text-label text-text-primary"
           >
-            Discount percentage (%)
+            {tool.percentLabel}
           </label>
           <input
             id="discount-input-percent"
@@ -62,7 +74,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
             id="discount-hint-percent"
             class="mt-1 text-caption text-text-muted"
           >
-            A percentage between 0 and 100.
+            {tool.percentHint}
           </p>
           <p
             id="discount-error-percent"
@@ -78,10 +90,10 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
 
       <div class="mt-6">
         <button type="submit" class="btn btn-primary w-full">
-          Calculate
+          {t.calculator.calculate}
         </button>
         <button type="button" class="btn btn-secondary mt-3 w-full" data-reset>
-          Reset
+          {t.calculator.reset}
         </button>
       </div>
     </div>
@@ -92,15 +104,17 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
     aria-live="polite"
     data-result-region
   >
-    <p class="text-overline text-text-secondary uppercase">Result</p>
+    <p class="text-overline text-text-secondary uppercase">
+      {t.calculator.resultLabel}
+    </p>
     <div class="mt-2 pr-14">
-      <p class="text-caption text-text-secondary">Final price</p>
+      <p class="text-caption text-text-secondary">{tool.finalPriceLabel}</p>
       <p class="mt-1 text-mono-result text-text-disabled" data-final-price>
         —
       </p>
     </div>
     <div class="mt-4 pr-14">
-      <p class="text-caption text-text-secondary">You save</p>
+      <p class="text-caption text-text-secondary">{tool.savingsLabel}</p>
       <p
         class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
         data-savings
@@ -109,7 +123,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
       </p>
     </div>
     <p class="mt-3 pr-14 text-caption text-text-muted" data-result-caption>
-      Results appear here
+      {t.calculator.resultsPlaceholder}
     </p>
     <p
       class="mt-2 flex items-center gap-1.5 text-caption text-success"
@@ -121,7 +135,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
         aria-hidden="true"
         set:html={checkIcon}
       />
-      Copied to clipboard.
+      {t.calculator.copied}
     </p>
     <p
       class="mt-2 flex items-center gap-1.5 text-caption text-error"
@@ -133,12 +147,12 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
         aria-hidden="true"
         set:html={alertIcon}
       />
-      Copy failed — select the result text and copy it manually.
+      {t.calculator.copyFailed}
     </p>
     <button
       type="button"
       class="btn btn-ghost absolute top-3 right-3 w-11 px-0"
-      aria-label="Copy result"
+      aria-label={t.calculator.copyResult}
       disabled
       data-copy
     >
@@ -159,7 +173,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
   </div>
 
   <p class="mt-4 text-small text-text-secondary">
-    Formula:{" "}
+    {t.calculator.formulaLabel}{" "}
     <code class="inline-code" data-formula>
       discount = (price × percent) ÷ 100 · final = price − discount
     </code>
@@ -173,12 +187,20 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
     formatAmount,
     formulaTemplate,
   } from "../lib/discount";
+  import type {
+    CalculatorStrings,
+    DiscountToolStrings,
+  } from "../i18n/dictionary";
+  import { interpolate } from "../i18n/interpolate";
 
   const root = document.querySelector<HTMLElement>(
     "[data-discount-calculator]",
   );
 
   if (root) {
+    const i18n: { calculator: CalculatorStrings; tool: DiscountToolStrings } =
+      JSON.parse(root.dataset.i18n ?? "{}");
+
     const requireEl = <T extends Element>(selector: string): T => {
       const el = root.querySelector<T>(selector);
       if (!el) throw new Error(`Discount calculator: missing ${selector}`);
@@ -248,7 +270,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
         el.textContent = "—";
         el.classList.replace("text-text-primary", "text-text-disabled");
       }
-      resultCaption.textContent = "Results appear here";
+      resultCaption.textContent = i18n.calculator.resultsPlaceholder;
       formulaEl.textContent = formulaTemplate();
       copyButton.disabled = true;
     };
@@ -270,14 +292,14 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
           inputPrice,
           errorPrice,
           errorTextPrice,
-          "Enter a valid number.",
+          i18n.calculator.invalidNumber,
         );
       } else if (price < 0) {
         showError(
           inputPrice,
           errorPrice,
           errorTextPrice,
-          "Enter a price of 0 or more.",
+          i18n.tool.errors.negativePrice,
         );
       }
 
@@ -286,14 +308,14 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
           inputPercent,
           errorPercent,
           errorTextPercent,
-          "Enter a valid number.",
+          i18n.calculator.invalidNumber,
         );
       } else if (discountPercent < 0 || discountPercent > 100) {
         showError(
           inputPercent,
           errorPercent,
           errorTextPercent,
-          "Enter a discount between 0 and 100.",
+          i18n.tool.errors.percentRange,
         );
       }
 
@@ -320,14 +342,20 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
       finalPriceEl.classList.replace("text-text-disabled", "text-text-primary");
       savingsEl.textContent = formatAmount(result.savings);
       savingsEl.classList.replace("text-text-disabled", "text-text-primary");
-      resultCaption.textContent = `${formatAmount(discountPercent)}% off ${formatAmount(price)}.`;
+      resultCaption.textContent = interpolate(i18n.tool.caption, {
+        percent: formatAmount(discountPercent),
+        price: formatAmount(price),
+      });
       formulaEl.textContent = describeFormulas(
         price,
         discountPercent,
         result.savings,
         result.finalPrice,
       );
-      lastCopyText = `Final price: ${formatAmount(result.finalPrice)}\nYou save: ${formatAmount(result.savings)}`;
+      lastCopyText = interpolate(i18n.tool.copyText, {
+        price: formatAmount(result.finalPrice),
+        savings: formatAmount(result.savings),
+      });
       copyButton.disabled = false;
     });
 

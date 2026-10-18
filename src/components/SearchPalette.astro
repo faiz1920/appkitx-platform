@@ -3,19 +3,31 @@ import searchIcon from "lucide-static/icons/search.svg?raw";
 import searchXIcon from "lucide-static/icons/search-x.svg?raw";
 import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
 import tagIcon from "lucide-static/icons/tag.svg?raw";
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
 
 /* Build-time trusted SVGs keyed by registry icon name. */
 const toolIcons: Record<string, string> = {
   calculator: calculatorIcon,
   tag: tagIcon,
 };
+
+/* Strings for the client script — JSON-safe slice of the dictionary. */
+const scriptStrings = { search: t.search };
 ---
 
 <dialog
   class="search-palette"
-  aria-label="Search tools"
+  aria-label={t.search.label}
   data-search-palette
   data-tool-icons={JSON.stringify(toolIcons)}
+  data-i18n={JSON.stringify(scriptStrings)}
 >
   <div class="flex h-14 shrink-0 items-center gap-3 border-b border-border-subtle px-4">
     <span
@@ -27,23 +39,23 @@ const toolIcons: Record<string, string> = {
       type="text"
       class="search-palette-input min-w-0 flex-1 border-0 bg-transparent font-sans text-body text-text-primary placeholder:text-text-muted"
       role="combobox"
-      aria-label="Search tools"
+      aria-label={t.search.label}
       aria-expanded="true"
       aria-autocomplete="list"
       aria-controls="search-palette-results"
-      placeholder="Search tools…"
+      placeholder={t.search.placeholder}
       autocomplete="off"
       spellcheck="false"
       data-search-input
     />
-    <kbd class="kbd shrink-0">Esc</kbd>
+    <kbd class="kbd shrink-0">{t.search.escapeKey}</kbd>
   </div>
 
   <div class="min-h-0 flex-1 overflow-y-auto p-2">
     <div
       role="listbox"
       id="search-palette-results"
-      aria-label="Tools"
+      aria-label={t.search.resultsLabel}
       data-search-results
     ></div>
     <div
@@ -58,9 +70,9 @@ const toolIcons: Record<string, string> = {
       />
       <p class="text-label text-text-primary" data-search-empty-message></p>
       <p class="text-caption text-text-muted">
-        Try a different word, or{" "}
+        {t.search.suggestion}{" "}
         <a href="/" class="focus-ring text-accent hover:text-accent-hover">
-          browse all tools
+          {t.search.browseAll}
         </a>
         .
       </p>
@@ -72,12 +84,17 @@ const toolIcons: Record<string, string> = {
 
 <script>
   import { searchTools } from "../lib/search";
+  import { interpolate } from "../i18n/interpolate";
+  import type { SearchStrings } from "../i18n/dictionary";
 
   const dialog = document.querySelector<HTMLDialogElement>(
     "[data-search-palette]",
   );
 
   if (dialog) {
+    const i18n: { search: SearchStrings } = JSON.parse(
+      dialog.dataset.i18n ?? "{}",
+    );
     const input = dialog.querySelector<HTMLInputElement>("[data-search-input]");
     const resultsEl = dialog.querySelector<HTMLElement>(
       "[data-search-results]",
@@ -160,11 +177,18 @@ const toolIcons: Record<string, string> = {
         emptyEl.hidden = hasResults;
         resultsEl.hidden = !hasResults;
         if (!hasResults) {
-          emptyMessage.textContent = `No tools match “${query.trim()}”`;
+          emptyMessage.textContent = interpolate(i18n.search.noResults, {
+            query: query.trim(),
+          });
         }
         const status = hasResults
-          ? `${currentResults.length} tool${currentResults.length === 1 ? "" : "s"}`
-          : `No tools match ${query.trim()}`;
+          ? interpolate(
+              currentResults.length === 1
+                ? i18n.search.countOne
+                : i18n.search.countMany,
+              { count: currentResults.length },
+            )
+          : interpolate(i18n.search.noResultsStatus, { query: query.trim() });
         if (statusEl.textContent !== status) statusEl.textContent = status;
       };
 

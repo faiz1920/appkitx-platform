@@ -1,14 +1,23 @@
 ---
 import arrowIcon from "lucide-static/icons/arrow-right.svg?raw";
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
 
 interface Props {
   title: string;
   description: string;
   icon: string;
   href?: string;
+  locale?: LocaleCode;
 }
 
-const { title, description, icon, href = "#" } = Astro.props;
+const {
+  title,
+  description,
+  icon,
+  href = "#",
+  locale = defaultLocale,
+} = Astro.props;
+const t = getDictionary(locale);
 ---
 
 <a
@@ -23,7 +32,7 @@ const { title, description, icon, href = "#" } = Astro.props;
   <h3 class="mt-4 text-body-strong text-text-primary">{title}</h3>
   <p class="mt-1 line-clamp-2 text-small text-text-secondary">{description}</p>
   <span class="mt-4 flex items-center gap-1 text-label text-accent">
-    Open tool
+    {t.toolCard.openTool}
     <span
       class="h-4 w-4 transition-transform group-hover:translate-x-0.5 [&_svg]:h-4 [&_svg]:w-4"
       aria-hidden="true"

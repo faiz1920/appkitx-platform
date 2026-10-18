@@ -2,25 +2,29 @@
 import ToolLayout from "../layouts/ToolLayout.astro";
 import PercentageCalculator from "../components/PercentageCalculator.astro";
 import { resolveTools } from "../lib/tools";
+import { getDictionary } from "../i18n/config";
 import tagIcon from "lucide-static/icons/tag.svg?raw";
 
+const t = getDictionary();
+const tool = t.tools.percentage;
+
 const toolIcons: Record<string, string> = { tag: tagIcon };
-const relatedTools = resolveTools(["/discount-calculator"]).map((tool) => ({
-  title: tool.title,
-  description: tool.description,
-  href: tool.href,
-  icon: toolIcons[tool.icon] ?? "",
+const relatedTools = resolveTools(["/discount-calculator"]).map((related) => ({
+  title: related.title,
+  description: related.description,
+  href: related.href,
+  icon: toolIcons[related.icon] ?? "",
 }));
 ---
 
 <ToolLayout
-  title="Percentage Calculator — AppKitX"
-  description="Free percentage calculator: find X% of Y, work out what percent one number is of another, and calculate percentage increase or decrease."
-  toolName="Percentage Calculator"
-  toolDescription="Find a percentage of a number, work out what percent one number is of another, or measure the change between two values."
+  title={tool.title}
+  description={tool.metaDescription}
+  toolName={tool.name}
+  toolDescription={tool.description}
   breadcrumb={[
-    { label: "Home", href: "/" },
-    { label: "Percentage Calculator" },
+    { label: t.toolLayout.breadcrumbHome, href: "/" },
+    { label: tool.name },
   ]}
   relatedTools={relatedTools}
 >

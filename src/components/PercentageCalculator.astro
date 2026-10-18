@@ -2,13 +2,25 @@
 import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
 import checkIcon from "lucide-static/icons/check.svg?raw";
 import copyIcon from "lucide-static/icons/copy.svg?raw";
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.percentage;
+
+/* Strings for the client script — JSON-safe slice of the dictionary. */
+const scriptStrings = { calculator: t.calculator, tool };
 ---
 
-<div data-percentage-calculator>
+<div data-percentage-calculator data-i18n={JSON.stringify(scriptStrings)}>
   <form novalidate data-calculator-form>
     <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)">
       <fieldset class="min-w-0">
-        <legend class="text-label text-text-primary">Mode</legend>
+        <legend class="text-label text-text-primary">{tool.modeLegend}</legend>
         <div class="segmented mt-2">
           <label>
             <input
@@ -18,7 +30,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
               class="sr-only"
               checked
             />
-            X% of Y
+            {tool.modes["percent-of"].optionLabel}
           </label>
           <label>
             <input
@@ -27,7 +39,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
               value="what-percent"
               class="sr-only"
             />
-            What %
+            {tool.modes["what-percent"].optionLabel}
           </label>
           <label>
             <input
@@ -36,7 +48,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
               value="percent-change"
               class="sr-only"
             />
-            % change
+            {tool.modes["percent-change"].optionLabel}
           </label>
         </div>
       </fieldset>
@@ -48,7 +60,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
             class="text-label text-text-primary"
             data-label-a
           >
-            Percentage (X%)
+            {tool.modes["percent-of"].labelA}
           </label>
           <input
             id="calc-input-a"
@@ -66,7 +78,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
             class="mt-1 text-caption text-text-muted"
             data-hint-a
           >
-            The percentage to apply.
+            {tool.modes["percent-of"].hintA}
           </p>
           <p id="calc-error-a" class="field-error mt-1" hidden data-error-a>
             <span aria-hidden="true" set:html={alertIcon} />
@@ -80,7 +92,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
             class="text-label text-text-primary"
             data-label-b
           >
-            Value (Y)
+            {tool.modes["percent-of"].labelB}
           </label>
           <input
             id="calc-input-b"
@@ -98,7 +110,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
             class="mt-1 text-caption text-text-muted"
             data-hint-b
           >
-            The number to take the percentage of.
+            {tool.modes["percent-of"].hintB}
           </p>
           <p id="calc-error-b" class="field-error mt-1" hidden data-error-b>
             <span aria-hidden="true" set:html={alertIcon} />
@@ -109,10 +121,10 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
 
       <div class="mt-6">
         <button type="submit" class="btn btn-primary w-full">
-          Calculate
+          {t.calculator.calculate}
         </button>
         <button type="button" class="btn btn-secondary mt-3 w-full" data-reset>
-          Reset
+          {t.calculator.reset}
         </button>
       </div>
     </div>
@@ -123,12 +135,14 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
     aria-live="polite"
     data-result-region
   >
-    <p class="text-overline text-text-secondary uppercase">Result</p>
+    <p class="text-overline text-text-secondary uppercase">
+      {t.calculator.resultLabel}
+    </p>
     <p class="mt-2 pr-14 text-mono-result text-text-disabled" data-result-value>
       —
     </p>
     <p class="mt-1 pr-14 text-caption text-text-muted" data-result-caption>
-      Results appear here
+      {t.calculator.resultsPlaceholder}
     </p>
     <p
       class="mt-2 flex items-center gap-1.5 text-caption text-success"
@@ -140,7 +154,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
         aria-hidden="true"
         set:html={checkIcon}
       />
-      Copied to clipboard.
+      {t.calculator.copied}
     </p>
     <p
       class="mt-2 flex items-center gap-1.5 text-caption text-error"
@@ -152,12 +166,12 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
         aria-hidden="true"
         set:html={alertIcon}
       />
-      Copy failed — select the result text and copy it manually.
+      {t.calculator.copyFailed}
     </p>
     <button
       type="button"
       class="btn btn-ghost absolute top-3 right-3 w-11 px-0"
-      aria-label="Copy result"
+      aria-label={t.calculator.copyResult}
       disabled
       data-copy
     >
@@ -178,7 +192,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
   </div>
 
   <p class="mt-4 text-small text-text-secondary">
-    Formula:{" "}
+    {t.calculator.formulaLabel}{" "}
     <code class="inline-code" data-formula>
       (X ÷ 100) × Y
     </code>
@@ -194,12 +208,20 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
     formulaTemplate,
     type Mode,
   } from "../lib/percentage";
+  import type {
+    CalculatorStrings,
+    PercentageToolStrings,
+  } from "../i18n/dictionary";
+  import { interpolate } from "../i18n/interpolate";
 
   const root = document.querySelector<HTMLElement>(
     "[data-percentage-calculator]",
   );
 
   if (root) {
+    const i18n: { calculator: CalculatorStrings; tool: PercentageToolStrings } =
+      JSON.parse(root.dataset.i18n ?? "{}");
+
     const requireEl = <T extends Element>(selector: string): T => {
       const el = root.querySelector<T>(selector);
       if (!el) throw new Error(`Percentage calculator: missing ${selector}`);
@@ -231,29 +253,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
     const radios =
       root.querySelectorAll<HTMLInputElement>('input[name="mode"]');
 
-    const MODES: Record<
-      Mode,
-      { labelA: string; hintA: string; labelB: string; hintB: string }
-    > = {
-      "percent-of": {
-        labelA: "Percentage (X%)",
-        hintA: "The percentage to apply.",
-        labelB: "Value (Y)",
-        hintB: "The number to take the percentage of.",
-      },
-      "what-percent": {
-        labelA: "Part (X)",
-        hintA: "The number you are comparing.",
-        labelB: "Whole (Y)",
-        hintB: "The number to compare it against.",
-      },
-      "percent-change": {
-        labelA: "From (original value)",
-        hintA: "The starting value. Must be greater than zero.",
-        labelB: "To (new value)",
-        hintB: "The value after the change.",
-      },
-    };
+    const MODES = i18n.tool.modes;
 
     let copyTimer: number | undefined;
     let copyBusy = false;
@@ -292,7 +292,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
       text: HTMLElement,
     ) => {
       wrap.hidden = false;
-      text.textContent = "Enter a valid number.";
+      text.textContent = i18n.calculator.invalidNumber;
       input.setAttribute("aria-invalid", "true");
     };
 
@@ -301,7 +301,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
       resetCopyFeedback();
       resultValue.textContent = "—";
       resultValue.classList.replace("text-text-primary", "text-text-disabled");
-      setCaption("Results appear here");
+      setCaption(i18n.calculator.resultsPlaceholder);
       formulaEl.textContent = formulaTemplate(mode());
       copyButton.disabled = true;
     };
@@ -328,12 +328,24 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
       value: number,
     ) => {
       if (activeMode === "percent-of")
-        return `${formatNumber(a)}% of ${formatNumber(b)}.`;
+        return interpolate(i18n.tool.captions.percentOf, {
+          percent: formatNumber(a),
+          value: formatNumber(b),
+        });
       if (activeMode === "what-percent")
-        return `${formatNumber(a)} out of ${formatNumber(b)}.`;
+        return interpolate(i18n.tool.captions.whatPercent, {
+          part: formatNumber(a),
+          whole: formatNumber(b),
+        });
       return value === 0
-        ? `No change from ${formatNumber(a)} to ${formatNumber(b)}.`
-        : `From ${formatNumber(a)} to ${formatNumber(b)}.`;
+        ? interpolate(i18n.tool.captions.noChange, {
+            from: formatNumber(a),
+            to: formatNumber(b),
+          })
+        : interpolate(i18n.tool.captions.change, {
+            from: formatNumber(a),
+            to: formatNumber(b),
+          });
     };
 
     form.addEventListener("submit", (event) => {
@@ -355,7 +367,7 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
 
       if (value === null) {
         lastResult = "";
-        resultValue.textContent = "Undefined";
+        resultValue.textContent = i18n.tool.undefinedResult;
         resultValue.classList.replace(
           "text-text-disabled",
           "text-text-primary",
@@ -363,9 +375,9 @@ import copyIcon from "lucide-static/icons/copy.svg?raw";
         setCaption(
           activeMode === "percent-change"
             ? a === 0
-              ? "Can't compute a percentage change from 0 — the original value must not be zero."
-              : "Percentage change is undefined for a negative original value — use a positive starting value."
-            : "Can't divide by 0 — the whole must not be zero.",
+              ? i18n.tool.captions.changeFromZero
+              : i18n.tool.captions.changeFromNegative
+            : i18n.tool.captions.divideByZero,
         );
         formulaEl.textContent = formulaTemplate(activeMode);
         copyButton.disabled = true;
