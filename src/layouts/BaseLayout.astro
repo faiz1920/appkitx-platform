@@ -29,6 +29,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     {noindex && <meta name="robots" content="noindex" />}
     {!noindex && <link rel="canonical" href={canonical.href} />}
+    <meta
+      name="google-site-verification"
+      content="FqtwFyw8U6onLFiInewftYVJ-kJePykEmuxN2SwOe0c"
+    />
     <title>{title}</title>
   </head>
   <body>
