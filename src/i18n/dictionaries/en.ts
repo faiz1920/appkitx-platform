@@ -10,6 +10,8 @@ export const en: Dictionary = {
     defaultTitle: "AppKitX — Free Online Tools",
     defaultDescription:
       "Free calculators, converters, and developer utilities, all in one place.",
+    socialImageAlt:
+      "AppKitX — free online tools for calculations, conversions, and development.",
     skipToContent: "Skip to content",
   },
   nav: {
@@ -118,7 +120,7 @@ export const en: Dictionary = {
       page: {
         title: "Free Date & Time Tools — AppKitX",
         metaDescription:
-          "Free date and age calculators: count the days between two dates, add or subtract days, weeks, months, and years, and work out your age in years, months, and days.",
+          "Free date and age calculators: count days between two dates, add or subtract days, weeks, months, and years, and work out your age in years, months, and days.",
         toolsHeading: "Free date & time tools",
         intro: [
           "Two browser-based tools for calendar math: count the days between two dates with a years, months, and days breakdown, or add and subtract days, weeks, months, and years with month-end clamping.",

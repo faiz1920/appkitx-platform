@@ -33,6 +33,9 @@ Tool visuals are live UI or original SVG diagrams.
 
 - AppKitX wordmark and logo mark: original works of the project, all rights reserved.
   The final logo mark is pending design; the wordmark is approved for interim use.
+- Social preview image (`public/images/appkitx-og.png`): original AppKitX artwork
+  built from the project wordmark, logo mark, and design tokens. No stock imagery
+  or third-party artwork is included.
 
 ## Policy
 

@@ -80,7 +80,7 @@ test("homepage exposes Open Graph, Twitter, and WebSite structured data", async 
   );
   await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
     "content",
-    "summary",
+    "summary_large_image",
   );
   await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute(
     "content",

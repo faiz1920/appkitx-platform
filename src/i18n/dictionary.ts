@@ -21,6 +21,8 @@ import type { Mode } from "../lib/percentage";
 export interface LayoutStrings {
   defaultTitle: string;
   defaultDescription: string;
+  /** Alt text for the shared social preview image. */
+  socialImageAlt: string;
   skipToContent: string;
 }
 

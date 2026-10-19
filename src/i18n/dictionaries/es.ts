@@ -22,6 +22,8 @@ export const es: Dictionary = {
     defaultTitle: "AppKitX — Herramientas online gratuitas",
     defaultDescription:
       "Calculadoras, conversores y utilidades para desarrolladores, gratis y en un solo lugar.",
+    socialImageAlt:
+      "AppKitX — herramientas online gratuitas para cálculos, conversiones y desarrollo.",
     skipToContent: "Saltar al contenido",
   },
   nav: {
@@ -504,7 +506,7 @@ export const es: Dictionary = {
     dateCalculator: {
       title: "Calculadora de fechas — AppKitX",
       metaDescription:
-        "Calculadora de fechas gratis: cuenta los días entre dos fechas o suma y resta días, semanas, meses y años, con ajuste de fin de mes y el día de la semana resultante.",
+        "Calculadora de fechas gratis: cuenta los días entre dos fechas o suma y resta días, semanas, meses y años, con ajuste de fin de mes y el día de la semana.",
       name: "Calculadora de fechas",
       description:
         "Cuenta los días entre dos fechas o suma y resta días, semanas, meses y años.",

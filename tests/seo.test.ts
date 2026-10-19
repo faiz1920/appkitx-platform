@@ -5,7 +5,12 @@ import {
   buildWebApplicationJsonLd,
   buildWebSiteJsonLd,
   serializeJsonLd,
+  siteAssetUrl,
   siteUrl,
+  SOCIAL_IMAGE_HEIGHT,
+  SOCIAL_IMAGE_PATH,
+  SOCIAL_IMAGE_WIDTH,
+  socialImageUrl,
   SITE_NAME,
 } from "../src/lib/seo";
 
@@ -61,6 +66,29 @@ describe("siteUrl", () => {
 
   it("throws when the site is not configured", () => {
     expect(() => siteUrl("/x", undefined)).toThrow(/site is not configured/i);
+  });
+});
+
+describe("social image", () => {
+  it("publishes one shared 1200x630 PNG path", () => {
+    expect(SOCIAL_IMAGE_PATH).toBe("/images/appkitx-og.png");
+    expect(SOCIAL_IMAGE_WIDTH).toBe(1200);
+    expect(SOCIAL_IMAGE_HEIGHT).toBe(630);
+  });
+
+  it("resolves the image to an absolute URL without a trailing slash", () => {
+    expect(socialImageUrl(SITE)).toBe(
+      "https://appkitx.com/images/appkitx-og.png",
+    );
+    expect(siteAssetUrl("/favicon.svg", SITE)).toBe(
+      "https://appkitx.com/favicon.svg",
+    );
+  });
+
+  it("rejects asset paths outside the configured origin", () => {
+    expect(() => siteAssetUrl("https://evil.example/card.png", SITE)).toThrow(
+      /outside/i,
+    );
   });
 });
 

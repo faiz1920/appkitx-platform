@@ -57,6 +57,7 @@ Do not register a language or expose it in the switcher until its translations a
 ### SEO output
 
 - Every indexable page carries a self-referencing canonical, reciprocal `hreflang` alternates for every supported locale, and `x-default` pointing at the unprefixed English URL — in the HTML head only.
+- Every indexable page also shares one 1200×630 PNG social preview image at `/images/appkitx-og.png`, with localized alt text, explicit dimensions, and `summary_large_image` Twitter metadata.
 - The sitemap pairs each translated page with its `en`/`es` alternates (emitted by `@astrojs/sitemap` from the registry via `sitemapI18n()`); it never contains `x-default` — the plugin has no support for it — and never lists `/en` URLs.
 - **404 limitation**: static output has a single `404.html`, so unknown paths — including `/es/…` paths — serve the English noindex 404 page. Localized 404s are a future enhancement.
 
@@ -85,7 +86,7 @@ Google Search Console is a manual, maintainer-operated surface. Nothing in this 
 
 - `npm run build` emits `dist/sitemap-index.xml` (referenced from `robots.txt`) and `dist/sitemap-0.xml` via `@astrojs/sitemap`, with the en/es alternates derived from the locale registry, no `/en` URLs, no `x-default`, and no 404.
 - `npm test` asserts that the sitemap i18n configuration follows the locale registry (`tests/routing.test.ts`) and that canonical URL forms and the JSON-LD builders are consistent for every shipped page (`tests/seo.test.ts`).
-- `npm run test:e2e` serves the production build and checks rendered canonicals, hreflang alternates, Open Graph, and structured data per page, the noindex 404, and that `robots.txt` and the sitemap are served with the expected routes (`e2e/seo.spec.ts`, `e2e/deployment.spec.ts`).
+- `npm run test:e2e` serves the production build and checks rendered canonicals, hreflang alternates, Open Graph, Twitter, and structured data per page, the noindex 404, the shared social image dimensions and format, and that `robots.txt` and the sitemap are served with the expected routes (`e2e/seo.spec.ts`, `e2e/social-metadata.spec.ts`, `e2e/deployment.spec.ts`).
 
 These checks prove the site's output, never Google's behavior. Indexing, ranking, and reporting are only visible in Search Console.
 
