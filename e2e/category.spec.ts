@@ -286,6 +286,30 @@ test("an unpublished category path renders the noindex 404 page", async ({
   );
 });
 
+test("category intros avoid hardcoded tool counts", async ({ page }) => {
+  for (const path of [
+    "/calculators/",
+    "/developer-tools/",
+    "/date-time/",
+    "/es/calculators/",
+    "/es/developer-tools/",
+    "/es/date-time/",
+  ]) {
+    await page.goto(path);
+
+    const intro = page.locator("main section").first().locator("p");
+    const firstParagraph = (await intro.first().innerText()).trim();
+    const fullIntro = (await intro.allInnerTexts()).join(" ");
+
+    expect(firstParagraph, `${path} intro start`).not.toMatch(
+      /^(?:\d+|two|three|four|dos|tres|cuatro)\b/i,
+    );
+    expect(fullIntro, `${path} fixed-count pronouns`).not.toMatch(
+      /\b(?:both|ambas)\b/i,
+    );
+  }
+});
+
 test("the homepage chip and footer link the published categories", async ({
   page,
 }) => {

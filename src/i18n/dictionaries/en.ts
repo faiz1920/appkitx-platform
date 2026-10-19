@@ -9,9 +9,9 @@ export const en: Dictionary = {
   layout: {
     defaultTitle: "AppKitX — Free Online Tools",
     defaultDescription:
-      "Free calculators, converters, and developer utilities, all in one place.",
+      "Free calculators, developer utilities, and date and time tools, all in one place.",
     socialImageAlt:
-      "AppKitX — free online tools for calculations, conversions, and development.",
+      "AppKitX — free online tools for calculators, developer utilities, and date and time tools.",
     skipToContent: "Skip to content",
   },
   nav: {
@@ -73,7 +73,7 @@ export const en: Dictionary = {
   home: {
     heroTitle: "Free tools for everyday work.",
     heroSubline:
-      "Calculators, converters, and developer utilities — all in one place.",
+      "Calculators, developer utilities, and date and time tools — all in one place.",
     browseByCategory: "Browse by category",
     exploreHeading: "Explore the toolkit.",
     placeholderTools: {
@@ -96,8 +96,8 @@ export const en: Dictionary = {
           "Free calculators for percentages and discounts: find a percentage of a number, work out percent change, or see the final price after a discount.",
         toolsHeading: "Free online calculators",
         intro: [
-          "Two calculators cover the everyday percentage math: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, and see what a discount saves and its final price.",
-          "Both run entirely in your browser, show the formula behind each result, and let you copy it with one click. Amounts are treated exactly as you enter them — the discount calculator is currency-neutral, and results are rounded only for display.",
+          "The calculators cover the everyday percentage math: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, and see what a discount saves and its final price.",
+          "They run entirely in your browser, show the formula behind each result, and let you copy it with one click. Amounts are treated exactly as you enter them — the discount calculator is currency-neutral, and results are rounded only for display.",
         ],
       },
     },
@@ -110,8 +110,8 @@ export const en: Dictionary = {
           "Free browser-based developer tools: encode and decode Base64, and format, minify, or validate JSON. Nothing you paste is uploaded.",
         toolsHeading: "Free developer tools",
         intro: [
-          "Two browser-based utilities for everyday developer work: convert text to Base64 and back, and format, minify, or validate JSON.",
-          "Both run entirely in your browser — nothing you paste is uploaded anywhere. Each tool documents its behavior and edge cases, and every result can be copied with one click.",
+          "Browser-based utilities for everyday developer work: convert text to Base64 and back, and format, minify, or validate JSON.",
+          "They run entirely in your browser — nothing you paste is uploaded anywhere. Each tool documents its behavior and edge cases, and every result can be copied with one click.",
         ],
       },
     },
@@ -123,8 +123,8 @@ export const en: Dictionary = {
           "Free date and age calculators: count days between two dates, add or subtract days, weeks, months, and years, and work out your age in years, months, and days.",
         toolsHeading: "Free date & time tools",
         intro: [
-          "Two browser-based tools for calendar math: count the days between two dates with a years, months, and days breakdown, or add and subtract days, weeks, months, and years with month-end clamping.",
-          "The age calculator turns a date of birth into years, months, and days plus total days lived, counted as of your device's local calendar date. Both tools work with plain calendar dates — no timezones, nothing uploaded, and every result can be copied with one click.",
+          "Browser-based tools for calendar math: count the days between two dates with a years, months, and days breakdown, or add and subtract days, weeks, months, and years with month-end clamping.",
+          "The age calculator turns a date of birth into years, months, and days plus total days lived, counted as of your device's local calendar date. The tools work with plain calendar dates — no timezones, nothing uploaded, and every result can be copied with one click.",
         ],
       },
     },

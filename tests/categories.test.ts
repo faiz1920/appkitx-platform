@@ -148,6 +148,26 @@ describe("category page copy", () => {
       }
     }
   });
+
+  it("does not hardcode the number of tools in category page intros", () => {
+    for (const [code, dictionary] of Object.entries(dictionaries)) {
+      for (const category of publishedCategories()) {
+        const page = dictionary.categories[category].page;
+        if (page === undefined) continue;
+
+        const firstParagraph = page.intro[0] ?? "";
+        const fullIntro = page.intro.join(" ");
+
+        expect(firstParagraph, `${code} ${category} intro start`).not.toMatch(
+          /^\s*(?:\d+|two|three|four|dos|tres|cuatro)\b/i,
+        );
+        expect(
+          fullIntro,
+          `${code} ${category} fixed-count pronouns`,
+        ).not.toMatch(/\b(?:both|ambas)\b/i);
+      }
+    }
+  });
 });
 
 /*
