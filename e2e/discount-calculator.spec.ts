@@ -229,19 +229,19 @@ test("links between both calculators through related tools", async ({
   const toPercentage = related.getByRole("link", {
     name: /Percentage Calculator/,
   });
-  await expect(toPercentage).toHaveAttribute("href", "/percentage-calculator");
+  await expect(toPercentage).toHaveAttribute("href", "/percentage-calculator/");
 
   await toPercentage.click();
-  await expect(page).toHaveURL(/\/percentage-calculator$/);
+  await expect(page).toHaveURL(/\/percentage-calculator\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Percentage Calculator",
   );
 
   const back = page.locator("section").filter({ hasText: "Related tools" });
   const toDiscount = back.getByRole("link", { name: /Discount Calculator/ });
-  await expect(toDiscount).toHaveAttribute("href", "/discount-calculator");
+  await expect(toDiscount).toHaveAttribute("href", "/discount-calculator/");
   await toDiscount.click();
-  await expect(page).toHaveURL(/\/discount-calculator$/);
+  await expect(page).toHaveURL(/\/discount-calculator\/$/);
 });
 
 test("is linked from the homepage and the footer", async ({ page }) => {
@@ -251,15 +251,15 @@ test("is linked from the homepage and the footer", async ({ page }) => {
     .locator("#tools")
     .getByRole("link")
     .filter({ hasText: "Discount Calculator" });
-  await expect(card).toHaveAttribute("href", "/discount-calculator");
+  await expect(card).toHaveAttribute("href", "/discount-calculator/");
 
   const footerLink = page
     .getByRole("contentinfo")
     .getByRole("link", { name: "Discount Calculator" });
-  await expect(footerLink).toHaveAttribute("href", "/discount-calculator");
+  await expect(footerLink).toHaveAttribute("href", "/discount-calculator/");
 
   await card.click();
-  await expect(page).toHaveURL(/\/discount-calculator$/);
+  await expect(page).toHaveURL(/\/discount-calculator\/$/);
 });
 
 test("has no horizontal overflow at 320px", async ({ page }) => {

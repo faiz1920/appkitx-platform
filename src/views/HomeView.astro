@@ -5,7 +5,7 @@ import Footer from "../components/Footer.astro";
 import ToolCard from "../components/ToolCard.astro";
 import { getDictionary, getLocale, type LocaleCode } from "../i18n/config";
 import { localizedToolCatalog } from "../i18n/tool-catalog";
-import { localizedPath } from "../i18n/routing";
+import { localizedHref, localizedPath } from "../i18n/routing";
 import {
   CATEGORY_IDS,
   categoryPath,
@@ -57,7 +57,7 @@ const tools: Array<{
     title: tool.title,
     description: tool.description,
     icon: registryIcons[tool.icon] ?? "",
-    href: localizedPath(tool.href, locale),
+    href: localizedHref(tool.href, locale),
   })),
   {
     title: t.home.placeholderTools.unitConverter.title,
@@ -80,7 +80,7 @@ const tools: Array<{
 const categories = CATEGORY_IDS.map((category) => ({
   name: t.categories[category].name,
   href: isCategoryPublished(category)
-    ? localizedPath(categoryPath(category), locale)
+    ? localizedHref(categoryPath(category), locale)
     : "#tools",
 }));
 
@@ -124,7 +124,7 @@ const jsonLd = [
           </form>
         </div>
 
-        <div class="mt-6">
+        <div id="categories" class="mt-6 scroll-mt-(--layout-nav-height)">
           <p class="text-overline text-text-muted uppercase">
             {t.home.browseByCategory}
           </p>

@@ -36,9 +36,9 @@ test("the English category page lists both registered calculators", async ({
     .filter({ hasText: "Open tool" });
   await expect(cards).toHaveCount(2);
   await expect(cards.nth(0)).toContainText("Percentage Calculator");
-  await expect(cards.nth(0)).toHaveAttribute("href", "/percentage-calculator");
+  await expect(cards.nth(0)).toHaveAttribute("href", "/percentage-calculator/");
   await expect(cards.nth(1)).toContainText("Discount Calculator");
-  await expect(cards.nth(1)).toHaveAttribute("href", "/discount-calculator");
+  await expect(cards.nth(1)).toHaveAttribute("href", "/discount-calculator/");
 
   /* Placeholder cards must never appear on a category page. */
   await expect(page.getByRole("main").getByText("Unit Converter")).toHaveCount(
@@ -84,10 +84,13 @@ test("the Spanish category page is fully localized", async ({ page }) => {
   await expect(cards.nth(0)).toContainText("Calculadora de porcentajes");
   await expect(cards.nth(0)).toHaveAttribute(
     "href",
-    "/es/percentage-calculator",
+    "/es/percentage-calculator/",
   );
   await expect(cards.nth(1)).toContainText("Calculadora de descuentos");
-  await expect(cards.nth(1)).toHaveAttribute("href", "/es/discount-calculator");
+  await expect(cards.nth(1)).toHaveAttribute(
+    "href",
+    "/es/discount-calculator/",
+  );
 
   await page.screenshot({
     path: "test-results/category-calculators-es.png",
@@ -124,9 +127,9 @@ test("the English developer tools page lists both registered tools", async ({
     .filter({ hasText: "Open tool" });
   await expect(cards).toHaveCount(2);
   await expect(cards.nth(0)).toContainText("Base64 Encoder");
-  await expect(cards.nth(0)).toHaveAttribute("href", "/base64-encoder");
+  await expect(cards.nth(0)).toHaveAttribute("href", "/base64-encoder/");
   await expect(cards.nth(1)).toContainText("JSON Formatter");
-  await expect(cards.nth(1)).toHaveAttribute("href", "/json-formatter");
+  await expect(cards.nth(1)).toHaveAttribute("href", "/json-formatter/");
 
   await page.screenshot({
     path: "test-results/category-developer-tools-en.png",
@@ -164,9 +167,9 @@ test("the Spanish developer tools page is fully localized", async ({
     .filter({ hasText: "Abrir herramienta" });
   await expect(cards).toHaveCount(2);
   await expect(cards.nth(0)).toContainText("Codificador Base64");
-  await expect(cards.nth(0)).toHaveAttribute("href", "/es/base64-encoder");
+  await expect(cards.nth(0)).toHaveAttribute("href", "/es/base64-encoder/");
   await expect(cards.nth(1)).toContainText("Formateador JSON");
-  await expect(cards.nth(1)).toHaveAttribute("href", "/es/json-formatter");
+  await expect(cards.nth(1)).toHaveAttribute("href", "/es/json-formatter/");
 
   await page.screenshot({
     path: "test-results/category-developer-tools-es.png",
@@ -203,9 +206,9 @@ test("the English date & time page lists both registered tools", async ({
     .filter({ hasText: "Open tool" });
   await expect(cards).toHaveCount(2);
   await expect(cards.nth(0)).toContainText("Date Calculator");
-  await expect(cards.nth(0)).toHaveAttribute("href", "/date-calculator");
+  await expect(cards.nth(0)).toHaveAttribute("href", "/date-calculator/");
   await expect(cards.nth(1)).toContainText("Age Calculator");
-  await expect(cards.nth(1)).toHaveAttribute("href", "/age-calculator");
+  await expect(cards.nth(1)).toHaveAttribute("href", "/age-calculator/");
 
   await page.screenshot({
     path: "test-results/category-date-time-en.png",
@@ -241,9 +244,9 @@ test("the Spanish date & time page is fully localized", async ({ page }) => {
     .filter({ hasText: "Abrir herramienta" });
   await expect(cards).toHaveCount(2);
   await expect(cards.nth(0)).toContainText("Calculadora de fechas");
-  await expect(cards.nth(0)).toHaveAttribute("href", "/es/date-calculator");
+  await expect(cards.nth(0)).toHaveAttribute("href", "/es/date-calculator/");
   await expect(cards.nth(1)).toContainText("Calculadora de edad");
-  await expect(cards.nth(1)).toHaveAttribute("href", "/es/age-calculator");
+  await expect(cards.nth(1)).toHaveAttribute("href", "/es/age-calculator/");
 
   await page.screenshot({
     path: "test-results/category-date-time-es.png",
@@ -289,9 +292,9 @@ test("the homepage chip and footer link the published categories", async ({
   await page.goto("/");
 
   for (const [name, href] of [
-    ["Calculators", "/calculators"],
-    ["Developer tools", "/developer-tools"],
-    ["Date & time", "/date-time"],
+    ["Calculators", "/calculators/"],
+    ["Developer tools", "/developer-tools/"],
+    ["Date & time", "/date-time/"],
   ] as const) {
     await expect(
       page.getByRole("main").getByRole("link", { name }),
@@ -315,9 +318,9 @@ test("the homepage chip and footer link the published categories", async ({
 
   await page.goto("/es/");
   for (const [name, href] of [
-    ["Calculadoras", "/es/calculators"],
-    ["Herramientas de desarrollo", "/es/developer-tools"],
-    ["Fecha y hora", "/es/date-time"],
+    ["Calculadoras", "/es/calculators/"],
+    ["Herramientas de desarrollo", "/es/developer-tools/"],
+    ["Fecha y hora", "/es/date-time/"],
   ] as const) {
     await expect(
       page.getByRole("main").getByRole("link", { name }),
@@ -333,62 +336,62 @@ test("tool pages link to their published category", async ({ page }) => {
     {
       path: "/percentage-calculator/",
       label: "See all",
-      href: "/calculators",
+      href: "/calculators/",
     },
     {
       path: "/discount-calculator/",
       label: "See all",
-      href: "/calculators",
+      href: "/calculators/",
     },
     {
       path: "/base64-encoder/",
       label: "See all",
-      href: "/developer-tools",
+      href: "/developer-tools/",
     },
     {
       path: "/json-formatter/",
       label: "See all",
-      href: "/developer-tools",
+      href: "/developer-tools/",
     },
     {
       path: "/es/percentage-calculator/",
       label: "Ver todas",
-      href: "/es/calculators",
+      href: "/es/calculators/",
     },
     {
       path: "/es/discount-calculator/",
       label: "Ver todas",
-      href: "/es/calculators",
+      href: "/es/calculators/",
     },
     {
       path: "/es/base64-encoder/",
       label: "Ver todas",
-      href: "/es/developer-tools",
+      href: "/es/developer-tools/",
     },
     {
       path: "/es/json-formatter/",
       label: "Ver todas",
-      href: "/es/developer-tools",
+      href: "/es/developer-tools/",
     },
     {
       path: "/date-calculator/",
       label: "See all",
-      href: "/date-time",
+      href: "/date-time/",
     },
     {
       path: "/age-calculator/",
       label: "See all",
-      href: "/date-time",
+      href: "/date-time/",
     },
     {
       path: "/es/date-calculator/",
       label: "Ver todas",
-      href: "/es/date-time",
+      href: "/es/date-time/",
     },
     {
       path: "/es/age-calculator/",
       label: "Ver todas",
-      href: "/es/date-time",
+      href: "/es/date-time/",
     },
   ]) {
     await page.goto(item.path);
@@ -407,12 +410,12 @@ test("the language switcher preserves the category page", async ({ page }) => {
   await switcher.locator("summary").click();
   await switcher.locator('[data-locale-choice="es"]').click();
 
-  await expect(page).toHaveURL(/\/es\/calculators\/?$/);
+  await expect(page).toHaveURL(/\/es\/calculators\/$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 
   /* The stored explicit choice carries to later visits in both directions. */
   await page.goto("/calculators/");
-  await expect(page).toHaveURL(/\/es\/calculators\/?$/);
+  await expect(page).toHaveURL(/\/es\/calculators\/$/);
 });
 
 test("the language switcher preserves the developer tools page", async ({
@@ -424,7 +427,7 @@ test("the language switcher preserves the developer tools page", async ({
   await switcher.locator("summary").click();
   await switcher.locator('[data-locale-choice="es"]').click();
 
-  await expect(page).toHaveURL(/\/es\/developer-tools\/?$/);
+  await expect(page).toHaveURL(/\/es\/developer-tools\/$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 });
 
@@ -437,7 +440,7 @@ test("the language switcher preserves the date & time page", async ({
   await switcher.locator("summary").click();
   await switcher.locator('[data-locale-choice="es"]').click();
 
-  await expect(page).toHaveURL(/\/es\/date-time\/?$/);
+  await expect(page).toHaveURL(/\/es\/date-time\/$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 });
 

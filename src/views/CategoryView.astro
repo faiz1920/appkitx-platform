@@ -6,7 +6,7 @@ import Breadcrumbs from "../components/Breadcrumbs.astro";
 import ToolCard from "../components/ToolCard.astro";
 import { getDictionary, getLocale, type LocaleCode } from "../i18n/config";
 import { resolveLocalizedTools } from "../i18n/tool-catalog";
-import { localizedPath } from "../i18n/routing";
+import { localizedHref, localizedPath } from "../i18n/routing";
 import {
   categoryPath,
   isCategoryPublished,
@@ -72,11 +72,11 @@ const categoryTools = resolveLocalizedTools(
   title: tool.title,
   description: tool.description,
   icon: registryIcons[tool.icon] ?? "",
-  href: localizedPath(tool.href, locale),
+  href: localizedHref(tool.href, locale),
 }));
 
 const breadcrumb = [
-  { label: t.toolLayout.breadcrumbHome, href: localizedPath("/", locale) },
+  { label: t.toolLayout.breadcrumbHome, href: localizedHref("/", locale) },
   { label: strings.name },
 ];
 

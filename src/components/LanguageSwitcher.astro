@@ -10,7 +10,7 @@ import {
   type LocaleCode,
 } from "../i18n/config";
 import {
-  localizedPath,
+  localizedHref,
   stripLocalePrefix,
   translatedPagePaths,
 } from "../i18n/routing";
@@ -39,8 +39,8 @@ const options = Object.values(locales).map((meta) => ({
   translationStatus: meta.translation.status,
   provisionalLabel: getDictionary(meta.code).language.provisional,
   href: translated
-    ? localizedPath(path, meta.code)
-    : localizedPath("/", meta.code),
+    ? localizedHref(path, meta.code)
+    : localizedHref("/", meta.code),
 }));
 ---
 

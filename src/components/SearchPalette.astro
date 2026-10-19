@@ -8,7 +8,7 @@ import bracesIcon from "lucide-static/icons/braces.svg?raw";
 import calendarIcon from "lucide-static/icons/calendar-days.svg?raw";
 import cakeIcon from "lucide-static/icons/cake.svg?raw";
 import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
-import { localizedPath } from "../i18n/routing";
+import { localizedHref } from "../i18n/routing";
 import { localizedToolCatalog } from "../i18n/tool-catalog";
 
 interface Props {
@@ -36,7 +36,7 @@ const toolIcons: Record<string, string> = {
  */
 const catalog = localizedToolCatalog(locale).map((tool) => ({
   ...tool,
-  href: localizedPath(tool.href, locale),
+  href: localizedHref(tool.href, locale),
 }));
 
 /* Strings for the client script — JSON-safe slice of the dictionary. */
@@ -94,7 +94,7 @@ const scriptStrings = { search: t.search };
       <p class="text-caption text-text-muted">
         {t.search.suggestion}{" "}
         <a
-          href={localizedPath("/", locale)}
+          href={localizedHref("/", locale)}
           class="focus-ring text-accent hover:text-accent-hover"
         >
           {t.search.browseAll}

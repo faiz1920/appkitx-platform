@@ -57,6 +57,12 @@ export function localizedPath(path: string, locale: LocaleCode): string {
   return `/${locale}${normalized}`;
 }
 
+/** Site-relative canonical href for an indexable page, with a trailing slash. */
+export function localizedHref(path: string, locale: LocaleCode): string {
+  const localized = localizedPath(path, locale);
+  return localized.endsWith("/") ? localized : `${localized}/`;
+}
+
 function trimTrailingSlash(path: string): string {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
 }

@@ -5,6 +5,7 @@ import {
   alternateLinks,
   astroI18nLocales,
   isTranslatedPage,
+  localizedHref,
   localizedPath,
   nonDefaultLocales,
   sitemapI18n,
@@ -105,6 +106,21 @@ describe("locale path helpers", () => {
     expect(localizedPath("/percentage-calculator", "es")).toBe(
       "/es/percentage-calculator",
     );
+  });
+
+  it("builds canonical trailing-slash hrefs for indexable pages", () => {
+    expect(localizedHref("/", "en")).toBe("/");
+    expect(localizedHref("/percentage-calculator", "en")).toBe(
+      "/percentage-calculator/",
+    );
+    expect(localizedHref("/percentage-calculator/", "en")).toBe(
+      "/percentage-calculator/",
+    );
+    expect(localizedHref("/", "es")).toBe("/es/");
+    expect(localizedHref("/percentage-calculator", "es")).toBe(
+      "/es/percentage-calculator/",
+    );
+    expect(localizedHref("/calculators", "es")).toBe("/es/calculators/");
   });
 
   it("strips locale prefixes with and without trailing slashes", () => {

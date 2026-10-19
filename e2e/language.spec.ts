@@ -57,6 +57,30 @@ test("the switcher shows a visible label, the current language, and 44px targets
   });
 });
 
+test("the switcher links to canonical trailing-slash page URLs", async ({
+  page,
+}) => {
+  await page.goto("/percentage-calculator/");
+  await summary(page).click();
+
+  await expect(
+    switcher(page).locator('[data-locale-choice="en"]'),
+  ).toHaveAttribute("href", "/percentage-calculator/");
+  await expect(
+    switcher(page).locator('[data-locale-choice="es"]'),
+  ).toHaveAttribute("href", "/es/percentage-calculator/");
+
+  await page.goto("/es/calculators/");
+  await summary(page).click();
+
+  await expect(
+    switcher(page).locator('[data-locale-choice="en"]'),
+  ).toHaveAttribute("href", "/calculators/");
+  await expect(
+    switcher(page).locator('[data-locale-choice="es"]'),
+  ).toHaveAttribute("href", "/es/calculators/");
+});
+
 test("the switcher marks provisional translations without hiding the language", async ({
   page,
 }) => {
@@ -117,7 +141,7 @@ test("choosing a language preserves the page and stores the explicit choice", as
   await summary(page).click();
   await switcher(page).locator('[data-locale-choice="es"]').click();
 
-  await expect(page).toHaveURL(/\/es\/percentage-calculator\/?$/);
+  await expect(page).toHaveURL(/\/es\/percentage-calculator\/$/);
   expect(
     await page.evaluate(
       (key) => window.localStorage.getItem(key),
@@ -144,6 +168,25 @@ test("an explicit choice takes precedence on later visits, both directions", asy
   );
   await page.goto("/es/");
   await expect(page).toHaveURL(/\/$/);
+});
+
+test("a stored choice keeps canonical non-root URLs in both directions", async ({
+  page,
+}) => {
+  await page.goto("/percentage-calculator/");
+  await page.evaluate(
+    (key) => window.localStorage.setItem(key, "es"),
+    PREFERENCE_STORAGE_KEY,
+  );
+  await page.goto("/percentage-calculator/");
+  await expect(page).toHaveURL(/\/es\/percentage-calculator\/$/);
+
+  await page.evaluate(
+    (key) => window.localStorage.setItem(key, "en"),
+    PREFERENCE_STORAGE_KEY,
+  );
+  await page.goto("/es/percentage-calculator/");
+  await expect(page).toHaveURL(/\/percentage-calculator\/$/);
 });
 
 test("invalid stored choices are ignored and cleaned up", async ({ page }) => {

@@ -278,12 +278,12 @@ Every interactive element defines the full set. Hover is a state like any other 
 
 ## Breakpoints & Responsive Behavior
 
-| Token             | Width  | Key changes                                             |
-| ----------------- | ------ | ------------------------------------------------------- |
-| `--breakpoint-sm` | 640px  | Tool grid 1→2 columns; footer columns stack → 2         |
-| `--breakpoint-md` | 768px  | Global nav expands from mobile drawer; footer 4 columns |
-| `--breakpoint-lg` | 1024px | Tool grid 3 columns; developer-tool panes side-by-side  |
-| `--breakpoint-xl` | 1280px | Tool grid 4 columns; full density                       |
+| Token             | Width  | Key changes                                            |
+| ----------------- | ------ | ------------------------------------------------------ |
+| `--breakpoint-sm` | 640px  | Tool grid 1→2 columns; footer columns stack → 2        |
+| `--breakpoint-md` | 768px  | Global nav expands from mobile drawer                  |
+| `--breakpoint-lg` | 1024px | Tool grid 3 columns; developer-tool panes side-by-side |
+| `--breakpoint-xl` | 1280px | Tool grid 4 columns; full density                      |
 
 ### Collapsing rules
 
@@ -293,7 +293,7 @@ Every interactive element defines the full set. Hover is a state like any other 
 - **Search palette**: ≥640px centered panel; below, full-screen sheet.
 - **Developer tools**: split panes stack vertically below 1024px.
 - **Calculator**: always single column, max 640px — works identically at every width.
-- **Footer**: 4 columns ≥768px → 2 → 1.
+- **Footer**: 2 columns ≥640px → 1.
 
 ---
 
@@ -326,7 +326,7 @@ WCAG 2.2 AA baseline. These are requirements, not guidelines:
 
 - White surface, `1px` border-bottom (`--color-border-subtle`), height `--layout-nav-height` (64px), sticky.
 - Left: AppKitX logo (original mark + wordmark, Inter 600 18px, `--color-text-primary`).
-- Center/right: primary links (Tools, Categories, About) in `--text-label`, `--color-text-secondary`; hover → `--color-text-primary`.
+- Center/right: primary links (Tools, Categories) in `--text-label`, `--color-text-secondary`; hover → `--color-text-primary`. Each links to its homepage section from every page.
 - Right: **search trigger** — the visual anchor of the nav: 44px outlined button (border-control, radius-md) with search icon, "Search" label, and a `⌘K` hint in a `--color-surface-muted` chip with `--color-text-secondary` text. Opens the search palette.
 - Next to the search trigger (desktop): **language switcher** — 44px outlined disclosure button with a globe icon, the visible current language, and a chevron. See Language switcher.
 - Mobile (<768px): logo + icon-only search button + menu button (44×44). Menu opens a drawer with full-width 48px link rows and the language switcher grouped below them.
@@ -452,8 +452,8 @@ Validation: errors appear inline under the offending field (error color, 13px, a
 ### Footer
 
 - `--color-surface-subtle` background, `1px` border-top (border-subtle), padding 48px top/bottom.
-- Columns: Tools, Categories, Company, Legal — headings `--text-overline` (muted), links `--text-small` text-secondary, hover accent. 4 columns ≥768px → 2 → 1.
-- Legal row: border-top, 12px `--text-micro` in text-muted: "© 2026 AppKitX" + Privacy / Terms links.
+- Columns: Tools, Categories — headings `--text-overline` (muted), links `--text-small` text-secondary, hover accent. 2 columns ≥640px → 1. Company and Legal columns return only when those pages exist.
+- Legal row: border-top, 12px `--text-micro` in text-muted: "© 2026 AppKitX".
 
 ### Legal pages
 
