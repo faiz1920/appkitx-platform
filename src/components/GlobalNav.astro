@@ -3,7 +3,7 @@ import menuIcon from "lucide-static/icons/menu.svg?raw";
 import searchIcon from "lucide-static/icons/search.svg?raw";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
 import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
-import { localizedPath } from "../i18n/routing";
+import { localizedHref } from "../i18n/routing";
 
 interface Props {
   locale?: LocaleCode;
@@ -12,10 +12,10 @@ interface Props {
 const { locale = defaultLocale } = Astro.props;
 const t = getDictionary(locale);
 
+const homeHref = localizedHref("/", locale);
 const links = [
-  { href: "#tools", label: t.nav.tools },
-  { href: "#tools", label: t.nav.categories },
-  { href: "#tools", label: t.nav.about },
+  { href: `${homeHref}#tools`, label: t.nav.tools },
+  { href: `${homeHref}#categories`, label: t.nav.categories },
 ];
 ---
 
@@ -25,7 +25,7 @@ const links = [
     class="mx-auto flex h-(--layout-nav-height) max-w-(--layout-container) items-center justify-between gap-6 px-6"
   >
     <a
-      href={localizedPath("/", locale)}
+      href={homeHref}
       class="focus-ring font-sans text-[18px] leading-none font-semibold text-text-primary"
     >
       AppKitX

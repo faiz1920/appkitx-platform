@@ -3,7 +3,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import GlobalNav from "../components/GlobalNav.astro";
 import Footer from "../components/Footer.astro";
 import { tools } from "../lib/tools";
-import { getDictionary } from "../i18n/config";
+import { defaultLocale, getDictionary } from "../i18n/config";
+import { localizedHref } from "../i18n/routing";
 import searchIcon from "lucide-static/icons/search.svg?raw";
 
 const t = getDictionary();
@@ -43,14 +44,17 @@ const t = getDictionary();
       <ul class="mt-6 flex flex-wrap justify-center gap-2">
         {tools.map((tool) => (
           <li>
-            <a href={tool.href} class="chip focus-ring">
+            <a
+              href={localizedHref(tool.href, defaultLocale)}
+              class="chip focus-ring"
+            >
               {tool.title}
             </a>
           </li>
         ))}
       </ul>
 
-      <a href="/" class="btn btn-primary mt-8">
+      <a href={localizedHref("/", defaultLocale)} class="btn btn-primary mt-8">
         {t.notFound.goHome}
       </a>
     </div>

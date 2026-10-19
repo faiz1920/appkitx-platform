@@ -96,6 +96,9 @@ export function buildLocalePreferenceScript(
         : basePath === "/"
           ? "/" + targetLocale + "/"
           : "/" + targetLocale + basePath;
+    if (target.length > 1 && target.charAt(target.length - 1) !== "/") {
+      target += "/";
+    }
     window.location.replace(target);
   }
   var stored = null;

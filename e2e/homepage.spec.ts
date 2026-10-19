@@ -20,7 +20,7 @@ test("homepage renders the chrome, hero, and token styles", async ({
     .getByRole("link")
     .filter({ hasText: "Percentage Calculator" });
   await expect(card).toHaveCSS("border-radius", "12px");
-  await expect(card).toHaveAttribute("href", "/percentage-calculator");
+  await expect(card).toHaveAttribute("href", "/percentage-calculator/");
 
   await expect(page.getByRole("navigation", { name: "Global" })).toHaveCSS(
     "height",
@@ -150,7 +150,7 @@ test("navigation and footer links show pressed states", async ({ page }) => {
 
   const footerLink = page
     .getByRole("contentinfo")
-    .getByRole("link", { name: "About" });
+    .getByRole("link", { name: "Percentage Calculator" });
   await footerLink.hover();
   await expect(footerLink).toHaveCSS("color", "rgb(15, 118, 110)");
   await page.mouse.down();

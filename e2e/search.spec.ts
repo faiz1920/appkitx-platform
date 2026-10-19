@@ -118,7 +118,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   );
 
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/percentage-calculator$/);
+  await expect(page).toHaveURL(/\/percentage-calculator\/$/);
 });
 
 test("typing filters results and shows the empty state", async ({ page }) => {
@@ -150,7 +150,7 @@ test("clicking a result navigates to its route", async ({ page }) => {
 
   await page.getByRole("option", { name: /Percentage Calculator/ }).click();
 
-  await expect(page).toHaveURL(/\/percentage-calculator$/);
+  await expect(page).toHaveURL(/\/percentage-calculator\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Percentage Calculator",
   );
@@ -201,7 +201,7 @@ test("searches and navigates from a tool page", async ({ page }) => {
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
 
-  await expect(page).toHaveURL(/\/percentage-calculator$/);
+  await expect(page).toHaveURL(/\/percentage-calculator\/$/);
 });
 
 test("only lists registered tools with unique routes", async ({ page }) => {
@@ -215,12 +215,12 @@ test("only lists registered tools with unique routes", async ({ page }) => {
     );
 
   expect([...hrefs].sort()).toEqual([
-    "/age-calculator",
-    "/base64-encoder",
-    "/date-calculator",
-    "/discount-calculator",
-    "/json-formatter",
-    "/percentage-calculator",
+    "/age-calculator/",
+    "/base64-encoder/",
+    "/date-calculator/",
+    "/discount-calculator/",
+    "/json-formatter/",
+    "/percentage-calculator/",
   ]);
   expect(new Set(hrefs).size).toBe(hrefs.length);
 
@@ -238,7 +238,7 @@ test("finds and opens the developer tools by keyword", async ({ page }) => {
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
 
-  await expect(page).toHaveURL(/\/base64-encoder$/);
+  await expect(page).toHaveURL(/\/base64-encoder\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Base64 Encoder",
   );
@@ -259,7 +259,7 @@ test("finds and opens the date tools by keyword", async ({ page }) => {
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
 
-  await expect(page).toHaveURL(/\/date-calculator$/);
+  await expect(page).toHaveURL(/\/date-calculator\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Date Calculator",
   );
@@ -306,7 +306,7 @@ test("the Spanish palette searches localized tools and stays localized", async (
   await expect(page.getByRole("option")).toContainText("Calculadoras");
 
   await page.getByRole("option").click();
-  await expect(page).toHaveURL(/\/es\/discount-calculator\/?$/);
+  await expect(page).toHaveURL(/\/es\/discount-calculator\/$/);
 });
 
 test("the Spanish palette matches accented terms with or without accents", async ({

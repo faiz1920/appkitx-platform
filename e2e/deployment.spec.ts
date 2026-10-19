@@ -16,10 +16,10 @@ test("unknown routes render the 404 page", async ({ page }) => {
   const main = page.getByRole("main");
   await expect(
     main.getByRole("link", { name: "Percentage Calculator" }),
-  ).toHaveAttribute("href", "/percentage-calculator");
+  ).toHaveAttribute("href", "/percentage-calculator/");
   await expect(
     main.getByRole("link", { name: "Discount Calculator" }),
-  ).toHaveAttribute("href", "/discount-calculator");
+  ).toHaveAttribute("href", "/discount-calculator/");
 
   const home = page.getByRole("link", { name: "Go to homepage" });
   await expect(home).toHaveAttribute("href", "/");
