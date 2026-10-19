@@ -36,6 +36,41 @@ test("homepage renders the chrome, hero, and token styles", async ({
   await page.screenshot({ path: "test-results/homepage.png", fullPage: true });
 });
 
+test("homepage copy describes shipped tool families without converter claims", async ({
+  page,
+}) => {
+  const cases = [
+    {
+      path: "/",
+      families: [/calculators?/i, /developer/i, /date and time/i],
+      converterClaim: /converters?/i,
+    },
+    {
+      path: "/es/",
+      families: [/calculadoras?/i, /desarrollador/i, /fecha y hora/i],
+      converterClaim: /conversores?/i,
+    },
+  ];
+
+  for (const item of cases) {
+    await page.goto(item.path);
+
+    const heroSubline = await page.locator("main h1 + p").innerText();
+    const metaDescription = await page
+      .locator('meta[name="description"]')
+      .getAttribute("content");
+    const copy = `${heroSubline} ${metaDescription ?? ""}`;
+
+    expect(heroSubline.trim()).not.toBe("");
+    for (const family of item.families) {
+      expect(copy, `${item.path} family coverage`).toMatch(family);
+    }
+    expect(copy, `${item.path} converter claim`).not.toMatch(
+      item.converterClaim,
+    );
+  }
+});
+
 test("planned tools are non-interactive coming-soon cards", async ({
   page,
 }) => {

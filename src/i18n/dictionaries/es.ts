@@ -21,9 +21,9 @@ export const es: Dictionary = {
   layout: {
     defaultTitle: "AppKitX — Herramientas online gratuitas",
     defaultDescription:
-      "Calculadoras, conversores y utilidades para desarrolladores, gratis y en un solo lugar.",
+      "Calculadoras, utilidades para desarrolladores y herramientas de fecha y hora, gratis y en un solo lugar.",
     socialImageAlt:
-      "AppKitX — herramientas online gratuitas para cálculos, conversiones y desarrollo.",
+      "AppKitX — herramientas online gratuitas: calculadoras, utilidades para desarrolladores y herramientas de fecha y hora.",
     skipToContent: "Saltar al contenido",
   },
   nav: {
@@ -85,7 +85,7 @@ export const es: Dictionary = {
   home: {
     heroTitle: "Herramientas gratis para el día a día.",
     heroSubline:
-      "Calculadoras, conversores y utilidades para desarrolladores, todo en un solo lugar.",
+      "Calculadoras, utilidades para desarrolladores y herramientas de fecha y hora, todo en un solo lugar.",
     browseByCategory: "Explorar por categoría",
     exploreHeading: "Explora el conjunto de herramientas.",
     placeholderTools: {
@@ -108,8 +108,8 @@ export const es: Dictionary = {
           "Calculadoras gratis de porcentajes y descuentos: calcula el X % de un número, la variación porcentual o el precio final tras un descuento.",
         toolsHeading: "Calculadoras online gratis",
         intro: [
-          "Dos calculadoras cubren las cuentas de porcentajes del día a día: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales y comprueba cuánto ahorras con un descuento y el precio final.",
-          "Ambas funcionan por completo en tu navegador, muestran la fórmula de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes: la calculadora de descuentos es neutral respecto a la moneda y los resultados solo se redondean para mostrarlos.",
+          "Las calculadoras cubren las cuentas de porcentajes del día a día: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales y comprueba cuánto ahorras con un descuento y el precio final.",
+          "Funcionan por completo en tu navegador, muestran la fórmula de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes: la calculadora de descuentos es neutral respecto a la moneda y los resultados solo se redondean para mostrarlos.",
         ],
       },
     },
@@ -122,8 +122,8 @@ export const es: Dictionary = {
           "Herramientas de desarrollo gratis en tu navegador: codifica y descodifica Base64 y formatea, minimiza o valida JSON. Nada de lo que pegas se sube.",
         toolsHeading: "Herramientas de desarrollo gratis",
         intro: [
-          "Dos utilidades en el navegador para el trabajo diario de desarrollo: convierte texto a Base64 y viceversa, y formatea, minimiza o valida JSON.",
-          "Ambas se ejecutan por completo en tu navegador: nada de lo que pegas se sube a ningún sitio. Cada herramienta documenta su comportamiento y sus casos límite, y todos los resultados se pueden copiar con un clic.",
+          "Utilidades en el navegador para el trabajo diario de desarrollo: convierte texto a Base64 y viceversa, y formatea, minimiza o valida JSON.",
+          "Se ejecutan por completo en tu navegador: nada de lo que pegas se sube a ningún sitio. Cada herramienta documenta su comportamiento y sus casos límite, y todos los resultados se pueden copiar con un clic.",
         ],
       },
     },
@@ -135,8 +135,8 @@ export const es: Dictionary = {
           "Calculadoras de fechas y de edad gratis: cuenta los días entre dos fechas, suma o resta días, semanas, meses y años y calcula la edad en años, meses y días.",
         toolsHeading: "Herramientas de fecha y hora gratis",
         intro: [
-          "Dos herramientas en el navegador para cuentas con el calendario: cuenta los días entre dos fechas con un desglose en años, meses y días, o suma y resta días, semanas, meses y años con ajuste de fin de mes.",
-          "La calculadora de edad convierte una fecha de nacimiento en años, meses y días, además de los días vividos totales, contados a fecha del calendario local de tu dispositivo. Ambas trabajan con fechas de calendario simples: sin zonas horarias, sin subir nada y con todos los resultados copiables con un clic.",
+          "Herramientas en el navegador para cuentas con el calendario: cuenta los días entre dos fechas con un desglose en años, meses y días, o suma y resta días, semanas, meses y años con ajuste de fin de mes.",
+          "La calculadora de edad convierte una fecha de nacimiento en años, meses y días, además de los días vividos totales, contados a fecha del calendario local de tu dispositivo. Las herramientas trabajan con fechas de calendario simples: sin zonas horarias, sin subir nada y con todos los resultados copiables con un clic.",
         ],
       },
     },
