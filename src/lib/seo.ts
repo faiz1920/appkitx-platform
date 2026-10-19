@@ -16,6 +16,11 @@
 /** Product name used in structured data and social cards. Not translated. */
 export const SITE_NAME = "AppKitX";
 
+/** Shared social preview image, served from the public directory. */
+export const SOCIAL_IMAGE_PATH = "/images/appkitx-og.png";
+export const SOCIAL_IMAGE_WIDTH = 1200;
+export const SOCIAL_IMAGE_HEIGHT = 630;
+
 export interface BreadcrumbEntry {
   label: string;
   href?: string;
@@ -91,12 +96,10 @@ function requireAbsoluteUrl(value: string, field: string): string {
 }
 
 /*
- * Resolve a site-relative path to the canonical absolute URL form: absolute
- * with a trailing slash (directory pages), matching canonicals and the
- * sitemap. Throws when the path escapes the configured origin or the site is
- * not configured.
+ * Resolve a site-relative path against the configured origin. Throws when the
+ * path escapes the configured origin or the site is not configured.
  */
-export function siteUrl(path: string, site: URL | string | undefined): string {
+function resolveSiteUrl(path: string, site: URL | string | undefined): URL {
   if (site === undefined) {
     throw new Error("SEO configuration error: site is not configured");
   }
@@ -107,10 +110,36 @@ export function siteUrl(path: string, site: URL | string | undefined): string {
       `SEO configuration error: ${path} resolves outside ${base.origin}`,
     );
   }
+  return resolved;
+}
+
+/*
+ * Resolve a site-relative path to the canonical absolute URL form: absolute
+ * with a trailing slash (directory pages), matching canonicals and the
+ * sitemap.
+ */
+export function siteUrl(path: string, site: URL | string | undefined): string {
+  const resolved = resolveSiteUrl(path, site);
   if (!resolved.pathname.endsWith("/")) {
     resolved.pathname = `${resolved.pathname}/`;
   }
   return resolved.href;
+}
+
+/*
+ * Resolve a static asset path to an absolute URL without the trailing-slash
+ * normalization used for pages. Used by Open Graph and Twitter image tags.
+ */
+export function siteAssetUrl(
+  path: string,
+  site: URL | string | undefined,
+): string {
+  return resolveSiteUrl(path, site).href;
+}
+
+/** Absolute URL of the shared social preview image. */
+export function socialImageUrl(site: URL | string | undefined): string {
+  return siteAssetUrl(SOCIAL_IMAGE_PATH, site);
 }
 
 /*
