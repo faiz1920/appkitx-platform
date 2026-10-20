@@ -1,3 +1,4 @@
+# Content-Security-Policy-Report-Only is generated into dist/_headers at build time.
 # Hashed build assets are content-addressed and can be cached forever.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
