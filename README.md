@@ -78,9 +78,31 @@ Category landing pages are registry-driven. `src/lib/categories.ts` owns the tax
 - **Linking**: homepage chips and the footer Categories column activate automatically for published categories; each tool page links its category from the Related tools section ("See all"). Unpublished categories keep their in-page anchor on the homepage and render as plain text in the footer — never as links.
 - **SEO**: category pages are indexable and carry a self-canonical, reciprocal `hreflang` alternates plus `x-default`, `BreadcrumbList` and `CollectionPage` JSON-LD, and the standard en/es sitemap pairing. Unpublished categories are never built, listed, or linked.
 
+## Analytics and real user measurements
+
+The Astro application bundle does not include an application-managed analytics SDK. No analytics script is imported in `src/`, and the build does not emit an analytics snippet into `dist/`.
+
+Production does have Cloudflare Web Analytics enabled for `appkitx.com`. The Cloudflare dashboard currently shows:
+
+- Setup method: Automatic setup.
+- Real User Measurements (RUM): enabled.
+- Visitor data in the EU: excluded.
+
+Cloudflare injects the beacon outside this repository. The production audit observed the Cloudflare beacon script from `static.cloudflareinsights.com` and requests to `/cdn-cgi/rum`. Local builds and previews do not include the production-injected beacon because Cloudflare adds it at the edge; the Playwright e2e suite therefore does not exercise it. The owner has decided to retain this configuration.
+
+Cloudflare RUM is separate from Google Search Console. RUM provides visitor measurement and field performance data; Search Console remains the source for organic search impressions, clicks, CTR, indexing, and URL Inspection results.
+
+### CSP implications
+
+A future Content Security Policy must account for the externally injected Cloudflare RUM script and its required network destinations. The observed hostname `static.cloudflareinsights.com` and endpoint `/cdn-cgi/rum` are evidence of what production currently loads, not a complete CSP specification, and any future policy must be verified against the live response. No CSP is added by this documentation.
+
+### Privacy and consent
+
+The current Cloudflare dashboard setting excludes visitor data in the EU. That setting is not, by itself, a determination that GDPR, ePrivacy, or any other privacy or consent requirement is satisfied. Privacy and consent requirements need a separate, informed assessment if applicable. This documentation does not add a cookie banner, consent manager, privacy-policy text, or legal conclusion.
+
 ## Search Console monitoring
 
-Google Search Console is a manual, maintainer-operated surface. Nothing in this repository submits sitemaps, requests indexing, or reads Search Console data, and this section deliberately contains no results — no Search Console data has been collected or verified in this repository. The site also ships **no analytics**: there are no tracking scripts or third-party embeds in the build, and none may be added without an explicit decision. Search Console is the intended performance signal until then.
+Google Search Console is a manual, maintainer-operated surface. Nothing in this repository submits sitemaps, requests indexing, or reads Search Console data, and this section deliberately contains no results — no Search Console data has been collected or verified in this repository. Search Console remains a separate source of organic search performance data from the Cloudflare RUM described above; it is not the only measurement surface, and this repository does not read or record its data.
 
 ### Automated checks (this repository)
 
@@ -88,7 +110,7 @@ Google Search Console is a manual, maintainer-operated surface. Nothing in this 
 - `npm test` asserts that the sitemap i18n configuration follows the locale registry (`tests/routing.test.ts`) and that canonical URL forms and the JSON-LD builders are consistent for every shipped page (`tests/seo.test.ts`).
 - `npm run test:e2e` serves the production build and checks rendered canonicals, hreflang alternates, Open Graph, Twitter, and structured data per page, the noindex 404, the shared social image dimensions and format, and that `robots.txt` and the sitemap are served with the expected routes (`e2e/seo.spec.ts`, `e2e/social-metadata.spec.ts`, `e2e/deployment.spec.ts`).
 
-These checks prove the site's output, never Google's behavior. Indexing, ranking, and reporting are only visible in Search Console.
+These checks prove the repository's output, not Google's behavior or Cloudflare's edge injection. The local preview used by the suite does not include the production RUM beacon. Indexing, ranking, and reporting are only visible in Search Console.
 
 ### Manual checklist (maintainer, in Search Console)
 
@@ -151,4 +173,4 @@ Validate a preview deployment before promoting to production.
 
 The intended production domain is `appkitx.com` (canonical), with `www.appkitx.com` redirecting to it. Domain binding and DNS setup are manual Cloudflare steps and are not configured by this repository.
 
-Security headers ship via `public/_headers` (content-type sniffing, referrer policy, framing, permissions policy, and immutable caching for hashed assets). HSTS is enabled at the Cloudflare zone level (SSL/TLS → Edge Certificates) once the domain is connected. A Content Security Policy is not set yet — the app uses small inline module scripts, so a strict CSP needs a hash-based pipeline first.
+Security headers ship via `public/_headers` (content-type sniffing, referrer policy, framing, permissions policy, and immutable caching for hashed assets). HSTS is enabled at the Cloudflare zone level (SSL/TLS → Edge Certificates) once the domain is connected. A Content Security Policy is not set yet — the app uses small inline module scripts, so a strict CSP needs a hash-based pipeline first. Any future CSP must also account for the externally injected Cloudflare RUM script and endpoint documented under [Analytics and real user measurements](#analytics-and-real-user-measurements); the observed hostname and endpoint are evidence, not a complete directive list.
