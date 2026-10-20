@@ -146,7 +146,7 @@ These checks prove the repository's output, not Google's behavior or Cloudflare'
 ## Commands
 
 - `npm run dev` — start the dev server
-- `npm run build` — production build to `dist/`
+- `npm run build` — production build to `dist/`; also generates the report-only CSP header in `dist/_headers`
 - `npm run check` — Astro and TypeScript checks
 - `npm test` — Vitest unit tests
 - `npm run test:e2e` — Playwright smoke tests (run `npm run build` first; the suite starts its own `wrangler dev` local preview on port 4399 and never attaches to a dev server on 4321)
@@ -174,4 +174,42 @@ Validate a preview deployment before promoting to production.
 
 The intended production domain is `appkitx.com` (canonical), with `www.appkitx.com` redirecting to it. Domain binding and DNS setup are manual Cloudflare steps and are not configured by this repository.
 
-Security headers come from two layers. Repository-managed headers ship via `public/_headers`: content-type sniffing, referrer policy, framing, permissions policy, and immutable caching for hashed assets. HSTS is not defined in `public/_headers`; Cloudflare manages it at the edge for `appkitx.com`. The verified production policy is `Strict-Transport-Security: max-age=2592000` (one month), with `includeSubDomains` off and `preload` off, present on both the apex `200` response and the `www` `301` redirect. This verifies HSTS only and does not make the overall security posture complete. A Content Security Policy remains a separate, pending decision: it is not set yet, and the app uses small inline scripts, so a strict CSP needs a hash-based pipeline first. `npm run csp:hash` inventories the exact inline executable script hashes from the current build; `application/ld+json` data blocks are reported separately, external scripts are excluded, and the production-only Cloudflare RUM injection must be tested separately. Regenerate the hashes after any change to inline scripts or generated HTML. Any future CSP must also account for the externally injected Cloudflare RUM script and endpoint documented under [Analytics and real user measurements](#analytics-and-real-user-measurements); the observed hostname and endpoint are evidence, not a complete directive list.
+Security headers come from two layers. Repository-managed headers ship via `public/_headers`: content-type sniffing, referrer policy, framing, permissions policy, and immutable caching for hashed assets. HSTS is not defined in `public/_headers`; Cloudflare manages it at the edge for `appkitx.com`. The verified production policy is `Strict-Transport-Security: max-age=2592000` (one month), with `includeSubDomains` off and `preload` off, present on both the apex `200` response and the `www` `301` redirect. This verifies HSTS only and does not make the overall security posture complete.
+
+### Content Security Policy (report-only)
+
+The build generates a `Content-Security-Policy-Report-Only` header and writes it into `dist/_headers` after Astro has generated every HTML page. It is not enforcing CSP. Report-only violations are reported to the browser only; they are not blocked.
+
+The workflow is:
+
+1. `npm run build` renders HTML and copies `public/_headers` to `dist/_headers`.
+2. `src/integrations/csp-report-only.ts` runs in `astro:build:done`.
+3. It reuses `src/lib/csp-inline-hashes.ts` to compute the executable inline-script hashes from `dist/**/*.html`.
+4. It builds the deterministic policy in `src/lib/csp-report-only.ts`.
+5. It inserts exactly one `Content-Security-Policy-Report-Only` line into the global `/*` block in `dist/_headers`, preserving every existing header and cache rule.
+
+Generated hashes are never written into `public/_headers` or any other manually maintained policy. `public/_headers` remains the source for the static security and cache rules. The integration fails the build if no HTML is found, `dist/_headers` is missing, the global block is missing or ambiguous, a report-only header exists outside the global block, or an enforcing CSP header is present.
+
+The policy is:
+
+```text
+default-src 'none';
+script-src 'self' https://static.cloudflareinsights.com <six build-generated sha256 hashes>;
+style-src 'self';
+img-src 'self';
+font-src 'self' data:;
+connect-src 'self' https://cloudflareinsights.com;
+base-uri 'none';
+form-action 'none';
+frame-ancestors 'none';
+object-src 'none';
+worker-src 'none'
+```
+
+`https://static.cloudflareinsights.com` is required for the edge-injected Cloudflare RUM module. `https://cloudflareinsights.com` is a fallback allowance for the RUM bundle’s code-inspected fallback URL; it is not an observed production destination. The observed production RUM request is a same-origin POST to `/cdn-cgi/rum`, which `connect-src 'self'` allows. There is no `report-uri` or `report-to`, because no CSP report collector exists. The browser’s `securitypolicyviolation` event, `ReportingObserver`, and console are the available diagnostics; do not describe them as central report collection. The existing `Report-To: cf-nel` response header is Cloudflare Network Error Logging, not a CSP collector.
+
+The Cloudflare RUM configuration, the EU visitor-data exclusion, and HSTS are unchanged. Local builds and previews do not contain the production RUM injection; `e2e/csp.spec.ts` therefore uses a local simulation for the external script host and same-origin beacon, and real production RUM behavior must be verified separately after a future deployment.
+
+Enforcement is a separate decision. Before switching from report-only to enforcing, require at minimum: zero unexpected violations across the full English/Spanish page and interaction set in Chromium, Firefox, and WebKit; a production or production-like preview with RUM returning `204` from `/cdn-cgi/rum` and no violations; the full Playwright suite green; header/hash consistency against a fresh build; verified header presence on `/404`, `/404.html`, and unknown 404 routes; cache/version alignment during rollout; and an explicit decision about the absence of a central CSP collector. HSTS remains unchanged throughout.
+
+`npm run csp:hash` remains the read-only inventory command. `npx playwright test e2e/csp.spec.ts` runs the generated-header, hash-consistency, violation-capture, and local RUM simulation checks. The production-only Cloudflare RUM injection and endpoint are documented under [Analytics and real user measurements](#analytics-and-real-user-measurements); the observed hostname and endpoint are evidence, not a complete directive list.
