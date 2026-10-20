@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
  * M5 category landing pages: registry-derived content, internal linking from
  * the homepage, footer, and tool pages, the provisioning gates for
  * unpublished categories, and locale behavior — all against the production
- * build served by `astro preview`.
+ * build served by `wrangler dev`.
  */
 
 test("the English category page lists both registered calculators", async ({

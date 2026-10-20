@@ -127,24 +127,25 @@ These checks prove the site's output, never Google's behavior. Indexing, ranking
 - `npm run build` — production build to `dist/`
 - `npm run check` — Astro and TypeScript checks
 - `npm test` — Vitest unit tests
-- `npm run test:e2e` — Playwright smoke tests (run `npm run build` first; the suite starts its own `astro preview` on port 4399 and never attaches to a dev server on 4321)
+- `npm run test:e2e` — Playwright smoke tests (run `npm run build` first; the suite starts its own `wrangler dev` local preview on port 4399 and never attaches to a dev server on 4321)
 - `npm run format` / `npm run format:check` — Prettier
 
 Line endings: the repository stores and checks out LF on every platform (`* text=auto eol=lf` in `.gitattributes`). If `format:check` reports CRLF files after a fresh Windows checkout, run `npx prettier --write .` once — it rewrites the working files to LF without changing any committed content.
 
 ## Deployment (Cloudflare Workers Static Assets)
 
-The site is a static Astro build deployed as Cloudflare Workers Static Assets. `wrangler.jsonc` is the deployment contract: it serves the build output and renders the branded 404 page for unknown routes. There is no server-side runtime, API, or environment variable in the repository.
+The site is a static Astro build deployed as Cloudflare Workers Static Assets. `wrangler.jsonc` is the deployment contract: it serves the build output, renders the branded 404 page for unknown routes, and uses a small Worker only to force the correct 404 status on direct `/404` and `/404.html` requests. There is no API or environment variable in the repository.
 
-| Setting            | Value                                                                    |
-| ------------------ | ------------------------------------------------------------------------ |
-| Build command      | `npm run build`                                                          |
-| Assets directory   | `dist` (configured in `wrangler.jsonc`)                                  |
-| Unknown routes     | `not_found_handling: "404-page"` (branded `404.html`)                    |
-| Compatibility date | `2026-10-17` (configured in `wrangler.jsonc`)                            |
-| Node.js            | 22.22.0 or newer (the `engines` requirement of the pinned Astro release) |
+| Setting            | Value                                                                                  |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| Build command      | `npm run build`                                                                        |
+| Assets directory   | `dist` (configured in `wrangler.jsonc`)                                                |
+| Unknown routes     | `not_found_handling: "404-page"` (branded `404.html`)                                  |
+| Direct error paths | `src/worker.ts` serves the branded 404 body with status 404 for `/404` and `/404.html` |
+| Compatibility date | `2026-10-17` (configured in `wrangler.jsonc`)                                          |
+| Node.js            | 22.22.0 or newer (the `engines` requirement of the pinned Astro release)               |
 
-Deployments run through the Wrangler CLI against `wrangler.jsonc`; the `previews` block in that file is required by the external deploy command. The exact invocation and any CI wiring are maintained outside this repository — no deploy script, workflow, or Wrangler dependency is checked in, so this file does not pin a command.
+Deployments run through the Wrangler CLI against `wrangler.jsonc`; the `previews` block in that file is required by the external deploy command. Wrangler is a development dependency here for the local preview used by Playwright. The exact deployment invocation and any CI wiring are maintained outside this repository, so this file does not pin a deploy command.
 
 Validate a preview deployment before promoting to production.
 

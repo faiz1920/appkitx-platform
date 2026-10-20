@@ -1,15 +1,17 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const previewPort = 4399;
+const previewUrl = `http://127.0.0.1:${previewPort}`;
 
 export default defineConfig({
   testDir: "./e2e",
   webServer: {
-    command: `npm run preview -- --port ${previewPort}`,
-    port: previewPort,
+    command: `wrangler dev --port ${previewPort} --ip 127.0.0.1 --local`,
+    url: previewUrl,
+    reuseExistingServer: false,
   },
   use: {
-    baseURL: `http://localhost:${previewPort}`,
+    baseURL: previewUrl,
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });
