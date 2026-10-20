@@ -1,5 +1,45 @@
 import { expect, test } from "@playwright/test";
 
+test("direct 404 paths return 404 without redirects", async ({
+  page,
+  request,
+}) => {
+  for (const path of ["/404", "/404.html"]) {
+    const response = await request.get(path, { maxRedirects: 0 });
+    expect(response.status(), `${path} must return 404`).toBe(404);
+    expect(
+      response.headers()["location"],
+      `${path} must not redirect`,
+    ).toBeUndefined();
+
+    await page.goto(path);
+    expect(new URL(page.url()).pathname, `${path} must stay put`).toBe(path);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "Page not found",
+    );
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      "noindex",
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+    await expect(
+      page.getByRole("link", { name: "Go to homepage" }),
+    ).toHaveAttribute("href", "/");
+  }
+});
+
+test("valid routes remain successful", async ({ request }) => {
+  for (const path of [
+    "/",
+    "/es/",
+    "/percentage-calculator/",
+    "/es/percentage-calculator/",
+  ]) {
+    const response = await request.get(path, { maxRedirects: 0 });
+    expect(response.status(), `${path} must return 200`).toBe(200);
+  }
+});
+
 test("unknown routes render the 404 page", async ({ page }) => {
   const response = await page.goto("/definitely-not-a-real-page");
   expect(response?.status()).toBe(404);

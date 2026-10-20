@@ -26,5 +26,5 @@ Repo-specific guidance. Global Nexverra rules (`~/.config/opencode/AGENTS.md`) a
 
 - Tool logic: pure functions in standalone modules, Vitest-covered; the Astro `<script>` stays a thin UI wrapper.
 - UI changes get runtime proof via a Playwright screenshot of the changed route.
-- Playwright e2e serves the production build through `astro preview` — run `npm run build` before `npm run test:e2e`.
+- Playwright e2e serves the production build through `wrangler dev` — run `npm run build` before `npm run test:e2e`.
 - Prettier needs `prettier-plugin-astro` for `.astro` files. Windows checkouts may reintroduce CRLF endings; run `npx prettier --write .` if `format:check` flags files that git reports as unchanged.

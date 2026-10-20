@@ -5,7 +5,7 @@ import { siteUrl } from "../src/lib/seo";
 
 /*
  * M3/M4/M6 routing guarantees, checked against the built production output
- * served through `astro preview`: English stays the unprefixed default,
+ * served through `wrangler dev`: English stays the unprefixed default,
  * every registered locale is served under its prefix, unsupported prefixes
  * 404 without redirects, and the sitemap pairs every translated page with
  * reciprocal alternates (x-default lives in the HTML head only).

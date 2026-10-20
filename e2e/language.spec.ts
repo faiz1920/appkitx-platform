@@ -5,7 +5,7 @@ import { PREFERENCE_STORAGE_KEY } from "../src/i18n/preferences";
 /*
  * M4 language behavior: the switcher, explicit-choice persistence, the
  * disabled-by-default browser-language detection, and Spanish end-to-end
- * rendering — all against the production build served by `astro preview`.
+ * rendering — all against the production build served by `wrangler dev`.
  */
 
 const switcher = (page: Page) =>
