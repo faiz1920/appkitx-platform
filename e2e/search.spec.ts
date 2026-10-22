@@ -5,6 +5,12 @@ const searchInput = (page: Page) => page.locator("[data-search-input]");
 const heroInput = (page: Page) => page.getByPlaceholder("Search free tools…");
 
 const openWithShortcut = async (page: Page) => {
+  /*
+   * The palette's Ctrl/Cmd+K listener lives in a deferred module script.
+   * A completed navigation can expose its heading before those modules run,
+   * so wait for the document lifecycle before sending the shortcut.
+   */
+  await page.waitForLoadState("load");
   await page.keyboard.press("Control+k");
   await expect(palette(page)).toBeVisible();
 };
