@@ -5,6 +5,7 @@ import { makeResult } from "./types";
 
 export const RULE_GPU_PCIE = "gpu-motherboard-pcie";
 export const RULE_GPU_CASE_LENGTH = "gpu-case-length";
+export const RULE_GPU_CASE_SLOTS = "gpu-case-slot-width";
 
 export const gpuMotherboardRule: CompatibilityRule = (ctx) => {
   const { gpu, motherboard } = ctx;
@@ -138,6 +139,59 @@ export const gpuCaseRule: CompatibilityRule = (ctx) => {
       `The ${gpuLength} mm graphics card fits within the case's ${maxLength} mm GPU clearance.`,
       {
         observed: { gpuLengthMm: gpuLength, caseMaxGpuLengthMm: maxLength },
+      },
+    ),
+  ];
+};
+
+export const gpuCaseSlotRule: CompatibilityRule = (ctx) => {
+  const { gpu, pcCase } = ctx;
+  if (!gpu || !pcCase) return [];
+
+  const ids = [gpu.id, pcCase.id];
+  const slotWidth = gpu.specs.slotWidth;
+  const maxSlots = pcCase.specs.maxGpuSlots;
+
+  if (slotWidth === null || maxSlots === null) {
+    return [
+      makeResult(
+        RULE_GPU_CASE_SLOTS,
+        "unknown",
+        ids,
+        `GPU slot-thickness clearance cannot be verified: ${slotWidth === null ? "the graphics card's slot width" : "the case's maximum GPU slot thickness"} is not documented in the available data.`,
+        {
+          observed: { gpuSlotWidth: slotWidth, caseMaxGpuSlots: maxSlots },
+          recommendation:
+            "Check the card's slot thickness and the case's expansion-slot clearance before purchasing.",
+        },
+      ),
+    ];
+  }
+
+  if (slotWidth > maxSlots) {
+    return [
+      makeResult(
+        RULE_GPU_CASE_SLOTS,
+        "incompatible",
+        ids,
+        `The ${slotWidth}-slot graphics card exceeds the case's documented ${maxSlots}-slot GPU allowance.`,
+        {
+          observed: { gpuSlotWidth: slotWidth, caseMaxGpuSlots: maxSlots },
+          recommendation:
+            "Choose a thinner graphics card or a case that documents a larger GPU slot allowance.",
+        },
+      ),
+    ];
+  }
+
+  return [
+    makeResult(
+      RULE_GPU_CASE_SLOTS,
+      "compatible",
+      ids,
+      `The ${slotWidth}-slot graphics card fits the case's ${maxSlots}-slot GPU allowance.`,
+      {
+        observed: { gpuSlotWidth: slotWidth, caseMaxGpuSlots: maxSlots },
       },
     ),
   ];

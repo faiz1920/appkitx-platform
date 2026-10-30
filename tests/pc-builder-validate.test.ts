@@ -4,6 +4,8 @@ import {
   validateComponent,
 } from "../src/lib/pc-builder/validate";
 import {
+  makeCase,
+  makeCaseFan,
   makeCpu,
   makeGpu,
   makeMotherboard,
@@ -213,5 +215,87 @@ describe("validateCatalogue", () => {
     if (!result.ok) {
       expect(result.errors[0].path).toMatch(/^\[1\]/);
     }
+  });
+});
+
+describe("M10.3 schema validation", () => {
+  it("rejects records without provenance", () => {
+    const cpu = makeCpu() as unknown as Record<string, unknown>;
+    delete cpu.provenance;
+    const result = validateComponent(cpu);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors.some((e) => e.path === ".provenance")).toBe(true);
+    }
+  });
+
+  it("accepts the extended lifecycle states", () => {
+    for (const availability of ["end-of-life", "unverified"] as const) {
+      expect(validateComponent({ ...makeCpu(), availability }).ok).toBe(true);
+    }
+  });
+
+  it("rejects an M.2 slot count that disagrees with slot detail", () => {
+    const board = makeMotherboard({
+      m2Slots: 3,
+      m2SlotDetails: [
+        { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
+      ],
+    });
+    const result = validateComponent(board);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors.some((e) => e.path === ".specs.m2Slots")).toBe(true);
+    }
+  });
+
+  it("rejects radiator summary sizes that no mount documents", () => {
+    const pcCase = makeCase({
+      radiatorSupportMm: [120, 360],
+      radiatorMounts: [{ sizeMm: 120, position: "rear" }],
+    });
+    const result = validateComponent(pcCase);
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects PWM fans with a 3-pin connector", () => {
+    const fan = makeCaseFan({ connector: "3-pin-dc", pwm: true });
+    const result = validateComponent(fan);
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects M.2 keying on non-M.2 drives", () => {
+    const drive = makeStorage({
+      interface: "sata",
+      formFactor: "2.5-inch",
+      m2Key: "M",
+      m2LengthMm: null,
+      pcieGeneration: null,
+    });
+    const result = validateComponent(drive);
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects a thread count below the core count", () => {
+    const cpu = makeCpu({ cores: 8, threads: 4 });
+    const result = validateComponent(cpu);
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects a boost clock below the base clock", () => {
+    const cpu = makeCpu({ baseClockGHz: 5.0, boostClockGHz: 4.0 });
+    const result = validateComponent(cpu);
+    expect(result.ok).toBe(false);
+  });
+
+  it("accepts explicit unknown values in the new optional fields", () => {
+    const cpu = makeCpu({
+      cores: null,
+      threads: null,
+      baseClockGHz: null,
+      boostClockGHz: null,
+      memorySpeedMTs: null,
+    });
+    expect(validateComponent(cpu).ok).toBe(true);
   });
 });

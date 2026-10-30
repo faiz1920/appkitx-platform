@@ -141,6 +141,12 @@ describe("component labels", () => {
     expect(
       availabilityLabel({ ...makeCpu(), availability: "discontinued" }),
     ).toBe("Discontinued");
+    expect(
+      availabilityLabel({ ...makeCpu(), availability: "end-of-life" }),
+    ).toBe("End of life");
+    expect(
+      availabilityLabel({ ...makeCpu(), availability: "unverified" }),
+    ).toBe("Unverified");
     expect(availabilityLabel({ ...makeCpu(), availability: "unknown" })).toBe(
       "Availability unknown",
     );
@@ -249,8 +255,10 @@ describe("missingSpecLabels", () => {
     const sata = makeStorage({
       interface: "sata",
       formFactor: "2.5-inch",
+      m2Key: null,
       m2LengthMm: null,
       pcieGeneration: null,
+      powerDrawW: 4,
     });
     expect(missingSpecLabels(sata)).toEqual([]);
   });

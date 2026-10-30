@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:pc-builder": "playwright test -c playwright.pc-builder.config.ts",
+    "pc-builder:validate-catalogue": "node --experimental-strip-types scripts/validate-pc-catalogue.ts",
     "csp:hash": "node --experimental-strip-types scripts/csp-inline-hashes.ts"
   },
   "dependencies": {

@@ -1,36 +1,12 @@
-import type { PsuComponent } from "../types";
-import { CATALOGUE_VERIFIED_DATE, manufacturerSource } from "./meta";
+import type { PsuComponent } from "../types.ts";
+import { CATALOGUE_VERIFIED_DATE, manufacturerSource } from "./meta.ts";
 
+/*
+ * Power supplies — 9 records across 550 W-1000 W, ATX and SFX, Bronze to
+ * Platinum. Connector counts are native outputs; adapter-supported 16-pin
+ * configurations are deliberately not counted as native.
+ */
 export const psus: readonly PsuComponent[] = [
-  {
-    id: "psu-corsair-rm750x-2021",
-    category: "psu",
-    manufacturer: "Corsair",
-    name: "RM750x (2021)",
-    model: "CP-9020199",
-    description:
-      "750 W fully modular ATX power supply, 80 PLUS Gold certified, Zero RPM fan mode.",
-    url: "https://www.corsair.com/us/en/p/psu/cp-9020199-na/",
-    availability: "in-production",
-    source: manufacturerSource(
-      "Corsair product specification",
-      "https://www.corsair.com/us/en/p/psu/cp-9020199-na/",
-    ),
-    lastVerified: CATALOGUE_VERIFIED_DATE,
-    specs: {
-      wattage: 750,
-      efficiency: "80 PLUS Gold",
-      modularity: "full",
-      formFactor: "ATX",
-      atxVersion: null,
-      connectors: {
-        eps8pin: 2,
-        pcie8pin: 4,
-        pcie16pin: 0,
-        sata: null,
-      },
-    },
-  },
   {
     id: "psu-corsair-cv650",
     category: "psu",
@@ -41,6 +17,7 @@ export const psus: readonly PsuComponent[] = [
       "650 W non-modular ATX power supply, 80 PLUS Bronze certified, 120 mm low-noise fan.",
     url: "https://www.corsair.com/us/en/p/psu/cp-9020211-na/",
     availability: "in-production",
+    provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
       "https://www.corsair.com/us/en/p/psu/cp-9020211-na/",
@@ -52,10 +29,166 @@ export const psus: readonly PsuComponent[] = [
       modularity: "non-modular",
       formFactor: "ATX",
       atxVersion: null,
+      lengthMm: 140,
       connectors: {
         eps8pin: 1,
         pcie8pin: 2,
         pcie16pin: 0,
+        sata: null,
+      },
+    },
+  },
+  {
+    id: "psu-corsair-cx550",
+    category: "psu",
+    manufacturer: "Corsair",
+    name: "CX550",
+    model: "CP-9020277",
+    description:
+      "550 W non-modular ATX power supply, 80 PLUS Bronze certified, 120 mm fan.",
+    url: "https://www.corsair.com/us/en/p/psu/cp-9020277-na/",
+    availability: "in-production",
+    provenance: "manufacturer-specification",
+    source: manufacturerSource(
+      "Corsair product specification",
+      "https://www.corsair.com/us/en/p/psu/cp-9020277-na/",
+    ),
+    lastVerified: CATALOGUE_VERIFIED_DATE,
+    specs: {
+      wattage: 550,
+      efficiency: "80 PLUS Bronze",
+      modularity: "non-modular",
+      formFactor: "ATX",
+      atxVersion: null,
+      lengthMm: 140,
+      connectors: {
+        eps8pin: 1,
+        pcie8pin: 2,
+        pcie16pin: 0,
+        sata: null,
+      },
+    },
+  },
+  {
+    id: "psu-seasonic-focus-gx-550",
+    category: "psu",
+    manufacturer: "Seasonic",
+    name: "FOCUS GX-550",
+    model: "FOCUS-GX-550",
+    description:
+      "550 W fully modular ATX power supply, 80 PLUS Gold certified, 120 mm Fluid Dynamic Bearing fan.",
+    url: "https://seasonic.com/focus-gx/",
+    availability: "in-production",
+    provenance: "manufacturer-specification",
+    source: manufacturerSource(
+      "Seasonic product specification",
+      "https://seasonic.com/focus-gx/",
+    ),
+    lastVerified: CATALOGUE_VERIFIED_DATE,
+    specs: {
+      wattage: 550,
+      efficiency: "80 PLUS Gold",
+      modularity: "full",
+      formFactor: "ATX",
+      atxVersion: null,
+      lengthMm: 140,
+      connectors: {
+        eps8pin: 1,
+        pcie8pin: 2,
+        pcie16pin: 0,
+        sata: null,
+      },
+    },
+  },
+  {
+    id: "psu-corsair-sf600",
+    category: "psu",
+    manufacturer: "Corsair",
+    name: "SF600",
+    model: "CP-9020182",
+    description:
+      "600 W fully modular SFX power supply, 80 PLUS Platinum certified, 92 mm fan for small-form-factor builds.",
+    url: "https://www.corsair.com/us/en/p/psu/cp-9020182-na/",
+    availability: "in-production",
+    provenance: "manufacturer-specification",
+    source: manufacturerSource(
+      "Corsair product specification",
+      "https://www.corsair.com/us/en/p/psu/cp-9020182-na/",
+    ),
+    lastVerified: CATALOGUE_VERIFIED_DATE,
+    specs: {
+      wattage: 600,
+      efficiency: "80 PLUS Platinum",
+      modularity: "full",
+      formFactor: "SFX",
+      atxVersion: null,
+      lengthMm: 100,
+      connectors: {
+        eps8pin: 1,
+        pcie8pin: 2,
+        pcie16pin: 0,
+        sata: null,
+      },
+    },
+  },
+  {
+    id: "psu-corsair-rm750x-2021",
+    category: "psu",
+    manufacturer: "Corsair",
+    name: "RM750x (2021)",
+    model: "CP-9020199",
+    description:
+      "750 W fully modular ATX power supply, 80 PLUS Gold certified, Zero RPM fan mode.",
+    url: "https://www.corsair.com/us/en/p/psu/cp-9020199-na/",
+    availability: "in-production",
+    provenance: "manufacturer-specification",
+    source: manufacturerSource(
+      "Corsair product specification",
+      "https://www.corsair.com/us/en/p/psu/cp-9020199-na/",
+    ),
+    lastVerified: CATALOGUE_VERIFIED_DATE,
+    specs: {
+      wattage: 750,
+      efficiency: "80 PLUS Gold",
+      modularity: "full",
+      formFactor: "ATX",
+      atxVersion: null,
+      lengthMm: 160,
+      connectors: {
+        eps8pin: 2,
+        pcie8pin: 4,
+        pcie16pin: 0,
+        sata: null,
+      },
+    },
+  },
+  {
+    id: "psu-corsair-rm850e-2023",
+    category: "psu",
+    manufacturer: "Corsair",
+    name: "RM850e (2023)",
+    model: "CP-9020263",
+    description:
+      "850 W fully modular ATX 3.0 power supply, 80 PLUS Gold certified, with a native 16-pin 12VHPWR connector.",
+    url: "https://www.corsair.com/us/en/p/psu/cp-9020263-na/",
+    availability: "in-production",
+    provenance: "manufacturer-specification",
+    source: manufacturerSource(
+      "Corsair product specification",
+      "https://www.corsair.com/us/en/p/psu/cp-9020263-na/",
+    ),
+    lastVerified: CATALOGUE_VERIFIED_DATE,
+    specs: {
+      wattage: 850,
+      efficiency: "80 PLUS Gold",
+      modularity: "full",
+      formFactor: "ATX",
+      atxVersion: "ATX 3.0",
+      lengthMm: 140,
+      connectors: {
+        eps8pin: 2,
+        pcie8pin: 4,
+        pcie16pin: 1,
         sata: null,
       },
     },
@@ -70,6 +203,7 @@ export const psus: readonly PsuComponent[] = [
       "850 W fully modular ATX 3.0 power supply, 80 PLUS Gold certified, with a native 16-pin (12VHPWR) connector.",
     url: "https://www.msi.com/Power-Supply/MPG-A850G-PCIE5",
     availability: "in-production",
+    provenance: "manufacturer-specification",
     source: manufacturerSource(
       "MSI product specification",
       "https://www.msi.com/Power-Supply/MPG-A850G-PCIE5/Specification",
@@ -81,6 +215,69 @@ export const psus: readonly PsuComponent[] = [
       modularity: "full",
       formFactor: "ATX",
       atxVersion: "ATX 3.0",
+      lengthMm: 150,
+      connectors: {
+        eps8pin: 2,
+        pcie8pin: null,
+        pcie16pin: 1,
+        sata: null,
+      },
+    },
+  },
+  {
+    id: "psu-corsair-rm1000x-2021",
+    category: "psu",
+    manufacturer: "Corsair",
+    name: "RM1000x (2021)",
+    model: "CP-9020201",
+    description:
+      "1000 W fully modular ATX power supply, 80 PLUS Gold certified, Zero RPM fan mode.",
+    url: "https://www.corsair.com/us/en/p/psu/cp-9020201-na/",
+    availability: "in-production",
+    provenance: "manufacturer-specification",
+    source: manufacturerSource(
+      "Corsair product specification",
+      "https://www.corsair.com/us/en/p/psu/cp-9020201-na/",
+    ),
+    lastVerified: CATALOGUE_VERIFIED_DATE,
+    specs: {
+      wattage: 1000,
+      efficiency: "80 PLUS Gold",
+      modularity: "full",
+      formFactor: "ATX",
+      atxVersion: null,
+      lengthMm: 180,
+      connectors: {
+        eps8pin: 2,
+        pcie8pin: 6,
+        pcie16pin: 0,
+        sata: null,
+      },
+    },
+  },
+  {
+    id: "psu-msi-mpg-a1000g-pcie5",
+    category: "psu",
+    manufacturer: "MSI",
+    name: "MPG A1000G PCIE5",
+    model: "MPG A1000G PCIE5",
+    description:
+      "1000 W fully modular ATX 3.0 power supply, 80 PLUS Gold certified, with a native 16-pin (12VHPWR) connector.",
+    url: "https://www.msi.com/Power-Supply/MPG-A1000G-PCIE5",
+    availability: "in-production",
+    provenance: "manufacturer-specification",
+    source: manufacturerSource(
+      "MSI product specification",
+      "https://www.msi.com/Power-Supply/MPG-A1000G-PCIE5/Specification",
+    ),
+    lastVerified: CATALOGUE_VERIFIED_DATE,
+    specs: {
+      wattage: 1000,
+      efficiency: "80 PLUS Gold",
+      modularity: "full",
+      formFactor: "ATX",
+      atxVersion: "ATX 3.0",
+      lengthMm: 150,
       connectors: {
         eps8pin: 2,
         pcie8pin: null,

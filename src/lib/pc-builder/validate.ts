@@ -14,7 +14,7 @@ import {
   componentCategories,
   type Component,
   type ComponentCategory,
-} from "./types";
+} from "./types.ts";
 
 export interface ValidationError {
   /** Dot-separated path to the offending field, e.g. "specs.socket". */
@@ -121,6 +121,50 @@ function checkPositiveInt(
   }
 }
 
+function checkPositiveIntOrNull(
+  errors: ValidationError[],
+  obj: Obj,
+  key: string,
+  path: string,
+): void {
+  const v = obj[key];
+  if (v === null) return;
+  if (typeof v !== "number" || !Number.isInteger(v) || v <= 0) {
+    err(errors, `${path}.${key}`, "must be a positive integer or null");
+  }
+}
+
+function checkStringOrNull(
+  errors: ValidationError[],
+  obj: Obj,
+  key: string,
+  path: string,
+): void {
+  const v = obj[key];
+  if (v === null) return;
+  if (typeof v !== "string" || v.trim() === "") {
+    err(errors, `${path}.${key}`, "must be a non-empty string or null");
+  }
+}
+
+function checkEnumOrNull(
+  errors: ValidationError[],
+  obj: Obj,
+  key: string,
+  path: string,
+  allowed: readonly string[],
+): void {
+  const v = obj[key];
+  if (v === null) return;
+  if (typeof v !== "string" || !allowed.includes(v)) {
+    err(
+      errors,
+      `${path}.${key}`,
+      `must be one of: ${allowed.join(", ")} or null`,
+    );
+  }
+}
+
 function checkEnum(
   errors: ValidationError[],
   obj: Obj,
@@ -202,7 +246,21 @@ const MEMORY_GENERATIONS = ["DDR3", "DDR4", "DDR5"];
 const FORM_FACTORS_MB = ["ATX", "Micro-ATX", "Mini-ITX", "E-ATX"];
 const FORM_FACTORS_RAM = ["DIMM", "SO-DIMM"];
 const FORM_FACTORS_PSU = ["ATX", "SFX", "SFX-L"];
-const AVAILABILITY = ["in-production", "discontinued", "unknown"];
+const AVAILABILITY = [
+  "in-production",
+  "discontinued",
+  "end-of-life",
+  "unverified",
+  "unknown",
+];
+const PROVENANCE = [
+  "manufacturer-specification",
+  "manufacturer-support-list",
+  "verified-third-party",
+  "estimated",
+  "unknown",
+];
+const M2_INTERFACES = ["nvme", "sata", "both"];
 
 const COMMON_KEYS = [
   "id",
@@ -215,6 +273,7 @@ const COMMON_KEYS = [
   "url",
   "releaseDate",
   "availability",
+  "provenance",
   "source",
   "lastVerified",
   "specs",
@@ -229,6 +288,7 @@ function validateCommon(errors: ValidationError[], record: Obj): void {
   checkNonEmptyString(errors, record, "model", "");
   checkNonEmptyString(errors, record, "description", "");
   checkEnum(errors, record, "availability", "", AVAILABILITY);
+  checkEnum(errors, record, "provenance", "", PROVENANCE);
   checkIsoDate(errors, record, "releaseDate", "", false);
   checkIsoDate(errors, record, "lastVerified", "", true);
 
@@ -264,8 +324,13 @@ function validateSpecs(
     case "cpu": {
       checkNoUnknownKeys(errors, specs, p, [
         "socket",
+        "cores",
+        "threads",
+        "baseClockGHz",
+        "boostClockGHz",
         "memoryTypes",
         "memoryChannels",
+        "memorySpeedMTs",
         "maxMemoryGB",
         "tdpW",
         "maxPowerW",
@@ -275,9 +340,28 @@ function validateSpecs(
         "coolerIncluded",
       ]);
       checkNonEmptyString(errors, specs, "socket", p);
+      checkPositiveIntOrNull(errors, specs, "cores", p);
+      checkPositiveIntOrNull(errors, specs, "threads", p);
+      checkNumberOrNull(errors, specs, "baseClockGHz", p, { positive: true });
+      checkNumberOrNull(errors, specs, "boostClockGHz", p, { positive: true });
       checkEnumArray(errors, specs, "memoryTypes", p, MEMORY_GENERATIONS);
       checkNumberOrNull(errors, specs, "memoryChannels", p, { positive: true });
+      checkNumberOrNull(errors, specs, "memorySpeedMTs", p, { positive: true });
       checkNumberOrNull(errors, specs, "maxMemoryGB", p, { positive: true });
+      if (
+        typeof specs.cores === "number" &&
+        typeof specs.threads === "number" &&
+        specs.threads < specs.cores
+      ) {
+        err(errors, `${p}.threads`, "must be greater than or equal to cores");
+      }
+      if (
+        typeof specs.baseClockGHz === "number" &&
+        typeof specs.boostClockGHz === "number" &&
+        specs.boostClockGHz < specs.baseClockGHz
+      ) {
+        err(errors, `${p}.boostClockGHz`, "must not be below baseClockGHz");
+      }
       checkNumberOrNull(errors, specs, "tdpW", p, { positive: true });
       checkNumberOrNull(errors, specs, "maxPowerW", p, { positive: true });
       checkBoolean(errors, specs, "integratedGraphics", p);
@@ -293,6 +377,10 @@ function validateSpecs(
     }
     case "gpu": {
       checkNoUnknownKeys(errors, specs, p, [
+        "chipset",
+        "boardPartner",
+        "vramGB",
+        "memoryType",
         "pcieGeneration",
         "pcieLanes",
         "lengthMm",
@@ -302,6 +390,10 @@ function validateSpecs(
         "powerConnectors",
         "displayOutputs",
       ]);
+      checkNonEmptyString(errors, specs, "chipset", p);
+      checkStringOrNull(errors, specs, "boardPartner", p);
+      checkNumberOrNull(errors, specs, "vramGB", p, { positive: true });
+      checkStringOrNull(errors, specs, "memoryType", p);
       checkNumberOrNull(errors, specs, "pcieGeneration", p, { positive: true });
       checkNumberOrNull(errors, specs, "pcieLanes", p, { positive: true });
       checkNumberOrNull(errors, specs, "lengthMm", p, { positive: true });
@@ -345,9 +437,12 @@ function validateSpecs(
         "supportedRamSpeedsMTs",
         "pcieX16Slots",
         "m2Slots",
+        "m2SlotDetails",
         "sataPorts",
         "fanHeaders",
         "cpuPowerConnectors",
+        "cpuSupportListUrl",
+        "biosVersion",
       ]);
       checkNonEmptyString(errors, specs, "socket", p);
       checkNonEmptyString(errors, specs, "chipset", p);
@@ -360,11 +455,48 @@ function validateSpecs(
       checkNumberOrNull(errors, specs, "m2Slots", p);
       checkNumberOrNull(errors, specs, "sataPorts", p);
       checkNumberOrNull(errors, specs, "fanHeaders", p);
-      if (
-        specs.cpuPowerConnectors !== null &&
-        typeof specs.cpuPowerConnectors !== "string"
-      ) {
-        err(errors, `${p}.cpuPowerConnectors`, "must be a string or null");
+      checkStringOrNull(errors, specs, "cpuPowerConnectors", p);
+      checkStringOrNull(errors, specs, "cpuSupportListUrl", p);
+      checkStringOrNull(errors, specs, "biosVersion", p);
+
+      const m2Details = specs.m2SlotDetails;
+      if (m2Details !== null) {
+        if (!Array.isArray(m2Details)) {
+          err(errors, `${p}.m2SlotDetails`, "must be an array or null");
+        } else {
+          m2Details.forEach((slot, i) => {
+            const sp = `${p}.m2SlotDetails[${i}]`;
+            if (!isObj(slot)) {
+              err(errors, sp, "must be an object");
+              return;
+            }
+            checkNoUnknownKeys(errors, slot, sp, [
+              "interface",
+              "maxLengthMm",
+              "pcieGeneration",
+            ]);
+            checkEnum(errors, slot, "interface", sp, M2_INTERFACES);
+            checkNumberOrNull(errors, slot, "maxLengthMm", sp, {
+              positive: true,
+            });
+            checkNumberOrNull(errors, slot, "pcieGeneration", sp, {
+              positive: true,
+            });
+          });
+          if (typeof specs.m2Slots !== "number") {
+            err(
+              errors,
+              `${p}.m2Slots`,
+              "must be a number when m2SlotDetails is provided",
+            );
+          } else if (specs.m2Slots !== m2Details.length) {
+            err(
+              errors,
+              `${p}.m2Slots`,
+              "must equal the number of documented M.2 slots",
+            );
+          }
+        }
       }
       const slots = specs.pcieX16Slots;
       if (slots !== null) {
@@ -390,6 +522,9 @@ function validateSpecs(
         "moduleCount",
         "totalCapacityGB",
         "speedMTs",
+        "timings",
+        "voltageV",
+        "profile",
         "formFactor",
         "ecc",
         "registered",
@@ -399,6 +534,9 @@ function validateSpecs(
       checkPositiveInt(errors, specs, "moduleCount", p);
       checkPositiveNumber(errors, specs, "totalCapacityGB", p);
       checkPositiveNumber(errors, specs, "speedMTs", p);
+      checkStringOrNull(errors, specs, "timings", p);
+      checkNumberOrNull(errors, specs, "voltageV", p, { positive: true });
+      checkEnumOrNull(errors, specs, "profile", p, ["XMP", "EXPO", "XMP/EXPO"]);
       checkEnum(errors, specs, "formFactor", p, FORM_FACTORS_RAM);
       checkBoolean(errors, specs, "ecc", p);
       checkBoolean(errors, specs, "registered", p);
@@ -425,6 +563,9 @@ function validateSpecs(
         "supportedSockets",
         "heightMm",
         "radiatorSizeMm",
+        "radiatorThicknessMm",
+        "fanSizeMm",
+        "fanCount",
         "tdpRatingW",
       ]);
       checkEnum(errors, specs, "type", p, ["air", "aio-liquid"]);
@@ -441,9 +582,17 @@ function validateSpecs(
       }
       checkNumberOrNull(errors, specs, "heightMm", p, { positive: true });
       checkNumberOrNull(errors, specs, "radiatorSizeMm", p, { positive: true });
+      checkNumberOrNull(errors, specs, "radiatorThicknessMm", p, {
+        positive: true,
+      });
+      checkNumberOrNull(errors, specs, "fanSizeMm", p, { positive: true });
+      checkPositiveIntOrNull(errors, specs, "fanCount", p);
       checkNumberOrNull(errors, specs, "tdpRatingW", p, { positive: true });
       if (specs.type === "air" && specs.radiatorSizeMm !== null) {
         err(errors, `${p}.radiatorSizeMm`, "must be null for air coolers");
+      }
+      if (specs.type === "air" && specs.radiatorThicknessMm !== null) {
+        err(errors, `${p}.radiatorThicknessMm`, "must be null for air coolers");
       }
       if (specs.type === "aio-liquid" && specs.heightMm !== null) {
         err(
@@ -460,15 +609,23 @@ function validateSpecs(
         "capacityGB",
         "interface",
         "formFactor",
+        "m2Key",
         "m2LengthMm",
         "pcieGeneration",
+        "seqReadMBps",
+        "seqWriteMBps",
+        "powerDrawW",
       ]);
       checkEnum(errors, specs, "storageType", p, ["ssd", "hdd"]);
       checkPositiveNumber(errors, specs, "capacityGB", p);
       checkEnum(errors, specs, "interface", p, ["nvme", "sata"]);
       checkEnum(errors, specs, "formFactor", p, ["m2", "2.5-inch", "3.5-inch"]);
+      checkEnumOrNull(errors, specs, "m2Key", p, ["M", "B+M"]);
       checkNumberOrNull(errors, specs, "m2LengthMm", p, { positive: true });
       checkNumberOrNull(errors, specs, "pcieGeneration", p, { positive: true });
+      checkNumberOrNull(errors, specs, "seqReadMBps", p, { positive: true });
+      checkNumberOrNull(errors, specs, "seqWriteMBps", p, { positive: true });
+      checkNumberOrNull(errors, specs, "powerDrawW", p, { positive: true });
       if (
         specs.interface === "nvme" &&
         specs.formFactor !== "m2" &&
@@ -480,6 +637,9 @@ function validateSpecs(
           "NVMe drives must be M.2 or 2.5-inch (U.2)",
         );
       }
+      if (specs.formFactor !== "m2" && specs.m2Key !== null) {
+        err(errors, `${p}.m2Key`, "must be null for non-M.2 drives");
+      }
       break;
     }
     case "psu": {
@@ -489,6 +649,7 @@ function validateSpecs(
         "modularity",
         "formFactor",
         "atxVersion",
+        "lengthMm",
         "connectors",
       ]);
       checkPositiveNumber(errors, specs, "wattage", p);
@@ -499,9 +660,8 @@ function validateSpecs(
         "non-modular",
       ]);
       checkEnum(errors, specs, "formFactor", p, FORM_FACTORS_PSU);
-      if (specs.atxVersion !== null && typeof specs.atxVersion !== "string") {
-        err(errors, `${p}.atxVersion`, "must be a string or null");
-      }
+      checkStringOrNull(errors, specs, "atxVersion", p);
+      checkNumberOrNull(errors, specs, "lengthMm", p, { positive: true });
       const connectors = specs.connectors;
       if (!isObj(connectors)) {
         err(errors, `${p}.connectors`, "is required and must be an object");
@@ -522,16 +682,26 @@ function validateSpecs(
     }
     case "case": {
       checkNoUnknownKeys(errors, specs, p, [
+        "caseType",
         "supportedFormFactors",
         "maxGpuLengthMm",
         "maxCoolerHeightMm",
         "psuFormFactors",
+        "maxPsuLengthMm",
         "radiatorSupportMm",
+        "radiatorMounts",
         "maxGpuSlots",
         "driveBays25inch",
         "driveBays35inch",
         "fanSizesMm",
+        "fanMounts",
         "includedFans",
+      ]);
+      checkEnum(errors, specs, "caseType", p, [
+        "full-tower",
+        "mid-tower",
+        "mini-tower",
+        "sff",
       ]);
       checkEnumArray(errors, specs, "supportedFormFactors", p, FORM_FACTORS_MB);
       checkNumberOrNull(errors, specs, "maxGpuLengthMm", p, { positive: true });
@@ -539,24 +709,115 @@ function validateSpecs(
         positive: true,
       });
       checkEnumArray(errors, specs, "psuFormFactors", p, FORM_FACTORS_PSU);
+      checkNumberOrNull(errors, specs, "maxPsuLengthMm", p, { positive: true });
       checkNumberArrayOrNull(errors, specs, "radiatorSupportMm", p);
       checkNumberOrNull(errors, specs, "maxGpuSlots", p, { positive: true });
       checkNumberOrNull(errors, specs, "driveBays25inch", p);
       checkNumberOrNull(errors, specs, "driveBays35inch", p);
       checkNumberArrayOrNull(errors, specs, "fanSizesMm", p);
       checkNumberOrNull(errors, specs, "includedFans", p);
+
+      const radiatorMounts = specs.radiatorMounts;
+      if (radiatorMounts !== null) {
+        if (!Array.isArray(radiatorMounts)) {
+          err(errors, `${p}.radiatorMounts`, "must be an array or null");
+        } else {
+          radiatorMounts.forEach((mount, i) => {
+            const mp = `${p}.radiatorMounts[${i}]`;
+            if (!isObj(mount)) {
+              err(errors, mp, "must be an object");
+              return;
+            }
+            checkNoUnknownKeys(errors, mount, mp, ["sizeMm", "position"]);
+            checkPositiveNumber(errors, mount, "sizeMm", mp);
+            checkNonEmptyString(errors, mount, "position", mp);
+          });
+        }
+      }
+      const fanMounts = specs.fanMounts;
+      if (fanMounts !== null) {
+        if (!Array.isArray(fanMounts)) {
+          err(errors, `${p}.fanMounts`, "must be an array or null");
+        } else {
+          fanMounts.forEach((mount, i) => {
+            const mp = `${p}.fanMounts[${i}]`;
+            if (!isObj(mount)) {
+              err(errors, mp, "must be an object");
+              return;
+            }
+            checkNoUnknownKeys(errors, mount, mp, ["sizeMm", "maxCount"]);
+            checkPositiveNumber(errors, mount, "sizeMm", mp);
+            checkPositiveInt(errors, mount, "maxCount", mp);
+          });
+        }
+      }
+
+      // Summary size lists must agree with documented mount detail when both
+      // are present, so the engine cannot silently ignore a documented size.
+      if (
+        Array.isArray(radiatorMounts) &&
+        Array.isArray(specs.radiatorSupportMm)
+      ) {
+        const mountSizes = new Set(
+          radiatorMounts
+            .filter(isObj)
+            .map((mount) => mount.sizeMm)
+            .filter((size): size is number => typeof size === "number"),
+        );
+        for (const size of specs.radiatorSupportMm) {
+          if (typeof size === "number" && !mountSizes.has(size)) {
+            err(
+              errors,
+              `${p}.radiatorSupportMm`,
+              `lists ${size} mm but no radiator mount documents that size`,
+            );
+          }
+        }
+      }
+      if (Array.isArray(fanMounts) && Array.isArray(specs.fanSizesMm)) {
+        const mountSizes = new Set(
+          fanMounts
+            .filter(isObj)
+            .map((mount) => mount.sizeMm)
+            .filter((size): size is number => typeof size === "number"),
+        );
+        for (const size of specs.fanSizesMm) {
+          if (typeof size === "number" && !mountSizes.has(size)) {
+            err(
+              errors,
+              `${p}.fanSizesMm`,
+              `lists ${size} mm but no fan mount documents that size`,
+            );
+          }
+        }
+      }
       break;
     }
     case "case-fan": {
       checkNoUnknownKeys(errors, specs, p, [
         "sizeMm",
+        "thicknessMm",
         "connector",
+        "pwm",
         "airflowDirection",
         "rpmMin",
         "rpmMax",
+        "airflowCFM",
+        "staticPressureMmH2O",
       ]);
       checkPositiveNumber(errors, specs, "sizeMm", p);
+      checkNumberOrNull(errors, specs, "thicknessMm", p, { positive: true });
       checkEnum(errors, specs, "connector", p, ["4-pin-pwm", "3-pin-dc"]);
+      if (specs.pwm !== null && typeof specs.pwm !== "boolean") {
+        err(errors, `${p}.pwm`, "must be a boolean or null");
+      }
+      if (specs.pwm === true && specs.connector === "3-pin-dc") {
+        err(errors, `${p}.pwm`, "3-pin DC fans cannot support PWM control");
+      }
+      checkNumberOrNull(errors, specs, "airflowCFM", p, { positive: true });
+      checkNumberOrNull(errors, specs, "staticPressureMmH2O", p, {
+        positive: true,
+      });
       if (
         specs.airflowDirection !== null &&
         specs.airflowDirection !== "standard" &&
@@ -570,6 +831,13 @@ function validateSpecs(
       }
       checkNumberOrNull(errors, specs, "rpmMin", p);
       checkNumberOrNull(errors, specs, "rpmMax", p);
+      if (
+        typeof specs.rpmMin === "number" &&
+        typeof specs.rpmMax === "number" &&
+        specs.rpmMin > specs.rpmMax
+      ) {
+        err(errors, `${p}.rpmMin`, "must not exceed rpmMax");
+      }
       break;
     }
   }
