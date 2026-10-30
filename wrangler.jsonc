@@ -8,6 +8,12 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/404", "/404.html"],
+    "run_worker_first": ["/404", "/404.html", "/__csp-report"],
   },
+  "analytics_engine_datasets": [
+    {
+      "binding": "CSP_REPORTS",
+      "dataset": "appkitx_csp_reports",
+    },
+  ],
 }

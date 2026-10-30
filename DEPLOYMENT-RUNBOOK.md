@@ -30,6 +30,9 @@ the confirmations below.
 - Production uses a **report-only** CSP. Deployment work must not enable an
   enforcing policy or alter the CSP, HSTS, RUM, cache, SEO, or routing
   configuration.
+- The CSP reporting collector is implemented on
+  `feature/m9-csp-reporting-collector` but is **not deployed**. Production
+  currently has no `/__csp-report` endpoint and no `report-uri` directive.
 
 ## Separate provenance claims
 
@@ -72,7 +75,8 @@ Record all of the following in the private deployment record:
    percentage, observation timestamp, and the API/dashboard source used.
 5. Optional deterministic local artifact-manifest digest and the command/tool
    used to compute it.
-6. Post-deployment smoke-test result with operator and timestamp.
+6. Post-deployment smoke-test result with operator and timestamp, including the
+   CSP collector checks when the collector is part of the deployment.
 7. Rollback target Version ID, its source commit/build mapping, and whether the
    target is verified as retained and deployable.
 8. Any deviation, manual action, failed check, or evidence gap.
@@ -85,6 +89,74 @@ the **100 most recently published versions**. The historical GitHub check run is
 independent of the Cloudflare Builds connection and may outlive it. Export the
 check-run payload and any build logs that must be retained before either becomes
 unavailable.
+
+## CSP reporting collector deployment
+
+The collector is a repository change, not a currently active production feature.
+See [CSP-REPORTING-COLLECTOR.md](./CSP-REPORTING-COLLECTOR.md) for the endpoint
+contract, schema, privacy rules, and queries.
+
+Repository contract:
+
+- `src/worker.ts` handles `POST /__csp-report` before the static-assets fallback.
+- `wrangler.jsonc` adds `/__csp-report` to `run_worker_first` and binds
+  `CSP_REPORTS` to Analytics Engine dataset `appkitx_csp_reports`.
+- `src/lib/csp-report-only.ts` appends `report-uri /__csp-report` to the
+  report-only policy. It does not emit `report-to` or `Reporting-Endpoints`
+  because Chromium 156 drops reports when `report-to` is present.
+- The endpoint returns `503` when the binding is absent. Analytics Engine
+  creates the dataset on the first successful write.
+
+Account-side prerequisites before exposure:
+
+1. Confirm Analytics Engine is available for the Worker's account.
+2. Create a read-only API token with **Account Analytics Read** for queries. Do
+   not store it in this repository.
+3. Add the Cloudflare rate-limit rule documented in the collector guide. It is
+   not active until an operator verifies it.
+4. Ensure WAF, bot-fight, or managed-challenge rules do not challenge
+   `/__csp-report`; browser report requests cannot complete an interactive
+   challenge and would be dropped.
+5. Define who reviews aggregate reports and how an unexpected directive or
+   blocked origin is escalated.
+
+Pre-deployment gate:
+
+```bash
+npm test
+npm run check
+npm run build
+npx playwright test e2e/csp.spec.ts e2e/csp-reporting.spec.ts
+```
+
+After deployment, verify:
+
+1. The report-only header contains `report-uri /__csp-report` and there is no
+   enforcing `Content-Security-Policy` header or meta tag.
+2. `GET https://appkitx.com/__csp-report` returns `405` with `Allow: POST`.
+3. A synthetic legacy report returns `204`:
+
+```bash
+curl -sS -o /dev/null -w '%{http_code}\n' \
+  -X POST https://appkitx.com/__csp-report \
+  -H 'Content-Type: application/csp-report' \
+  --data '{"csp-report":{"document-uri":"https://appkitx.com/","effective-directive":"script-src-elem","disposition":"report","blocked-uri":"inline"}}'
+```
+
+4. Trigger a deliberate unlisted inline script in a browser and confirm a
+   `POST /__csp-report` with `204` in the Network panel.
+5. Query Analytics Engine for the last hour and confirm a row. A `204` without a
+   row means the endpoint accepted the report but durable storage did not occur.
+
+Do not treat a local `wrangler dev` `204` as storage evidence: the local
+Analytics Engine binding is a no-op. Do not claim real-user reporting is
+operational until production delivery and a storage query are both verified.
+
+To disable reporting without enabling enforcement, remove
+`report-uri /__csp-report` from the policy builder, run the full checks, and
+deploy the report-only policy. The endpoint may remain deployed but unused.
+Rolling back the Worker Version removes the endpoint and directive together;
+Analytics Engine rows remain until their 90-day retention expires.
 
 ## Collecting provenance evidence
 
@@ -438,6 +510,7 @@ curl -sS -o /dev/null -D - "https://www.appkitx.com/" \
 
 - Exactly one `Content-Security-Policy-Report-Only` header is present.
 - No enforcing `Content-Security-Policy` header or CSP meta tag appears.
+- The report-only policy contains `report-uri /__csp-report` and no `report-to`.
 - The report-only policy's executable inline hashes match the deployed HTML.
 - HSTS is exactly `max-age=2592000`, without unapproved `includeSubDomains` or
   `preload`.
@@ -473,6 +546,23 @@ Compare every unique executable hash in the output with the live
 `Content-Security-Policy-Report-Only` header. JSON-LD data blocks remain
 excluded. Do not use the local `dist/_headers` value as proof that production is
 serving the same asset inventory.
+
+### CSP reporting collector
+
+Only when the collector is part of the deployed Version:
+
+- `GET /__csp-report` returns `405` with `Allow: POST`.
+- A synthetic legacy report returns `204`; it is not a real visitor report.
+- A deliberate unlisted inline script in each browser sends a `POST` with
+  `204`.
+- An Analytics Engine query returns at least the synthetic row in the expected
+  time window.
+- No payload data appears in Workers Logs. A storage failure logs only
+  `csp_report_storage_failed`.
+
+If the endpoint returns `503`, the `CSP_REPORTS` binding is absent. If it returns
+`204` but no row is queryable, check the binding, deployment time, dataset name,
+and query time window before claiming reports are being stored.
 
 ### Cloudflare RUM
 
@@ -535,5 +625,7 @@ runbook, or attempt a rollback against an unverified Version ID.
 ## Documentation boundary
 
 This runbook deliberately does not add a public version endpoint, deployment
-metadata to HTML, a second CI/deployment pipeline, or a CSP collector. Keep
-completed attestations in private operational storage.
+metadata to HTML, or a second CI/deployment pipeline. The CSP reporting collector
+is documented in [CSP-REPORTING-COLLECTOR.md](./CSP-REPORTING-COLLECTOR.md) and is
+not deployed by this runbook. Keep completed attestations in private operational
+storage.

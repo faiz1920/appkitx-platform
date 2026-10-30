@@ -76,6 +76,7 @@ describe("buildCspReportOnlyPolicy", () => {
         "frame-ancestors 'none'",
         "object-src 'none'",
         "worker-src 'none'",
+        "report-uri /__csp-report",
       ].join("; "),
     );
   });
@@ -105,13 +106,22 @@ describe("buildCspReportOnlyPolicy", () => {
     );
   });
 
-  it("does not allow inline, eval, strict-dynamic, or reporting directives", () => {
+  it("does not allow inline, eval, strict-dynamic, wildcard, or broad protocol sources", () => {
     const policy = policyFor();
 
     expect(policy).not.toContain("'unsafe-inline'");
     expect(policy).not.toContain("'unsafe-eval'");
+    expect(policy).not.toContain("'unsafe-hashes'");
     expect(policy).not.toContain("'strict-dynamic'");
-    expect(policy).not.toContain("report-uri");
+    expect(policy).not.toMatch(/(^|[ ;])\*(?:[ ;]|$)/);
+    expect(policy).not.toContain("http:");
+  });
+
+  it("uses report-uri only because Chromium drops reports when report-to is present", () => {
+    const policy = policyFor();
+
+    expect(policy.match(/report-uri/g)).toHaveLength(1);
+    expect(policy).toContain("report-uri /__csp-report");
     expect(policy).not.toContain("report-to");
   });
 
@@ -270,11 +280,11 @@ describe("updateCspReportOnlyHeader", () => {
     );
   });
 
-  it("rejects unsafe tokens and line breaks in the policy", () => {
+  it("rejects unsafe tokens, line breaks, report-to, and unapproved report-uri values", () => {
     expect(() =>
       updateCspReportOnlyHeader(
         HEADERS,
-        "default-src 'none'; script-src 'unsafe-inline'",
+        "default-src 'none'; script-src 'unsafe-inline'; report-uri /__csp-report",
       ),
     ).toThrow(/'unsafe-inline'/);
     expect(() =>
@@ -286,16 +296,21 @@ describe("updateCspReportOnlyHeader", () => {
     expect(() =>
       updateCspReportOnlyHeader(
         HEADERS,
-        "default-src 'none'; report-to csp-endpoint",
+        "default-src 'none'; report-uri /__csp-report; report-to csp-endpoint",
       ),
-    ).toThrow(/report-to/);
+    ).toThrow(/report-to/i);
     expect(() =>
       updateCspReportOnlyHeader(HEADERS, "default-src 'none'; report-uri /csp"),
-    ).toThrow(/report-uri/);
+    ).toThrow(/unapproved report-uri/i);
+    expect(() =>
+      updateCspReportOnlyHeader(HEADERS, "default-src 'none'"),
+    ).toThrow(/exactly one report-uri/i);
   });
 
   it("rejects a header line over the limit", () => {
-    expect(() => updateCspReportOnlyHeader(HEADERS, "a".repeat(2000))).toThrow(
+    const longPolicy = `default-src 'none'; script-src 'self' ${"a".repeat(1900)}; report-uri /__csp-report`;
+
+    expect(() => updateCspReportOnlyHeader(HEADERS, longPolicy)).toThrow(
       /longer than 2000 characters/i,
     );
   });

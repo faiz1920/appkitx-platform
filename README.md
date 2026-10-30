@@ -157,7 +157,7 @@ Line endings: the repository stores and checks out LF on every platform (`* text
 
 ## Deployment (Cloudflare Workers Static Assets)
 
-The site is a static Astro build deployed as Cloudflare Workers Static Assets. `wrangler.jsonc` is the deployment contract: it serves the build output, renders the branded 404 page for unknown routes, and uses a small Worker only to force the correct 404 status on direct `/404` and `/404.html` requests. There is no API or environment variable in the repository.
+The site is a static Astro build deployed as Cloudflare Workers Static Assets. `wrangler.jsonc` is the deployment contract: it serves the build output, renders the branded 404 page for unknown routes, forces the correct 404 status on direct `/404` and `/404.html` requests, and configures `POST /__csp-report` for CSP report collection. Analytics Engine is bound as `CSP_REPORTS`; there is no public read API or runtime secret in the repository.
 
 | Setting            | Value                                                                                  |
 | ------------------ | -------------------------------------------------------------------------------------- |
@@ -165,6 +165,7 @@ The site is a static Astro build deployed as Cloudflare Workers Static Assets. `
 | Assets directory   | `dist` (configured in `wrangler.jsonc`)                                                |
 | Unknown routes     | `not_found_handling: "404-page"` (branded `404.html`)                                  |
 | Direct error paths | `src/worker.ts` serves the branded 404 body with status 404 for `/404` and `/404.html` |
+| CSP reports        | `POST /__csp-report`; Analytics Engine binding `CSP_REPORTS` → `appkitx_csp_reports`   |
 | Compatibility date | `2026-10-17` (configured in `wrangler.jsonc`)                                          |
 | Node.js            | 22.22.0 or newer (the `engines` requirement of the pinned Astro release)               |
 
@@ -180,7 +181,7 @@ Security headers come from two layers. Repository-managed headers ship via `publ
 
 ### Content Security Policy (report-only)
 
-The build generates a `Content-Security-Policy-Report-Only` header and writes it into `dist/_headers` after Astro has generated every HTML page. It is not enforcing CSP. Report-only violations are reported to the browser only; they are not blocked.
+The build generates a `Content-Security-Policy-Report-Only` header and writes it into `dist/_headers` after Astro has generated every HTML page. It is not enforcing CSP. Report-only violations are reported to the browser and, when the collector is deployed, to the same-origin `POST /__csp-report` endpoint. They are not blocked.
 
 The workflow is:
 
@@ -188,9 +189,9 @@ The workflow is:
 2. `src/integrations/csp-report-only.ts` runs in `astro:build:done`.
 3. It reuses `src/lib/csp-inline-hashes.ts` to compute the executable inline-script hashes from `dist/**/*.html`.
 4. It builds the deterministic policy in `src/lib/csp-report-only.ts`.
-5. It inserts exactly one `Content-Security-Policy-Report-Only` line into the global `/*` block in `dist/_headers`, preserving every existing header and cache rule.
+5. It inserts exactly one `Content-Security-Policy-Report-Only` line into the global `/*` block in `dist/_headers`, preserving every existing header and cache rule. The policy ends with `report-uri /__csp-report`.
 
-Generated hashes are never written into `public/_headers` or any other manually maintained policy. `public/_headers` remains the source for the static security and cache rules. The integration fails the build if no HTML is found, `dist/_headers` is missing, the global block is missing or ambiguous, a report-only header exists outside the global block, or an enforcing CSP header is present.
+Generated hashes are never written into `public/_headers` or any other manually maintained policy. `public/_headers` remains the source for the static security and cache rules. The integration fails the build if no HTML is found, `dist/_headers` is missing, the global block is missing or ambiguous, a report-only header exists outside the global block, an enforcing CSP header is present, or the policy contains `report-to` or an unapproved reporting URL.
 
 The policy is:
 
@@ -205,15 +206,20 @@ base-uri 'none';
 form-action 'none';
 frame-ancestors 'none';
 object-src 'none';
-worker-src 'none'
+worker-src 'none';
+report-uri /__csp-report
 ```
 
-`https://static.cloudflareinsights.com` is required for the edge-injected Cloudflare RUM module. `https://cloudflareinsights.com` is a fallback allowance for the RUM bundle’s code-inspected fallback URL; it is not an observed production destination. The observed production RUM request is a same-origin POST to `/cdn-cgi/rum`, which `connect-src 'self'` allows. There is no `report-uri` or `report-to`, because no CSP report collector exists. The browser’s `securitypolicyviolation` event, `ReportingObserver`, and console are the available diagnostics; do not describe them as central report collection. The existing `Report-To: cf-nel` response header is Cloudflare Network Error Logging, not a CSP collector.
+`https://static.cloudflareinsights.com` is required for the edge-injected Cloudflare RUM module. `https://cloudflareinsights.com` is a fallback allowance for the RUM bundle’s code-inspected fallback URL; it is not an observed production destination. The observed production RUM request is a same-origin POST to `/cdn-cgi/rum`, which `connect-src 'self'` allows.
+
+`report-uri /__csp-report` points at the Worker collector. The endpoint accepts legacy `application/csp-report` payloads and Reporting API `application/reports+json` arrays, normalizes them, and writes bounded fields to the Analytics Engine dataset `appkitx_csp_reports`. `report-to` is intentionally not emitted: Chromium 156 generated violations but delivered no report when `report-to` was present, while `report-uri` delivered in Chromium, Firefox, and WebKit. The endpoint still accepts the Reporting API envelope for future compatibility. See [CSP-REPORTING-COLLECTOR.md](./CSP-REPORTING-COLLECTOR.md) for the contract, schema, privacy rules, and verification steps.
+
+Local builds and previews use a local Miniflare Analytics Engine binding whose writes are no-ops. Local browser tests therefore prove endpoint behavior and delivery, not durable storage. Production storage is not verified until the collector is deployed and a row is queried. The existing `Report-To: cf-nel` response header is Cloudflare Network Error Logging, not a CSP collector.
 
 The Cloudflare RUM configuration, the EU visitor-data exclusion, and HSTS are unchanged. Local builds and previews do not contain the production RUM injection; `e2e/csp.spec.ts` therefore uses a local simulation for the external script host and same-origin beacon, and real production RUM behavior must be verified separately after a future deployment.
 
-Enforcement is a separate decision. Before switching from report-only to enforcing, require at minimum: zero unexpected violations across the full English/Spanish page and interaction set in Chromium, Firefox, and WebKit; a production or production-like preview with RUM returning `204` from `/cdn-cgi/rum` and no violations; the full Playwright suite green; header/hash consistency against a fresh build; verified header presence on `/404`, `/404.html`, and unknown 404 routes; cache/version alignment during rollout; and an explicit decision about the absence of a central CSP collector. HSTS remains unchanged throughout.
+Enforcement is a separate decision. Before switching from report-only to enforcing, require at minimum: zero unexpected violations across the full English/Spanish page and interaction set in Chromium, Firefox, and WebKit; a production or production-like preview with RUM returning `204` from `/cdn-cgi/rum` and no violations; the full Playwright suite green; header/hash consistency against a fresh build; verified header presence on `/404`, `/404.html`, and unknown 404 routes; cache/version alignment during rollout; a deployed CSP collector with a completed report-only soak; and an explicit enforcement decision. HSTS remains unchanged throughout.
 
-`npm run csp:hash` remains the read-only inventory command. `npx playwright test e2e/csp.spec.ts` runs the generated-header, hash-consistency, violation-capture, and local RUM simulation checks. The production-only Cloudflare RUM injection and endpoint are documented under [Analytics and real user measurements](#analytics-and-real-user-measurements); the observed hostname and endpoint are evidence, not a complete directive list.
+`npm run csp:hash` remains the read-only inventory command. `npx playwright test e2e/csp.spec.ts` runs the generated-header, hash-consistency, violation-capture, and local RUM simulation checks. `npx playwright test e2e/csp-reporting.spec.ts` runs the endpoint contract and real browser-delivery checks in Chromium, Firefox, and WebKit. The production-only Cloudflare RUM injection and endpoint are documented under [Analytics and real user measurements](#analytics-and-real-user-measurements); the observed hostname and endpoint are evidence, not a complete directive list.
 
-The enforcement-readiness assessment, proposed enforcing policy, collector decision, staged rollout, rollback triggers, and scorecard are in [CSP-ENFORCEMENT-READINESS.md](./CSP-ENFORCEMENT-READINESS.md). Enforcement is not currently authorized.
+The collector contract, storage schema, privacy boundaries, deployment checks, aggregate queries, and rollback steps are in [CSP-REPORTING-COLLECTOR.md](./CSP-REPORTING-COLLECTOR.md). The enforcement-readiness assessment, proposed enforcing policy, staged rollout, rollback triggers, and scorecard are in [CSP-ENFORCEMENT-READINESS.md](./CSP-ENFORCEMENT-READINESS.md). Enforcement is not currently authorized.

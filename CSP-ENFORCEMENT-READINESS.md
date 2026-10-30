@@ -16,7 +16,9 @@ attestation, rollback, and post-deployment verification.
 The application policy is technically sound and well tested, but enforcement
 should not begin until:
 
-1. A private CSP report collector and alert path are approved and implemented.
+1. The collector is deployed, with an Analytics Engine read path and alert
+   ownership confirmed. The collector code exists on the
+   `feature/m9-csp-reporting-collector` branch but is not deployed.
 2. The policy with reporting enabled is soaked in report-only mode for an
    explicit period with real-user evidence reviewed.
 3. The active production Version ID is confirmed for the exact enforcement
@@ -28,12 +30,16 @@ should not begin until:
 ## Current policy and baseline
 
 - Repository baseline: `be1a65ab22442920e99d516ef06374d76ba49e7a`.
+- Collector branch base: `730eeafa33116d215fa63218f9e270e99bf6e88d`.
 - Production: `https://appkitx.com/`.
 - Policy mode: report-only.
 - One `Content-Security-Policy-Report-Only` response header.
 - No enforcing `Content-Security-Policy` response header.
 - No CSP `<meta>` tag.
-- No `report-uri`, `report-to`, or `Reporting-Endpoints` CSP collector.
+- The feature branch adds a same-origin `report-uri /__csp-report` collector.
+  Production does not yet contain that directive or endpoint.
+- No `report-uri`, `report-to`, or `Reporting-Endpoints` CSP collector is
+  present in production.
 - The existing `Report-To: cf-nel` response header belongs to Cloudflare Network
   Error Logging and is not a CSP report destination.
 
@@ -56,28 +62,33 @@ base-uri 'none';
 form-action 'none';
 frame-ancestors 'none';
 object-src 'none';
-worker-src 'none'
+worker-src 'none';
+report-uri /__csp-report
 ```
 
-The source builder, fresh `dist/_headers`, and current production header match
-exactly. The generated policy is 606 characters; the complete header line is 648
-characters, below the existing 2,000-character guard.
+Production currently ends at `worker-src 'none'`. The feature branch adds
+`report-uri /__csp-report` and generates a 632-character policy (674-character
+header line). The source builder, fresh build, and production header matched
+exactly before that addition; the collector-enabled policy has not been
+deployed.
 
 ## Directive assessment
 
-| Directive         | Current value                                     | Assessment                                                                                                                                                              |
-| ----------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `default-src`     | `'none'`                                          | Correct deny-by-default baseline.                                                                                                                                       |
-| `script-src`      | `'self'`, Cloudflare RUM host, six SHA-256 hashes | All first-party bundles are same-origin. The external RUM module is Cloudflare-owned. No unsafe allowances.                                                             |
-| `style-src`       | `'self'`                                          | Application CSS is same-origin. No inline `<style>` blocks or `style=` attributes were found.                                                                           |
-| `img-src`         | `'self'`                                          | No external or `data:` image requests were found.                                                                                                                       |
-| `font-src`        | `'self' data:`                                    | `data:` is required: the built CSS embeds a JetBrains Mono WOFF2 data URL. Other fonts are same-origin.                                                                 |
-| `connect-src`     | `'self' https://cloudflareinsights.com`           | Same-origin `/cdn-cgi/rum` is the observed telemetry destination. The Cloudflare RUM bundle also contains the documented `cloudflareinsights.com/cdn-cgi/rum` fallback. |
-| `base-uri`        | `'none'`                                          | No `<base>` element exists or is required.                                                                                                                              |
-| `form-action`     | `'none'`                                          | All forms are JavaScript-mediated and have no submit action. No legitimate form navigation was found.                                                                   |
-| `frame-ancestors` | `'none'`                                          | No embedding requirement exists. `X-Frame-Options: DENY` is also present. This directive is ignored in report-only mode but will apply on enforcement.                  |
-| `object-src`      | `'none'`                                          | No plugin content exists.                                                                                                                                               |
-| `worker-src`      | `'none'`                                          | No Worker, SharedWorker, or service worker is created by the application or the RUM bundle.                                                                             |
+| Directive         | Current value                                     | Assessment                                                                                                                                                                 |
+| ----------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `default-src`     | `'none'`                                          | Correct deny-by-default baseline.                                                                                                                                          |
+| `script-src`      | `'self'`, Cloudflare RUM host, six SHA-256 hashes | All first-party bundles are same-origin. The external RUM module is Cloudflare-owned. No unsafe allowances.                                                                |
+| `style-src`       | `'self'`                                          | Application CSS is same-origin. No inline `<style>` blocks or `style=` attributes were found.                                                                              |
+| `img-src`         | `'self'`                                          | No external or `data:` image requests were found.                                                                                                                          |
+| `font-src`        | `'self' data:`                                    | `data:` is required: the built CSS embeds a JetBrains Mono WOFF2 data URL. Other fonts are same-origin.                                                                    |
+| `connect-src`     | `'self' https://cloudflareinsights.com`           | Same-origin `/cdn-cgi/rum` is the observed telemetry destination. The Cloudflare RUM bundle also contains the documented `cloudflareinsights.com/cdn-cgi/rum` fallback.    |
+| `base-uri`        | `'none'`                                          | No `<base>` element exists or is required.                                                                                                                                 |
+| `form-action`     | `'none'`                                          | All forms are JavaScript-mediated and have no submit action. No legitimate form navigation was found.                                                                      |
+| `frame-ancestors` | `'none'`                                          | No embedding requirement exists. `X-Frame-Options: DENY` is also present. This directive is ignored in report-only mode but will apply on enforcement.                     |
+| `object-src`      | `'none'`                                          | No plugin content exists.                                                                                                                                                  |
+| `worker-src`      | `'none'`                                          | No Worker, SharedWorker, or service worker is created by the application or the RUM bundle.                                                                                |
+| `report-uri`      | `/__csp-report`                                   | Same-origin Worker collector. Implemented and browser-tested on the feature branch; not deployed.                                                                          |
+| `report-to`       | Not emitted                                       | Rejected after Chromium 156 generated violations but delivered no report when `report-to`/`Reporting-Endpoints` were present. `report-uri` delivered in all three engines. |
 
 No `'unsafe-inline'`, `'unsafe-eval'`, `'unsafe-hashes'`, `'strict-dynamic'`,
 wildcard host, or `http:` source is present. No directive was found to be
@@ -109,24 +120,30 @@ same `_headers` file, confirming deterministic hash production.
 
 ### Automated
 
-- Full E2E suite: **627/627 passed**
-  - Chromium: 209/209
-  - Firefox: 209/209
-  - WebKit: 209/209
+- Full E2E suite: **666/666 passed**
+  - Chromium: 222/222
+  - Firefox: 222/222
+  - WebKit: 222/222
   - Zero skips, retries, or flaky results.
 - CSP-specific suite: **27/27 passed**, 9 per engine.
-- Unit tests: **295/295 passed**.
+- CSP reporting suite: **39/39 passed**, 13 per engine, including actual
+  browser delivery of a report-only violation.
+- Unit tests: **324/324 passed**.
 - `npm run check`: 0 errors, warnings, or hints.
 - `npm run format:check`: passed.
-- Two fresh builds: byte-identical.
+- Two fresh builds of the collector branch: byte-identical across all `dist`
+  files, including the generated `_headers`.
 
 Covered journeys include navigation, search, all six tools, Spanish locale
 switching, clipboard behavior, keyboard focus and focus trapping, 404 handling,
-missing JSON input, responsive layouts, and the local RUM simulation.
+missing JSON input, responsive layouts, the local RUM simulation, endpoint
+validation and limits, and actual browser-to-collector delivery.
 
 The deliberate unlisted-inline-script test executed in all three engines,
 produced a report-only `securitypolicyviolation` with disposition `report`, and
-confirmed that report-only mode did not block execution.
+confirmed that report-only mode did not block execution. The reporting suite
+additionally confirmed that Chromium, Firefox, and WebKit each delivered the
+violation to `POST /__csp-report` and received `204`.
 
 ### Production sampled
 
@@ -159,15 +176,17 @@ WebKit `27.2`:
 - Actual telemetry POSTs HTTP 204.
 
 No `securitypolicyviolation` events occurred during normal production flows.
-WebKit logged its known diagnostic that the report-only policy has no
-`report-to` destination. That is a reporting limitation, not a violation.
+WebKit's earlier diagnostic about a missing `report-to` destination applied to
+the collector-less production policy. The collector-enabled policy uses
+`report-uri`; local WebKit delivery to the endpoint succeeded. That diagnostic
+was a reporting limitation, not a violation.
 
 ### Evidence quality: MODERATE
 
 Automated coverage is strong, and production sampling is broad across three
-engines and representative journeys. However, there is no central real-user
-report collection and no defined continuous production observation period.
-Browser events and local test instrumentation are not a substitute for
+engines and representative journeys. However, there is no **deployed** central
+real-user report collection and no defined continuous production observation
+period. Browser events and local test instrumentation are not a substitute for
 real-user reporting.
 
 ## Cloudflare RUM compatibility
@@ -199,36 +218,60 @@ determination, and was not changed or assessed as such.
 
 ## Reporting collector decision
 
-**Recommendation: a collector is required before enforcement.**
+**Recommendation: a collector is required before enforcement. The repository
+implementation exists on `feature/m9-csp-reporting-collector`; it is not
+deployed.**
 
-The current report-only header has no report destination. Browsers only expose
-violations in the console and page-level `securitypolicyviolation` events, which
-vanish with the page. There are no real-user reports, historical violation
-trends, or alerts. The assertion that sampled flows had no violations is not
-evidence that all real users had no violations.
+The production report-only header has no report destination. Browsers only
+expose violations in the console and page-level `securitypolicyviolation`
+events, which vanish with the page. There are no real-user reports, historical
+violation trends, or alerts. The assertion that sampled flows had no violations
+is not evidence that all real users had no violations.
 
-`report-to` is supported by the current target engines (Chrome 70+, Firefox 149+,
-Safari 16.4+). `report-uri` is deprecated but broadly supported; a browser that
-supports `report-to` ignores `report-uri`. If legacy coverage is required, send
-both and deduplicate reports.
+### Implemented collector
 
-A future collector should:
+- `POST /__csp-report` is handled by `src/worker.ts` before the static-assets
+  fallback. `wrangler.jsonc` includes the path in `run_worker_first`.
+- The endpoint accepts `application/csp-report` (legacy wrapper, WebKit hybrid,
+  or single Reporting API object) and `application/reports+json` arrays.
+- It enforces a 32 KiB body limit, a 20-report batch limit, strict shape
+  validation, bounded field lengths, and `Cache-Control: no-store`.
+- It normalizes reports to directive, disposition, blocked origin/category,
+  document path, coarse browser family, count, and schema version.
+- It writes to the Analytics Engine dataset `appkitx_csp_reports` through the
+  `CSP_REPORTS` binding. The dataset is created on first write.
+- It does not store raw bodies, samples, referrers, IP addresses, cookies,
+  authorization headers, full user agents, full URLs, query strings, or
+  fragments. See [CSP-REPORTING-COLLECTOR.md](./CSP-REPORTING-COLLECTOR.md).
+- It has no public read API and does not fetch submitted URLs.
 
-- Be a POST-only same-origin Worker route, with no public read API.
-- Accept only `application/csp-report` and `application/reports+json`.
-- Enforce a small request-body limit and reject malformed payloads.
-- Use Cloudflare rate limiting/WAF suitable for an unauthenticated report
-  endpoint.
-- Strip query strings and fragments from document/source URLs before storage.
-- Avoid storing raw `script-sample`, referrers, IP addresses, cookies, or user
-  input unless separately justified.
-- Aggregate by effective directive, blocked host/type, page path, and coarse
-  browser family where necessary.
-- Alert on new or unexpected directives rather than logging unbounded raw data.
-- Define short retention and private access.
-- Accept both the Reporting API envelope and the legacy CSP report body during
-  any transition.
-- Be implemented and reviewed separately; this assessment does not add one.
+The endpoint, policy, and browser delivery are covered by unit and Playwright
+tests. Local Miniflare Analytics Engine writes are no-ops, so local tests prove
+delivery to the endpoint, not durable storage or real-user collection.
+
+### Why `report-to` is not used
+
+`report-to` and `Reporting-Endpoints` were implemented and tested first.
+Chromium 156 generated the report-only violation but delivered no report when
+`report-to` was present, even with an absolute endpoint. The same page delivered
+normally with `report-uri` only. This matches a known Chromium CSP `report-to`
+delivery problem (Chromium issue 40702166). Chromium prefers `report-to` when it
+is present and does not fall back to `report-uri`, so emitting both would lose
+Chromium reports entirely.
+
+Firefox 157 delivered `application/reports+json`, and WebKit 27.2 delivered its
+hybrid payload, but the cross-browser requirement makes `report-uri` the only
+safe primary mechanism. The endpoint still accepts the Reporting API envelope
+for future compatibility. Revisit `report-to` only after verifying delivery in
+the Chromium version used by production visitors.
+
+### Account-side prerequisites
+
+- A Cloudflare API token with **Account Analytics Read** for aggregate queries.
+- A Cloudflare rate-limiting rule for `POST /__csp-report`; the exact
+  recommendation is in the collector document. It is not active.
+- Private access and alert ownership for the dataset and queries.
+- A deployment, followed by verification that rows are written and readable.
 
 Cloudflare Web Analytics/RUM is not a CSP collector. Cloudflare Client-Side
 Security/Page Shield is a separate product and is not currently configured as a
@@ -259,29 +302,20 @@ base-uri 'none';
 form-action 'none';
 frame-ancestors 'none';
 object-src 'none';
-worker-src 'none'
+worker-src 'none';
+report-uri /__csp-report
 ```
 
-When the approved collector exists, the enforcing policy should add:
+The collector directive is already part of the tested feature-branch policy. No
+`report-to` directive or `Reporting-Endpoints` header is emitted, for the
+Chromium delivery reason above. The endpoint still accepts the Reporting API
+envelope if a future browser or tool submits it directly.
 
-```text
-report-to csp-endpoint;
-report-uri https://appkitx.com/<approved-report-path>
-```
-
-and the response must include:
-
-```text
-Reporting-Endpoints: csp-endpoint="https://appkitx.com/<approved-report-path>"
-```
-
-The existing `CSP_REPORT_ONLY_MAX_LINE_LENGTH` guard and the implementation that
-currently rejects reporting directives must be extended in a separate change.
-The collector must not be added as part of this assessment.
-
-No directive addition beyond reporting is proposed. `font-src data:` and the
-Cloudflare RUM fallback host are retained because both are justified by current
-build/runtime evidence. This policy is documentation only; it is not written to
+No directive addition beyond `report-uri /__csp-report` is proposed. `font-src
+data:` and the Cloudflare RUM fallback host are retained because both are
+justified by current build/runtime evidence. The `CSP_REPORT_ONLY_MAX_LINE_LENGTH`
+guard now accepts the approved reporting directive and rejects `report-to` and
+unapproved report URLs. This policy is documentation only; it is not written to
 `dist/_headers` or production.
 
 ## Staged enforcement plan
@@ -302,12 +336,15 @@ build/runtime evidence. This policy is documentation only; it is not written to
 
 ### Gate 1 — Report-only collector soak
 
-- Implement the collector in a separately approved task.
-- Add `Reporting-Endpoints` and `report-to`/optional `report-uri` to the
-  report-only policy.
-- Deploy report-only only and observe for at least seven consecutive days and a
-  minimum of 10,000 production page views, or a larger threshold agreed by the
-  owner.
+- The collector implementation is present on the feature branch; deploy it in a
+  separately approved change.
+- Confirm the deployed policy contains `report-uri /__csp-report` and no
+  enforcing CSP.
+- Verify a synthetic report returns `204` and appears in Analytics Engine.
+- Configure the Cloudflare rate-limit rule and the read-only Analytics Engine
+  token before exposing the endpoint broadly.
+- Observe for at least seven consecutive days and a minimum of 10,000 production
+  page views, or a larger threshold agreed by the owner.
 - Require zero unexplained violations across all major routes and journeys.
 - Triage known browser/extension noise separately; do not silently suppress it.
 - Confirm alerts, retention, rate limits, and privacy review.
@@ -372,42 +409,47 @@ candidate's reports before closing the incident.
 
 ## Readiness scorecard
 
-| Category                     | Evidence                                                                                                                           | Status  | Remaining action                                                      |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------- |
-| Policy correctness           | Source, fresh build, and production policy match; directives scoped; no unsafe/wildcard sources                                    | PASS    | None identified                                                       |
-| Inline hash reliability      | Six exact hashes; 65 occurrences; 21 pages; 38 JSON-LD excluded; deterministic builds                                              | PASS    | Re-run on final enforcement candidate                                 |
-| External script sources      | First-party bundles and Cloudflare RUM only; no wildcard hosts                                                                     | PASS    | Reconfirm on release candidate                                        |
-| Cloudflare RUM               | Script 200; actual telemetry 204 in all engines; fallback source verified                                                          | PASS    | Recheck after enforcement                                             |
-| Chromium                     | Full suite 209/209; CSP suite 9/9; production smoke passed                                                                         | PASS    | Repeat for enforcement candidate                                      |
-| Firefox                      | Full suite 209/209; CSP suite 9/9; production smoke passed                                                                         | PASS    | Repeat for enforcement candidate                                      |
-| WebKit                       | Full suite 209/209; CSP suite 9/9; production smoke passed                                                                         | PASS    | Repeat for enforcement candidate                                      |
-| Production route coverage    | 23 routes, 21 exact HTML matches, 8/8 assets, policy/hashes/404s/HSTS passed                                                       | PASS    | Expand only if new routes are added                                   |
-| Real-user violation evidence | No collector; no report-to; no central logs/dashboards; no defined observation period                                              | BLOCKED | Add collector and complete report-only soak                           |
-| Reporting collector          | None configured; no `report-uri`/`report-to`; NEL `Report-To` is unrelated                                                         | BLOCKED | Approve and implement collector before enforcement                    |
-| Deployment provenance        | New `be1a65a`/Build `5e6672f0…`/Version `2214ddbf…` evidence exists, but active Version ID was not revalidated after the new build | PARTIAL | Operator verifies active deployment and records attestation           |
-| Rollback readiness           | Mechanism documented; current active version and target retention unverified; no rehearsal                                         | PARTIAL | Verify active/pre-enforcement versions, retention, and rollback steps |
-| Operational monitoring       | Browser sampling only; no central CSP alerts or thresholds                                                                         | BLOCKED | Add collector alerting and define response ownership                  |
+| Category                     | Evidence                                                                                                                                               | Status  | Remaining action                                                      |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- | --------------------------------------------------------------------- |
+| Policy correctness           | Source and fresh build include `report-uri /__csp-report`; production still ends at `worker-src 'none'`; directives scoped; no unsafe/wildcard sources | PARTIAL | Deploy the collector-enabled policy and re-compare production         |
+| Inline hash reliability      | Six exact hashes; 65 occurrences; 21 pages; 38 JSON-LD excluded; deterministic builds                                                                  | PASS    | Re-run on final enforcement candidate                                 |
+| External script sources      | First-party bundles and Cloudflare RUM only; no wildcard hosts                                                                                         | PASS    | Reconfirm on release candidate                                        |
+| Cloudflare RUM               | Script 200; actual telemetry 204 in all engines; fallback source verified                                                                              | PASS    | Recheck after enforcement                                             |
+| Chromium                     | Full suite 222/222; CSP suite 9/9; reporting suite 13/13; production smoke passed; report delivery verified locally                                    | PASS    | Repeat for enforcement candidate                                      |
+| Firefox                      | Full suite 222/222; CSP suite 9/9; reporting suite 13/13; production smoke passed; report delivery verified locally                                    | PASS    | Repeat for enforcement candidate                                      |
+| WebKit                       | Full suite 222/222; CSP suite 9/9; reporting suite 13/13; production smoke passed; report delivery verified locally                                    | PASS    | Repeat for enforcement candidate                                      |
+| Production route coverage    | 23 routes, 21 exact HTML matches, 8/8 assets, policy/hashes/404s/HSTS passed                                                                           | PASS    | Expand only if new routes are added                                   |
+| Real-user violation evidence | Collector implemented but not deployed; no production reports, dashboards, or defined observation period                                               | BLOCKED | Deploy collector and complete report-only soak                        |
+| Reporting collector          | Endpoint, normalization, limits, and browser delivery implemented and tested; Analytics Engine storage not deployed or verified                        | PARTIAL | Deploy, verify rows, configure rate limit and read access             |
+| Deployment provenance        | New `be1a65a`/Build `5e6672f0…`/Version `2214ddbf…` evidence exists, but active Version ID was not revalidated after the new build                     | PARTIAL | Operator verifies active deployment and records attestation           |
+| Rollback readiness           | Mechanism documented; current active version and target retention unverified; no rehearsal                                                             | PARTIAL | Verify active/pre-enforcement versions, retention, and rollback steps |
+| Operational monitoring       | Aggregate SQL documented; no active rate limit, alerting, or response ownership                                                                        | PARTIAL | Add rate limit, alerting, and ownership before the soak               |
 
 ## Outstanding blockers and operator actions
 
-1. Approve and implement a private CSP report collector with rate limits,
-   validation, aggregation, privacy review, and alerting.
-2. Deploy report-only with reporting enabled and complete the defined soak.
-3. Revalidate the current active production Version ID. The last authenticated
+1. Deploy the collector-enabled report-only policy and verify a synthetic report
+   returns `204` and produces an Analytics Engine row.
+2. Configure the Cloudflare rate-limit rule and a read-only Analytics Engine token;
+   define alert ownership.
+3. Complete the defined report-only soak with production evidence.
+4. Revalidate the current active production Version ID. The last authenticated
    audit recorded `7074ff1f-10d1-4141-9768-9de8b5080d3b`; a newer repository build
    now exists for `be1a65a` with Build `5e6672f0…` and Version `2214ddbf…`.
-4. Confirm whether the candidate `2214ddbf…` or another Version is active, and
+5. Confirm whether the candidate `2214ddbf…` or another Version is active, and
    record the exact check-run/build/Version/deployment chain.
-5. Confirm the immediate pre-enforcement and historical rollback versions remain
+6. Confirm the immediate pre-enforcement and historical rollback versions remain
    deployable within Cloudflare's 100-version limit.
-6. Define canary/version-affinity support or approve a controlled 100% deployment.
-7. Re-run the full browser, production policy, hash, RUM, and rollback checks for
-   the enforcement release candidate.
-8. Record the private attestation and smoke results after every deployment.
+7. Define canary/version-affinity support or approve a controlled 100% deployment.
+8. Re-run the full browser, production policy, hash, RUM, collector, and rollback
+   checks for the enforcement release candidate.
+9. Record the private attestation and smoke results after every deployment.
 
 ## Documentation boundary
 
-This assessment adds no collector, no analytics, no public version endpoint, no
-CSP enforcement, and no production configuration change. The proposed policy is
-documentation only. Any enforcement rollout, collector implementation, or
-Cloudflare deployment requires separate approval.
+The collector implementation is documented in
+[CSP-REPORTING-COLLECTOR.md](./CSP-REPORTING-COLLECTOR.md) and is present on a
+feature branch only. This assessment does not deploy it, does not add production
+analytics, does not add a public version endpoint, and does not enable CSP
+enforcement. The proposed enforcing policy remains documentation only. Any
+enforcement rollout, collector deployment, or Cloudflare configuration change
+requires separate approval.

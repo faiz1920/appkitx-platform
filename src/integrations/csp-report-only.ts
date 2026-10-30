@@ -85,7 +85,7 @@ export default function cspReportOnly(): AstroIntegration {
         }
 
         logger.info(
-          `Generated Content-Security-Policy-Report-Only with ${inventory.uniqueExecutable.length} inline hashes in dist/_headers.`,
+          `Generated Content-Security-Policy-Report-Only with ${inventory.uniqueExecutable.length} inline hashes and the CSP report endpoint in dist/_headers.`,
         );
       },
     },
