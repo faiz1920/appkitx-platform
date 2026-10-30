@@ -12,11 +12,14 @@ the confirmations below.
 ## Deployment ownership and model
 
 - The repository is `faiz1920/appkitx-platform`; production source is `main`.
-- Cloudflare Workers Builds is the deployment system. It is configured outside
-  this repository.
-- A push to the production branch runs the build command, followed by the deploy
-  command. Workers Builds uses the default `npx wrangler deploy` unless the
-  external trigger has been customised; confirm the trigger settings in
+- Cloudflare Workers Builds produced Versions 24–26. It is configured outside
+  this repository. An authenticated audit on 2026-10-30 found no current Builds
+  trigger or build records, so current Git-trigger behaviour must be rechecked
+  before assuming a future merge deploys automatically.
+- When connected, a push to the production branch runs the build command,
+  followed by the deploy command. Workers Builds uses the default
+  `npx wrangler deploy` unless the external trigger has been customised; confirm
+  the current trigger settings in
   **Workers & Pages → appkitx-platform → Settings → Build**.
 - `wrangler.jsonc` is the deployment contract. The Worker name is
   `appkitx-platform` and the static output is `dist/`.
@@ -44,16 +47,29 @@ A successful build does not prove that its version is active. Matching content
 alone does not prove an exact active Version ID because an out-of-band deployment
 could create another version with identical content.
 
+Artifact identifiers have different scopes:
+
+- A Worker script ETag identifies the Worker code artifact, not the static asset
+  bundle or source commit.
+- Hashed static asset filenames and ETags identify individual asset bytes, but
+  require a clean source build comparison to associate them with a commit.
+- CSP hashes cover only the listed executable inline scripts. They do not cover
+  external JavaScript, CSS, HTML, or the Worker script, and can remain identical
+  while the application asset bundle changes.
+
+Only the check-run/build/version chain plus the authoritative deployment record
+can tie a source commit to the active production version.
+
 ## Required evidence for every production deployment
 
 Record all of the following in the private deployment record:
 
 1. Repository, production branch, and full source commit SHA.
 2. Pull request and merge commit when applicable.
-3. Cloudflare Build ID, Worker Version ID, build completion timestamp, and build
-   URL.
-4. The active deployment observation: Version ID, traffic percentage,
-   observation timestamp, and the API/dashboard source used.
+3. Cloudflare Build ID, Worker Version ID, build completion timestamp, build
+   URL, GitHub check-run ID/URL, and an exported copy of the check-run payload.
+4. The active deployment observation: deployment ID, Version ID, traffic
+   percentage, observation timestamp, and the API/dashboard source used.
 5. Optional deterministic local artifact-manifest digest and the command/tool
    used to compute it.
 6. Post-deployment smoke-test result with operator and timestamp.
@@ -61,10 +77,14 @@ Record all of the following in the private deployment record:
    target is verified as retained and deployable.
 8. Any deviation, manual action, failed check, or evidence gap.
 
-Build records and build logs are retained by Cloudflare for 90 days. Versions
-and deployments are not removed when the build log expires, but rollback is
-limited to the **100 most recently published versions**. Export any build logs
-that must be kept beyond 90 days.
+Cloudflare documents Workers Builds build/log retention for 90 days. Separately,
+after a Builds connection is removed, the Builds API may no longer expose the
+historical records; the 2026-10-30 audit observed that state. Versions and
+deployments are not removed when a build log expires, but rollback is limited to
+the **100 most recently published versions**. The historical GitHub check run is
+independent of the Cloudflare Builds connection and may outlive it. Export the
+check-run payload and any build logs that must be retained before either becomes
+unavailable.
 
 ## Collecting provenance evidence
 
@@ -141,6 +161,13 @@ Record the build UUID, branch, commit hash, and Version ID. If the API is not
 available, copy the equivalent Build ID, Version ID, and source SHA from the
 Cloudflare build detail page and GitHub check run.
 
+A missing current Builds configuration or empty Builds API result does not erase
+a historical build. The GitHub check run records the Cloudflare Build ID in
+`external_id`, the Worker Version ID in its summary, and the source association
+through its `head_sha` and check-suite `before`/`after` values. Export that
+metadata and use the Cloudflare audit log to establish when a former build
+connection was removed.
+
 ### 5. Optional artifact-manifest digest
 
 The Cloudflare Version ID is the authoritative deployed-artifact identity. A
@@ -201,7 +228,10 @@ observed; use `null` for an unverified field.
     "build_id": "<build uuid>",
     "version_id": "<worker version uuid>",
     "build_completed_at": "<UTC timestamp>",
-    "build_url": "<private dashboard URL>"
+    "build_url": "<private dashboard URL>",
+    "github_check_run_id": null,
+    "github_check_run_url": null,
+    "check_run_payload_exported": false
   },
   "activation": {
     "verified": false,
@@ -278,28 +308,35 @@ rollback blockers do not currently apply. Recheck this if bindings are added.
 7. The current Version ID recorded as the roll-forward target.
 8. A private place to record the before/after deployment evidence.
 
-### Current audit snapshot (2026-10-30)
+### Current audit snapshot (2026-10-30, reconciled)
 
 This snapshot must be refreshed before any rollback:
 
-| Field                                     | Evidence                                                                               |
-| ----------------------------------------- | -------------------------------------------------------------------------------------- |
-| `origin/main`                             | `f664fd6a2fcef8ac4aedf6bd9476f9f1da87ce81`                                             |
-| Merge reference                           | PR #30, merged 2026-10-30T05:04:11Z                                                    |
-| Latest repository-linked production build | `5aecb24a-5c28-4c41-bfab-6ef8df4a07fb`                                                 |
-| Source for that build                     | `f664fd6a2fcef8ac4aedf6bd9476f9f1da87ce81`                                             |
-| Worker Version ID from that build         | `faf8f318-d9f9-4542-a814-818fe14f85b2`                                                 |
-| Build completed                           | 2026-10-30T05:04:57Z                                                                   |
-| Later repository-linked production build  | None observed at audit time                                                            |
-| Current active Version ID                 | **Unverified** — authenticated Cloudflare access unavailable                           |
-| Previous known production version         | `66e82b32-786e-4f3e-a41d-fe54d5e9fe67` from `c16a69e…`, completed 2026-10-22T22:22:27Z |
-| Previous-version retention/deployability  | **Unverified** — must confirm in Cloudflare                                            |
+| Field                                     | Evidence                                                                                             |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `origin/main`                             | `7e19681be8a74a4d2aeecf473d832aacd10fa24f`                                                           |
+| Merge reference                           | PR #31, merged 2026-10-30T05:32:58Z                                                                  |
+| Latest repository-linked production build | `819eb256-8c53-473b-a5a0-f76e184bce38`                                                               |
+| Source for that build                     | `7e19681be8a74a4d2aeecf473d832aacd10fa24f`                                                           |
+| Worker Version ID from that build         | `7074ff1f-10d1-4141-9768-9de8b5080d3b`                                                               |
+| Build completed                           | 2026-10-30T05:33:55Z                                                                                 |
+| Active deployment                         | `a9329c4b-51e1-4ee9-900f-a75293306a4a`, Version `7074ff1f…`, 100% traffic                            |
+| Deployment created                        | 2026-10-30T05:33:50.910047Z                                                                          |
+| Current Builds trigger/records            | No trigger or build records visible in the authenticated API at reconciliation time                  |
+| Previous production version               | `faf8f318-d9f9-4542-a814-818fe14f85b2` from `f664fd6…`, PR #30                                       |
+| Older fallback version                    | `66e82b32-786e-4f3e-a41d-fe54d5e9fe67` from `c16a69e…`, completed 2026-10-22T22:22:27Z               |
+| Rollback target                           | Preferred: `faf8f318…`; retention/deployability **unverified**; fallback `66e82b32…` also unverified |
 
-Production HTML from all 21 generated pages and all eight hashed CSS/JS assets
-referenced directly by that HTML matched a clean local build of `f664fd6`
-byte-for-byte after removing Cloudflare's RUM injection. This strongly supports
-that production is serving the `f664fd6` artifact, but it does not prove that
-Version ID `faf8f318-d9f9-4542-a814-818fe14f85b2` is the active deployment.
+All 21 generated HTML pages and all eight hashed CSS/JS assets referenced directly
+by that HTML matched a clean local build of `7e19681` byte-for-byte after
+removing Cloudflare's RUM injection. The current active deployment is verified by
+the Cloudflare deployments API. The historical GitHub check run also maps
+`7e19681` to Build `819eb256…` and Version `7074ff1f…`.
+
+The previous production Version `faf8f318…` was verified during the earlier
+production content audit and has a passing cross-browser production smoke record.
+It is the preferred rollback candidate if Version 26 must be reverted; Version
+`66e82b32…` remains an older fallback.
 
 ### Procedure — Dashboard
 
@@ -363,11 +400,12 @@ provenance record.
 ### Rollback confidence
 
 The rollback mechanism, CLI commands, permission requirements, 100-version
-limit, and dashboard route are supported by current Cloudflare documentation
-and the local Wrangler help output. The current active version and rollback
-target retention were **not** verified because no Cloudflare credentials were
-available. The procedure therefore requires operator verification before it can
-be considered operationally rollback-ready.
+limit, and dashboard route are supported by current Cloudflare documentation and
+the local Wrangler help output. The current active deployment/Version ID is now
+verified through the Cloudflare deployments API. The preferred rollback target's
+retention and deployability were **not** verified, and the rollback procedure was
+not executed. It therefore requires operator verification before it can be
+considered operationally rollback-ready.
 
 ## Post-deployment and post-rollback verification
 
@@ -475,17 +513,21 @@ described as a full application E2E run.
 
 ## Access limitations and operator actions
 
-Current repository-side access is read-only and does not include a Cloudflare
-session or API token. The following require an authorized operator:
+The repository environment has no Cloudflare session or API token. The current
+active deployment was confirmed through an operator-provided authenticated audit.
+The following require an authorized operator:
 
-1. Confirm the current active deployment/Version ID in Cloudflare.
-2. Confirm whether Version `66e82b32-786e-4f3e-a41d-fe54d5e9fe67` remains among
-   the 100 retained versions and is deployable.
-3. Map the current active Version ID to its Build ID/source commit through the
-   Cloudflare Builds API or dashboard.
-4. Retain the build record/log privately before the 90-day expiration.
-5. Grant a read-only Workers role for audits and a separate Editor role only
-   for an approved rollback.
+1. Confirm whether Version `faf8f318-d9f9-4542-a814-818fe14f85b2` remains among
+   the 100 retained versions and is deployable as the preferred rollback target.
+2. Confirm the older fallback Version
+   `66e82b32-786e-4f3e-a41d-fe54d5e9fe67` if a second retained target is needed.
+3. Export the current GitHub check-run payload and retain the build record/log
+   privately before either becomes unavailable.
+4. Use Cloudflare audit logs to establish when and why the former Builds
+   connection/build records disappeared, and confirm the current trigger state
+   before relying on push-to-`main` deployment.
+5. Grant a read-only Workers role for future audits and a separate Editor role
+   only for an approved rollback.
 6. Execute the rollback only after the confirmations above and record the
    post-rollback evidence.
 
