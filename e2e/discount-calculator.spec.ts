@@ -1,20 +1,11 @@
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+import { prepareClipboard } from "./clipboard";
+import { tabTo } from "./keyboard";
 
 const finalPrice = (page: Page) => page.locator("[data-final-price]");
 const savings = (page: Page) => page.locator("[data-savings]");
 const resultCaption = (page: Page) => page.locator("[data-result-caption]");
 const formula = (page: Page) => page.locator("[data-formula]");
-
-const tabTo = async (page: Page, target: Locator, max = 20) => {
-  for (let i = 0; i < max; i++) {
-    await page.keyboard.press("Tab");
-    const reached = await target.evaluate(
-      (el) => el === document.activeElement,
-    );
-    if (reached) return;
-  }
-  throw new Error("Did not reach the target element via Tab");
-};
 
 const calculate = async (page: Page, price: string, percent: string) => {
   await page.getByLabel("Original price").fill(price);
@@ -162,12 +153,12 @@ test("resets inputs and results", async ({ page }) => {
   );
 });
 
-test("is fully operable from the keyboard", async ({ page }) => {
+test("is fully operable from the keyboard", async ({ page, browserName }) => {
   await page.goto("/discount-calculator");
 
-  await tabTo(page, page.getByLabel("Original price"));
+  await tabTo(page, browserName, page.getByLabel("Original price"));
   await page.keyboard.type("100");
-  await tabTo(page, page.getByLabel("Discount percentage (%)"));
+  await tabTo(page, browserName, page.getByLabel("Discount percentage (%)"));
   await page.keyboard.type("20");
   await page.keyboard.press("Enter");
 
@@ -176,10 +167,11 @@ test("is fully operable from the keyboard", async ({ page }) => {
 
 test("shows the design-system focus ring on interactive controls", async ({
   page,
+  browserName,
 }) => {
   await page.goto("/discount-calculator");
 
-  await tabTo(page, page.getByLabel("Original price"));
+  await tabTo(page, browserName, page.getByLabel("Original price"));
   const price = page.getByLabel("Original price");
   await expect(price).toHaveCSS("outline-width", "2px");
   await expect(price).toHaveCSS("outline-style", "solid");
@@ -187,7 +179,7 @@ test("shows the design-system focus ring on interactive controls", async ({
   await expect(price).toHaveCSS("outline-offset", "2px");
 
   const calculateButton = page.getByRole("button", { name: "Calculate" });
-  await tabTo(page, calculateButton);
+  await tabTo(page, browserName, calculateButton);
   await expect(calculateButton).toHaveCSS("outline-width", "2px");
   await expect(calculateButton).toHaveCSS("outline-color", "rgb(13, 148, 136)");
   await expect(calculateButton).toHaveCSS("outline-offset", "2px");
@@ -195,8 +187,9 @@ test("shows the design-system focus ring on interactive controls", async ({
 
 test("copies both results with accessible success feedback", async ({
   page,
+  browserName,
 }) => {
-  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+  await prepareClipboard(page, browserName);
   await page.goto("/discount-calculator");
 
   const copy = page.getByRole("button", { name: "Copy result" });

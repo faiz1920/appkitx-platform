@@ -497,7 +497,7 @@ export const es: Dictionary = {
             "Sirve cualquier valor JSON válido: objetos, arrays, cadenas, números, booleanos y `null`.",
             "Los números se analizan como números de JavaScript, así que los enteros muy grandes pueden perder precisión al volver a imprimirlos.",
             "Las claves duplicadas conservan el último valor, igual que el comportamiento de `JSON.parse` en los navegadores.",
-            "Cuando la entrada no es válida, el mensaje muestra la línea y la columna donde se detuvo el análisis cuando el navegador la indica, y el último resultado válido permanece en el panel de salida.",
+            "Cuando la entrada no es válida, el mensaje muestra la línea y la columna donde se detuvo el análisis cuando esa posición se puede determinar, y el último resultado válido permanece en el panel de salida.",
             "La entrada solo se analiza como datos (nunca se evalúa) y los resultados se muestran como texto sin formato.",
           ],
         },

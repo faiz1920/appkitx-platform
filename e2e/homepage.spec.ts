@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { pressTab, tabTo } from "./keyboard";
 
 test("homepage renders the chrome, hero, and token styles", async ({
   page,
@@ -134,9 +135,10 @@ test("global nav collapses and icon buttons keep 44px targets", async ({
 
 test("keyboard focus shows the focus ring on the skip link", async ({
   page,
+  browserName,
 }) => {
   await page.goto("/");
-  await page.keyboard.press("Tab");
+  await pressTab(page, browserName);
 
   const skipLink = page.getByRole("link", { name: "Skip to content" });
   await expect(skipLink).toBeFocused();
@@ -147,6 +149,7 @@ test("keyboard focus shows the focus ring on the skip link", async ({
 
 test("navigation buttons show the design-system focus ring", async ({
   page,
+  browserName,
 }) => {
   await page.setViewportSize({ width: 720, height: 900 });
   await page.goto("/");
@@ -155,16 +158,14 @@ test("navigation buttons show the design-system focus ring", async ({
   const search = banner.getByRole("button", { name: "Search tools" });
   const menu = banner.getByRole("button", { name: "Menu" });
 
-  await page.keyboard.press("Tab"); // skip link
-  await page.keyboard.press("Tab"); // logo
-  await page.keyboard.press("Tab"); // search trigger
+  await tabTo(page, browserName, search);
   await expect(search).toBeFocused();
   await expect(search).toHaveCSS("outline-width", "2px");
   await expect(search).toHaveCSS("outline-style", "solid");
   await expect(search).toHaveCSS("outline-color", "rgb(13, 148, 136)");
   await expect(search).toHaveCSS("outline-offset", "2px");
 
-  await page.keyboard.press("Tab"); // menu toggle
+  await pressTab(page, browserName);
   await expect(menu).toBeFocused();
   await expect(menu).toHaveCSS("outline-width", "2px");
   await expect(menu).toHaveCSS("outline-style", "solid");
@@ -183,6 +184,12 @@ test("navigation and footer links show pressed states", async ({ page }) => {
   await page.mouse.move(4, 4);
   await page.mouse.up();
 
+  /*
+   * Reload before checking the second element. WebKit retains :active when a
+   * pressed pointer is released outside the originating link, which would
+   * otherwise leak the nav link's pressed state into the footer link.
+   */
+  await page.goto("/");
   const footerLink = page
     .getByRole("contentinfo")
     .getByRole("link", { name: "Percentage Calculator" });

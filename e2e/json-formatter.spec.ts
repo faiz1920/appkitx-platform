@@ -1,9 +1,10 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { prepareClipboard } from "./clipboard";
 
 /*
  * M7 Phase 1 JSON Formatter: format/minify behavior against the production
- * build, two-space indentation, localized parse errors with line/column and
- * the positionless fallback, safe text-only rendering (no evaluation, no
+ * build, two-space indentation, deterministic cross-browser parse-error
+ * positions, localized errors, safe text-only rendering (no evaluation, no
  * HTML injection), copy feedback, keyboard access, and Spanish localization.
  */
 
@@ -78,32 +79,55 @@ test("minifies JSON", async ({ page }) => {
   await expect(status(page)).toContainText("Valid JSON");
 });
 
-test("reports parse errors with line and column when available", async ({
+test("reports deterministic cross-browser parse error positions", async ({
   page,
 }) => {
   await page.goto("/json-formatter");
 
-  await input(page).fill('{\n  "a": 1,\n}');
-  await page.getByRole("button", { name: "Format" }).click();
+  const cases = [
+    {
+      input: '{\n  "a": 1,\n}',
+      expected: "Invalid JSON at line 3, column 1.",
+    },
+    {
+      input: '{"a": 1',
+      expected: "Invalid JSON at line 1, column 8.",
+    },
+    {
+      input: "nope",
+      expected: "Invalid JSON at line 1, column 1.",
+    },
+    {
+      input: "[1 2]",
+      expected: "Invalid JSON at line 1, column 4.",
+    },
+    {
+      input: '"abc',
+      expected: "Invalid JSON at line 1, column 5.",
+    },
+  ];
 
-  await expect(error(page)).toBeVisible();
-  await expect(error(page)).toHaveText("Invalid JSON at line 3, column 1.");
-  await expect(input(page)).toHaveAttribute("aria-invalid", "true");
-  await expect(status(page)).toContainText("Invalid JSON");
-  await expect(output(page)).toHaveValue("");
+  for (const malformed of cases) {
+    await input(page).fill(malformed.input);
+    await page.getByRole("button", { name: "Format" }).click();
+
+    await expect(error(page)).toBeVisible();
+    await expect(error(page), malformed.input).toHaveText(malformed.expected);
+    await expect(input(page)).toHaveAttribute("aria-invalid", "true");
+    await expect(status(page)).toContainText("Invalid JSON");
+    await expect(output(page)).toHaveValue("");
+  }
 });
 
-test("falls back to the generic error when no position is reported", async ({
+test("locates a malformed array entry at the offending token", async ({
   page,
 }) => {
   await page.goto("/json-formatter");
 
-  await input(page).fill("nope");
+  await input(page).fill("[1, 2,, 3]");
   await page.getByRole("button", { name: "Format" }).click();
 
-  await expect(error(page)).toHaveText(
-    "This isn't valid JSON — check for missing quotes, commas, or brackets.",
-  );
+  await expect(error(page)).toHaveText("Invalid JSON at line 1, column 7.");
   await expect(input(page)).toHaveAttribute("aria-invalid", "true");
 });
 
@@ -179,8 +203,11 @@ test("clear resets the tool and returns focus to the input", async ({
   await expect(input(page)).toBeFocused();
 });
 
-test("copies the output with accessible success feedback", async ({ page }) => {
-  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+test("copies the output with accessible success feedback", async ({
+  page,
+  browserName,
+}) => {
+  await prepareClipboard(page, browserName);
   await page.goto("/json-formatter");
 
   await input(page).fill('{"a":1}');
@@ -246,6 +273,12 @@ test("the Spanish page is localized and reports positioned errors", async ({
   await page.getByRole("button", { name: "Formatear" }).click();
   await expect(error(page)).toHaveText(
     "JSON no válido en la línea 3, columna 1.",
+  );
+
+  await input(page).fill("[1 2]");
+  await page.getByRole("button", { name: "Formatear" }).click();
+  await expect(error(page)).toHaveText(
+    "JSON no válido en la línea 1, columna 4.",
   );
 
   await input(page).fill('{"b":1,"a":[1,2]}');

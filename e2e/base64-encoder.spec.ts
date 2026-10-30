@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { prepareClipboard } from "./clipboard";
 
 /*
  * M7 Phase 1 Base64 Encoder: encode/decode behavior against the production
@@ -171,8 +172,11 @@ test("clear resets the tool and returns focus to the input", async ({
   await expect(input(page)).toBeFocused();
 });
 
-test("copies the output with accessible success feedback", async ({ page }) => {
-  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+test("copies the output with accessible success feedback", async ({
+  page,
+  browserName,
+}) => {
+  await prepareClipboard(page, browserName);
   await page.goto("/base64-encoder");
 
   await input(page).fill("hello");

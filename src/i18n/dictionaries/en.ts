@@ -479,7 +479,7 @@ export const en: Dictionary = {
             "Any valid JSON value works — objects, arrays, strings, numbers, booleans, and `null`.",
             "Numbers are parsed as JavaScript numbers, so very large integers may lose precision when the result is re-printed.",
             "Duplicate keys keep the last value, matching `JSON.parse` behavior in browsers.",
-            "When the input is invalid, the message shows the line and column where parsing stopped when the browser reports one, and the last valid output stays in the output pane.",
+            "When the input is invalid, the message shows the line and column where parsing stopped when that position can be determined, and the last valid output stays in the output pane.",
             "The input is only parsed as data — never evaluated — and results are rendered as plain text.",
           ],
         },

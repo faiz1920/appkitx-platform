@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { prepareClipboard } from "./clipboard";
 
 /*
  * M7 Phase 2 Age Calculator: age as of the device's local calendar date,
@@ -196,8 +197,11 @@ test("handles a Feb 29 birth date", async ({ page }) => {
   );
 });
 
-test("copies the result with accessible success feedback", async ({ page }) => {
-  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+test("copies the result with accessible success feedback", async ({
+  page,
+  browserName,
+}) => {
+  await prepareClipboard(page, browserName);
   await page.goto("/age-calculator");
 
   const birth = birthdayBirth();
