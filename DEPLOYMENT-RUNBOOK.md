@@ -312,31 +312,26 @@ rollback blockers do not currently apply. Recheck this if bindings are added.
 
 This snapshot must be refreshed before any rollback:
 
-| Field                                     | Evidence                                                                                             |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `origin/main`                             | `7e19681be8a74a4d2aeecf473d832aacd10fa24f`                                                           |
-| Merge reference                           | PR #31, merged 2026-10-30T05:32:58Z                                                                  |
-| Latest repository-linked production build | `819eb256-8c53-473b-a5a0-f76e184bce38`                                                               |
-| Source for that build                     | `7e19681be8a74a4d2aeecf473d832aacd10fa24f`                                                           |
-| Worker Version ID from that build         | `7074ff1f-10d1-4141-9768-9de8b5080d3b`                                                               |
-| Build completed                           | 2026-10-30T05:33:55Z                                                                                 |
-| Active deployment                         | `a9329c4b-51e1-4ee9-900f-a75293306a4a`, Version `7074ff1f…`, 100% traffic                            |
-| Deployment created                        | 2026-10-30T05:33:50.910047Z                                                                          |
-| Current Builds trigger/records            | No trigger or build records visible in the authenticated API at reconciliation time                  |
-| Previous production version               | `faf8f318-d9f9-4542-a814-818fe14f85b2` from `f664fd6…`, PR #30                                       |
-| Older fallback version                    | `66e82b32-786e-4f3e-a41d-fe54d5e9fe67` from `c16a69e…`, completed 2026-10-22T22:22:27Z               |
-| Rollback target                           | Preferred: `faf8f318…`; retention/deployability **unverified**; fallback `66e82b32…` also unverified |
+| Field                                             | Evidence                                                                                               |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `origin/main`                                     | `be1a65ab22442920e99d516ef06374d76ba49e7a`                                                             |
+| Merge reference                                   | PR #32, merged 2026-10-30T16:34:20Z                                                                    |
+| Latest repository-linked production build         | `5e6672f0-f97f-4216-80bc-c013f4bdbf9f`                                                                 |
+| Source for that build                             | `be1a65ab22442920e99d516ef06374d76ba49e7a`                                                             |
+| Worker Version ID from that build                 | `2214ddbf-b72c-48bc-bca2-f899a699502b`                                                                 |
+| Build completed                                   | 2026-10-30T16:35:05Z                                                                                   |
+| Active deployment at last authenticated API audit | `a9329c4b-51e1-4ee9-900f-a75293306a4a`, Version `7074ff1f…`, 100% traffic                              |
+| Active Version after the newer build              | **Unverified** — Version `2214ddbf…` is the build candidate; Cloudflare access was unavailable locally |
+| Current Builds trigger/records                    | No trigger or build records visible in the last authenticated API audit                                |
+| Historical non-enforcing candidates               | `2214ddbf…`, `7074ff1f…`, `faf8f318…`, `66e82b32…`; retention/deployability all **unverified**         |
+| Rollback target                                   | The immediately preceding non-enforcing Version, verified retained before use                          |
 
 All 21 generated HTML pages and all eight hashed CSS/JS assets referenced directly
-by that HTML matched a clean local build of `7e19681` byte-for-byte after
-removing Cloudflare's RUM injection. The current active deployment is verified by
-the Cloudflare deployments API. The historical GitHub check run also maps
-`7e19681` to Build `819eb256…` and Version `7074ff1f…`.
-
-The previous production Version `faf8f318…` was verified during the earlier
-production content audit and has a passing cross-browser production smoke record.
-It is the preferred rollback candidate if Version 26 must be reverted; Version
-`66e82b32…` remains an older fallback.
+by that HTML matched a clean local build of `be1a65a` byte-for-byte after removing
+Cloudflare's RUM injection. The GitHub check run maps `be1a65a` to Build
+`5e6672f0…` and Version `2214ddbf…`. Earlier API evidence verified Version
+`7074ff1f…` as active before this newer build. The current active Version ID must
+be rechecked before a rollback or enforcement deployment.
 
 ### Procedure — Dashboard
 
@@ -401,11 +396,12 @@ provenance record.
 
 The rollback mechanism, CLI commands, permission requirements, 100-version
 limit, and dashboard route are supported by current Cloudflare documentation and
-the local Wrangler help output. The current active deployment/Version ID is now
-verified through the Cloudflare deployments API. The preferred rollback target's
-retention and deployability were **not** verified, and the rollback procedure was
-not executed. It therefore requires operator verification before it can be
-considered operationally rollback-ready.
+the local Wrangler help output. Version `7074ff1f…` was verified active before
+Build `5e6672f0…`, but the active Version after that newer build has **not** been
+revalidated. The preferred rollback target's retention and deployability were
+also **not** verified, and the rollback procedure was not executed. It therefore
+requires operator verification before it can be considered operationally
+rollback-ready.
 
 ## Post-deployment and post-rollback verification
 
@@ -513,22 +509,24 @@ described as a full application E2E run.
 
 ## Access limitations and operator actions
 
-The repository environment has no Cloudflare session or API token. The current
-active deployment was confirmed through an operator-provided authenticated audit.
+The repository environment has no Cloudflare session or API token. The last
+authenticated audit confirmed Version `7074ff1f…`; a newer build for `be1a65a`
+created Version `2214ddbf…`, but its active state was not revalidated locally.
 The following require an authorized operator:
 
-1. Confirm whether Version `faf8f318-d9f9-4542-a814-818fe14f85b2` remains among
-   the 100 retained versions and is deployable as the preferred rollback target.
-2. Confirm the older fallback Version
-   `66e82b32-786e-4f3e-a41d-fe54d5e9fe67` if a second retained target is needed.
-3. Export the current GitHub check-run payload and retain the build record/log
+1. Confirm the current active Version ID and whether it is `2214ddbf…`.
+2. Confirm whether `2214ddbf…` and the immediate prior Version remain among the
+   100 retained versions and are deployable rollback targets.
+3. Confirm older fallback Versions `7074ff1f…`, `faf8f318…`, and `66e82b32…`
+   only if a deeper rollback is required.
+4. Export the current GitHub check-run payload and retain the build record/log
    privately before either becomes unavailable.
-4. Use Cloudflare audit logs to establish when and why the former Builds
+5. Use Cloudflare audit logs to establish when and why the former Builds
    connection/build records disappeared, and confirm the current trigger state
    before relying on push-to-`main` deployment.
-5. Grant a read-only Workers role for future audits and a separate Editor role
+6. Grant a read-only Workers role for future audits and a separate Editor role
    only for an approved rollback.
-6. Execute the rollback only after the confirmations above and record the
+7. Execute the rollback only after the confirmations above and record the
    post-rollback evidence.
 
 Do not commit credentials, request a production role change as part of this
