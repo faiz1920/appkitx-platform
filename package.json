@@ -12,6 +12,7 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:pc-builder": "playwright test -c playwright.pc-builder.config.ts",
     "csp:hash": "node --experimental-strip-types scripts/csp-inline-hashes.ts"
   },
   "dependencies": {

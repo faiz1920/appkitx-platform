@@ -1,0 +1,33 @@
+---
+/*
+ * Development-only PC Builder entry point.
+ *
+ * This file lives outside src/pages and is mounted by the
+ * pc-builder-dev-preview integration during `astro dev` only. It is never
+ * part of a production build, the sitemap, navigation or SEO surface.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import GlobalNav from "../../components/GlobalNav.astro";
+import Footer from "../../components/Footer.astro";
+import PcBuilder from "./PcBuilder.astro";
+---
+
+<BaseLayout
+  title="PC Builder — development preview"
+  description="Manual PC component selection with live compatibility checks."
+  noindex={true}
+>
+  <GlobalNav />
+  <main id="main">
+    <PcBuilder />
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style is:global>
+  /* The Astro dev toolbar floats over interactive content; this preview is
+     only served by `astro dev`, so hide it for a clean, unobstructed UI. */
+  astro-dev-toolbar {
+    display: none !important;
+  }
+</style>

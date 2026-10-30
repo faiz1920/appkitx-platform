@@ -1,0 +1,1101 @@
+---
+/*
+ * Manual PC Builder UI (M10.2) — development preview.
+ *
+ * Framework-free by design: this markup plus one client script that owns the
+ * immutable selection state. Compatibility and power results are always
+ * derived with the M10.1 engine on render; no UI-side compatibility logic.
+ */
+import closeIcon from "lucide-static/icons/x.svg?raw";
+import { catalogue } from "../../lib/pc-builder/catalogue";
+import { CATEGORY_LABELS } from "../../lib/pc-builder/ui";
+import {
+  componentCategories,
+  multiSlotCategories,
+} from "../../lib/pc-builder/types";
+import { manufacturerOptions } from "../../lib/pc-builder/ui";
+
+const manufacturers = manufacturerOptions(catalogue);
+const catalogueNote = `Initial curated catalogue: ${catalogue.length} components from ${manufacturers.length} manufacturers. It is not the full market. Specifications come from manufacturer pages; unpublished values are marked as not published.`;
+const multiSlot = new Set<string>(multiSlotCategories);
+---
+
+<div
+  class="mx-auto max-w-(--layout-container) px-6 py-8 md:py-10"
+  data-pc-builder
+>
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <p class="text-overline text-text-muted">
+        Development preview — not published
+      </p>
+      <h1 class="mt-1 text-headline text-text-primary">PC Builder</h1>
+      <p class="mt-2 max-w-(--layout-prose) text-small text-text-secondary">
+        Assemble a PC from the curated catalogue and check compatibility as you
+        go. Selection changes run every applicable rule immediately.
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <p class="text-caption text-text-muted" data-progress></p>
+      <button type="button" class="btn btn-secondary" data-clear>
+        Clear build
+      </button>
+    </div>
+  </div>
+
+  <noscript>
+    <p class="mt-6 rounded-lg border border-warning bg-warning-subtle p-4 text-small text-warning">
+      The PC Builder requires JavaScript to manage the selection and run
+      compatibility checks.
+    </p>
+  </noscript>
+
+  <div class="mt-8 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+    <section aria-labelledby="components-heading" class="min-w-0">
+      <h2 id="components-heading" class="text-title text-text-primary">
+        Components
+      </h2>
+      <p class="mt-1 text-caption text-text-muted">
+        One selection per component category, except RAM kits, storage and case
+        fans, which can hold several.
+      </p>
+
+      <div class="mt-4 space-y-3" data-slots>
+        {componentCategories.map((category) => (
+          <article
+            class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+            aria-labelledby={`slot-heading-${category}`}
+            data-slot={category}
+          >
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h3
+                  id={`slot-heading-${category}`}
+                  class="text-body-strong text-text-primary"
+                >
+                  {CATEGORY_LABELS[category]}
+                </h3>
+                <p
+                  class="text-caption text-text-muted"
+                  data-slot-meta={category}
+                >
+                  Not selected
+                </p>
+              </div>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-slot-button={category}
+                aria-label={`Select ${CATEGORY_LABELS[category]}`}
+              >
+                {multiSlot.has(category) ? "Add" : "Select"}
+              </button>
+            </div>
+            <div data-slot-content={category}></div>
+          </article>
+        ))}
+      </div>
+
+      <p class="mt-4 text-micro text-text-muted">{catalogueNote}</p>
+    </section>
+
+    <aside
+      class="space-y-6 lg:sticky lg:top-[calc(var(--layout-nav-height)+16px)]"
+      aria-label="Build results"
+    >
+      <section
+        class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+        aria-labelledby="compatibility-heading"
+      >
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          <h2 id="compatibility-heading" class="text-title text-text-primary">
+            Compatibility
+          </h2>
+          <span
+            class="inline-flex items-center gap-1.5 rounded-full border border-border-strong bg-surface-muted px-3 py-1 text-chip text-text-secondary"
+            data-overall-badge
+          >
+            No components selected
+          </span>
+        </div>
+        <p class="mt-2 text-caption text-text-secondary" data-overall-message>
+          Add components to run compatibility checks.
+        </p>
+
+        <dl class="mt-4 grid grid-cols-2 gap-2" data-counts>
+          <div class="rounded-md bg-surface-subtle px-3 py-2">
+            <dt class="text-micro text-text-muted">Incompatible</dt>
+            <dd
+              class="font-mono text-title tabular-nums text-text-primary"
+              data-count-incompatible
+            >
+              0
+            </dd>
+          </div>
+          <div class="rounded-md bg-surface-subtle px-3 py-2">
+            <dt class="text-micro text-text-muted">Warnings</dt>
+            <dd
+              class="font-mono text-title tabular-nums text-text-primary"
+              data-count-warning
+            >
+              0
+            </dd>
+          </div>
+          <div class="rounded-md bg-surface-subtle px-3 py-2">
+            <dt class="text-micro text-text-muted">Unknown</dt>
+            <dd
+              class="font-mono text-title tabular-nums text-text-primary"
+              data-count-unknown
+            >
+              0
+            </dd>
+          </div>
+          <div class="rounded-md bg-surface-subtle px-3 py-2">
+            <dt class="text-micro text-text-muted">Compatible</dt>
+            <dd
+              class="font-mono text-title tabular-nums text-text-primary"
+              data-count-compatible
+            >
+              0
+            </dd>
+          </div>
+        </dl>
+
+        <p class="mt-3 text-small text-text-muted" data-findings-empty>
+          Findings appear here after you select components.
+        </p>
+        <ul class="mt-1 divide-y divide-border-subtle" data-findings></ul>
+        <p class="mt-3 text-micro text-text-muted" data-missing hidden></p>
+        <p class="mt-3 text-micro text-text-muted">
+          Verdicts come from the shared compatibility engine. Missing
+          specifications are reported as Unknown — never as compatible.
+        </p>
+      </section>
+
+      <section
+        class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+        aria-labelledby="power-heading"
+      >
+        <h2 id="power-heading" class="text-title text-text-primary">
+          Build summary
+        </h2>
+        <p class="mt-1 text-caption text-text-muted" data-selected-summary>
+          0 components selected
+        </p>
+        <ul
+          class="mt-2 space-y-1 text-small text-text-secondary"
+          data-selected-list
+        ></ul>
+
+        <div class="mt-4 border-t border-border-subtle pt-4">
+          <p class="text-overline text-text-muted">Estimated system load</p>
+          <p
+            class="font-mono text-mono-result tabular-nums text-text-primary"
+            data-load
+          >
+            —
+          </p>
+          <p class="mt-1 text-caption text-text-secondary">
+            Recommended PSU:{" "}
+            <span class="font-mono tabular-nums" data-recommended-psu>
+              —
+            </span>
+          </p>
+          <p class="text-caption text-text-secondary" data-headroom></p>
+        </div>
+
+        <details class="mt-3" data-breakdown>
+          <summary class="focus-ring cursor-pointer text-label text-accent hover:text-accent-hover">
+            Power breakdown
+          </summary>
+          <div class="mt-2 overflow-x-auto">
+            <table class="w-full text-caption">
+              <caption class="sr-only">
+                Estimated power breakdown by component
+              </caption>
+              <thead>
+                <tr class="text-overline text-text-muted">
+                  <th scope="col" class="py-1 pr-2 text-left font-semibold">
+                    Load
+                  </th>
+                  <th scope="col" class="py-1 pr-2 text-left font-semibold">
+                    Basis
+                  </th>
+                  <th scope="col" class="py-1 text-right font-semibold">
+                    Watts
+                  </th>
+                </tr>
+              </thead>
+              <tbody data-breakdown-body></tbody>
+            </table>
+          </div>
+        </details>
+
+        <ul
+          class="mt-3 space-y-1 text-micro text-text-muted"
+          data-assumptions
+        ></ul>
+        <p class="mt-3 text-micro text-text-muted">
+          The load estimate is not a manufacturer-certified PSU requirement.
+          Manufacturer figures are taken from published specifications; all
+          other loads are generic estimates.
+        </p>
+      </section>
+    </aside>
+  </div>
+
+  <dialog
+    class="m-auto w-[min(760px,calc(100vw-2rem))] max-h-[85vh] rounded-xl border border-border-subtle bg-surface p-0 shadow-lg backdrop:bg-overlay"
+    aria-labelledby="picker-title"
+    aria-describedby="picker-hint"
+    data-picker
+  >
+    <div class="flex items-start justify-between gap-4 border-b border-border-subtle p-5">
+      <div>
+        <h2
+          id="picker-title"
+          class="text-title text-text-primary"
+          data-picker-title
+        >
+          Select component
+        </h2>
+        <p id="picker-hint" class="mt-1 text-caption text-text-muted">
+          Search or filter the curated catalogue. Selecting a component updates
+          compatibility immediately.
+        </p>
+      </div>
+      <button
+        type="button"
+        class="btn btn-ghost h-11 w-11 shrink-0 p-0"
+        aria-label="Close component picker"
+        data-picker-close
+        set:html={closeIcon}
+      />
+    </div>
+
+    <div class="border-b border-border-subtle p-5">
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_200px]">
+        <div>
+          <label for="picker-search" class="text-label text-text-primary">
+            Search components
+          </label>
+          <input
+            id="picker-search"
+            type="search"
+            class="input mt-1"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Manufacturer, product name or model"
+            data-picker-search
+          />
+        </div>
+        <div>
+          <label for="picker-manufacturer" class="text-label text-text-primary">
+            Manufacturer
+          </label>
+          <select
+            id="picker-manufacturer"
+            class="input mt-1"
+            data-picker-manufacturer
+          >
+            <option value="">All manufacturers</option>
+          </select>
+        </div>
+      </div>
+      <p
+        class="mt-2 text-caption text-text-muted"
+        data-picker-count
+        aria-live="polite"
+      ></p>
+    </div>
+
+    <div class="min-h-0 overflow-y-auto p-5">
+      <ul class="space-y-3" data-picker-results></ul>
+      <div
+        class="rounded-md border border-border-subtle bg-surface-subtle p-6 text-center"
+        hidden
+        data-picker-empty
+      >
+        <p class="text-label text-text-primary">No components match</p>
+        <p
+          class="mt-1 text-caption text-text-muted"
+          data-picker-empty-message
+        ></p>
+      </div>
+    </div>
+  </dialog>
+
+  <div
+    class="sr-only"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    data-announcer
+  ></div>
+</div>
+
+<script>
+  import circleCheck from "lucide-static/icons/circle-check.svg?raw";
+  import circleHelp from "lucide-static/icons/circle-help.svg?raw";
+  import circleX from "lucide-static/icons/circle-x.svg?raw";
+  import triangleAlert from "lucide-static/icons/triangle-alert.svg?raw";
+  import {
+    clearBuild,
+    createEmptyBuild,
+    isMultiSlot,
+    removeComponent,
+    resolveBuild,
+    selectComponent,
+    type BuildState,
+  } from "../../lib/pc-builder/build-state";
+  import {
+    catalogue,
+    componentsByCategory,
+  } from "../../lib/pc-builder/catalogue";
+  import { evaluateBuild } from "../../lib/pc-builder/engine";
+  import type { CompatibilityReport } from "../../lib/pc-builder/engine";
+  import type { CompatibilityStatus } from "../../lib/pc-builder/rules";
+  import type {
+    Component,
+    ComponentCategory,
+  } from "../../lib/pc-builder/types";
+  import {
+    CATEGORY_LABELS,
+    COMPATIBILITY_STATUS_LABELS,
+    POWER_KIND_LABELS,
+    availabilityLabel,
+    categoriesSelectedText,
+    componentDisplayName,
+    componentSourceLabel,
+    countSelectedCategories,
+    filterComponents,
+    formatPower,
+    manufacturerOptions,
+    missingSpecLabels,
+    overallStatusLabel,
+    sortComponents,
+    sortedFindings,
+    specLines,
+  } from "../../lib/pc-builder/ui";
+
+  const root = document.querySelector<HTMLElement>("[data-pc-builder]");
+
+  if (root) {
+    const requireEl = <T extends Element>(
+      selector: string,
+      scope: ParentNode = root,
+    ): T => {
+      const element = scope.querySelector<T>(selector);
+      if (!element) throw new Error(`PC Builder: missing ${selector}`);
+      return element;
+    };
+
+    const el = <K extends keyof HTMLElementTagNameMap>(
+      tag: K,
+      className = "",
+      text?: string,
+    ): HTMLElementTagNameMap[K] => {
+      const node = document.createElement(tag);
+      if (className !== "") node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+
+    const button = (label: string, className: string): HTMLButtonElement => {
+      const node = el("button", className, label);
+      node.type = "button";
+      return node;
+    };
+
+    const slotButton = (category: ComponentCategory) =>
+      requireEl<HTMLButtonElement>(`[data-slot-button="${category}"]`);
+
+    const slotContent = (category: ComponentCategory) =>
+      requireEl<HTMLElement>(`[data-slot-content="${category}"]`);
+
+    const slotMeta = (category: ComponentCategory) =>
+      requireEl<HTMLElement>(`[data-slot-meta="${category}"]`);
+
+    const slotCategories = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-slot]"),
+    ).map((slot) => slot.dataset.slot as ComponentCategory);
+
+    const progress = requireEl<HTMLElement>("[data-progress]");
+    const clearButton = requireEl<HTMLButtonElement>("[data-clear]");
+    const announcer = requireEl<HTMLElement>("[data-announcer]");
+    const overallBadge = requireEl<HTMLElement>("[data-overall-badge]");
+    const overallMessage = requireEl<HTMLElement>("[data-overall-message]");
+    const findingsEmpty = requireEl<HTMLElement>("[data-findings-empty]");
+    const findingsList = requireEl<HTMLElement>("[data-findings]");
+    const missingNote = requireEl<HTMLElement>("[data-missing]");
+    const countNodes: Record<CompatibilityStatus, HTMLElement> = {
+      incompatible: requireEl("[data-count-incompatible]"),
+      warning: requireEl("[data-count-warning]"),
+      unknown: requireEl("[data-count-unknown]"),
+      compatible: requireEl("[data-count-compatible]"),
+    };
+    const selectedSummary = requireEl<HTMLElement>("[data-selected-summary]");
+    const selectedList = requireEl<HTMLElement>("[data-selected-list]");
+    const loadValue = requireEl<HTMLElement>("[data-load]");
+    const recommendedPsu = requireEl<HTMLElement>("[data-recommended-psu]");
+    const headroomNote = requireEl<HTMLElement>("[data-headroom]");
+    const breakdownBody = requireEl<HTMLElement>("[data-breakdown-body]");
+    const assumptionsList = requireEl<HTMLElement>("[data-assumptions]");
+
+    const dialog = requireEl<HTMLDialogElement>("[data-picker]");
+    const pickerTitle = requireEl<HTMLElement>("[data-picker-title]");
+    const pickerSearch = requireEl<HTMLInputElement>("[data-picker-search]");
+    const pickerManufacturer = requireEl<HTMLSelectElement>(
+      "[data-picker-manufacturer]",
+    );
+    const pickerCount = requireEl<HTMLElement>("[data-picker-count]");
+    const pickerResults = requireEl<HTMLElement>("[data-picker-results]");
+    const pickerEmpty = requireEl<HTMLElement>("[data-picker-empty]");
+    const pickerEmptyMessage = requireEl<HTMLElement>(
+      "[data-picker-empty-message]",
+    );
+    const pickerClose = requireEl<HTMLButtonElement>("[data-picker-close]");
+
+    const byId = new Map(
+      catalogue.map((component) => [component.id, component]),
+    );
+    const sortedCatalogue = sortComponents(catalogue);
+
+    const STATUS_ICON: Record<CompatibilityStatus, string> = {
+      compatible: circleCheck,
+      warning: triangleAlert,
+      incompatible: circleX,
+      unknown: circleHelp,
+    };
+
+    const STATUS_BADGE_CLASS: Record<CompatibilityStatus, string> = {
+      compatible: "border-success bg-success-subtle text-success",
+      warning: "border-warning bg-warning-subtle text-warning",
+      incompatible: "border-error bg-error-subtle text-error",
+      unknown: "border-border-strong bg-surface-muted text-text-secondary",
+    };
+
+    const STATUS_ICON_CLASS =
+      "inline-flex shrink-0 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:stroke-current";
+
+    let state: BuildState = createEmptyBuild();
+    let activeCategory: ComponentCategory | null = null;
+
+    function statusBadge(status: CompatibilityStatus): HTMLElement {
+      const badge = el(
+        "span",
+        `inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-micro font-medium ${STATUS_BADGE_CLASS[status]}`,
+        COMPATIBILITY_STATUS_LABELS[status],
+      );
+      const icon = el("span", STATUS_ICON_CLASS);
+      icon.setAttribute("aria-hidden", "true");
+      icon.innerHTML = STATUS_ICON[status];
+      badge.prepend(icon);
+      return badge;
+    }
+
+    function announce(text: string): void {
+      announcer.textContent = "";
+      announcer.textContent = text;
+    }
+
+    /* ---------------------------------------------------------------- */
+    /* Component slots                                                    */
+    /* ---------------------------------------------------------------- */
+
+    function renderSlot(category: ComponentCategory): void {
+      const content = slotContent(category);
+      const action = slotButton(category);
+      const meta = slotMeta(category);
+      const ids = state.selected[category];
+      const components = ids
+        .map((id) => byId.get(id))
+        .filter((component): component is Component => component !== undefined);
+
+      content.replaceChildren();
+
+      if (components.length === 0) {
+        content.append(
+          el("p", "mt-3 text-small text-text-muted", "Not selected yet."),
+        );
+        meta.hidden = true;
+        meta.textContent = "";
+      } else {
+        meta.hidden = false;
+        meta.textContent =
+          components.length === 1
+            ? "1 selected"
+            : `${components.length} selected`;
+        for (const component of components) {
+          content.append(selectedComponentCard(category, component));
+        }
+      }
+
+      const hasSelection = components.length > 0;
+      const label = CATEGORY_LABELS[category];
+      const actionText = isMultiSlot(category)
+        ? hasSelection
+          ? `Add ${label}`
+          : `Select ${label}`
+        : hasSelection
+          ? `Change ${label}`
+          : `Select ${label}`;
+      action.textContent = actionText;
+      // The accessible name must match the visible label (WCAG 2.5.3).
+      action.setAttribute("aria-label", actionText);
+    }
+
+    function selectedComponentCard(
+      category: ComponentCategory,
+      component: Component,
+    ): HTMLElement {
+      const card = el(
+        "div",
+        "mt-3 rounded-md border border-border-subtle bg-surface-subtle p-4",
+      );
+      const header = el(
+        "div",
+        "flex flex-wrap items-start justify-between gap-2",
+      );
+      const title = el("div", "min-w-0");
+      title.append(
+        el(
+          "p",
+          "text-body-strong text-text-primary",
+          componentDisplayName(component),
+        ),
+        el("p", "font-mono text-caption text-text-muted", component.model),
+      );
+
+      const availability = el(
+        "span",
+        "rounded-full border border-border-subtle bg-surface px-2.5 py-0.5 text-micro text-text-secondary",
+        availabilityLabel(component),
+      );
+
+      header.append(title, availability);
+      card.append(header);
+
+      const specs = specLines(component).slice(0, 4);
+      if (specs.length > 0) {
+        const list = el(
+          "ul",
+          "mt-3 space-y-1 text-caption text-text-secondary",
+        );
+        for (const line of specs) {
+          const item = el("li");
+          item.append(
+            el("span", "text-text-muted", `${line.label}: `),
+            document.createTextNode(line.value),
+          );
+          list.append(item);
+        }
+        card.append(list);
+      }
+
+      const actions = el("div", "mt-3 flex flex-wrap items-center gap-2");
+      const remove = button(
+        "Remove",
+        "btn btn-ghost px-3 text-caption hover:bg-error-subtle hover:text-error",
+      );
+      remove.setAttribute(
+        "aria-label",
+        `Remove ${componentDisplayName(component)} from ${CATEGORY_LABELS[category]}`,
+      );
+      remove.addEventListener("click", () => {
+        state = removeComponent(state, category, component.id);
+        renderAll(
+          `Removed ${componentDisplayName(component)} from ${CATEGORY_LABELS[category]}.`,
+        );
+        slotButton(category).focus();
+      });
+      actions.append(remove);
+      card.append(actions);
+
+      return card;
+    }
+
+    /* ---------------------------------------------------------------- */
+    /* Compatibility panel                                               */
+    /* ---------------------------------------------------------------- */
+
+    function overallMessageFor(
+      report: CompatibilityReport,
+      selectedComponents: number,
+    ): string {
+      if (report.results.length === 0) {
+        return selectedComponents === 0
+          ? "Add components to run compatibility checks."
+          : "No compatibility rule can run yet. Add a related component, such as a motherboard for the CPU.";
+      }
+      switch (report.summary.status) {
+        case "incompatible":
+          return "At least one confirmed conflict needs attention.";
+        case "warning":
+          return "The build works, with one or more considerations.";
+        case "unknown":
+          return "Compatibility could not be fully verified from the available specifications.";
+        case "compatible":
+          return "All applicable rules passed with the available data.";
+        default:
+          return "Compatibility could not be determined.";
+      }
+    }
+
+    function setOverallBadge(
+      status: CompatibilityStatus | null,
+      label: string,
+    ): void {
+      overallBadge.textContent = label;
+      overallBadge.className =
+        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-chip " +
+        (status === null
+          ? "border-border-strong bg-surface-muted text-text-secondary"
+          : STATUS_BADGE_CLASS[status]);
+      if (status !== null) {
+        const icon = el("span", STATUS_ICON_CLASS);
+        icon.setAttribute("aria-hidden", "true");
+        icon.innerHTML = STATUS_ICON[status];
+        overallBadge.prepend(icon);
+      }
+    }
+
+    function findingItem(
+      ruleId: string,
+      status: CompatibilityStatus,
+      message: string,
+      componentIds: string[],
+      recommendation?: string,
+    ): HTMLElement {
+      const item = el("li", "py-3");
+      const header = el(
+        "div",
+        "flex flex-wrap items-center justify-between gap-2",
+      );
+      header.append(
+        statusBadge(status),
+        el("span", "font-mono text-micro text-text-muted", ruleId),
+      );
+      item.append(header);
+      item.append(el("p", "mt-2 text-small text-text-primary", message));
+
+      const affected = componentIds
+        .map((id) => {
+          const component = byId.get(id);
+          return component ? componentDisplayName(component) : id;
+        })
+        .join(" · ");
+      if (affected !== "") {
+        item.append(
+          el(
+            "p",
+            "mt-1 text-caption text-text-secondary",
+            `Affects: ${affected}`,
+          ),
+        );
+      }
+      if (recommendation) {
+        item.append(
+          el(
+            "p",
+            "mt-1 text-caption text-text-secondary",
+            `Recommended: ${recommendation}`,
+          ),
+        );
+      }
+      return item;
+    }
+
+    function renderCompatibility(
+      report: CompatibilityReport,
+      selectedComponents: number,
+    ): void {
+      const analysis = report.summary.status;
+      const hasResults = report.results.length > 0;
+      const label = overallStatusLabel(report, selectedComponents);
+      setOverallBadge(hasResults ? analysis : null, label);
+      overallMessage.textContent = overallMessageFor(
+        report,
+        selectedComponents,
+      );
+
+      (Object.keys(countNodes) as CompatibilityStatus[]).forEach((status) => {
+        countNodes[status].textContent = String(report.summary.counts[status]);
+      });
+
+      const sorted = sortedFindings(report);
+      const actionable = sorted.filter(
+        (result) => result.status !== "compatible",
+      );
+      const compatible = sorted.filter(
+        (result) => result.status === "compatible",
+      );
+
+      findingsList.replaceChildren();
+      for (const result of actionable) {
+        findingsList.append(
+          findingItem(
+            result.ruleId,
+            result.status,
+            result.message,
+            result.componentIds,
+            result.recommendation,
+          ),
+        );
+      }
+
+      findingsEmpty.hidden = report.results.length > 0;
+      if (!hasResults) {
+        findingsEmpty.textContent =
+          selectedComponents === 0
+            ? "Findings appear here after you select components."
+            : "No rule applies to the current selection yet.";
+      }
+
+      if (compatible.length > 0) {
+        const details = el("details", "py-3");
+        const summary = el(
+          "summary",
+          "cursor-pointer text-label text-accent hover:text-accent-hover focus-ring",
+          `Show ${compatible.length} compatible check${compatible.length === 1 ? "" : "s"}`,
+        );
+        details.append(summary);
+        const list = el("ul", "mt-2 divide-y divide-border-subtle");
+        for (const result of compatible) {
+          list.append(
+            findingItem(
+              result.ruleId,
+              result.status,
+              result.message,
+              result.componentIds,
+              result.recommendation,
+            ),
+          );
+        }
+        details.append(list);
+        findingsList.append(details);
+      }
+    }
+
+    /* ---------------------------------------------------------------- */
+    /* Build summary & power                                             */
+    /* ---------------------------------------------------------------- */
+
+    function renderPower(
+      report: CompatibilityReport,
+      components: Component[],
+    ): void {
+      selectedSummary.textContent = `${components.length} component${components.length === 1 ? "" : "s"} selected`;
+      selectedList.replaceChildren();
+      for (const component of components) {
+        selectedList.append(el("li", "", componentDisplayName(component)));
+      }
+
+      const power = report.power;
+      loadValue.textContent = formatPower(power.loadWatts);
+      recommendedPsu.textContent = formatPower(power.recommendedPsuW);
+      headroomNote.textContent = power.sufficientData
+        ? `Includes ${power.headroomPercent}% headroom policy.`
+        : "";
+
+      breakdownBody.replaceChildren();
+      for (const item of power.breakdown) {
+        const row = el("tr");
+        const label = el("td", "py-1 pr-2 text-text-secondary", item.label);
+        const kind = el(
+          "td",
+          "py-1 pr-2 text-text-muted",
+          POWER_KIND_LABELS[item.kind],
+        );
+        const watts = el(
+          "td",
+          "py-1 text-right font-mono tabular-nums text-text-primary",
+          `${item.watts} W`,
+        );
+        row.append(label, kind, watts);
+        breakdownBody.append(row);
+      }
+      if (power.breakdown.length === 0) {
+        const row = el("tr");
+        const cell = el(
+          "td",
+          "py-1 text-text-muted",
+          "No components with power data.",
+        );
+        cell.colSpan = 3;
+        row.append(cell);
+        breakdownBody.append(row);
+      }
+
+      assumptionsList.replaceChildren();
+      for (const assumption of power.assumptions) {
+        assumptionsList.append(el("li", "", assumption));
+      }
+      if (power.assumptions.length === 0) {
+        assumptionsList.append(
+          el("li", "", "Select components to see power assumptions."),
+        );
+      }
+    }
+
+    /* ---------------------------------------------------------------- */
+    /* Render orchestration                                              */
+    /* ---------------------------------------------------------------- */
+
+    function renderAll(announcement?: string): void {
+      const resolved = resolveBuild(state, (id) => byId.get(id));
+      const report = evaluateBuild(resolved.components);
+
+      for (const category of slotCategories) renderSlot(category);
+      renderCompatibility(report, resolved.components.length);
+      renderPower(report, resolved.components);
+
+      progress.textContent = `${categoriesSelectedText(
+        countSelectedCategories(state.selected),
+      )} · ${resolved.components.length} selected`;
+      clearButton.disabled = resolved.components.length === 0;
+
+      missingNote.hidden = resolved.missingIds.length === 0;
+      if (resolved.missingIds.length > 0) {
+        missingNote.textContent = `Unavailable catalogue entries were skipped: ${resolved.missingIds.join(", ")}.`;
+      }
+
+      if (announcement) {
+        announce(
+          `${announcement} ${overallStatusLabel(report, resolved.components.length)}. ${report.summary.counts.incompatible} incompatible, ${report.summary.counts.warning} warning(s), ${report.summary.counts.unknown} unknown finding(s).`,
+        );
+      }
+    }
+
+    /* ---------------------------------------------------------------- */
+    /* Picker                                                            */
+    /* ---------------------------------------------------------------- */
+
+    function pickerComponents(): Component[] {
+      if (!activeCategory) return [];
+      const components = sortedCatalogue.filter(
+        (component) => component.category === activeCategory,
+      );
+      return filterComponents(components, {
+        search: pickerSearch.value,
+        manufacturer: pickerManufacturer.value || null,
+      });
+    }
+
+    function populateManufacturers(category: ComponentCategory): void {
+      const all = componentsByCategory(category);
+      pickerManufacturer.replaceChildren(
+        new Option("All manufacturers", ""),
+        ...manufacturerOptions(all).map(
+          (manufacturer) => new Option(manufacturer, manufacturer),
+        ),
+      );
+    }
+
+    function pickerResultCard(component: Component): HTMLElement {
+      const category = component.category;
+      const card = el(
+        "li",
+        "rounded-md border border-border-subtle bg-surface p-4",
+      );
+      const header = el(
+        "div",
+        "flex flex-wrap items-start justify-between gap-3",
+      );
+      const title = el("div", "min-w-0");
+
+      if (component.image) {
+        const image = el(
+          "img",
+          "mb-2 h-20 w-20 rounded-md border border-border-subtle object-contain",
+        );
+        image.src = component.image;
+        image.alt = `${componentDisplayName(component)} product image`;
+        image.loading = "lazy";
+        title.append(image);
+      }
+
+      title.append(
+        el(
+          "p",
+          "text-body-strong text-text-primary",
+          componentDisplayName(component),
+        ),
+        el("p", "font-mono text-caption text-text-muted", component.model),
+        el(
+          "span",
+          "mt-1 inline-flex rounded-full border border-border-subtle bg-surface px-2.5 py-0.5 text-micro text-text-secondary",
+          availabilityLabel(component),
+        ),
+      );
+      header.append(title);
+
+      const alreadySelected = state.selected[category].includes(component.id);
+      if (isMultiSlot(category)) {
+        const add = button(
+          alreadySelected ? "Added" : "Add",
+          "btn btn-primary",
+        );
+        add.disabled = alreadySelected;
+        add.setAttribute(
+          "aria-label",
+          alreadySelected
+            ? `${componentDisplayName(component)} is already added`
+            : `Add ${componentDisplayName(component)} to the build`,
+        );
+        if (!alreadySelected) {
+          add.addEventListener("click", () => chooseComponent(component));
+        }
+        header.append(add);
+      } else {
+        const select = button(
+          alreadySelected ? "Selected" : "Select",
+          alreadySelected ? "btn btn-secondary" : "btn btn-primary",
+        );
+        select.disabled = alreadySelected;
+        select.setAttribute(
+          "aria-label",
+          alreadySelected
+            ? `${componentDisplayName(component)} is selected`
+            : `Select ${componentDisplayName(component)}`,
+        );
+        if (!alreadySelected) {
+          select.addEventListener("click", () => chooseComponent(component));
+        }
+        header.append(select);
+      }
+
+      card.append(header);
+
+      const specs = specLines(component);
+      if (specs.length > 0) {
+        const list = el(
+          "dl",
+          "mt-3 grid grid-cols-1 gap-x-4 gap-y-1 text-caption sm:grid-cols-2",
+        );
+        for (const line of specs) {
+          const row = el("div", "flex gap-1");
+          row.append(
+            el("dt", "shrink-0 text-text-muted", `${line.label}:`),
+            el("dd", "text-text-secondary", line.value),
+          );
+          list.append(row);
+        }
+        card.append(list);
+      }
+
+      const gaps = missingSpecLabels(component);
+      if (gaps.length > 0) {
+        card.append(
+          el(
+            "p",
+            "mt-2 text-micro text-text-muted",
+            `Not published: ${gaps.join(", ")}.`,
+          ),
+        );
+      }
+
+      const footer = el("div", "mt-3 flex flex-wrap items-center gap-2");
+      const sourceUrl = component.url ?? component.source.url;
+      const source = el(
+        "a",
+        "focus-ring text-caption text-accent hover:text-accent-hover",
+        "Manufacturer specification",
+      );
+      source.href = sourceUrl;
+      source.target = "_blank";
+      source.rel = "noopener noreferrer";
+      footer.append(
+        source,
+        el(
+          "span",
+          "text-micro text-text-muted",
+          `· ${componentSourceLabel(component)}`,
+        ),
+      );
+      card.append(footer);
+
+      return card;
+    }
+
+    function renderPickerResults(): void {
+      if (!activeCategory) return;
+      const components = pickerComponents();
+      const total = componentsByCategory(activeCategory).length;
+
+      pickerResults.replaceChildren();
+      for (const component of components) {
+        pickerResults.append(pickerResultCard(component));
+      }
+
+      pickerCount.textContent =
+        components.length === total
+          ? `${total} component${total === 1 ? "" : "s"} available`
+          : `${components.length} of ${total} components match`;
+
+      const empty = components.length === 0;
+      pickerEmpty.hidden = !empty;
+      pickerResults.hidden = empty;
+      if (empty) {
+        const query = pickerSearch.value.trim();
+        const manufacturer = pickerManufacturer.value;
+        pickerEmptyMessage.textContent =
+          query !== "" || manufacturer !== ""
+            ? `No components match ${query !== "" ? `"${query}"` : ""}${
+                query !== "" && manufacturer !== "" ? " with " : ""
+              }${manufacturer !== "" ? `manufacturer ${manufacturer}` : ""}. Try a different search or filter.`
+            : "This category has no catalogue records yet.";
+      }
+    }
+
+    function openPicker(category: ComponentCategory): void {
+      activeCategory = category;
+      const label = CATEGORY_LABELS[category];
+      pickerTitle.textContent = isMultiSlot(category)
+        ? `Add ${label}`
+        : `Select ${label}`;
+      pickerSearch.value = "";
+      populateManufacturers(category);
+      pickerManufacturer.value = "";
+      renderPickerResults();
+      dialog.showModal();
+      pickerSearch.focus();
+    }
+
+    function chooseComponent(component: Component): void {
+      const category = component.category;
+      const action = isMultiSlot(category) ? "Added" : "Selected";
+      state = selectComponent(state, category, component.id);
+      dialog.close();
+      renderAll(
+        `${action} ${componentDisplayName(component)} as ${CATEGORY_LABELS[category]}.`,
+      );
+      slotButton(category).focus();
+    }
+
+    /* ---------------------------------------------------------------- */
+    /* Events                                                            */
+    /* ---------------------------------------------------------------- */
+
+    for (const category of slotCategories) {
+      slotButton(category).addEventListener("click", () =>
+        openPicker(category),
+      );
+    }
+
+    pickerSearch.addEventListener("input", renderPickerResults);
+    pickerManufacturer.addEventListener("change", renderPickerResults);
+    pickerClose.addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", (event) => {
+      // Light-dismiss when clicking the backdrop (the dialog element itself).
+      if (event.target === dialog) dialog.close();
+    });
+
+    clearButton.addEventListener("click", () => {
+      state = clearBuild();
+      renderAll("Build cleared.");
+    });
+
+    renderAll();
+  }
+</script>
