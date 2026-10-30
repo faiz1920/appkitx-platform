@@ -109,18 +109,6 @@ function checkPositiveNumber(
   }
 }
 
-function checkNonNegativeInt(
-  errors: ValidationError[],
-  obj: Obj,
-  key: string,
-  path: string,
-): void {
-  const v = obj[key];
-  if (typeof v !== "number" || !Number.isInteger(v) || v < 0) {
-    err(errors, `${path}.${key}`, "must be a non-negative integer");
-  }
-}
-
 function checkPositiveInt(
   errors: ValidationError[],
   obj: Obj,

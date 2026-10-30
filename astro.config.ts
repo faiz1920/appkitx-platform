@@ -2,6 +2,7 @@ import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import cspReportOnly from "./src/integrations/csp-report-only";
+import pcBuilderDevPreview from "./src/integrations/pc-builder-dev-preview";
 import { defaultLocale } from "./src/i18n/config";
 import { astroI18nLocales, sitemapI18n } from "./src/i18n/routing";
 
@@ -19,6 +20,7 @@ export default defineConfig({
       i18n: sitemapI18n(),
     }),
     cspReportOnly(),
+    pcBuilderDevPreview(),
   ],
   vite: {
     plugins: [tailwindcss()],
