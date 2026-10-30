@@ -149,7 +149,7 @@ These checks prove the repository's output, not Google's behavior or Cloudflare'
 - `npm run build` — production build to `dist/`; also generates the report-only CSP header in `dist/_headers`
 - `npm run check` — Astro and TypeScript checks
 - `npm test` — Vitest unit tests
-- `npm run test:e2e` — Playwright smoke tests (run `npm run build` first; the suite starts its own `wrangler dev` local preview on port 4399 and never attaches to a dev server on 4321)
+- `npm run test:e2e` — Playwright smoke tests in Chromium, Firefox, and WebKit (run `npm run build` first; the suite starts its own `wrangler dev` local preview on port 4399 and never attaches to a dev server on 4321)
 - `npm run csp:hash` — inventory inline executable scripts in `dist` with CSP-compatible SHA-256 hashes (run `npm run build` first; JSON-LD data blocks are counted separately and external scripts are excluded)
 - `npm run format` / `npm run format:check` — Prettier
 

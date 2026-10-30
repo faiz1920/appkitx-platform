@@ -3,9 +3,9 @@ import { formatJson, minifyJson, parseJson } from "../src/lib/json-format";
 
 /*
  * M7 Phase 1 JSON policy: two-space formatting, whitespace-only minifying,
- * distinct "empty" vs "invalid" issues, line/column when the engine reports
- * a position (and a positionless fallback when it does not), and no
- * evaluation of input — JSON.parse is the only parser.
+ * distinct "empty" vs "invalid" issues, deterministic cross-browser
+ * line/column diagnostics, and no evaluation of input — JSON.parse remains
+ * the authority for validity and values.
  */
 
 describe("parseJson", () => {
@@ -30,30 +30,51 @@ describe("parseJson", () => {
     expect(parseJson("\n\t ")).toEqual({ ok: false, issue: "empty" });
   });
 
-  it("reports line and column for positioned parse errors", () => {
-    expect(parseJson('{\n  "a": 1,\n}')).toEqual({
-      ok: false,
-      issue: "invalid",
-      line: 3,
-      column: 1,
-    });
-    expect(parseJson('{"a": 1')).toEqual({
-      ok: false,
-      issue: "invalid",
-      line: 1,
-      column: 8,
-    });
-    expect(parseJson('{\n  "a": 1\n')).toEqual({
-      ok: false,
-      issue: "invalid",
-      line: 3,
-      column: 1,
-    });
+  it("reports deterministic line and column for representative malformed JSON", () => {
+    const cases = [
+      { input: '{\n  "a": 1,\n}', line: 3, column: 1 },
+      { input: '{"a": 1', line: 1, column: 8 },
+      { input: '{\n  "a": 1\n', line: 3, column: 1 },
+      { input: "nope", line: 1, column: 1 },
+      { input: "alert(1)", line: 1, column: 1 },
+      { input: "[1, 2,, 3]", line: 1, column: 7 },
+      { input: "[1 2]", line: 1, column: 4 },
+      { input: '{"a" 1}', line: 1, column: 6 },
+      { input: "[1,", line: 1, column: 4 },
+      { input: '"abc', line: 1, column: 5 },
+      { input: "{]", line: 1, column: 2 },
+      { input: "[}", line: 1, column: 2 },
+      { input: "true false", line: 1, column: 6 },
+      { input: "[1,]", line: 1, column: 4 },
+      { input: '{"a":}', line: 1, column: 6 },
+      { input: '"\\x"', line: 1, column: 3 },
+      { input: "01", line: 1, column: 2 },
+      { input: "1.", line: 1, column: 3 },
+      { input: "tru", line: 1, column: 4 },
+      {
+        input: '{\r\n  "a": 1\r\n  "b": 2\r\n}',
+        line: 3,
+        column: 3,
+      },
+    ];
+
+    for (const malformed of cases) {
+      expect(parseJson(malformed.input), malformed.input).toEqual({
+        ok: false,
+        issue: "invalid",
+        line: malformed.line,
+        column: malformed.column,
+      });
+    }
   });
 
-  it("falls back to a positionless issue when the engine reports no position", () => {
-    expect(parseJson("nope")).toEqual({ ok: false, issue: "invalid" });
-    expect(parseJson("[1, 2,, 3]")).toEqual({ ok: false, issue: "invalid" });
+  it("falls back without a position beyond the diagnostic depth limit", () => {
+    const deeplyNestedInvalid = `${"[".repeat(600)}x${"]".repeat(600)}`;
+
+    expect(parseJson(deeplyNestedInvalid)).toEqual({
+      ok: false,
+      issue: "invalid",
+    });
   });
 
   it("never evaluates the input", () => {
@@ -63,7 +84,12 @@ describe("parseJson", () => {
     if (result.ok) {
       expect(result.value).toEqual({ x: "<script>window.pwned = 1</script>" });
     }
-    expect(parseJson("alert(1)")).toEqual({ ok: false, issue: "invalid" });
+    expect(parseJson("window.pwned = 1")).toEqual({
+      ok: false,
+      issue: "invalid",
+      line: 1,
+      column: 1,
+    });
   });
 });
 

@@ -1,19 +1,10 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { prepareClipboard } from "./clipboard";
+import { tabTo } from "./keyboard";
 
 const resultValue = (page: Page) => page.locator("[data-result-value]");
 const resultCaption = (page: Page) => page.locator("[data-result-caption]");
 const formula = (page: Page) => page.locator("[data-formula]");
-
-const tabTo = async (page: Page, target: Locator, max = 20) => {
-  for (let i = 0; i < max; i++) {
-    await page.keyboard.press("Tab");
-    const reached = await target.evaluate(
-      (el) => el === document.activeElement,
-    );
-    if (reached) return;
-  }
-  throw new Error("Did not reach the target element via Tab");
-};
 
 const ring = async (locator: Locator) => {
   await expect(locator).toHaveCSS("outline-width", "2px");
@@ -200,7 +191,7 @@ test("resets inputs, result, and mode", async ({ page }) => {
   await expect(formula(page)).toHaveText("(X ÷ 100) × Y");
 });
 
-test("is fully operable from the keyboard", async ({ page }) => {
+test("is fully operable from the keyboard", async ({ page, browserName }) => {
   await page.goto("/percentage-calculator");
 
   const firstRadio = page.getByRole("radio", { name: "X% of Y" });
@@ -208,9 +199,9 @@ test("is fully operable from the keyboard", async ({ page }) => {
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("radio", { name: "What %" })).toBeChecked();
 
-  await tabTo(page, page.getByLabel("Part (X)"));
+  await tabTo(page, browserName, page.getByLabel("Part (X)"));
   await page.keyboard.type("20");
-  await tabTo(page, page.getByLabel("Whole (Y)"));
+  await tabTo(page, browserName, page.getByLabel("Whole (Y)"));
   await page.keyboard.type("80");
   await page.keyboard.press("Enter");
 
@@ -219,23 +210,27 @@ test("is fully operable from the keyboard", async ({ page }) => {
 
 test("shows the design-system focus ring on interactive controls", async ({
   page,
+  browserName,
 }) => {
   await page.goto("/percentage-calculator");
 
   const label = page.locator(".segmented label").first();
-  await tabTo(page, page.getByRole("radio", { name: "X% of Y" }));
+  await tabTo(page, browserName, page.getByRole("radio", { name: "X% of Y" }));
   await ring(label);
 
-  await tabTo(page, page.getByLabel("Percentage (X%)"));
+  await tabTo(page, browserName, page.getByLabel("Percentage (X%)"));
   await ring(page.getByLabel("Percentage (X%)"));
 
   const calculate = page.getByRole("button", { name: "Calculate" });
-  await tabTo(page, calculate);
+  await tabTo(page, browserName, calculate);
   await ring(calculate);
 });
 
-test("copies the result with accessible success feedback", async ({ page }) => {
-  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+test("copies the result with accessible success feedback", async ({
+  page,
+  browserName,
+}) => {
+  await prepareClipboard(page, browserName);
   await page.goto("/percentage-calculator");
 
   const copy = page.getByRole("button", { name: "Copy result" });

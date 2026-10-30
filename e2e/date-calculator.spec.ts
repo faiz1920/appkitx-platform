@@ -1,4 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { prepareClipboard } from "./clipboard";
+import { pressTab } from "./keyboard";
 
 /*
  * M7 Phase 2 Date Calculator: exclusive day counts, the anchored
@@ -245,8 +247,11 @@ test("switching modes swaps the fields and resets the result", async ({
   await expect(daysValue(page)).toHaveText("—");
 });
 
-test("copies the result with accessible success feedback", async ({ page }) => {
-  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+test("copies the result with accessible success feedback", async ({
+  page,
+  browserName,
+}) => {
+  await prepareClipboard(page, browserName);
   await page.goto("/date-calculator");
 
   await page.getByLabel("Start date").fill("2026-03-01");
@@ -267,6 +272,7 @@ test("copies the result with accessible success feedback", async ({ page }) => {
 
 test("shows the design-system focus ring and 44px targets", async ({
   page,
+  browserName,
 }) => {
   await page.goto("/date-calculator");
 
@@ -283,10 +289,10 @@ test("shows the design-system focus ring and 44px targets", async ({
     expect(box.height).toBeGreaterThanOrEqual(44);
   }
 
-  /* Arrive on the button via the keyboard so :focus-visible applies. */
+  /* Cycle through Reset with the keyboard so :focus-visible applies. */
   await page.getByRole("button", { name: "Calculate" }).focus();
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Shift+Tab");
+  await pressTab(page, browserName);
+  await pressTab(page, browserName, { shift: true });
   await ring(page.getByRole("button", { name: "Calculate" }));
 });
 

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { pressTab } from "./keyboard";
 
 const palette = (page: Page) => page.locator("[data-search-palette]");
 const searchInput = (page: Page) => page.locator("[data-search-input]");
@@ -179,12 +180,13 @@ test("shows the design-system focus ring on the palette input", async ({
 
 test("keeps keyboard focus contained inside the open dialog", async ({
   page,
+  browserName,
 }) => {
   await page.goto("/");
   await openWithShortcut(page);
 
   for (let i = 0; i < 5; i++) {
-    await page.keyboard.press("Tab");
+    await pressTab(page, browserName);
     const inside = await page.evaluate(() => {
       const dialog = document.querySelector("[data-search-palette]");
       return dialog?.contains(document.activeElement) ?? false;
