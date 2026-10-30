@@ -7,10 +7,15 @@
 
 import { cpuMotherboardRules } from "./cpu-motherboard";
 import { ramRules } from "./ram";
-import { gpuCaseRule, gpuMotherboardRule } from "./gpu";
+import { gpuCaseRule, gpuCaseSlotRule, gpuMotherboardRule } from "./gpu";
 import { coolerCaseRules, coolerCpuRules } from "./cooler";
 import { motherboardCaseRule } from "./case";
-import { psuCaseRule, psuGpuConnectorsRule, psuWattageRule } from "./psu";
+import {
+  psuCaseLengthRule,
+  psuCaseRule,
+  psuGpuConnectorsRule,
+  psuWattageRule,
+} from "./psu";
 import { storageRules } from "./storage";
 import { fanCaseRule, fanHeadersRule } from "./fans";
 import type { CompatibilityRule } from "./types";
@@ -20,12 +25,14 @@ export const compatibilityRules: readonly CompatibilityRule[] = [
   ramRules,
   gpuMotherboardRule,
   gpuCaseRule,
+  gpuCaseSlotRule,
   coolerCpuRules,
   coolerCaseRules,
   motherboardCaseRule,
   psuWattageRule,
   psuGpuConnectorsRule,
   psuCaseRule,
+  psuCaseLengthRule,
   storageRules,
   fanCaseRule,
   fanHeadersRule,

@@ -9,14 +9,15 @@ import { defineConfig, devices } from "@playwright/test";
  * The production suite and deployment configuration are untouched.
  */
 
-const previewPort = 4521;
-const previewUrl = `http://127.0.0.1:${previewPort}`;
+const previewPort = Number(process.env.PC_BUILDER_PREVIEW_PORT ?? 4521);
+const previewHost = process.env.PC_BUILDER_PREVIEW_HOST ?? "127.0.0.1";
+const previewUrl = `http://${previewHost}:${previewPort}`;
 
 export default defineConfig({
   testDir: "./e2e-pc-builder",
   fullyParallel: false,
   webServer: {
-    command: `npm run dev -- --port ${previewPort} --host 127.0.0.1`,
+    command: `npm run dev -- --port ${previewPort} --host ${previewHost}`,
     url: `${previewUrl}/pc-builder`,
     // Reuse a running dev server when present; Playwright starts one otherwise.
     reuseExistingServer: true,

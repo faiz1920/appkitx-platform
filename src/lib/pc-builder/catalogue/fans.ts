@@ -1,6 +1,11 @@
-import type { CaseFanComponent } from "../types";
-import { CATALOGUE_VERIFIED_DATE, manufacturerSource } from "./meta";
+import type { CaseFanComponent } from "../types.ts";
+import { CATALOGUE_VERIFIED_DATE, manufacturerSource } from "./meta.ts";
 
+/*
+ * Case fans — 7 records. Connector and PWM capability are separate fields
+ * because a 4-pin connector does not guarantee PWM control, and airflow
+ * direction describes the blade design, not the installation direction.
+ */
 export const caseFans: readonly CaseFanComponent[] = [
   {
     id: "case-fan-noctua-nf-a12x25-pwm",
@@ -12,6 +17,7 @@ export const caseFans: readonly CaseFanComponent[] = [
       "120 mm premium fan with Sterrox LCP blades, 4-pin PWM, 450–2000 rpm speed range.",
     url: "https://noctua.at/en/nf-a12x25-pwm/specification",
     availability: "in-production",
+    provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Noctua product specification",
       "https://noctua.at/en/nf-a12x25-pwm/specification",
@@ -19,10 +25,14 @@ export const caseFans: readonly CaseFanComponent[] = [
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
       sizeMm: 120,
+      thicknessMm: 25,
       connector: "4-pin-pwm",
+      pwm: true,
       airflowDirection: "standard",
       rpmMin: 450,
       rpmMax: 2000,
+      airflowCFM: null,
+      staticPressureMmH2O: null,
     },
   },
   {
@@ -35,6 +45,7 @@ export const caseFans: readonly CaseFanComponent[] = [
       "140 mm premium fan with square frame (fits 120 mm mounting holes), 4-pin PWM, 300–1500 rpm speed range.",
     url: "https://noctua.at/en/nf-a14-pwm/specification",
     availability: "in-production",
+    provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Noctua product specification",
       "https://noctua.at/en/nf-a14-pwm/specification",
@@ -42,10 +53,14 @@ export const caseFans: readonly CaseFanComponent[] = [
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
       sizeMm: 140,
+      thicknessMm: 25,
       connector: "4-pin-pwm",
+      pwm: true,
       airflowDirection: "standard",
       rpmMin: 300,
       rpmMax: 1500,
+      airflowCFM: null,
+      staticPressureMmH2O: null,
     },
   },
   {
@@ -58,6 +73,7 @@ export const caseFans: readonly CaseFanComponent[] = [
       "120 mm pressure-optimised fan, 4-pin PWM, 200–1800 rpm speed range.",
     url: "https://www.arctic.de/en/P12-PWM/ACFAN00119A",
     availability: "in-production",
+    provenance: "manufacturer-specification",
     source: manufacturerSource(
       "ARCTIC product specification",
       "https://www.arctic.de/en/P12-PWM/ACFAN00119A",
@@ -65,10 +81,126 @@ export const caseFans: readonly CaseFanComponent[] = [
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
       sizeMm: 120,
+      thicknessMm: 25,
       connector: "4-pin-pwm",
+      pwm: true,
       airflowDirection: "standard",
       rpmMin: 200,
       rpmMax: 1800,
+      airflowCFM: null,
+      staticPressureMmH2O: null,
+    },
+  },
+  {
+    id: "case-fan-arctic-p14-pwm",
+    category: "case-fan",
+    manufacturer: "ARCTIC",
+    name: "P14 PWM",
+    model: "P14 PWM",
+    description:
+      "140 mm pressure-optimised fan, 4-pin PWM, 200–1700 rpm speed range.",
+    url: "https://www.arctic.de/en/P14-PWM/ACFAN00138A",
+    availability: "in-production",
+    provenance: "manufacturer-specification",
+    source: manufacturerSource(
+      "ARCTIC product specification",
+      "https://www.arctic.de/en/P14-PWM/ACFAN00138A",
+    ),
+    lastVerified: CATALOGUE_VERIFIED_DATE,
+    specs: {
+      sizeMm: 140,
+      thicknessMm: 27,
+      connector: "4-pin-pwm",
+      pwm: true,
+      airflowDirection: "standard",
+      rpmMin: 200,
+      rpmMax: 1700,
+      airflowCFM: 72.8,
+      staticPressureMmH2O: 2.4,
+    },
+  },
+  {
+    id: "case-fan-noctua-nf-a12x15-pwm",
+    category: "case-fan",
+    manufacturer: "Noctua",
+    name: "NF-A12x15 PWM",
+    model: "NF-A12x15 PWM",
+    description:
+      "120 mm slim fan, 15 mm thickness, 4-pin PWM, 450–1850 rpm speed range.",
+    url: "https://noctua.at/en/nf-a12x15-pwm/specification",
+    availability: "in-production",
+    provenance: "manufacturer-specification",
+    source: manufacturerSource(
+      "Noctua product specification",
+      "https://noctua.at/en/nf-a12x15-pwm/specification",
+    ),
+    lastVerified: CATALOGUE_VERIFIED_DATE,
+    specs: {
+      sizeMm: 120,
+      thicknessMm: 15,
+      connector: "4-pin-pwm",
+      pwm: true,
+      airflowDirection: "standard",
+      rpmMin: 450,
+      rpmMax: 1850,
+      airflowCFM: null,
+      staticPressureMmH2O: null,
+    },
+  },
+  {
+    id: "case-fan-corsair-af120-elite",
+    category: "case-fan",
+    manufacturer: "Corsair",
+    name: "AF120 ELITE",
+    model: "AF120 ELITE",
+    description:
+      "120 mm airflow fan with eight RGB LEDs, 4-pin PWM, 400–1850 rpm speed range.",
+    url: "https://www.corsair.com/us/en/p/case-fans/co-9050141-ww/",
+    availability: "in-production",
+    provenance: "manufacturer-specification",
+    source: manufacturerSource(
+      "Corsair product specification",
+      "https://www.corsair.com/us/en/p/case-fans/co-9050141-ww/",
+    ),
+    lastVerified: CATALOGUE_VERIFIED_DATE,
+    specs: {
+      sizeMm: 120,
+      thicknessMm: 25,
+      connector: "4-pin-pwm",
+      pwm: true,
+      airflowDirection: "standard",
+      rpmMin: 400,
+      rpmMax: 1850,
+      airflowCFM: null,
+      staticPressureMmH2O: null,
+    },
+  },
+  {
+    id: "case-fan-thermalright-tl-c12c",
+    category: "case-fan",
+    manufacturer: "Thermalright",
+    name: "TL-C12C",
+    model: "TL-C12C",
+    description:
+      "120 mm case fan, 4-pin PWM, up to 1550 rpm with 66.17 CFM rated airflow.",
+    url: "https://www.thermalright.com/product/tl-c12c/",
+    availability: "in-production",
+    provenance: "manufacturer-specification",
+    source: manufacturerSource(
+      "Thermalright product specification",
+      "https://www.thermalright.com/product/tl-c12c/",
+    ),
+    lastVerified: CATALOGUE_VERIFIED_DATE,
+    specs: {
+      sizeMm: 120,
+      thicknessMm: 25,
+      connector: "4-pin-pwm",
+      pwm: true,
+      airflowDirection: "standard",
+      rpmMin: null,
+      rpmMax: 1550,
+      airflowCFM: 66.17,
+      staticPressureMmH2O: 1.53,
     },
   },
 ];

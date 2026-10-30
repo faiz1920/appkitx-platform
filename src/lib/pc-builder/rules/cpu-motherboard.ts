@@ -90,8 +90,14 @@ export const cpuMotherboardRules: CompatibilityRule = (ctx) => {
     );
   }
 
-  // BIOS: no reliable per-board BIOS revision data is available, so this
-  // is always reported as requiring verification rather than guessed.
+  /*
+   * BIOS: socket compatibility does not prove that the installed firmware
+   * recognises the CPU. Per-board BIOS revision evidence is not reliable in
+   * the catalogue yet, so this stays unknown and points at the published
+   * support list when the motherboard documents one.
+   */
+  const supportList = motherboard.specs.cpuSupportListUrl;
+  const biosVersion = motherboard.specs.biosVersion;
   results.push(
     makeResult(
       RULE_CPU_BIOS,
@@ -99,8 +105,13 @@ export const cpuMotherboardRules: CompatibilityRule = (ctx) => {
       ids,
       `BIOS compatibility between ${cpu.name} and ${motherboard.name} could not be verified from available data. Boards manufactured before this CPU launched may need a BIOS update.`,
       {
-        recommendation:
-          "Check the motherboard manufacturer's CPU support list for the minimum BIOS version before purchasing.",
+        observed: {
+          biosVersion,
+          cpuSupportListUrl: supportList,
+        },
+        recommendation: supportList
+          ? `Check the motherboard manufacturer's CPU support list for the minimum BIOS version before purchasing: ${supportList}`
+          : "Check the motherboard manufacturer's CPU support list for the minimum BIOS version before purchasing.",
       },
     ),
   );

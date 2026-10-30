@@ -459,7 +459,7 @@ describe("case, storage and fan rules", () => {
 
   it("reports unknown when M.2 slot data is missing", () => {
     const report = evaluateBuild([
-      makeMotherboard({ m2Slots: null }),
+      makeMotherboard({ m2Slots: null, m2SlotDetails: null }),
       makeStorage(),
     ]);
     expect(resultByRule(report.results, "storage-motherboard-m2").status).toBe(
@@ -527,5 +527,226 @@ describe("case, storage and fan rules", () => {
     expect(resultByRule(report.results, "fan-motherboard-headers").status).toBe(
       "unknown",
     );
+  });
+});
+
+describe("expanded datasheet rules (M10.3)", () => {
+  it("verifies GPU slot thickness against the case", () => {
+    const report = evaluateBuild([
+      makeGpu({ slotWidth: 2 }),
+      makeCase({ maxGpuSlots: 3 }),
+    ]);
+    expect(resultByRule(report.results, "gpu-case-slot-width").status).toBe(
+      "compatible",
+    );
+  });
+
+  it("rejects a GPU thicker than the case allows", () => {
+    const report = evaluateBuild([
+      makeGpu({ slotWidth: 3.5 }),
+      makeCase({ maxGpuSlots: 3 }),
+    ]);
+    expect(resultByRule(report.results, "gpu-case-slot-width").status).toBe(
+      "incompatible",
+    );
+  });
+
+  it("reports unknown GPU slot clearance when the case does not document it", () => {
+    const report = evaluateBuild([
+      makeGpu({ slotWidth: 3 }),
+      makeCase({ maxGpuSlots: null }),
+    ]);
+    expect(resultByRule(report.results, "gpu-case-slot-width").status).toBe(
+      "unknown",
+    );
+  });
+
+  it("verifies PSU chassis length against the case", () => {
+    const report = evaluateBuild([
+      makePsu({ lengthMm: 160 }),
+      makeCase({ maxPsuLengthMm: 180 }),
+    ]);
+    expect(resultByRule(report.results, "psu-case-length").status).toBe(
+      "compatible",
+    );
+  });
+
+  it("rejects a PSU longer than the case allows", () => {
+    const report = evaluateBuild([
+      makePsu({ lengthMm: 200 }),
+      makeCase({ maxPsuLengthMm: 180 }),
+    ]);
+    expect(resultByRule(report.results, "psu-case-length").status).toBe(
+      "incompatible",
+    );
+  });
+
+  it("reports unknown PSU length clearance when the case does not document it", () => {
+    const report = evaluateBuild([
+      makePsu({ lengthMm: 160 }),
+      makeCase({ maxPsuLengthMm: null }),
+    ]);
+    expect(resultByRule(report.results, "psu-case-length").status).toBe(
+      "unknown",
+    );
+  });
+
+  it("accepts an NVMe M.2 drive in a documented M.2 slot", () => {
+    const report = evaluateBuild([
+      makeMotherboard({
+        m2Slots: 1,
+        m2SlotDetails: [
+          { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
+        ],
+      }),
+      makeStorage({ m2LengthMm: 2280 }),
+    ]);
+    expect(resultByRule(report.results, "storage-motherboard-m2").status).toBe(
+      "compatible",
+    );
+  });
+
+  it("rejects an M.2 drive whose protocol the board does not document", () => {
+    const report = evaluateBuild([
+      makeMotherboard({
+        m2Slots: 1,
+        m2SlotDetails: [
+          { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
+        ],
+      }),
+      makeStorage({
+        interface: "sata",
+        formFactor: "m2",
+        m2Key: "B+M",
+        m2LengthMm: 2280,
+        pcieGeneration: null,
+      }),
+    ]);
+    const result = resultByRule(report.results, "storage-motherboard-m2");
+    expect(result.status).toBe("incompatible");
+    expect(result.message).toContain("SATA M.2 slot");
+  });
+
+  it("rejects an M.2 module longer than every compatible slot", () => {
+    const report = evaluateBuild([
+      makeMotherboard({
+        m2Slots: 1,
+        m2SlotDetails: [
+          { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
+        ],
+      }),
+      makeStorage({ m2LengthMm: 22110 }),
+    ]);
+    const result = resultByRule(report.results, "storage-motherboard-m2");
+    expect(result.status).toBe("incompatible");
+    expect(result.message).toContain("longer than every compatible slot");
+  });
+
+  it("reports unknown M.2 fit when the slot length limit is undocumented", () => {
+    const report = evaluateBuild([
+      makeMotherboard({
+        m2Slots: 1,
+        m2SlotDetails: [
+          { interface: "nvme", maxLengthMm: null, pcieGeneration: 4 },
+        ],
+      }),
+      makeStorage({ m2LengthMm: 2280 }),
+    ]);
+    expect(resultByRule(report.results, "storage-motherboard-m2").status).toBe(
+      "unknown",
+    );
+  });
+
+  it("reports unknown M.2 protocol support when only the slot count is documented", () => {
+    const report = evaluateBuild([
+      makeMotherboard({ m2Slots: 2, m2SlotDetails: null }),
+      makeStorage(),
+    ]);
+    const result = resultByRule(report.results, "storage-motherboard-m2");
+    expect(result.status).toBe("unknown");
+    expect(result.message).toContain(
+      "protocol and length support are not documented",
+    );
+  });
+
+  it("rejects more M.2 drives than physical slots", () => {
+    const report = evaluateBuild([
+      makeMotherboard({
+        m2Slots: 1,
+        m2SlotDetails: [
+          { interface: "both", maxLengthMm: 80, pcieGeneration: 4 },
+        ],
+      }),
+      makeStorage(),
+      makeStorage(),
+    ]);
+    expect(resultByRule(report.results, "storage-motherboard-m2").status).toBe(
+      "incompatible",
+    );
+  });
+
+  it("handles mixed protocols with distinct slot capacity", () => {
+    const report = evaluateBuild([
+      makeMotherboard({
+        m2Slots: 2,
+        m2SlotDetails: [
+          { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
+          { interface: "sata", maxLengthMm: 80, pcieGeneration: null },
+        ],
+      }),
+      makeStorage(),
+      makeStorage({
+        interface: "sata",
+        formFactor: "m2",
+        m2Key: "B+M",
+        m2LengthMm: 2280,
+        pcieGeneration: null,
+      }),
+    ]);
+    expect(resultByRule(report.results, "storage-motherboard-m2").status).toBe(
+      "compatible",
+    );
+  });
+
+  it("rejects two SATA M.2 drives when only one slot supports SATA", () => {
+    const sataDrive = () =>
+      makeStorage({
+        interface: "sata",
+        formFactor: "m2",
+        m2Key: "B+M",
+        m2LengthMm: 2280,
+        pcieGeneration: null,
+      });
+    const report = evaluateBuild([
+      makeMotherboard({
+        m2Slots: 2,
+        m2SlotDetails: [
+          { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
+          { interface: "sata", maxLengthMm: 80, pcieGeneration: null },
+        ],
+      }),
+      sataDrive(),
+      sataDrive(),
+    ]);
+    expect(resultByRule(report.results, "storage-motherboard-m2").status).toBe(
+      "incompatible",
+    );
+  });
+
+  it("includes CPU support-list evidence in the BIOS unknown result", () => {
+    const cpu = makeCpu({ socket: "AM5" });
+    const motherboard = makeMotherboard({
+      socket: "AM5",
+      cpuSupportListUrl: "https://example.test/support-list",
+      biosVersion: "7D75v1A",
+    });
+    const report = evaluateBuild([cpu, motherboard]);
+    const bios = resultByRule(report.results, "cpu-motherboard-bios");
+    expect(bios.status).toBe("unknown");
+    expect(bios.observed).toMatchObject({
+      biosVersion: "7D75v1A",
+      cpuSupportListUrl: "https://example.test/support-list",
+    });
+    expect(bios.recommendation).toContain("https://example.test/support-list");
   });
 });

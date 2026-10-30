@@ -130,7 +130,7 @@ test("searches components by product name and reports empty results", async ({
   const results = page.locator("[data-picker-results] > li");
 
   await page.getByLabel("Search components").fill("ryzen");
-  await expect(results).toHaveCount(2);
+  await expect(results).toHaveCount(9);
   await expect(
     page.getByText("AMD Ryzen 5 5600", { exact: true }),
   ).toBeVisible();
@@ -139,7 +139,7 @@ test("searches components by product name and reports empty results", async ({
   ).toHaveCount(0);
 
   await page.getByLabel("Search components").fill("intel");
-  await expect(results).toHaveCount(1);
+  await expect(results).toHaveCount(7);
   await expect(
     page.getByText("Intel Core i5-13600K", { exact: true }),
   ).toBeVisible();
@@ -151,7 +151,7 @@ test("searches components by product name and reports empty results", async ({
     'No components match "does-not-exist"',
   );
   await expect(page.locator("[data-picker-count]")).toHaveText(
-    "0 of 3 components match",
+    "0 of 16 components match",
   );
 });
 
@@ -160,13 +160,13 @@ test("filters components by manufacturer", async ({ page }) => {
   const results = page.locator("[data-picker-results] > li");
 
   await page.getByLabel("Manufacturer").selectOption("NVIDIA");
-  await expect(results).toHaveCount(2);
+  await expect(results).toHaveCount(5);
   await expect(page.locator("[data-picker-count]")).toHaveText(
-    "2 of 3 components match",
+    "5 of 15 components match",
   );
 
   await page.getByLabel("Manufacturer").selectOption("AMD");
-  await expect(results).toHaveCount(1);
+  await expect(results).toHaveCount(10);
 
   // Search and manufacturer filter combine.
   await page.getByLabel("Search components").fill("geforce");
@@ -262,7 +262,11 @@ test("shows warning-only results without calling them incompatible", async ({
 test("reports multiple simultaneous findings", async ({ page }) => {
   await selectFromCategory(page, "CPU", /AMD Ryzen 5 5600/);
   await selectFromCategory(page, "Motherboard", /MSI B650 TOMAHAWK WIFI/);
-  await selectFromCategory(page, "RAM", /G.SKILL Ripjaws V/);
+  await selectFromCategory(
+    page,
+    "RAM",
+    "G.SKILL Ripjaws V 16GB (2 x 8GB) DDR4-3200 CL16",
+  );
   await selectFromCategory(
     page,
     "Graphics card (GPU)",
@@ -346,15 +350,19 @@ test("replacing a component preserves the rest of the build", async ({
 test("multi-slot categories add items, prevent duplicates and remove individually", async ({
   page,
 }) => {
-  await selectFromCategory(page, "RAM", /Corsair Vengeance/);
+  await selectFromCategory(
+    page,
+    "RAM",
+    "Corsair Vengeance 32GB (2 x 16GB) DDR5-6000 CL30",
+  );
 
   await openCategory(page, "RAM");
   await expect(
     page.getByRole("button", {
-      name: /Corsair Vengeance.*already added/,
+      name: /Corsair Vengeance 32GB \(2 x 16GB\) DDR5-6000 CL30 is already added/,
     }),
   ).toBeDisabled();
-  await choose(page, /G.SKILL Ripjaws V/);
+  await choose(page, "G.SKILL Ripjaws V 16GB (2 x 8GB) DDR4-3200 CL16");
 
   await expect(page.locator('[data-slot="ram"]')).toContainText(
     "Corsair Vengeance",
@@ -368,7 +376,9 @@ test("multi-slot categories add items, prevent duplicates and remove individuall
   );
 
   await page
-    .getByRole("button", { name: /Remove Corsair Vengeance.*from RAM/ })
+    .getByRole("button", {
+      name: "Remove Corsair Vengeance 32GB (2 x 16GB) DDR5-6000 CL30 from RAM",
+    })
     .click();
   await expect(page.locator('[data-slot="ram"]')).not.toContainText(
     "Corsair Vengeance",
@@ -384,7 +394,11 @@ test("complete build evaluates every category without false incompatibilities", 
 }) => {
   await selectFromCategory(page, "CPU", /AMD Ryzen 7 7800X3D/);
   await selectFromCategory(page, "Motherboard", /MSI B650 TOMAHAWK WIFI/);
-  await selectFromCategory(page, "RAM", /Corsair Vengeance/);
+  await selectFromCategory(
+    page,
+    "RAM",
+    "Corsair Vengeance 32GB (2 x 16GB) DDR5-6000 CL30",
+  );
   await selectFromCategory(
     page,
     "Graphics card (GPU)",

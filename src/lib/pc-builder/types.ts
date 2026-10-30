@@ -1,5 +1,5 @@
 /*
- * PC Builder domain model (M10.1).
+ * PC Builder domain model (M10.1, extended M10.3).
  *
  * Conventions:
  * - Every specification attribute that may legitimately be unavailable is
@@ -9,6 +9,9 @@
  *   without them is invalid and must be rejected by validate.ts.
  * - Strings use stable, machine-readable vocabularies (unions) wherever a
  *   fixed set exists, so rules can compare values deterministically.
+ * - `provenance` classifies the record's evidence. Catalogue records are
+ *   manufacturer specifications; UI and power helpers label estimates at the
+ *   point of use.
  * - This module is pure TypeScript: no browser APIs, no I/O, no Astro.
  */
 
@@ -52,7 +55,29 @@ export const multiSlotCategories: readonly ComponentCategory[] = [
   "case-fan",
 ];
 
-export type AvailabilityStatus = "in-production" | "discontinued" | "unknown";
+/**
+ * Lifecycle state. `in-production` is only used when the manufacturer still
+ * lists the product; legacy parts stay in the catalogue as discontinued or
+ * end-of-life so existing and upgrade builds remain representable.
+ */
+export type AvailabilityStatus =
+  "in-production" | "discontinued" | "end-of-life" | "unverified" | "unknown";
+
+/**
+ * Evidence class for a record's specification values.
+ * - manufacturer-specification: manufacturer product/specification page
+ * - manufacturer-support-list: manufacturer CPU/memory support documentation
+ * - verified-third-party: independent measurement, only for fields the
+ *   manufacturer does not publish (none used in the seed catalogue yet)
+ * - estimated: engineering estimate; never used for catalogue specs
+ * - unknown: record retained for completeness but not verified
+ */
+export type DataProvenance =
+  | "manufacturer-specification"
+  | "manufacturer-support-list"
+  | "verified-third-party"
+  | "estimated"
+  | "unknown";
 
 /** Attribution for the data record. `accessedAt` is an ISO 8601 date. */
 export interface ComponentSource {
@@ -78,6 +103,8 @@ interface ComponentBase {
   /** ISO 8601 release date, when published. Optional. */
   releaseDate?: string;
   availability: AvailabilityStatus;
+  /** Evidence class for the specification values in this record. */
+  provenance: DataProvenance;
   source: ComponentSource;
   /** ISO 8601 timestamp of the last human verification of this record. */
   lastVerified: string;
@@ -91,20 +118,43 @@ export type MemoryGeneration = "DDR3" | "DDR4" | "DDR5";
 export type MotherboardFormFactor = "ATX" | "Micro-ATX" | "Mini-ITX" | "E-ATX";
 export type RamFormFactor = "DIMM" | "SO-DIMM";
 export type PsuFormFactor = "ATX" | "SFX" | "SFX-L";
+export type CaseType = "full-tower" | "mid-tower" | "mini-tower" | "sff";
 export type PsuModularity = "full" | "semi" | "non-modular";
 export type StorageInterface = "nvme" | "sata";
 export type StorageFormFactor = "m2" | "2.5-inch" | "3.5-inch";
+export type M2Key = "M" | "B+M";
 export type CoolerType = "air" | "aio-liquid";
 export type CaseFanConnector = "4-pin-pwm" | "3-pin-dc";
 /** Direction of the blade design. Most fans are "standard"; some models
  *  offer reverse-blade variants for unobstructed RGB viewing. */
 export type FanAirflowDirection = "standard" | "reverse";
+export type RamProfile = "XMP" | "EXPO" | "XMP/EXPO";
 
 export type GpuPowerConnectorType = "pcie-8pin" | "12vhpwr-16pin";
 
 export interface GpuPowerConnector {
   type: GpuPowerConnectorType;
   count: number;
+}
+
+/** One physical M.2 slot and the protocols it accepts. */
+export interface M2SlotInfo {
+  /** "both" marks slots that accept NVMe and SATA M.2 drives. */
+  interface: "nvme" | "sata" | "both";
+  /** Longest module the slot physically supports (e.g. 2280 -> 80). */
+  maxLengthMm: number | null;
+  pcieGeneration: number | null;
+}
+
+export interface CaseRadiatorMount {
+  sizeMm: number;
+  /** Human-readable position, e.g. "front", "top", "side". */
+  position: string;
+}
+
+export interface CaseFanMount {
+  sizeMm: number;
+  maxCount: number;
 }
 
 /* ------------------------------------------------------------------ */
@@ -114,8 +164,16 @@ export interface GpuPowerConnector {
 export interface CpuSpecs {
   /** CPU socket, e.g. "AM5", "AM4", "LGA1700". */
   socket: string;
+  /** Total physical cores. */
+  cores: number | null;
+  /** Total hardware threads (may equal cores on P-core-only designs). */
+  threads: number | null;
+  baseClockGHz: number | null;
+  boostClockGHz: number | null;
   memoryTypes: MemoryGeneration[];
   memoryChannels: number | null;
+  /** Manufacturer-published maximum memory speed in MT/s. */
+  memorySpeedMTs: number | null;
   maxMemoryGB: number | null;
   /** Base TDP / PBP in watts as published by the manufacturer. */
   tdpW: number | null;
@@ -131,9 +189,16 @@ export interface CpuSpecs {
 }
 
 export interface GpuSpecs {
+  /** GPU chipset/product family, e.g. "GeForce RTX 4070". */
+  chipset: string;
+  /** Board partner for partner-card records; null for reference/Founders. */
+  boardPartner: string | null;
+  vramGB: number | null;
+  /** Memory technology, e.g. "GDDR6X". */
+  memoryType: string | null;
   /** PCIe generation of the card interface (3, 4, 5, ...). */
   pcieGeneration: number | null;
-  /** Electrical lane count of the card interface (typically 16). */
+  /** Electrical lane count of the card interface (16, 8, ...). */
   pcieLanes: number | null;
   /** Card length in millimetres. */
   lengthMm: number | null;
@@ -167,12 +232,18 @@ export interface MotherboardSpecs {
   pcieX16Slots: PcieX16SlotInfo | null;
   /** Number of M.2 storage slots. */
   m2Slots: number | null;
+  /** Per-slot protocol/length details when the manufacturer documents them. */
+  m2SlotDetails: M2SlotInfo[] | null;
   /** Number of SATA ports. */
   sataPorts: number | null;
   /** Number of on-board fan headers. */
   fanHeaders: number | null;
   /** CPU auxiliary power input, e.g. "8-pin + 4-pin EPS". */
   cpuPowerConnectors: string | null;
+  /** Manufacturer CPU support list for BIOS/CPU evidence. */
+  cpuSupportListUrl: string | null;
+  /** Minimum BIOS version notes for current-generation CPUs, when published. */
+  biosVersion: string | null;
 }
 
 export interface RamSpecs {
@@ -182,6 +253,12 @@ export interface RamSpecs {
   totalCapacityGB: number;
   /** Rated speed in MT/s. */
   speedMTs: number;
+  /** Tested timings, e.g. "CL30-36-36-76". */
+  timings: string | null;
+  /** Profile voltage in volts, when published. */
+  voltageV: number | null;
+  /** Overclocking profile family, when published. */
+  profile: RamProfile | null;
   formFactor: RamFormFactor;
   ecc: boolean;
   registered: boolean;
@@ -195,6 +272,12 @@ export interface CoolerSpecs {
   heightMm: number | null;
   /** Radiator longest side in millimetres (AIO liquid coolers): 120, 240, ... */
   radiatorSizeMm: number | null;
+  /** Radiator thickness in millimetres, when published. */
+  radiatorThicknessMm: number | null;
+  /** Fan frame size in millimetres. */
+  fanSizeMm: number | null;
+  /** Number of fans included with the cooler. */
+  fanCount: number | null;
   /** Manufacturer thermal capacity rating in watts, when published. */
   tdpRatingW: number | null;
 }
@@ -204,10 +287,16 @@ export interface StorageSpecs {
   capacityGB: number;
   interface: StorageInterface;
   formFactor: StorageFormFactor;
+  /** M.2 keying for M.2 modules. */
+  m2Key: M2Key | null;
   /** M.2 module length in millimetres (e.g. 2280 -> 80), M.2 drives only. */
   m2LengthMm: number | null;
   /** PCIe generation of the link (NVMe drives only). */
   pcieGeneration: number | null;
+  seqReadMBps: number | null;
+  seqWriteMBps: number | null;
+  /** Typical drive power in watts, when published. */
+  powerDrawW: number | null;
 }
 
 export interface PsuConnectorSpec {
@@ -229,24 +318,33 @@ export interface PsuSpecs {
   formFactor: PsuFormFactor;
   /** ATX specification version, e.g. "ATX 3.0", when published. */
   atxVersion: string | null;
+  /** Chassis length in millimetres. */
+  lengthMm: number | null;
   connectors: PsuConnectorSpec;
 }
 
 export interface CaseSpecs {
+  caseType: CaseType;
   supportedFormFactors: MotherboardFormFactor[];
   /** Maximum GPU length in millimetres. */
   maxGpuLengthMm: number | null;
   /** Maximum CPU air-cooler height in millimetres. */
   maxCoolerHeightMm: number | null;
   psuFormFactors: PsuFormFactor[];
+  /** Maximum PSU chassis length in millimetres, when published. */
+  maxPsuLengthMm: number | null;
   /** Supported radiator sizes by longest side in millimetres. */
   radiatorSupportMm: number[] | null;
+  /** Documented radiator positions and sizes. */
+  radiatorMounts: CaseRadiatorMount[] | null;
   /** Maximum GPU slot thickness, when published. */
   maxGpuSlots: number | null;
   driveBays25inch: number | null;
   driveBays35inch: number | null;
   /** Fan frame sizes the case accepts, in millimetres. */
   fanSizesMm: number[] | null;
+  /** Documented fan mounting positions. */
+  fanMounts: CaseFanMount[] | null;
   /** Number of fans included with the case. */
   includedFans: number | null;
 }
@@ -254,10 +352,18 @@ export interface CaseSpecs {
 export interface CaseFanSpecs {
   /** Frame size in millimetres (120, 140, ...). */
   sizeMm: number;
+  /** Frame thickness in millimetres. */
+  thicknessMm: number | null;
   connector: CaseFanConnector;
+  /** Whether the fan supports PWM speed control. */
+  pwm: boolean | null;
   airflowDirection: FanAirflowDirection | null;
   rpmMin: number | null;
   rpmMax: number | null;
+  /** Rated airflow in CFM, when published. */
+  airflowCFM: number | null;
+  /** Rated static pressure in mmH2O, when published. */
+  staticPressureMmH2O: number | null;
 }
 
 /* ------------------------------------------------------------------ */

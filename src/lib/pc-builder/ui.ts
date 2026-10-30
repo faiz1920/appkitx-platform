@@ -98,6 +98,10 @@ export function availabilityLabel(component: Component): string {
       return "In production";
     case "discontinued":
       return "Discontinued";
+    case "end-of-life":
+      return "End of life";
+    case "unverified":
+      return "Unverified";
     case "unknown":
       return "Availability unknown";
   }
@@ -152,12 +156,30 @@ export function specLines(component: Component): SpecLine[] {
     case "cpu": {
       const s = component.specs;
       add("Socket", s.socket);
+      add(
+        "Cores / threads",
+        s.cores === null || s.threads === null
+          ? null
+          : `${s.cores}C / ${s.threads}T`,
+      );
+      add(
+        "Base clock",
+        s.baseClockGHz === null ? null : `${s.baseClockGHz} GHz`,
+      );
+      add(
+        "Boost clock",
+        s.boostClockGHz === null ? null : `${s.boostClockGHz} GHz`,
+      );
       add("Base TDP", s.tdpW === null ? null : `${s.tdpW} W`);
       add("Memory", s.memoryTypes.map((type) => memoryLabel(type)).join(" / "));
       add("Max memory", s.maxMemoryGB === null ? null : `${s.maxMemoryGB} GB`);
       add(
         "Memory channels",
         s.memoryChannels === null ? null : `${s.memoryChannels}`,
+      );
+      add(
+        "Memory speed",
+        s.memorySpeedMTs === null ? null : `${s.memorySpeedMTs} MT/s`,
       );
       add("Max boost power", s.maxPowerW === null ? null : `${s.maxPowerW} W`);
       add("Integrated graphics", s.integratedGraphics ? "Yes" : "No");
@@ -173,6 +195,10 @@ export function specLines(component: Component): SpecLine[] {
     }
     case "gpu": {
       const s = component.specs;
+      add("Chipset", s.chipset);
+      add("Board partner", s.boardPartner);
+      add("VRAM", s.vramGB === null ? null : `${s.vramGB} GB`);
+      add("Memory type", s.memoryType);
       add(
         "PCIe interface",
         s.pcieGeneration === null || s.pcieLanes === null
@@ -238,6 +264,9 @@ export function specLines(component: Component): SpecLine[] {
       add("Type", `${s.generation}-${s.speedMTs}`);
       add("Modules", `${s.moduleCount} × ${s.moduleCapacityGB} GB`);
       add("Total capacity", `${s.totalCapacityGB} GB`);
+      add("Timings", s.timings);
+      add("Voltage", s.voltageV === null ? null : `${s.voltageV} V`);
+      add("Profile", s.profile);
       add("Form factor", s.formFactor);
       add("ECC", s.ecc ? "Yes" : "No");
       add("Registered", s.registered ? "Registered" : "Unbuffered");
@@ -250,6 +279,16 @@ export function specLines(component: Component): SpecLine[] {
       add(
         "Radiator",
         s.radiatorSizeMm === null ? null : `${s.radiatorSizeMm} mm`,
+      );
+      add(
+        "Radiator thickness",
+        s.radiatorThicknessMm === null ? null : `${s.radiatorThicknessMm} mm`,
+      );
+      add(
+        "Fans",
+        s.fanSizeMm === null || s.fanCount === null
+          ? null
+          : `${s.fanCount} × ${s.fanSizeMm} mm`,
       );
       add("Sockets", s.supportedSockets.join(", "));
       add(
@@ -275,6 +314,16 @@ export function specLines(component: Component): SpecLine[] {
         "PCIe generation",
         s.pcieGeneration === null ? null : `PCIe ${s.pcieGeneration}.0`,
       );
+      add("M.2 key", s.m2Key);
+      add(
+        "Sequential read",
+        s.seqReadMBps === null ? null : `${s.seqReadMBps} MB/s`,
+      );
+      add(
+        "Sequential write",
+        s.seqWriteMBps === null ? null : `${s.seqWriteMBps} MB/s`,
+      );
+      add("Power", s.powerDrawW === null ? null : `${s.powerDrawW} W`);
       break;
     }
     case "psu": {
@@ -284,6 +333,7 @@ export function specLines(component: Component): SpecLine[] {
       add("Modularity", MODULARITY_LABELS[s.modularity]);
       add("Form factor", psuFormLabel(s.formFactor));
       add("ATX version", s.atxVersion);
+      add("Length", s.lengthMm === null ? null : `${s.lengthMm} mm`);
       add(
         "CPU/EPS 8-pin",
         s.connectors.eps8pin === null ? null : `${s.connectors.eps8pin}`,
@@ -304,6 +354,7 @@ export function specLines(component: Component): SpecLine[] {
     }
     case "case": {
       const s = component.specs;
+      add("Case type", s.caseType);
       add("Motherboards", s.supportedFormFactors.join(", "));
       add(
         "Max GPU length",
@@ -315,16 +366,28 @@ export function specLines(component: Component): SpecLine[] {
       );
       add("PSU support", s.psuFormFactors.join(", "));
       add(
-        "Radiators",
-        s.radiatorSupportMm === null
-          ? null
-          : s.radiatorSupportMm.map((size) => `${size} mm`).join(", "),
+        "Max PSU length",
+        s.maxPsuLengthMm === null ? null : `${s.maxPsuLengthMm} mm`,
       );
       add(
-        "Fan sizes",
-        s.fanSizesMm === null
-          ? null
-          : s.fanSizesMm.map((size) => `${size} mm`).join(", "),
+        "Radiators",
+        s.radiatorMounts !== null
+          ? s.radiatorMounts
+              .map((mount) => `${mount.sizeMm} mm ${mount.position}`)
+              .join(", ")
+          : s.radiatorSupportMm === null
+            ? null
+            : s.radiatorSupportMm.map((size) => `${size} mm`).join(", "),
+      );
+      add(
+        "Fan mounts",
+        s.fanMounts !== null
+          ? s.fanMounts
+              .map((mount) => `${mount.sizeMm} mm × ${mount.maxCount}`)
+              .join(", ")
+          : s.fanSizesMm === null
+            ? null
+            : s.fanSizesMm.map((size) => `${size} mm`).join(", "),
       );
       add(
         "Included fans",
@@ -335,12 +398,22 @@ export function specLines(component: Component): SpecLine[] {
     case "case-fan": {
       const s = component.specs;
       add("Size", `${s.sizeMm} mm`);
+      add("Thickness", s.thicknessMm === null ? null : `${s.thicknessMm} mm`);
       add("Connector", s.connector === "4-pin-pwm" ? "4-pin PWM" : "3-pin DC");
       add(
         "Speed range",
-        s.rpmMin === null || s.rpmMax === null
+        s.rpmMax === null
           ? null
-          : `${s.rpmMin}–${s.rpmMax} rpm`,
+          : s.rpmMin === null
+            ? `Up to ${s.rpmMax} rpm`
+            : `${s.rpmMin}–${s.rpmMax} rpm`,
+      );
+      add("Airflow", s.airflowCFM === null ? null : `${s.airflowCFM} CFM`);
+      add(
+        "Static pressure",
+        s.staticPressureMmH2O === null
+          ? null
+          : `${s.staticPressureMmH2O} mmH2O`,
       );
       add(
         "Airflow direction",
@@ -368,7 +441,12 @@ export function missingSpecLabels(component: Component): string[] {
     case "cpu": {
       const s = component.specs;
       gap("supported chipsets", s.supportedChipsets === null);
+      gap("core count", s.cores === null);
+      gap("thread count", s.threads === null);
+      gap("base clock", s.baseClockGHz === null);
+      gap("boost clock", s.boostClockGHz === null);
       gap("memory channels", s.memoryChannels === null);
+      gap("memory speed", s.memorySpeedMTs === null);
       gap("maximum memory", s.maxMemoryGB === null);
       gap("base TDP", s.tdpW === null);
       gap("boost power", s.maxPowerW === null);
@@ -377,6 +455,8 @@ export function missingSpecLabels(component: Component): string[] {
     }
     case "gpu": {
       const s = component.specs;
+      gap("VRAM capacity", s.vramGB === null);
+      gap("memory type", s.memoryType === null);
       gap("PCIe generation", s.pcieGeneration === null);
       gap("PCIe lanes", s.pcieLanes === null);
       gap("card length", s.lengthMm === null);
@@ -396,25 +476,41 @@ export function missingSpecLabels(component: Component): string[] {
       gap("SATA ports", s.sataPorts === null);
       gap("fan headers", s.fanHeaders === null);
       gap("CPU power connectors", s.cpuPowerConnectors === null);
+      gap("CPU support list", s.cpuSupportListUrl === null);
+      gap("BIOS version", s.biosVersion === null);
       break;
     }
-    case "ram":
+    case "ram": {
+      const s = component.specs;
+      gap("timings", s.timings === null);
+      gap("voltage", s.voltageV === null);
+      gap("overclocking profile", s.profile === null);
       break;
+    }
     case "cooler": {
       const s = component.specs;
       gap("cooling capacity rating", s.tdpRatingW === null);
+      gap("fan size", s.fanSizeMm === null);
+      gap("fan count", s.fanCount === null);
       if (s.type === "air") gap("cooler height", s.heightMm === null);
       if (s.type === "aio-liquid") {
         gap("radiator size", s.radiatorSizeMm === null);
+        gap("radiator thickness", s.radiatorThicknessMm === null);
       }
       break;
     }
     case "storage": {
       const s = component.specs;
-      if (s.formFactor === "m2") gap("M.2 length", s.m2LengthMm === null);
+      if (s.formFactor === "m2") {
+        gap("M.2 key", s.m2Key === null);
+        gap("M.2 length", s.m2LengthMm === null);
+      }
       if (s.interface === "nvme") {
         gap("PCIe generation", s.pcieGeneration === null);
       }
+      gap("sequential read", s.seqReadMBps === null);
+      gap("sequential write", s.seqWriteMBps === null);
+      gap("drive power", s.powerDrawW === null);
       break;
     }
     case "psu": {
@@ -424,25 +520,33 @@ export function missingSpecLabels(component: Component): string[] {
       gap("16-pin count", s.connectors.pcie16pin === null);
       gap("SATA power count", s.connectors.sata === null);
       gap("ATX version", s.atxVersion === null);
+      gap("PSU length", s.lengthMm === null);
       break;
     }
     case "case": {
       const s = component.specs;
       gap("max GPU length", s.maxGpuLengthMm === null);
       gap("max cooler height", s.maxCoolerHeightMm === null);
+      gap("max PSU length", s.maxPsuLengthMm === null);
       gap("radiator support", s.radiatorSupportMm === null);
+      gap("radiator positions", s.radiatorMounts === null);
       gap("GPU slot thickness", s.maxGpuSlots === null);
       gap("2.5-inch bays", s.driveBays25inch === null);
       gap("3.5-inch bays", s.driveBays35inch === null);
       gap("fan sizes", s.fanSizesMm === null);
+      gap("fan positions", s.fanMounts === null);
       gap("included fans", s.includedFans === null);
       break;
     }
     case "case-fan": {
       const s = component.specs;
+      gap("fan thickness", s.thicknessMm === null);
+      gap("PWM support", s.pwm === null);
       gap("airflow direction", s.airflowDirection === null);
       gap("minimum speed", s.rpmMin === null);
       gap("maximum speed", s.rpmMax === null);
+      gap("airflow rating", s.airflowCFM === null);
+      gap("static pressure rating", s.staticPressureMmH2O === null);
       break;
     }
   }

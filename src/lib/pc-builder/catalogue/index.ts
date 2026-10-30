@@ -1,24 +1,25 @@
 /*
- * Initial curated component catalogue (M10.1).
+ * Curated component catalogue (M10.1 seed; expanded in M10.3).
  *
- * This is a small seed dataset assembled from manufacturer-published
- * specifications — it is not a complete representation of the global
- * market, contains no pricing or stock data, and must not be presented as
- * such. The compatibility engine consumes any `Component[]`; expanding or
- * replacing this catalogue (including future API-backed data) requires no
- * engine changes.
+ * Baseline: 27 records from the M10.1 seed. M10.3 expands this to 101
+ * records across 23 manufacturers — still not a complete representation of
+ * the global market, and containing no pricing or stock data. Records are
+ * assembled from manufacturer-published specifications; unavailable values
+ * are explicit nulls. The compatibility engine consumes any `Component[]`,
+ * so expanding or replacing this catalogue (including future API-backed
+ * data) requires no engine changes.
  */
 
-import type { Component, ComponentCategory } from "../types";
-import { cpus } from "./cpus";
-import { gpus } from "./gpus";
-import { motherboards } from "./motherboards";
-import { ramKits } from "./ram";
-import { coolers } from "./coolers";
-import { storageDevices } from "./storage";
-import { psus } from "./psus";
-import { cases } from "./cases";
-import { caseFans } from "./fans";
+import type { Component, ComponentCategory } from "../types.ts";
+import { cpus } from "./cpus.ts";
+import { gpus } from "./gpus.ts";
+import { motherboards } from "./motherboards.ts";
+import { ramKits } from "./ram.ts";
+import { coolers } from "./coolers.ts";
+import { storageDevices } from "./storage.ts";
+import { psus } from "./psus.ts";
+import { cases } from "./cases.ts";
+import { caseFans } from "./fans.ts";
 
 export const catalogue: readonly Component[] = [
   ...cpus,

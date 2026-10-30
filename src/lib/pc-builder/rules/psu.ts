@@ -6,6 +6,7 @@ import { makeResult } from "./types";
 export const RULE_PSU_WATTAGE = "psu-wattage";
 export const RULE_PSU_GPU_CONNECTORS = "psu-gpu-connectors";
 export const RULE_PSU_CASE_FORM_FACTOR = "psu-case-form-factor";
+export const RULE_PSU_CASE_LENGTH = "psu-case-length";
 
 /** Minimum spare capacity (watts) below which a fitting PSU is a warning. */
 export const PSU_TIGHT_MARGIN_W = 50;
@@ -293,6 +294,59 @@ export const psuCaseRule: CompatibilityRule = (ctx) => {
       ids,
       `The case supports ${psu.specs.formFactor} power supplies.`,
       { observed: { psuFormFactor: psu.specs.formFactor } },
+    ),
+  ];
+};
+
+export const psuCaseLengthRule: CompatibilityRule = (ctx) => {
+  const { psu, pcCase } = ctx;
+  if (!psu || !pcCase) return [];
+
+  const ids = [psu.id, pcCase.id];
+  const length = psu.specs.lengthMm;
+  const maxLength = pcCase.specs.maxPsuLengthMm;
+
+  if (length === null || maxLength === null) {
+    return [
+      makeResult(
+        RULE_PSU_CASE_LENGTH,
+        "unknown",
+        ids,
+        `PSU length clearance cannot be verified: ${length === null ? "the power supply's chassis length" : "the case's maximum PSU length"} is not documented in the available data.`,
+        {
+          observed: { psuLengthMm: length, caseMaxPsuLengthMm: maxLength },
+          recommendation:
+            "Check the PSU length against the case's documented PSU clearance before purchasing.",
+        },
+      ),
+    ];
+  }
+
+  if (length > maxLength) {
+    return [
+      makeResult(
+        RULE_PSU_CASE_LENGTH,
+        "incompatible",
+        ids,
+        `The ${length} mm power supply exceeds the case's ${maxLength} mm PSU clearance.`,
+        {
+          observed: { psuLengthMm: length, caseMaxPsuLengthMm: maxLength },
+          recommendation:
+            "Choose a shorter PSU or a case with more PSU clearance.",
+        },
+      ),
+    ];
+  }
+
+  return [
+    makeResult(
+      RULE_PSU_CASE_LENGTH,
+      "compatible",
+      ids,
+      `The ${length} mm power supply fits within the case's ${maxLength} mm PSU clearance.`,
+      {
+        observed: { psuLengthMm: length, caseMaxPsuLengthMm: maxLength },
+      },
     ),
   ];
 };
