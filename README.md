@@ -172,6 +172,8 @@ Deployments run through the Wrangler CLI against `wrangler.jsonc`; the `previews
 
 Validate a preview deployment before promoting to production.
 
+Deployment provenance, private attestation, rollback, and post-deployment verification are covered in [DEPLOYMENT-RUNBOOK.md](./DEPLOYMENT-RUNBOOK.md).
+
 The intended production domain is `appkitx.com` (canonical), with `www.appkitx.com` redirecting to it. Domain binding and DNS setup are manual Cloudflare steps and are not configured by this repository.
 
 Security headers come from two layers. Repository-managed headers ship via `public/_headers`: content-type sniffing, referrer policy, framing, permissions policy, and immutable caching for hashed assets. HSTS is not defined in `public/_headers`; Cloudflare manages it at the edge for `appkitx.com`. The verified production policy is `Strict-Transport-Security: max-age=2592000` (one month), with `includeSubDomains` off and `preload` off, present on both the apex `200` response and the `www` `301` redirect. This verifies HSTS only and does not make the overall security posture complete.
