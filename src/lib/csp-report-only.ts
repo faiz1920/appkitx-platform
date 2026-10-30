@@ -1,4 +1,5 @@
 import type { InlineScriptInventory } from "./csp-inline-hashes";
+import { CSP_REPORT_PATH } from "./csp-report";
 
 export const CSP_REPORT_ONLY_HEADER = "Content-Security-Policy-Report-Only";
 export const CSP_REPORT_ONLY_MAX_LINE_LENGTH = 2000;
@@ -50,6 +51,7 @@ export function buildCspReportOnlyPolicy(
     "frame-ancestors 'none'",
     "object-src 'none'",
     "worker-src 'none'",
+    `report-uri ${CSP_REPORT_PATH}`,
   ].join("; ");
 
   validatePolicy(policy);
@@ -203,14 +205,43 @@ function validatePolicy(policy: string): void {
     "'unsafe-inline'",
     "'unsafe-eval'",
     "'strict-dynamic'",
-    "report-uri",
-    "report-to",
   ]) {
     if (policy.includes(forbidden)) {
       throw new Error(
         `Cannot use a CSP report-only policy containing ${forbidden}.`,
       );
     }
+  }
+
+  const directives = policy
+    .split(";")
+    .map((directive) => directive.trim())
+    .filter((directive) => directive !== "");
+  const reportUri = directives.filter(
+    (directive) =>
+      directive === "report-uri" || directive.startsWith("report-uri "),
+  );
+  const reportTo = directives.filter(
+    (directive) =>
+      directive === "report-to" || directive.startsWith("report-to "),
+  );
+
+  if (reportTo.length > 0) {
+    throw new Error(
+      "Cannot use a CSP report-only policy containing report-to: Chromium does not deliver reports when report-to is present, so report-uri is the required delivery mechanism.",
+    );
+  }
+
+  if (reportUri.length !== 1) {
+    throw new Error(
+      "Cannot use a CSP report-only policy without exactly one report-uri directive.",
+    );
+  }
+
+  if (reportUri[0] !== `report-uri ${CSP_REPORT_PATH}`) {
+    throw new Error(
+      `Cannot use a CSP report-only policy with an unapproved report-uri: ${reportUri[0]}.`,
+    );
   }
 
   if (formatHeaderLine(policy).length > CSP_REPORT_ONLY_MAX_LINE_LENGTH) {

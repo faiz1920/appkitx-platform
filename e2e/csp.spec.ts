@@ -130,11 +130,11 @@ test("the generated header matches the fresh build inventory", async ({
   expect(policy).toContain("default-src 'none'");
   expect(policy).toContain("https://static.cloudflareinsights.com");
   expect(policy).toContain("connect-src 'self' https://cloudflareinsights.com");
+  expect(policy).toContain("report-uri /__csp-report");
+  expect(policy).not.toContain("report-to");
   expect(policy).not.toContain("'unsafe-inline'");
   expect(policy).not.toContain("'unsafe-eval'");
   expect(policy).not.toContain("'strict-dynamic'");
-  expect(policy).not.toContain("report-uri");
-  expect(policy).not.toContain("report-to");
 });
 
 test("the generated _headers artifact preserves existing rules and has one CSP line", () => {
@@ -145,6 +145,8 @@ test("the generated _headers artifact preserves existing rules and has one CSP l
 
   expect(cspLines).toHaveLength(1);
   expect(cspLines[0].length).toBeLessThanOrEqual(2000);
+  expect(cspLines[0]).toContain("report-uri /__csp-report");
+  expect(cspLines[0]).not.toContain("report-to");
   expect(headers).toContain("# Hashed build assets are content-addressed");
   expect(headers).toContain(
     "  Cache-Control: public, max-age=31536000, immutable",
