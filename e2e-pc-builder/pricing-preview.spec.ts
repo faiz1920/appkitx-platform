@@ -1,11 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
 
 /*
- * Development-only synthetic pricing preview tests (M10.7).
+ * Development-only synthetic pricing preview tests (M10.7, India-first M10.8).
  *
  * These assert the architecture boundary, not live retail data: synthetic
- * labelling, market/currency isolation, stale-offer exclusion and explicit
- * no-price behaviour. No real retailer or price is involved.
+ * labelling, India-first market configuration, market/currency isolation,
+ * stale-offer exclusion and explicit no-price behaviour. No real retailer or
+ * price is involved.
  */
 
 async function openManual(page: Page): Promise<void> {
@@ -39,9 +40,11 @@ test("pricing preview is synthetic, market-scoped and hidden in Guided mode @cro
     "not real retailer offers and are never used by the recommendation engine",
   );
 
+  // India is the explicit first-rollout market. This is configuration, not
+  // browser-language or geolocation inference.
   const summary = panel.locator("[data-pricing-summary]");
-  await expect(summary).toHaveAttribute("data-pricing-market-id", "us");
-  await expect(summary).toHaveAttribute("data-pricing-currency", "USD");
+  await expect(summary).toHaveAttribute("data-pricing-market-id", "in");
+  await expect(summary).toHaveAttribute("data-pricing-currency", "INR");
   await expect(summary).toHaveAttribute("data-pricing-total-count", "4");
   await expect(summary).toHaveAttribute("data-pricing-eligible-count", "2");
   await expect(
@@ -51,8 +54,9 @@ test("pricing preview is synthetic, market-scoped and hidden in Guided mode @cro
     panel.locator('[data-pricing-offer-state="excluded"]'),
   ).toHaveCount(2);
   await expect(panel.locator("[data-pricing-cheapest]")).toContainText(
-    "339.50",
+    "₹28,999.00",
   );
+  await expect(panel.locator('[data-pricing-currency="USD"]')).toHaveCount(0);
 
   const syntheticFlags = await panel
     .locator("[data-pricing-offer]")
@@ -69,18 +73,18 @@ test("pricing preview is synthetic, market-scoped and hidden in Guided mode @cro
   expect(sourceHosts.length).toBeGreaterThan(0);
   for (const host of sourceHosts) expect(host.endsWith(".example")).toBe(true);
 
-  await panel.getByLabel("Market").selectOption("in");
-  await expect(summary).toHaveAttribute("data-pricing-market-id", "in");
-  await expect(summary).toHaveAttribute("data-pricing-currency", "INR");
-  await expect(summary).toHaveAttribute("data-pricing-total-count", "3");
+  await panel.getByLabel("Market").selectOption("us");
+  await expect(summary).toHaveAttribute("data-pricing-market-id", "us");
+  await expect(summary).toHaveAttribute("data-pricing-currency", "USD");
+  await expect(summary).toHaveAttribute("data-pricing-total-count", "4");
   await expect(summary).toHaveAttribute("data-pricing-eligible-count", "2");
   await expect(panel.locator("[data-pricing-cheapest]")).toContainText(
-    "28,999.00",
+    "$339.50",
   );
-  await expect(panel.locator('[data-pricing-currency="USD"]')).toHaveCount(0);
+  await expect(panel.locator('[data-pricing-currency="INR"]')).toHaveCount(0);
   await expect(
     panel.locator('[data-pricing-offer-state="eligible"]').first(),
-  ).toHaveAttribute("data-pricing-currency", "INR");
+  ).toHaveAttribute("data-pricing-currency", "USD");
 
   await page
     .locator('label:has(input[name="builder-mode"][value="guided"])')
@@ -122,8 +126,9 @@ test("stale and unavailable offers are not current, and no-price is explicit", a
   await expect(stale).toContainText("Last observed price");
   await expect(stale).toContainText("Last observed total");
   await expect(stale).toContainText("Not current: Price is expired");
+  await expect(stale).toContainText("₹27,999.00");
   await expect(panel.locator("[data-pricing-cheapest]")).not.toContainText(
-    "329.99",
+    "27,999",
   );
 
   const unavailable = panel

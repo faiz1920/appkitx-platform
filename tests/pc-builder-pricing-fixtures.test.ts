@@ -28,10 +28,9 @@ describe("synthetic pricing preview fixtures", () => {
     }
   });
 
-  it("provides fresh, aging, stale and unavailable examples per market", () => {
-    const scenario = createSyntheticPricingScenario(
-      new Date("2026-10-31T12:00:00.000Z"),
-    );
+  it("provides fresh, aging, stale and unavailable examples", () => {
+    const now = new Date("2026-10-31T12:00:00.000Z");
+    const scenario = createSyntheticPricingScenario(now);
     const markets = new Map(
       scenario.markets.map((market) => [market.id, market]),
     );
@@ -54,10 +53,29 @@ describe("synthetic pricing preview fixtures", () => {
     expect(
       scenario.offers.some(
         (offer) =>
-          new Date("2026-10-31T12:00:00.000Z").getTime() -
-            new Date(offer.provenance.observedAt).getTime() >
+          now.getTime() - new Date(offer.provenance.observedAt).getTime() >
           24 * 3_600_000,
       ),
     ).toBe(true);
+
+    // India is the first rollout market, so its preview data must exercise
+    // every visible state without borrowing another market's fixtures.
+    const indiaOffers = scenario.offers.filter(
+      (offer) => offer.marketId === "in",
+    );
+    expect(indiaOffers).toHaveLength(4);
+    expect(
+      indiaOffers.some((offer) => offer.availability.state === "out-of-stock"),
+    ).toBe(true);
+    expect(
+      indiaOffers.some(
+        (offer) =>
+          now.getTime() - new Date(offer.provenance.observedAt).getTime() >
+          24 * 3_600_000,
+      ),
+    ).toBe(true);
+    expect(indiaOffers.every((offer) => offer.price.currency === "INR")).toBe(
+      true,
+    );
   });
 });
