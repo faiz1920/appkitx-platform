@@ -12,6 +12,7 @@ export * from "./money";
 export * from "./regions";
 export * from "./india";
 export * from "./identity-audit";
+export * from "./identity-registry";
 export * from "./sellers";
 export * from "./product-matching";
 export * from "./freshness";
