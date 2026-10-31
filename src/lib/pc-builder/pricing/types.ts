@@ -34,6 +34,8 @@ export type PricingIssueCode =
   | "invalid-tax-status"
   | "invalid-match"
   | "invalid-offer"
+  | "duplicate-identifier"
+  | "identity-conflict"
   | "currency-mismatch"
   | "too-long"
   | "too-many"

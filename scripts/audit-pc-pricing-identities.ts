@@ -1,5 +1,5 @@
 /*
- * Read-only catalogue identity audit for India pricing readiness (M10.8).
+ * Read-only verified identity audit for the PC Builder catalogue (M10.9).
  *
  * The pricing domain uses bundler-style extensionless imports, so bundle the
  * script before running it with Node:
@@ -8,50 +8,101 @@
  *     --bundle --platform=node --format=esm --outfile=/tmp/pc-identity-audit.mjs
  *   node /tmp/pc-identity-audit.mjs
  *
- * The audit never writes catalogue data and never claims that an MPN-shaped
- * model string is a verified manufacturer part number.
+ * The audit never writes catalogue data and never treats an MPN-shaped model
+ * string or a provisional record as verified evidence.
  */
 import { catalogue } from "../src/lib/pc-builder/catalogue/index.ts";
-import {
-  auditCatalogueIdentities,
-  catalogueIdentity,
-} from "../src/lib/pc-builder/pricing/index.ts";
+import { identifierRegistry } from "../src/lib/pc-builder/catalogue/identifiers.ts";
+import { auditIdentifierRegistry } from "../src/lib/pc-builder/pricing/index.ts";
 
-const identities = catalogue.map(catalogueIdentity);
-const audit = auditCatalogueIdentities(identities);
+const audit = auditIdentifierRegistry(catalogue, identifierRegistry, {
+  now: new Date(),
+});
 
-const lines = [
-  "PC Builder pricing identity audit",
-  `Total components: ${audit.total}`,
-  `Verified-match ready (explicit MPN or GTIN): ${audit.verifiedMatchReady}`,
-  `Explicit MPN: ${audit.explicitMpn}`,
-  `Explicit GTIN: ${audit.explicitGtin}`,
-  `MPN-shaped model strings (unverified candidates): ${audit.modelMpnShaped}`,
-  `Descriptive model names: ${audit.modelDescriptive}`,
-  `Missing model: ${audit.missingModel}`,
-  `Duplicate normalized models: ${audit.duplicateModels.length}`,
-  "",
-  "By category (total / verified / mpn-shaped / descriptive):",
-];
+if (!audit.ok) {
+  const lines = [
+    "PC Builder pricing identity audit: FAILED",
+    "Registry validation rejected the following records:",
+    ...audit.issues.map(
+      (entry) => `  ${entry.path} [${entry.code}]: ${entry.message}`,
+    ),
+  ];
+  process.stdout.write(`${lines.join("\n")}\n`);
+  process.exitCode = 1;
+} else {
+  const result = audit.value;
+  const lines = [
+    "PC Builder pricing identity audit",
+    `Total components: ${result.totalComponents}`,
+    `Registry records: ${result.totalRecords}`,
+    `Source-verified records: ${result.sourceVerifiedRecords}`,
+    `Provisional records: ${result.provisionalRecords}`,
+    `Human-reviewed records: ${result.humanReviewedRecords}`,
+    `Awaiting human review: ${result.awaitingHumanReviewRecords}`,
+    `Stale source verifications: ${result.staleSourceVerificationRecords}`,
+    `Stale human reviews: ${result.staleHumanReviewRecords}`,
+    `Records with MPN: ${result.mpnRecords}`,
+    `Records with GTIN: ${result.gtinRecords}`,
+    `Records with both MPN and GTIN: ${result.bothRecords}`,
+    `Components with source-verified identity: ${result.sourceVerifiedComponents}`,
+    `Components with source-verified MPN: ${result.sourceVerifiedMpn}`,
+    `Components with source-verified GTIN: ${result.sourceVerifiedGtin}`,
+    `Components with both: ${result.both}`,
+    `Components without source-verified identity: ${result.withoutSourceVerified}`,
+    `Catalogue audit — source-verified matching-ready: ${result.catalogue.verifiedMatchReady}`,
+    `Catalogue audit — explicit MPN identities: ${result.catalogue.explicitMpn}`,
+    `Catalogue audit — explicit GTIN-only identities: ${result.catalogue.explicitGtin}`,
+    `Catalogue audit — MPN-shaped candidates remaining: ${result.catalogue.modelMpnShaped}`,
+    `Catalogue audit — descriptive model names remaining: ${result.catalogue.modelDescriptive}`,
+    `Catalogue audit — duplicate normalized models: ${result.catalogue.duplicateModels.length}`,
+    "",
+    "By category (total / source-verified / MPN / GTIN / both / without / human-reviewed):",
+  ];
 
-for (const category of audit.byCategory) {
-  lines.push(
-    `  ${category.category}: ${category.total} / ${category.verifiedMatchReady} / ${category.modelMpnShaped} / ${category.modelDescriptive}`,
-  );
-}
-
-if (audit.duplicateModels.length > 0) {
-  lines.push("", "Duplicate models:");
-  for (const duplicate of audit.duplicateModels) {
-    lines.push(`  ${duplicate.model}: ${duplicate.componentIds.join(", ")}`);
+  for (const category of result.byCategory) {
+    lines.push(
+      `  ${category.category}: ${category.total} / ${category.sourceVerifiedComponents} / ${category.sourceVerifiedMpn} / ${category.sourceVerifiedGtin} / ${category.both} / ${category.withoutSourceVerified} / ${category.humanReviewedComponents}`,
+    );
   }
+
+  if (result.provisionalComponentIds.length > 0) {
+    lines.push(
+      "",
+      `Provisional components (not eligible for verified matching): ${result.provisionalComponentIds.join(", ")}`,
+    );
+  }
+  if (result.humanReviewedComponentIds.length > 0) {
+    lines.push(
+      "",
+      `Human-reviewed components: ${result.humanReviewedComponentIds.join(", ")}`,
+    );
+  }
+  if (result.staleSourceVerificationComponentIds.length > 0) {
+    lines.push(
+      "",
+      `Stale source-verification components: ${result.staleSourceVerificationComponentIds.join(", ")}`,
+    );
+  }
+  if (result.staleHumanReviewComponentIds.length > 0) {
+    lines.push(
+      "",
+      `Stale human-review components: ${result.staleHumanReviewComponentIds.join(", ")}`,
+    );
+  }
+  if (result.catalogue.duplicateModels.length > 0) {
+    lines.push("", "Duplicate catalogue models:");
+    for (const duplicate of result.catalogue.duplicateModels) {
+      lines.push(`  ${duplicate.model}: ${duplicate.componentIds.join(", ")}`);
+    }
+  }
+
+  lines.push(
+    "",
+    "Matching eligibility is based on source verification, not human approval.",
+    "Every initial record is source-verified and awaiting human review.",
+    "Provisional records and MPN-shaped model strings are never counted as",
+    "verified matches, and no retailer SKU or provider identifier is inferred.",
+  );
+
+  process.stdout.write(`${lines.join("\n")}\n`);
 }
-
-lines.push(
-  "",
-  "No MPN, GTIN or retailer SKU is inferred. Explicit identity metadata must",
-  "come from a manufacturer or verified identifier source before matching can",
-  "produce a verified purchase option.",
-);
-
-process.stdout.write(`${lines.join("\n")}\n`);
