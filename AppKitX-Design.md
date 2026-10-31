@@ -110,6 +110,7 @@ All ratios are computed with the WCAG 2.2 relative-luminance formula for the exa
 | `accent` on `surface-muted`                   | 5.00:1 |
 | `accent` on `accent-subtle` (selected chip)   | 5.25:1 |
 | `accent-hover` on `surface` (hover)           | 7.58:1 |
+| `accent-hover` on `surface-subtle` (hover)    | 7.25:1 |
 | `accent-active` on `surface` (pressed)        | 9.48:1 |
 | `text-on-accent` on `accent` (primary button) | 5.47:1 |
 | `text-on-accent` on `accent-hover`            | 7.58:1 |
@@ -117,11 +118,11 @@ All ratios are computed with the WCAG 2.2 relative-luminance formula for the exa
 
 **Status text** (≥4.5:1):
 
-| Pair                                                        | Ratio                    |
-| ----------------------------------------------------------- | ------------------------ |
-| `success` on `surface` / `success-subtle` / `accent-subtle` | 5.02:1 / 4.79:1 / 4.81:1 |
-| `error` on `surface` / `error-subtle` / `accent-subtle`     | 6.47:1 / 5.91:1 / 6.20:1 |
-| `warning` on `surface` / `warning-subtle`                   | 5.02:1 / 4.84:1          |
+| Pair                                                                       | Ratio                             |
+| -------------------------------------------------------------------------- | --------------------------------- |
+| `success` on `surface` / `success-subtle` / `accent-subtle`                | 5.02:1 / 4.79:1 / 4.81:1          |
+| `error` on `surface` / `surface-subtle` / `error-subtle` / `accent-subtle` | 6.47:1 / 6.18:1 / 5.91:1 / 6.20:1 |
+| `warning` on `surface` / `warning-subtle`                                  | 5.02:1 / 4.84:1                   |
 
 **Non-text boundaries and indicators** (≥3:1):
 

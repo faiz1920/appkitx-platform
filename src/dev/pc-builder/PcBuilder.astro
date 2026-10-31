@@ -14,6 +14,7 @@ import {
   multiSlotCategories,
 } from "../../lib/pc-builder/types";
 import { manufacturerOptions } from "../../lib/pc-builder/ui";
+import { EXAMPLE_MARKETS } from "../../lib/pc-builder/pricing";
 import {
   BUILD_SIZE_OPTIONS,
   COOLING_OPTIONS,
@@ -1344,6 +1345,101 @@ const descriptionFor = (
     </aside>
   </div>
 
+  <section
+    class="mt-8 min-w-0 rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+    aria-labelledby="pricing-preview-heading"
+    data-pricing-preview
+    data-manual-only
+    hidden
+  >
+    <details>
+      <summary
+        id="pricing-preview-heading"
+        class="focus-ring min-h-11 cursor-pointer py-2 text-title text-text-primary"
+      >
+        Pricing architecture preview (synthetic)
+      </summary>
+      <div class="mt-3">
+        <div
+          class="rounded-md border border-warning bg-warning-subtle p-3"
+          role="note"
+        >
+          <p class="text-small text-warning">
+            <strong>Synthetic fixtures only.</strong> These sellers, prices,
+            stock states and matches are development data on example domains.
+            They are not real retailer offers and are never used by the
+            recommendation engine.
+          </p>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_240px]">
+          <div class="min-w-0">
+            <p class="text-label text-text-primary">Preview component</p>
+            <p
+              class="mt-1 break-words text-small text-text-secondary"
+              data-pricing-component
+            ></p>
+            <p class="mt-1 text-caption text-text-muted">
+              Offers are filtered to this catalogue component, market and
+              currency. No cross-currency comparison is performed.
+            </p>
+          </div>
+          <div>
+            <label for="pricing-market" class="text-label text-text-primary">
+              Market
+            </label>
+            <select
+              id="pricing-market"
+              class="input mt-1"
+              aria-describedby="pricing-market-help"
+              data-pricing-market
+            >
+              {EXAMPLE_MARKETS.map((market) => (
+                <option value={market.id}>
+                  {market.name} — {market.defaultCurrency}
+                </option>
+              ))}
+            </select>
+            <p
+              id="pricing-market-help"
+              class="mt-1 text-caption text-text-muted"
+              data-pricing-market-help
+            ></p>
+          </div>
+        </div>
+
+        <div
+          class="mt-4 rounded-md border border-border-subtle bg-surface-subtle p-3"
+          role="status"
+          aria-live="polite"
+          data-pricing-summary
+        ></div>
+
+        <ul class="mt-3 space-y-3" data-pricing-offers></ul>
+
+        <div
+          class="mt-3 rounded-md border border-border-subtle bg-surface-subtle p-4"
+          data-pricing-empty
+          hidden
+        >
+          <p class="text-label text-text-primary">
+            No synthetic offers for this component and market
+          </p>
+          <p class="mt-1 text-caption text-text-muted">
+            This is the expected no-price state. Nothing is substituted and no
+            total is estimated.
+          </p>
+        </div>
+
+        <p class="mt-3 text-micro text-text-muted">
+          No live retailer API, scraping, affiliate link, stock polling or
+          currency conversion is active. Synthetic offers are excluded from
+          recommendation scoring.
+        </p>
+      </div>
+    </details>
+  </section>
+
   <dialog
     class="m-auto max-h-[95vh] w-[min(760px,calc(100vw-2rem))] overflow-hidden rounded-xl border border-border-subtle bg-surface p-0 shadow-lg backdrop:bg-overlay open:flex open:flex-col sm:max-h-[85vh]"
     aria-labelledby="picker-title"
@@ -1737,6 +1833,29 @@ const descriptionFor = (
     type SavedBuildSelection,
     type ShareBuildPayload,
   } from "../../lib/pc-builder/saved-builds";
+  import {
+    AGGREGATE_STATUS_LABELS,
+    AVAILABILITY_LABELS,
+    DEFAULT_FRESHNESS_POLICY,
+    EXCLUSION_REASON_LABELS,
+    FRESHNESS_LABELS,
+    SELLER_TYPE_LABELS,
+    aggregateOffers,
+    assessFreshness,
+    effectiveAvailability,
+    formatMoney,
+    offerCost,
+    type ExcludedOffer,
+    type Market,
+    type Money,
+    type Offer,
+  } from "../../lib/pc-builder/pricing";
+  import {
+    PRICING_DEMO_COMPONENT_LABEL,
+    SYNTHETIC_PRICING_DISCLOSURE,
+    createSyntheticPricingScenario,
+    sellerById,
+  } from "./pricing-fixtures";
 
   const root = document.querySelector<HTMLElement>("[data-pc-builder]");
 
@@ -2051,6 +2170,14 @@ const descriptionFor = (
     const compatibilityHeading = requireEl<HTMLElement>(
       "#compatibility-heading",
     );
+    const pricingComponent = requireEl<HTMLElement>("[data-pricing-component]");
+    const pricingMarket = requireEl<HTMLSelectElement>("[data-pricing-market]");
+    const pricingMarketHelp = requireEl<HTMLElement>(
+      "[data-pricing-market-help]",
+    );
+    const pricingSummary = requireEl<HTMLElement>("[data-pricing-summary]");
+    const pricingOffers = requireEl<HTMLElement>("[data-pricing-offers]");
+    const pricingEmpty = requireEl<HTMLElement>("[data-pricing-empty]");
     const findingsEmpty = requireEl<HTMLElement>("[data-findings-empty]");
     const findingsList = requireEl<HTMLElement>("[data-findings]");
     const missingNote = requireEl<HTMLElement>("[data-missing]");
@@ -2126,6 +2253,8 @@ const descriptionFor = (
       resolution: SavedBuildResolution;
     } | null = null;
     let sharedViewOpen = false;
+    const syntheticPricing = createSyntheticPricingScenario(new Date());
+    let pricingMarketId = pricingMarket.value;
 
     const savedRepository = createSavedBuildRepository(createBrowserStorage());
     const componentLookup = (id: string) => byId.get(id);
@@ -2521,6 +2650,368 @@ const descriptionFor = (
     }
 
     /* ---------------------------------------------------------------- */
+    /* Synthetic pricing preview (M10.7)                                 */
+    /* ---------------------------------------------------------------- */
+
+    function pricingBadge(text: string, tone: string): HTMLElement {
+      return el(
+        "span",
+        `inline-flex items-center rounded-full border px-2.5 py-0.5 text-micro ${tone}`,
+        text,
+      );
+    }
+
+    function pricingMoneyText(amount: Money, market: Market): string {
+      const formatted = formatMoney(amount, market.displayLocale);
+      return formatted.ok ? formatted.value : "—";
+    }
+
+    function pricingDateText(iso: string | null, market: Market): string {
+      if (iso === null) return "Unknown";
+      const date = new Date(iso);
+      if (Number.isNaN(date.getTime())) return "Unknown";
+      return new Intl.DateTimeFormat(market.displayLocale, {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(date);
+    }
+
+    function pricingFreshnessTone(state: string): string {
+      switch (state) {
+        case "fresh":
+          return "border-success bg-success-subtle text-success";
+        case "aging":
+          return "border-warning bg-warning-subtle text-warning";
+        case "stale":
+        case "expired":
+          return "border-error bg-error-subtle text-error";
+        default:
+          return "border-border-strong bg-surface-muted text-text-secondary";
+      }
+    }
+
+    function pricingAvailabilityTone(state: string): string {
+      switch (state) {
+        case "in-stock":
+          return "border-success bg-success-subtle text-success";
+        case "limited":
+        case "preorder":
+        case "backorder":
+          return "border-warning bg-warning-subtle text-warning";
+        case "out-of-stock":
+          return "border-error bg-error-subtle text-error";
+        default:
+          return "border-border-strong bg-surface-muted text-text-secondary";
+      }
+    }
+
+    function renderPricingOffer(
+      offer: Offer,
+      market: Market,
+      excluded: ExcludedOffer | undefined,
+    ): HTMLElement {
+      const seller = sellerById(syntheticPricing.sellers, offer.sellerId);
+      const card = el(
+        "li",
+        "rounded-md border border-border-subtle bg-surface-subtle p-4",
+      );
+      card.dataset.pricingOffer = "";
+      card.dataset.pricingOfferId = offer.id;
+      card.dataset.pricingOfferState =
+        excluded === undefined ? "eligible" : "excluded";
+      card.dataset.pricingCurrency = offer.price.currency;
+      card.dataset.pricingSynthetic = "true";
+
+      const freshness =
+        excluded?.priceFreshness ??
+        assessFreshness(
+          offer.provenance.observedAt,
+          DEFAULT_FRESHNESS_POLICY,
+          new Date(),
+        );
+      const availability =
+        excluded?.effectiveAvailability ??
+        effectiveAvailability(offer, DEFAULT_FRESHNESS_POLICY, new Date())
+          .state;
+      const money = pricingMoneyText(offer.price, market);
+      const isStale =
+        freshness.state === "stale" ||
+        freshness.state === "expired" ||
+        freshness.state === "unknown";
+
+      card.dataset.pricingFreshness = freshness.state;
+      card.dataset.pricingAvailability = availability;
+      card.dataset.pricingPrice = String(offer.price.amountMinor);
+
+      const header = el(
+        "div",
+        "flex flex-wrap items-start justify-between gap-2",
+      );
+      const identity = el("div", "min-w-0");
+      identity.append(
+        el(
+          "p",
+          "text-body-strong text-text-primary",
+          seller?.displayName ?? "Unknown synthetic seller",
+        ),
+        el(
+          "p",
+          "mt-0.5 text-caption text-text-secondary",
+          `${seller ? SELLER_TYPE_LABELS[seller.sellerType] : "Seller type unknown"}${
+            offer.marketplaceId
+              ? ` · via marketplace ${offer.marketplaceId}`
+              : ""
+          }`,
+        ),
+      );
+      const badges = el("div", "flex flex-wrap items-center gap-1.5");
+      badges.append(
+        pricingBadge(
+          "Synthetic",
+          "border-warning bg-warning-subtle text-warning",
+        ),
+        pricingBadge(
+          freshness.state === "fresh"
+            ? "Fresh"
+            : FRESHNESS_LABELS[freshness.state],
+          pricingFreshnessTone(freshness.state),
+        ),
+        pricingBadge(
+          AVAILABILITY_LABELS[availability],
+          pricingAvailabilityTone(availability),
+        ),
+      );
+      header.append(identity, badges);
+      card.append(header);
+
+      const priceLine = el("div", "mt-3 flex flex-wrap items-baseline gap-2");
+      priceLine.append(
+        el(
+          "span",
+          "text-caption text-text-muted",
+          isStale ? "Last observed price" : "Current price",
+        ),
+        el(
+          "span",
+          `font-mono text-title tabular-nums ${
+            isStale ? "text-text-muted line-through" : "text-text-primary"
+          }`,
+          money,
+        ),
+        el(
+          "span",
+          "text-caption text-text-secondary",
+          `${offer.price.currency} · ${market.name}`,
+        ),
+      );
+      card.append(priceLine);
+
+      if (offer.listPrice && offer.discount && !isStale) {
+        card.append(
+          el(
+            "p",
+            "mt-1 text-caption text-text-secondary",
+            `List ${pricingMoneyText(offer.listPrice, market)} · Save ${pricingMoneyText(
+              offer.discount,
+              market,
+            )}${
+              offer.discountPercent === null
+                ? ""
+                : ` (${offer.discountPercent}%)`
+            }`,
+          ),
+        );
+      }
+
+      const cost = offerCost(offer);
+      const costLines = el(
+        "p",
+        "mt-2 break-words text-caption text-text-secondary",
+      );
+      costLines.textContent = [
+        `Shipping: ${
+          offer.shipping === null
+            ? "unknown"
+            : pricingMoneyText(offer.shipping, market)
+        }`,
+        `Tax: ${
+          offer.taxInclusion === "included"
+            ? "included"
+            : offer.taxInclusion === "excluded"
+              ? "excluded"
+              : "inclusion unknown"
+        }`,
+        cost.total === null
+          ? `Total incomplete (${cost.incompleteReasons.join(" ")})`
+          : `${
+              isStale ? "Last observed total" : "Total"
+            }: ${pricingMoneyText(cost.total, market)}`,
+      ].join(" · ");
+      card.append(costLines);
+
+      card.append(
+        el(
+          "p",
+          "mt-1 text-caption text-text-secondary",
+          `Observed ${pricingDateText(offer.provenance.observedAt, market)} · ${
+            offer.provenance.matchStatus === "verified"
+              ? "Verified synthetic match"
+              : "Probable synthetic match"
+          }`,
+        ),
+      );
+
+      if (excluded !== undefined) {
+        const reasons = el("p", "mt-2 break-words text-caption text-error");
+        reasons.textContent = `Not current: ${excluded.reasons
+          .map((reason) => EXCLUSION_REASON_LABELS[reason])
+          .join(" · ")}`;
+        card.append(reasons);
+      }
+
+      const footer = el("div", "mt-2 flex flex-wrap items-center gap-2");
+      const source = el(
+        "a",
+        "focus-ring text-caption text-accent hover:text-accent-hover",
+        "Synthetic source link",
+      );
+      source.href = offer.provenance.productUrl;
+      source.target = "_blank";
+      source.rel = "noopener noreferrer";
+      footer.append(source);
+      if (offer.restrictions.length > 0) {
+        footer.append(
+          el(
+            "span",
+            "text-micro text-text-muted",
+            `${offer.restrictions.length} restriction(s) recorded`,
+          ),
+        );
+      }
+      card.append(footer);
+      return card;
+    }
+
+    function renderPricingPreview(): void {
+      const market =
+        syntheticPricing.markets.find(
+          (entry) => entry.id === pricingMarketId,
+        ) ?? syntheticPricing.markets[0];
+      if (!market) return;
+
+      const selectedCpuId = state.selected.cpu[0];
+      const selectedCpu = selectedCpuId ? byId.get(selectedCpuId) : undefined;
+      const componentId = selectedCpu?.id ?? syntheticPricing.demoComponentId;
+      const componentName = selectedCpu
+        ? componentDisplayName(selectedCpu)
+        : `${PRICING_DEMO_COMPONENT_LABEL} (demo)`;
+      pricingComponent.dataset.pricingComponentId = componentId;
+      pricingComponent.textContent = `${componentName} · ${
+        selectedCpu ? "selected CPU" : "no CPU selected — demo component"
+      }`;
+      pricingMarketHelp.textContent = `${market.countryCode} · default currency ${
+        market.defaultCurrency
+      } · display locale ${market.displayLocale}. Prices are not converted.`;
+
+      const syntheticOffers = syntheticPricing.offers.filter(
+        (offer) => offer.provenance.dataOrigin === "synthetic",
+      );
+      const marketOffers = syntheticOffers.filter(
+        (offer) =>
+          offer.componentId === componentId && offer.marketId === market.id,
+      );
+      const aggregate = aggregateOffers(syntheticOffers, {
+        componentId,
+        marketId: market.id,
+        currency: market.defaultCurrency,
+        now: new Date(),
+        minimumMatch: "verified",
+        availability: "purchasable",
+      });
+      if (!aggregate.ok) {
+        pricingSummary.textContent =
+          "The synthetic pricing aggregate could not be calculated.";
+        pricingOffers.replaceChildren();
+        pricingEmpty.hidden = true;
+        return;
+      }
+
+      const result = aggregate.value;
+      pricingSummary.dataset.pricingTotalCount = String(result.totalCount);
+      pricingSummary.dataset.pricingEligibleCount = String(
+        result.eligibleCount,
+      );
+      pricingSummary.dataset.pricingStatus = result.status;
+      pricingSummary.dataset.pricingCurrency = result.currency;
+      pricingSummary.dataset.pricingMarketId = market.id;
+      pricingSummary.replaceChildren();
+      const summaryLine = el("div", "flex flex-wrap items-center gap-2");
+      summaryLine.append(
+        pricingBadge(
+          `${result.totalCount} recorded offer${result.totalCount === 1 ? "" : "s"}`,
+          "border-border-strong bg-surface text-text-secondary",
+        ),
+        pricingBadge(
+          `${result.eligibleCount} current eligible`,
+          "border-accent-subtle-border bg-accent-subtle text-accent",
+        ),
+        pricingBadge(
+          AGGREGATE_STATUS_LABELS[result.status],
+          result.status === "available"
+            ? "border-success bg-success-subtle text-success"
+            : "border-warning bg-warning-subtle text-warning",
+        ),
+      );
+      pricingSummary.append(summaryLine);
+      if (result.cheapest) {
+        const cheapest = el("p", "mt-2 text-small text-text-primary");
+        cheapest.dataset.pricingCheapest = "";
+        cheapest.textContent = `Cheapest current item price: ${pricingMoneyText(
+          result.cheapest.price,
+          market,
+        )} · ${result.currency}`;
+        pricingSummary.append(cheapest);
+      }
+      if (result.limitations.length > 0) {
+        pricingSummary.append(
+          el(
+            "p",
+            "mt-1 break-words text-caption text-text-muted",
+            result.limitations.join(" "),
+          ),
+        );
+      }
+
+      pricingOffers.replaceChildren();
+      pricingEmpty.hidden = marketOffers.length > 0;
+
+      if (marketOffers.length === 0) {
+        pricingSummary.append(
+          el(
+            "p",
+            "mt-2 text-caption text-text-muted",
+            `${SYNTHETIC_PRICING_DISCLOSURE} No offer is fabricated for this component and market.`,
+          ),
+        );
+        return;
+      }
+
+      for (const offer of result.eligible) {
+        pricingOffers.append(renderPricingOffer(offer, market, undefined));
+      }
+      for (const excluded of result.excluded) {
+        pricingOffers.append(
+          renderPricingOffer(excluded.offer, market, excluded),
+        );
+      }
+      if (result.status === "currency-mismatch") {
+        for (const offer of marketOffers) {
+          pricingOffers.append(renderPricingOffer(offer, market, undefined));
+        }
+      }
+    }
+
+    /* ---------------------------------------------------------------- */
     /* Render orchestration                                              */
     /* ---------------------------------------------------------------- */
 
@@ -2548,6 +3039,7 @@ const descriptionFor = (
         );
       }
       refreshBuildActions();
+      renderPricingPreview();
     }
 
     /* ---------------------------------------------------------------- */
@@ -4719,6 +5211,11 @@ const descriptionFor = (
     mobileReview.addEventListener("click", () => {
       compatibilityHeading.scrollIntoView({ block: "start" });
       compatibilityHeading.focus();
+    });
+
+    pricingMarket.addEventListener("change", () => {
+      pricingMarketId = pricingMarket.value;
+      renderPricingPreview();
     });
 
     requireEl<HTMLButtonElement>("[data-guided-edit]").addEventListener(

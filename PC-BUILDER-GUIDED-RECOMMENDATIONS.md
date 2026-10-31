@@ -181,6 +181,11 @@ Percentages are rounded with the largest-remainder method and always sum to 100.
 Target amounts are `budget × percent`, rounded so they sum to the rounded
 budget. Both are labelled **price-unverified** in the result and UI.
 
+M10.7 adds a separate commercial pricing and availability architecture
+(`PC-BUILDER-M10-7-PRICING-ARCHITECTURE.md`). Its offer and build-purchase
+contracts are not connected to recommendation scoring, and the target
+allocation above remains specification-based rather than a live quote.
+
 ## 6. Compatibility and Unknown handling
 
 - `evaluateBuild` is the final authority. The engine never implements a parallel
