@@ -14,6 +14,18 @@ import {
   multiSlotCategories,
 } from "../../lib/pc-builder/types";
 import { manufacturerOptions } from "../../lib/pc-builder/ui";
+import {
+  BUILD_SIZE_OPTIONS,
+  COOLING_OPTIONS,
+  CPU_BRAND_OPTIONS,
+  CURRENCY_UNIT_LABEL,
+  DEFAULT_QUESTIONNAIRE,
+  GPU_BRAND_OPTIONS,
+  PERFORMANCE_PRIORITY_OPTIONS,
+  RESOLUTION_OPTIONS,
+  UPGRADE_OPTIONS,
+  USE_CASE_OPTIONS,
+} from "../../lib/pc-builder/recommendations/questionnaire";
 
 const manufacturers = manufacturerOptions(catalogue);
 const catalogueNote = `Initial curated catalogue: ${catalogue.length} components from ${manufacturers.length} manufacturers. It is not the full market. Specifications come from manufacturer pages; unpublished values are marked as not published.`;
@@ -31,17 +43,58 @@ const multiSlot = new Set<string>(multiSlotCategories);
       </p>
       <h1 class="mt-1 text-headline text-text-primary">PC Builder</h1>
       <p class="mt-2 max-w-(--layout-prose) text-small text-text-secondary">
-        Assemble a PC from the curated catalogue and check compatibility as you
-        go. Selection changes run every applicable rule immediately.
+        Start with a guided recommendation based on your requirements, or
+        assemble a PC manually and check compatibility as you go. Both modes use
+        the same catalogue, compatibility engine and power estimator.
       </p>
     </div>
     <div class="flex flex-wrap items-center gap-3">
-      <p class="text-caption text-text-muted" data-progress></p>
-      <button type="button" class="btn btn-secondary" data-clear>
+      <p
+        class="text-caption text-text-muted"
+        data-progress
+        data-manual-only
+      ></p>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        data-clear
+        data-manual-only
+      >
         Clear build
       </button>
     </div>
   </div>
+
+  <fieldset class="mt-6">
+    <legend class="sr-only">Builder mode</legend>
+    <div class="segmented max-w-md">
+      <label class="min-h-11">
+        <input
+          type="radio"
+          name="builder-mode"
+          value="guided"
+          class="sr-only"
+          checked
+          data-mode-input
+        />
+        Guided
+      </label>
+      <label class="min-h-11">
+        <input
+          type="radio"
+          name="builder-mode"
+          value="manual"
+          class="sr-only"
+          data-mode-input
+        />
+        Manual
+      </label>
+    </div>
+    <p class="mt-2 text-caption text-text-muted">
+      Guided mode recommends a specification-based configuration. Manual mode
+      exposes the full catalogue and every compatibility finding.
+    </p>
+  </fieldset>
 
   <noscript>
     <p class="mt-6 rounded-lg border border-warning bg-warning-subtle p-4 text-small text-warning">
@@ -50,9 +103,620 @@ const multiSlot = new Set<string>(multiSlotCategories);
     </p>
   </noscript>
 
-  <div class="mt-8 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+  <section
+    class="mt-8"
+    data-mode-panel="guided"
+    aria-labelledby="guided-heading"
+  >
+    <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
+      <div class="min-w-0">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p class="text-overline text-text-muted" data-guided-step>
+              Step 1 of 2 — Requirements
+            </p>
+            <h2
+              id="guided-heading"
+              class="mt-1 text-title text-text-primary"
+              tabindex="-1"
+            >
+              Tell us what you need
+            </h2>
+            <p class="mt-1 max-w-(--layout-prose) text-caption text-text-muted">
+              The questionnaire shapes component priorities and the target
+              allocation. It does not imply live pricing.
+            </p>
+          </div>
+          <span
+            class="inline-flex items-center rounded-full border border-border-strong bg-surface-muted px-3 py-1 text-chip text-text-secondary"
+            data-guided-stage
+          >
+            Requirements
+          </span>
+        </div>
+
+        <form
+          class="mt-4 rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+          data-guided-form
+          novalidate
+        >
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label for="guided-budget" class="text-label text-text-primary">
+                Budget
+              </label>
+              <input
+                id="guided-budget"
+                name="budget"
+                type="number"
+                class="input mt-1 font-mono tabular-nums"
+                min="1"
+                max="1000000"
+                step="1"
+                inputmode="decimal"
+                value={DEFAULT_QUESTIONNAIRE.budget}
+                aria-describedby="guided-budget-help guided-budget-error"
+                data-guided-budget
+              />
+              <p
+                id="guided-budget-help"
+                class="mt-1 text-caption text-text-muted"
+              >
+                {CURRENCY_UNIT_LABEL} — a planning envelope, not a live price.
+              </p>
+              <p
+                id="guided-budget-error"
+                class="field-error mt-1"
+                role="alert"
+                hidden
+                data-guided-budget-error
+              ></p>
+            </div>
+
+            <div>
+              <label for="guided-use-case" class="text-label text-text-primary">
+                Primary use case
+              </label>
+              <select
+                id="guided-use-case"
+                class="input mt-1"
+                data-guided-use-case
+              >
+                {USE_CASE_OPTIONS.map((option) => (
+                  <option
+                    value={option.value}
+                    selected={option.value === DEFAULT_QUESTIONNAIRE.useCase}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <p class="mt-1 text-caption text-text-muted">
+                Sets the component priorities and allocation shape.
+              </p>
+            </div>
+
+            <div>
+              <label
+                for="guided-resolution"
+                class="text-label text-text-primary"
+              >
+                Target resolution
+              </label>
+              <select
+                id="guided-resolution"
+                class="input mt-1"
+                data-guided-resolution
+              >
+                {RESOLUTION_OPTIONS.map((option) => (
+                  <option
+                    value={option.value}
+                    selected={option.value === DEFAULT_QUESTIONNAIRE.resolution}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <p class="mt-1 text-caption text-text-muted">
+                Influences GPU priorities for gaming.
+              </p>
+            </div>
+
+            <div>
+              <label for="guided-priority" class="text-label text-text-primary">
+                Performance priority
+              </label>
+              <select
+                id="guided-priority"
+                class="input mt-1"
+                data-guided-priority
+              >
+                {PERFORMANCE_PRIORITY_OPTIONS.map((option) => (
+                  <option
+                    value={option.value}
+                    selected={
+                      option.value === DEFAULT_QUESTIONNAIRE.performancePriority
+                    }
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <p class="mt-1 text-caption text-text-muted">
+                Adjusts the scoring weights; it does not change compatibility.
+              </p>
+            </div>
+
+            <div>
+              <label
+                for="guided-cpu-brand"
+                class="text-label text-text-primary"
+              >
+                CPU preference
+              </label>
+              <select
+                id="guided-cpu-brand"
+                class="input mt-1"
+                data-guided-cpu-brand
+              >
+                {CPU_BRAND_OPTIONS.map((option) => (
+                  <option
+                    value={option.value}
+                    selected={option.value === DEFAULT_QUESTIONNAIRE.cpuBrand}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label
+                for="guided-gpu-brand"
+                class="text-label text-text-primary"
+              >
+                GPU preference
+              </label>
+              <select
+                id="guided-gpu-brand"
+                class="input mt-1"
+                data-guided-gpu-brand
+              >
+                {GPU_BRAND_OPTIONS.map((option) => (
+                  <option
+                    value={option.value}
+                    selected={option.value === DEFAULT_QUESTIONNAIRE.gpuBrand}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label for="guided-cooling" class="text-label text-text-primary">
+                Cooling preference
+              </label>
+              <select
+                id="guided-cooling"
+                class="input mt-1"
+                data-guided-cooling
+              >
+                {COOLING_OPTIONS.map((option) => (
+                  <option
+                    value={option.value}
+                    selected={option.value === DEFAULT_QUESTIONNAIRE.cooling}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label
+                for="guided-build-size"
+                class="text-label text-text-primary"
+              >
+                Build size
+              </label>
+              <select
+                id="guided-build-size"
+                class="input mt-1"
+                data-guided-build-size
+              >
+                {BUILD_SIZE_OPTIONS.map((option) => (
+                  <option
+                    value={option.value}
+                    selected={option.value === DEFAULT_QUESTIONNAIRE.buildSize}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label for="guided-upgrade" class="text-label text-text-primary">
+                Upgrade flexibility
+              </label>
+              <select
+                id="guided-upgrade"
+                class="input mt-1"
+                data-guided-upgrade
+              >
+                {UPGRADE_OPTIONS.map((option) => (
+                  <option
+                    value={option.value}
+                    selected={
+                      option.value === DEFAULT_QUESTIONNAIRE.upgradeFlexibility
+                    }
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <p
+            class="field-error mt-4"
+            role="alert"
+            hidden
+            data-guided-form-error
+          ></p>
+
+          <div class="mt-5 flex flex-wrap items-center gap-3">
+            <button type="submit" class="btn btn-primary" data-guided-generate>
+              Generate recommendation
+            </button>
+            <button type="button" class="btn btn-secondary" data-guided-reset>
+              Start over
+            </button>
+            <p class="text-caption text-text-muted">
+              Deterministic, specification-based, no account required.
+            </p>
+          </div>
+        </form>
+      </div>
+
+      <aside
+        class="rounded-lg border border-border-subtle bg-surface-subtle p-(--layout-panel-padding)"
+        aria-labelledby="guided-method-heading"
+      >
+        <h2 id="guided-method-heading" class="text-title text-text-primary">
+          How this works
+        </h2>
+        <ul class="mt-3 space-y-3 text-small text-text-secondary">
+          <li>
+            Candidates are filtered by known socket, memory, clearance and
+            connector constraints.
+          </li>
+          <li>
+            Every candidate is checked by the shared compatibility engine.
+            Unknown checks stay visible and are never treated as compatible.
+          </li>
+          <li>
+            Power comes from the existing estimator; missing CPU or GPU power
+            data is reported instead of guessed.
+          </li>
+          <li>
+            The catalogue stores no prices. Budget figures are target
+            allocations, not quotes, and no FPS or benchmark scores are claimed.
+          </li>
+        </ul>
+      </aside>
+    </div>
+
+    <section
+      class="mt-8"
+      data-guided-results
+      aria-labelledby="guided-results-heading"
+      hidden
+    >
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-overline text-text-muted" data-guided-result-step>
+            Step 2 of 2 — Recommendation
+          </p>
+          <h2
+            id="guided-results-heading"
+            class="mt-1 text-headline text-text-primary"
+            tabindex="-1"
+            data-guided-result-headline
+          >
+            Recommendation
+          </h2>
+          <p
+            class="mt-2 max-w-(--layout-prose) text-small text-text-secondary"
+            data-guided-result-explanation
+          ></p>
+        </div>
+        <span
+          class="inline-flex items-center rounded-full border px-3 py-1 text-chip"
+          data-guided-result-status
+        >
+          Recommendation
+        </span>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <button type="button" class="btn btn-secondary" data-guided-edit>
+          Edit requirements
+        </button>
+        <button type="button" class="btn btn-secondary" data-guided-regenerate>
+          Regenerate
+        </button>
+        <button type="button" class="btn btn-primary" data-guided-transfer>
+          Transfer to manual builder
+        </button>
+        <button type="button" class="btn btn-ghost" data-guided-start-over>
+          Start over
+        </button>
+      </div>
+
+      <p class="mt-2 text-caption text-warning" data-guided-stale hidden>
+        Requirements changed — generate again to update this recommendation.
+      </p>
+
+      <dl
+        class="mt-4 flex flex-wrap gap-2 text-caption"
+        data-guided-result-meta
+      ></dl>
+
+      <div
+        class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2"
+        data-guided-selections
+      ></div>
+
+      <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <section
+          class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+          aria-labelledby="guided-compat-heading"
+        >
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <h3 id="guided-compat-heading" class="text-title text-text-primary">
+              Compatibility
+            </h3>
+            <span
+              class="inline-flex items-center rounded-full border px-3 py-1 text-chip"
+              data-guided-compat-badge
+            >
+              Unknown
+            </span>
+          </div>
+          <p
+            class="mt-2 text-caption text-text-secondary"
+            data-guided-compat-message
+          ></p>
+          <dl class="mt-4 grid grid-cols-2 gap-2">
+            <div class="rounded-md bg-surface-subtle px-3 py-2">
+              <dt class="text-micro text-text-muted">Incompatible</dt>
+              <dd
+                class="font-mono text-title tabular-nums text-text-primary"
+                data-guided-count-incompatible
+              >
+                0
+              </dd>
+            </div>
+            <div class="rounded-md bg-surface-subtle px-3 py-2">
+              <dt class="text-micro text-text-muted">Warnings</dt>
+              <dd
+                class="font-mono text-title tabular-nums text-text-primary"
+                data-guided-count-warning
+              >
+                0
+              </dd>
+            </div>
+            <div class="rounded-md bg-surface-subtle px-3 py-2">
+              <dt class="text-micro text-text-muted">Unknown</dt>
+              <dd
+                class="font-mono text-title tabular-nums text-text-primary"
+                data-guided-count-unknown
+              >
+                0
+              </dd>
+            </div>
+            <div class="rounded-md bg-surface-subtle px-3 py-2">
+              <dt class="text-micro text-text-muted">Compatible</dt>
+              <dd
+                class="font-mono text-title tabular-nums text-text-primary"
+                data-guided-count-compatible
+              >
+                0
+              </dd>
+            </div>
+          </dl>
+          <div class="mt-3 space-y-4" data-guided-compat-groups></div>
+        </section>
+
+        <section
+          class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+          aria-labelledby="guided-power-heading"
+        >
+          <h3 id="guided-power-heading" class="text-title text-text-primary">
+            Power estimate
+          </h3>
+          <p class="mt-1 text-caption text-text-muted">
+            Reuses the M10.1 estimator and its documented assumptions.
+          </p>
+          <dl class="mt-4 space-y-2 text-small">
+            <div class="flex items-baseline justify-between gap-3">
+              <dt class="text-text-secondary">Estimated load</dt>
+              <dd
+                class="font-mono text-title tabular-nums text-text-primary"
+                data-guided-power-load
+              >
+                —
+              </dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-3">
+              <dt class="text-text-secondary">Recommended PSU</dt>
+              <dd class="font-mono tabular-nums" data-guided-power-recommended>
+                —
+              </dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-3">
+              <dt class="text-text-secondary">Selected PSU</dt>
+              <dd class="font-mono tabular-nums" data-guided-power-selected>
+                —
+              </dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-3">
+              <dt class="text-text-secondary">Headroom</dt>
+              <dd class="font-mono tabular-nums" data-guided-power-headroom>
+                —
+              </dd>
+            </div>
+          </dl>
+          <div data-guided-power-missing hidden>
+            <p class="mt-3 text-caption text-text-secondary">
+              Missing information
+            </p>
+            <ul
+              class="mt-1 space-y-1 text-micro text-text-muted"
+              data-guided-power-missing-list
+            ></ul>
+          </div>
+          <details class="mt-3">
+            <summary class="focus-ring cursor-pointer text-label text-accent hover:text-accent-hover">
+              Power assumptions
+            </summary>
+            <ul
+              class="mt-2 space-y-1 text-micro text-text-muted"
+              data-guided-power-assumptions
+            ></ul>
+          </details>
+        </section>
+
+        <section
+          class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+          aria-labelledby="guided-budget-heading"
+        >
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <h3 id="guided-budget-heading" class="text-title text-text-primary">
+              Budget allocation
+            </h3>
+            <span class="inline-flex items-center rounded-full border border-warning bg-warning-subtle px-3 py-1 text-chip text-warning">
+              Price data unverified
+            </span>
+          </div>
+          <p
+            class="mt-2 text-caption text-text-secondary"
+            data-guided-budget-summary
+          ></p>
+          <div class="mt-3 overflow-x-auto">
+            <table class="w-full text-caption">
+              <caption class="sr-only">
+                Target budget allocation by component category
+              </caption>
+              <thead>
+                <tr class="text-overline text-text-muted">
+                  <th scope="col" class="py-1 pr-2 text-left font-semibold">
+                    Category
+                  </th>
+                  <th scope="col" class="py-1 pr-2 text-right font-semibold">
+                    Share
+                  </th>
+                  <th scope="col" class="py-1 text-right font-semibold">
+                    Target
+                  </th>
+                </tr>
+              </thead>
+              <tbody data-guided-budget-rows></tbody>
+            </table>
+          </div>
+          <p
+            class="mt-3 text-micro text-text-muted"
+            data-guided-budget-note
+          ></p>
+        </section>
+
+        <section
+          class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+          aria-labelledby="guided-confidence-heading"
+        >
+          <h3
+            id="guided-confidence-heading"
+            class="text-title text-text-primary"
+          >
+            Data confidence
+          </h3>
+          <p
+            class="mt-2 text-small text-text-primary"
+            data-guided-confidence-label
+          >
+            —
+          </p>
+          <ul
+            class="mt-2 space-y-1 text-caption text-text-secondary"
+            data-guided-confidence-reasons
+          ></ul>
+          <div data-guided-confidence-missing hidden>
+            <p class="mt-3 text-caption text-text-secondary">
+              Unpublished specifications
+            </p>
+            <p
+              class="mt-1 text-micro text-text-muted"
+              data-guided-confidence-missing-list
+            ></p>
+          </div>
+          <div data-guided-confidence-unknown hidden>
+            <p class="mt-3 text-caption text-text-secondary">
+              Critical checks that remain Unknown
+            </p>
+            <ul
+              class="mt-1 space-y-1 text-micro text-text-muted"
+              data-guided-confidence-unknown-list
+            ></ul>
+          </div>
+        </section>
+      </div>
+
+      <section
+        class="mt-4 rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+        aria-labelledby="guided-unmet-heading"
+        data-guided-unmet
+        hidden
+      >
+        <h3 id="guided-unmet-heading" class="text-title text-text-primary">
+          Preferences not fully met
+        </h3>
+        <ul
+          class="mt-2 space-y-1 text-small text-text-secondary"
+          data-guided-unmet-list
+        ></ul>
+      </section>
+
+      <section
+        class="mt-4 rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+        aria-labelledby="guided-limitations-heading"
+      >
+        <h3
+          id="guided-limitations-heading"
+          class="text-title text-text-primary"
+        >
+          Limitations
+        </h3>
+        <ul
+          class="mt-2 space-y-1 text-small text-text-secondary"
+          data-guided-limitations
+        ></ul>
+      </section>
+    </section>
+  </section>
+
+  <div
+    class="mt-8 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]"
+    data-mode-panel="manual"
+    hidden
+  >
     <section aria-labelledby="components-heading" class="min-w-0">
-      <h2 id="components-heading" class="text-title text-text-primary">
+      <h2
+        id="components-heading"
+        class="text-title text-text-primary"
+        tabindex="-1"
+      >
         Components
       </h2>
       <p class="mt-1 text-caption text-text-muted">
@@ -325,6 +989,32 @@ const multiSlot = new Set<string>(multiSlotCategories);
     </div>
   </dialog>
 
+  <dialog
+    class="m-auto w-[min(520px,calc(100vw-2rem))] rounded-xl border border-border-subtle bg-surface p-0 shadow-lg backdrop:bg-overlay"
+    aria-labelledby="transfer-title"
+    aria-describedby="transfer-message"
+    data-transfer-dialog
+  >
+    <div class="p-5">
+      <h2 id="transfer-title" class="text-title text-text-primary">
+        Replace the existing manual build?
+      </h2>
+      <p
+        id="transfer-message"
+        class="mt-2 text-small text-text-secondary"
+        data-transfer-message
+      ></p>
+      <div class="mt-5 flex flex-wrap justify-end gap-2">
+        <button type="button" class="btn btn-secondary" data-transfer-cancel>
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" data-transfer-confirm>
+          Replace build
+        </button>
+      </div>
+    </div>
+  </dialog>
+
   <div
     class="sr-only"
     role="status"
@@ -346,6 +1036,7 @@ const multiSlot = new Set<string>(multiSlotCategories);
     removeComponent,
     resolveBuild,
     selectComponent,
+    selectedCount,
     type BuildState,
   } from "../../lib/pc-builder/build-state";
   import {
@@ -377,6 +1068,30 @@ const multiSlot = new Set<string>(multiSlotCategories);
     sortedFindings,
     specLines,
   } from "../../lib/pc-builder/ui";
+  import {
+    ALTERNATIVE_KIND_LABELS,
+    CURRENCY_UNIT,
+    DATA_CONFIDENCE_LABELS,
+    DEFAULT_QUESTIONNAIRE,
+    PERFORMANCE_PRIORITY_OPTIONS,
+    RESOLUTION_OPTIONS,
+    USE_CASE_OPTIONS,
+    RECOMMENDATION_STATUS_DESCRIPTIONS,
+    RECOMMENDATION_STATUS_LABELS,
+    canTransferRecommendation,
+    formatBudget,
+    manualBuildHasSelection,
+    recommendBuild,
+    recommendationToBuildState,
+    replaceSelectedComponent,
+    validateQuestionnaire,
+    type AlternativeSelection,
+    type CompatibilityFinding,
+    type ComponentSelection,
+    type RecommendationQuestionnaire,
+    type RecommendationResult,
+    type RecommendationStatus,
+  } from "../../lib/pc-builder/recommendations";
 
   const root = document.querySelector<HTMLElement>("[data-pc-builder]");
 
@@ -423,6 +1138,140 @@ const multiSlot = new Set<string>(multiSlotCategories);
     const progress = requireEl<HTMLElement>("[data-progress]");
     const clearButton = requireEl<HTMLButtonElement>("[data-clear]");
     const announcer = requireEl<HTMLElement>("[data-announcer]");
+
+    const modeInputs = Array.from(
+      root.querySelectorAll<HTMLInputElement>("[data-mode-input]"),
+    );
+    const guidedPanel = requireEl<HTMLElement>('[data-mode-panel="guided"]');
+    const manualPanel = requireEl<HTMLElement>('[data-mode-panel="manual"]');
+    const manualOnly = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-manual-only]"),
+    );
+    const guidedHeading = requireEl<HTMLElement>("#guided-heading");
+    const manualHeading = requireEl<HTMLElement>("#components-heading");
+    const guidedForm = requireEl<HTMLFormElement>("[data-guided-form]");
+    const budgetInput = requireEl<HTMLInputElement>("[data-guided-budget]");
+    const budgetError = requireEl<HTMLElement>("[data-guided-budget-error]");
+    const formError = requireEl<HTMLElement>("[data-guided-form-error]");
+    const useCaseSelect = requireEl<HTMLSelectElement>(
+      "[data-guided-use-case]",
+    );
+    const resolutionSelect = requireEl<HTMLSelectElement>(
+      "[data-guided-resolution]",
+    );
+    const prioritySelect = requireEl<HTMLSelectElement>(
+      "[data-guided-priority]",
+    );
+    const cpuBrandSelect = requireEl<HTMLSelectElement>(
+      "[data-guided-cpu-brand]",
+    );
+    const gpuBrandSelect = requireEl<HTMLSelectElement>(
+      "[data-guided-gpu-brand]",
+    );
+    const coolingSelect = requireEl<HTMLSelectElement>("[data-guided-cooling]");
+    const buildSizeSelect = requireEl<HTMLSelectElement>(
+      "[data-guided-build-size]",
+    );
+    const upgradeSelect = requireEl<HTMLSelectElement>("[data-guided-upgrade]");
+    const guidedStep = requireEl<HTMLElement>("[data-guided-step]");
+    const guidedStage = requireEl<HTMLElement>("[data-guided-stage]");
+    const guidedResults = requireEl<HTMLElement>("[data-guided-results]");
+    const resultStep = requireEl<HTMLElement>("[data-guided-result-step]");
+    const resultHeadline = requireEl<HTMLElement>(
+      "[data-guided-result-headline]",
+    );
+    const resultExplanation = requireEl<HTMLElement>(
+      "[data-guided-result-explanation]",
+    );
+    const resultStatus = requireEl<HTMLElement>("[data-guided-result-status]");
+    const resultMeta = requireEl<HTMLElement>("[data-guided-result-meta]");
+    const guidedSelections = requireEl<HTMLElement>("[data-guided-selections]");
+    const guidedStale = requireEl<HTMLElement>("[data-guided-stale]");
+    const guidedTransfer = requireEl<HTMLButtonElement>(
+      "[data-guided-transfer]",
+    );
+    const guidedCompatibilityBadge = requireEl<HTMLElement>(
+      "[data-guided-compat-badge]",
+    );
+    const guidedCompatibilityMessage = requireEl<HTMLElement>(
+      "[data-guided-compat-message]",
+    );
+    const guidedCountIncompatible = requireEl<HTMLElement>(
+      "[data-guided-count-incompatible]",
+    );
+    const guidedCountWarning = requireEl<HTMLElement>(
+      "[data-guided-count-warning]",
+    );
+    const guidedCountUnknown = requireEl<HTMLElement>(
+      "[data-guided-count-unknown]",
+    );
+    const guidedCountCompatible = requireEl<HTMLElement>(
+      "[data-guided-count-compatible]",
+    );
+    const guidedCompatibilityGroups = requireEl<HTMLElement>(
+      "[data-guided-compat-groups]",
+    );
+    const guidedPowerLoad = requireEl<HTMLElement>("[data-guided-power-load]");
+    const guidedPowerRecommended = requireEl<HTMLElement>(
+      "[data-guided-power-recommended]",
+    );
+    const guidedPowerSelected = requireEl<HTMLElement>(
+      "[data-guided-power-selected]",
+    );
+    const guidedPowerHeadroom = requireEl<HTMLElement>(
+      "[data-guided-power-headroom]",
+    );
+    const guidedPowerMissing = requireEl<HTMLElement>(
+      "[data-guided-power-missing]",
+    );
+    const guidedPowerMissingList = requireEl<HTMLElement>(
+      "[data-guided-power-missing-list]",
+    );
+    const guidedPowerAssumptions = requireEl<HTMLElement>(
+      "[data-guided-power-assumptions]",
+    );
+    const guidedBudgetSummary = requireEl<HTMLElement>(
+      "[data-guided-budget-summary]",
+    );
+    const guidedBudgetRows = requireEl<HTMLElement>(
+      "[data-guided-budget-rows]",
+    );
+    const guidedBudgetNote = requireEl<HTMLElement>(
+      "[data-guided-budget-note]",
+    );
+    const guidedConfidenceLabel = requireEl<HTMLElement>(
+      "[data-guided-confidence-label]",
+    );
+    const guidedConfidenceReasons = requireEl<HTMLElement>(
+      "[data-guided-confidence-reasons]",
+    );
+    const guidedConfidenceMissing = requireEl<HTMLElement>(
+      "[data-guided-confidence-missing]",
+    );
+    const guidedConfidenceMissingList = requireEl<HTMLElement>(
+      "[data-guided-confidence-missing-list]",
+    );
+    const guidedConfidenceUnknown = requireEl<HTMLElement>(
+      "[data-guided-confidence-unknown]",
+    );
+    const guidedConfidenceUnknownList = requireEl<HTMLElement>(
+      "[data-guided-confidence-unknown-list]",
+    );
+    const guidedUnmet = requireEl<HTMLElement>("[data-guided-unmet]");
+    const guidedUnmetList = requireEl<HTMLElement>("[data-guided-unmet-list]");
+    const guidedLimitations = requireEl<HTMLElement>(
+      "[data-guided-limitations]",
+    );
+    const transferDialog = requireEl<HTMLDialogElement>(
+      "[data-transfer-dialog]",
+    );
+    const transferMessage = requireEl<HTMLElement>("[data-transfer-message]");
+    const transferCancel = requireEl<HTMLButtonElement>(
+      "[data-transfer-cancel]",
+    );
+    const transferConfirm = requireEl<HTMLButtonElement>(
+      "[data-transfer-confirm]",
+    );
     const overallBadge = requireEl<HTMLElement>("[data-overall-badge]");
     const overallMessage = requireEl<HTMLElement>("[data-overall-message]");
     const findingsEmpty = requireEl<HTMLElement>("[data-findings-empty]");
@@ -480,6 +1329,7 @@ const multiSlot = new Set<string>(multiSlotCategories);
 
     let state: BuildState = createEmptyBuild();
     let activeCategory: ComponentCategory | null = null;
+    let currentRecommendation: RecommendationResult | null = null;
 
     function statusBadge(status: CompatibilityStatus): HTMLElement {
       const badge = el(
@@ -674,10 +1524,12 @@ const multiSlot = new Set<string>(multiSlotCategories);
       );
       header.append(
         statusBadge(status),
-        el("span", "font-mono text-micro text-text-muted", ruleId),
+        el("span", "break-all font-mono text-micro text-text-muted", ruleId),
       );
       item.append(header);
-      item.append(el("p", "mt-2 text-small text-text-primary", message));
+      item.append(
+        el("p", "mt-2 break-words text-small text-text-primary", message),
+      );
 
       const affected = componentIds
         .map((id) => {
@@ -698,7 +1550,7 @@ const multiSlot = new Set<string>(multiSlotCategories);
         item.append(
           el(
             "p",
-            "mt-1 text-caption text-text-secondary",
+            "mt-1 break-words text-caption text-text-secondary",
             `Recommended: ${recommendation}`,
           ),
         );
@@ -865,6 +1717,679 @@ const multiSlot = new Set<string>(multiSlotCategories);
           `${announcement} ${overallStatusLabel(report, resolved.components.length)}. ${report.summary.counts.incompatible} incompatible, ${report.summary.counts.warning} warning(s), ${report.summary.counts.unknown} unknown finding(s).`,
         );
       }
+    }
+
+    /* ---------------------------------------------------------------- */
+    /* Guided recommendation                                             */
+    /* ---------------------------------------------------------------- */
+
+    const RECOMMENDATION_BADGE_CLASS: Record<RecommendationStatus, string> = {
+      recommended: "border-success bg-success-subtle text-success",
+      "recommended-with-caveats":
+        "border-warning bg-warning-subtle text-warning",
+      "needs-review": "border-warning bg-warning-subtle text-warning",
+      "no-safe-recommendation": "border-error bg-error-subtle text-error",
+      "invalid-questionnaire":
+        "border-border-strong bg-surface-muted text-text-secondary",
+    };
+
+    function optionLabel<T extends string>(
+      options: readonly { value: T; label: string }[],
+      value: T,
+    ): string {
+      return options.find((option) => option.value === value)?.label ?? value;
+    }
+
+    function setRecommendationBadge(
+      element: HTMLElement,
+      status: RecommendationStatus,
+    ): void {
+      element.className =
+        "inline-flex items-center rounded-full border px-3 py-1 text-chip " +
+        RECOMMENDATION_BADGE_CLASS[status];
+      element.textContent = RECOMMENDATION_STATUS_LABELS[status];
+      element.title = RECOMMENDATION_STATUS_DESCRIPTIONS[status];
+    }
+
+    function setMode(mode: "guided" | "manual", focus = false): void {
+      guidedPanel.hidden = mode !== "guided";
+      manualPanel.hidden = mode !== "manual";
+      for (const input of modeInputs) input.checked = input.value === mode;
+      for (const node of manualOnly) node.hidden = mode !== "manual";
+      if (mode === "manual" && focus) {
+        renderAll();
+        manualHeading.focus();
+      } else if (mode === "guided" && focus) {
+        guidedHeading.focus();
+      }
+    }
+
+    function showBudgetError(message: string): void {
+      budgetError.textContent = message;
+      budgetError.hidden = message === "";
+      if (message === "") {
+        budgetInput.removeAttribute("aria-invalid");
+      } else {
+        budgetInput.setAttribute("aria-invalid", "true");
+      }
+    }
+
+    function showFormError(message: string): void {
+      formError.textContent = message;
+      formError.hidden = message === "";
+    }
+
+    function setDefaultQuestionnaire(): void {
+      budgetInput.value = String(DEFAULT_QUESTIONNAIRE.budget);
+      useCaseSelect.value = DEFAULT_QUESTIONNAIRE.useCase;
+      resolutionSelect.value = DEFAULT_QUESTIONNAIRE.resolution;
+      prioritySelect.value = DEFAULT_QUESTIONNAIRE.performancePriority;
+      cpuBrandSelect.value = DEFAULT_QUESTIONNAIRE.cpuBrand;
+      gpuBrandSelect.value = DEFAULT_QUESTIONNAIRE.gpuBrand;
+      coolingSelect.value = DEFAULT_QUESTIONNAIRE.cooling;
+      buildSizeSelect.value = DEFAULT_QUESTIONNAIRE.buildSize;
+      upgradeSelect.value = DEFAULT_QUESTIONNAIRE.upgradeFlexibility;
+    }
+
+    function markRequirementsDirty(): void {
+      if (currentRecommendation) guidedStale.hidden = false;
+    }
+
+    function readQuestionnaire(): RecommendationQuestionnaire {
+      return {
+        budget: Number(budgetInput.value),
+        currency: CURRENCY_UNIT,
+        useCase: useCaseSelect.value as RecommendationQuestionnaire["useCase"],
+        resolution:
+          resolutionSelect.value as RecommendationQuestionnaire["resolution"],
+        performancePriority:
+          prioritySelect.value as RecommendationQuestionnaire["performancePriority"],
+        cpuBrand:
+          cpuBrandSelect.value as RecommendationQuestionnaire["cpuBrand"],
+        gpuBrand:
+          gpuBrandSelect.value as RecommendationQuestionnaire["gpuBrand"],
+        cooling: coolingSelect.value as RecommendationQuestionnaire["cooling"],
+        buildSize:
+          buildSizeSelect.value as RecommendationQuestionnaire["buildSize"],
+        upgradeFlexibility:
+          upgradeSelect.value as RecommendationQuestionnaire["upgradeFlexibility"],
+      };
+    }
+
+    function metaItem(label: string, value: string): HTMLElement {
+      const item = el(
+        "div",
+        "rounded-full border border-border-subtle bg-surface px-3 py-1 text-caption",
+      );
+      item.append(
+        el("dt", "sr-only", label),
+        el("dd", "text-text-secondary", `${label}: ${value}`),
+      );
+      return item;
+    }
+
+    function selectionCard(selection: ComponentSelection): HTMLElement {
+      const card = el(
+        "article",
+        "rounded-lg border border-border-subtle bg-surface p-4",
+      );
+      card.dataset.guidedSelection = selection.category;
+      card.tabIndex = -1;
+      const categoryLabel = CATEGORY_LABELS[selection.category];
+      const headingId = `guided-selection-${selection.category}`;
+      card.setAttribute("aria-labelledby", headingId);
+
+      const header = el(
+        "div",
+        "flex flex-wrap items-start justify-between gap-2",
+      );
+      const title = el("div", "min-w-0");
+      title.append(
+        el("p", "text-overline text-text-muted", categoryLabel),
+        el(
+          "h3",
+          "mt-1 text-body-strong text-text-primary",
+          `${selection.manufacturer} ${selection.name}`,
+        ),
+        el("p", "font-mono text-caption text-text-muted", selection.model),
+      );
+      title.querySelector("h3")?.setAttribute("id", headingId);
+      const badges = el("div", "flex flex-wrap items-center gap-2");
+      badges.append(
+        statusBadge(selection.compatibilityStatus),
+        el(
+          "span",
+          "rounded-full border border-border-subtle bg-surface-muted px-2.5 py-0.5 font-mono text-micro text-text-secondary",
+          `Selection fit ${Math.round(selection.score)}/100`,
+        ),
+      );
+      header.append(title, badges);
+      card.append(header);
+
+      if (selection.keySpecs.length > 0) {
+        const specs = el(
+          "dl",
+          "mt-3 grid grid-cols-1 gap-x-4 gap-y-1 text-caption sm:grid-cols-2",
+        );
+        for (const line of selection.keySpecs) {
+          const row = el("div", "flex gap-1");
+          row.append(
+            el("dt", "shrink-0 text-text-muted", `${line.label}:`),
+            el("dd", "text-text-secondary", line.value),
+          );
+          specs.append(row);
+        }
+        card.append(specs);
+      }
+
+      card.append(
+        el("p", "mt-3 text-small text-text-secondary", selection.rationale),
+      );
+
+      const actionable = selection.compatibilityFindings.filter(
+        (finding) => finding.status !== "compatible",
+      );
+      if (actionable.length > 0) {
+        const findings = el("div", "mt-3");
+        findings.append(
+          el("h4", "text-label text-text-primary", "Compatibility notes"),
+        );
+        const list = el("ul", "mt-1 space-y-1");
+        for (const finding of actionable) {
+          const item = el("li", "break-words text-caption text-text-secondary");
+          const badge = statusBadge(finding.status);
+          item.append(badge, document.createTextNode(` ${finding.message}`));
+          list.append(item);
+        }
+        findings.append(list);
+        card.append(findings);
+      }
+
+      if (selection.limitations.length > 0) {
+        const limitations = el("div", "mt-3");
+        limitations.append(
+          el("h4", "text-label text-text-primary", "Known limitations"),
+        );
+        const list = el(
+          "ul",
+          "mt-1 space-y-1 text-caption text-text-secondary",
+        );
+        for (const limitation of selection.limitations) {
+          list.append(el("li", "", limitation));
+        }
+        limitations.append(list);
+        card.append(limitations);
+      }
+
+      const alternatives = el("div", "mt-4 border-t border-border-subtle pt-3");
+      alternatives.append(
+        el("h4", "text-label text-text-primary", "Alternatives"),
+      );
+      if (selection.alternatives.length === 0) {
+        alternatives.append(
+          el(
+            "p",
+            "mt-1 text-caption text-text-muted",
+            "No compatible alternatives in the current catalogue.",
+          ),
+        );
+      } else {
+        alternatives.append(
+          el(
+            "p",
+            "mt-1 text-micro text-text-muted",
+            "All alternatives are rechecked against the current build. Prices are unavailable, so cost is not compared.",
+          ),
+        );
+        const list = el("ul", "mt-2 space-y-2");
+        for (const alternative of selection.alternatives) {
+          list.append(alternativeItem(selection.category, alternative));
+        }
+        alternatives.append(list);
+      }
+      card.append(alternatives);
+      return card;
+    }
+
+    function alternativeItem(
+      category: ComponentCategory,
+      alternative: AlternativeSelection,
+    ): HTMLElement {
+      const item = el(
+        "li",
+        "rounded-md border border-border-subtle bg-surface-subtle p-3",
+      );
+      const use = button(
+        `${ALTERNATIVE_KIND_LABELS[alternative.kind]}: ${alternative.manufacturer} ${alternative.name}`,
+        "btn btn-secondary h-auto min-h-11 w-full items-start justify-start whitespace-normal py-2 text-left",
+      );
+      use.setAttribute(
+        "aria-label",
+        `Use ${ALTERNATIVE_KIND_LABELS[alternative.kind].toLowerCase()} ${alternative.manufacturer} ${alternative.name} as ${CATEGORY_LABELS[category]}`,
+      );
+      use.addEventListener("click", () =>
+        applyAlternative(category, alternative.componentId),
+      );
+      item.append(
+        use,
+        el("p", "mt-1 text-micro text-text-muted", alternative.tradeoff),
+      );
+      if (alternative.unknownChecks.length > 0) {
+        item.append(
+          el(
+            "p",
+            "mt-1 text-micro text-text-muted",
+            `${alternative.unknownChecks.length} Unknown check(s) remain for this alternative.`,
+          ),
+        );
+      }
+      if (alternative.limitations.length > 0) {
+        item.append(
+          el(
+            "p",
+            "mt-1 text-micro text-text-muted",
+            `Limitations: ${alternative.limitations.slice(0, 2).join(" ")}`,
+          ),
+        );
+      }
+      return item;
+    }
+
+    function findingGroup(
+      title: string,
+      findings: readonly CompatibilityFinding[],
+    ): HTMLElement | null {
+      if (findings.length === 0) return null;
+      const group = el("div");
+      group.append(
+        el(
+          "h4",
+          "text-label text-text-primary",
+          `${title} (${findings.length})`,
+        ),
+      );
+      const list = el("ul", "mt-1 divide-y divide-border-subtle");
+      for (const finding of findings) {
+        list.append(
+          findingItem(
+            finding.ruleId,
+            finding.status,
+            finding.message,
+            finding.componentIds,
+            finding.recommendation,
+          ),
+        );
+      }
+      group.append(list);
+      return group;
+    }
+
+    function renderCompatibilityPanel(result: RecommendationResult): void {
+      const compatibility = result.compatibility;
+      if (!compatibility) {
+        guidedCompatibilityBadge.className =
+          "inline-flex items-center rounded-full border px-3 py-1 text-chip border-border-strong bg-surface-muted text-text-secondary";
+        guidedCompatibilityBadge.textContent = "Unavailable";
+        guidedCompatibilityMessage.textContent =
+          "Compatibility data is unavailable for this result.";
+        guidedCountIncompatible.textContent = "0";
+        guidedCountWarning.textContent = "0";
+        guidedCountUnknown.textContent = "0";
+        guidedCountCompatible.textContent = "0";
+        guidedCompatibilityGroups.replaceChildren();
+        return;
+      }
+
+      setRecommendationBadge(guidedCompatibilityBadge, result.status);
+      guidedCompatibilityBadge.textContent =
+        COMPATIBILITY_STATUS_LABELS[compatibility.status];
+      guidedCompatibilityBadge.className =
+        "inline-flex items-center rounded-full border px-3 py-1 text-chip " +
+        STATUS_BADGE_CLASS[compatibility.status];
+      const message =
+        compatibility.status === "incompatible"
+          ? "At least one confirmed conflict needs attention."
+          : compatibility.status === "warning"
+            ? "The build works, with one or more considerations."
+            : compatibility.criticalUnknowns.length > 0
+              ? "A critical compatibility check could not be verified from the available data."
+              : compatibility.unknownChecks.length > 0
+                ? "Known constraints pass; review the Unknown checks before purchasing."
+                : "All applicable checks passed with published data.";
+      guidedCompatibilityMessage.textContent = message;
+      guidedCountIncompatible.textContent = String(
+        compatibility.confirmedIncompatibilities.length,
+      );
+      guidedCountWarning.textContent = String(compatibility.warnings.length);
+      guidedCountUnknown.textContent = String(
+        compatibility.unknownChecks.length,
+      );
+      guidedCountCompatible.textContent = String(
+        compatibility.compatibleCheckCount,
+      );
+
+      const groups: (HTMLElement | null)[] = [
+        findingGroup(
+          "Confirmed incompatibilities",
+          compatibility.confirmedIncompatibilities,
+        ),
+        findingGroup("Critical Unknown checks", compatibility.criticalUnknowns),
+        findingGroup("Warnings", compatibility.warnings),
+        findingGroup(
+          "Other Unknown checks",
+          compatibility.unknownChecks.filter(
+            (finding) =>
+              !compatibility.criticalUnknowns.some(
+                (critical) => critical.ruleId === finding.ruleId,
+              ),
+          ),
+        ),
+      ];
+      guidedCompatibilityGroups.replaceChildren(
+        ...groups.filter((group): group is HTMLElement => group !== null),
+      );
+      if (guidedCompatibilityGroups.childElementCount === 0) {
+        guidedCompatibilityGroups.append(
+          el(
+            "p",
+            "text-caption text-text-muted",
+            "No incompatibilities, warnings or Unknown checks were reported.",
+          ),
+        );
+      }
+    }
+
+    function renderPowerPanel(result: RecommendationResult): void {
+      const power = result.power;
+      if (!power) {
+        guidedPowerLoad.textContent = "—";
+        guidedPowerRecommended.textContent = "—";
+        guidedPowerSelected.textContent = "—";
+        guidedPowerHeadroom.textContent = "—";
+        guidedPowerMissing.hidden = true;
+        guidedPowerMissingList.replaceChildren();
+        guidedPowerAssumptions.replaceChildren();
+        return;
+      }
+      guidedPowerLoad.textContent = formatPower(power.estimatedLoadW);
+      guidedPowerRecommended.textContent = formatPower(power.recommendedPsuW);
+      guidedPowerSelected.textContent = formatPower(power.selectedPsuW);
+      guidedPowerHeadroom.textContent =
+        power.headroomW === null
+          ? "—"
+          : `${formatPower(Math.abs(power.headroomW))} ${
+              power.headroomW >= 0 ? "above" : "below"
+            } the recommended PSU${
+              power.headroomPercent === null
+                ? ""
+                : ` (${Math.abs(power.headroomPercent)}%)`
+            }`;
+
+      guidedPowerMissingList.replaceChildren();
+      for (const item of power.missingInformation) {
+        guidedPowerMissingList.append(el("li", "", item));
+      }
+      guidedPowerMissing.hidden = power.missingInformation.length === 0;
+
+      guidedPowerAssumptions.replaceChildren();
+      for (const assumption of power.assumptions) {
+        guidedPowerAssumptions.append(el("li", "", assumption));
+      }
+      if (power.assumptions.length === 0) {
+        guidedPowerAssumptions.append(
+          el("li", "", "No power assumptions were reported."),
+        );
+      }
+    }
+
+    function renderBudgetPanel(result: RecommendationResult): void {
+      const budget = result.budget;
+      if (!budget) {
+        guidedBudgetSummary.textContent =
+          "Budget allocation is unavailable for this result.";
+        guidedBudgetRows.replaceChildren();
+        guidedBudgetNote.textContent = "";
+        return;
+      }
+      guidedBudgetSummary.textContent = `Budget: ${formatBudget(
+        budget.budget,
+        budget.currency,
+      )}. Target allocation only; no component prices are stored.`;
+      guidedBudgetRows.replaceChildren();
+      for (const allocation of budget.allocations) {
+        const row = el("tr");
+        row.append(
+          el(
+            "td",
+            "py-1 pr-2 text-text-secondary",
+            CATEGORY_LABELS[allocation.category],
+          ),
+          el(
+            "td",
+            "py-1 pr-2 text-right font-mono tabular-nums text-text-secondary",
+            `${allocation.percent}%`,
+          ),
+          el(
+            "td",
+            "py-1 text-right font-mono tabular-nums text-text-primary",
+            `${allocation.targetAmount} ${budget.currency === CURRENCY_UNIT ? "units" : budget.currency}`,
+          ),
+        );
+        guidedBudgetRows.append(row);
+      }
+      guidedBudgetNote.textContent = budget.note;
+    }
+
+    function renderConfidencePanel(result: RecommendationResult): void {
+      const confidence = result.confidence;
+      if (!confidence) {
+        guidedConfidenceLabel.textContent = "Data confidence unavailable.";
+        guidedConfidenceReasons.replaceChildren();
+        guidedConfidenceMissing.hidden = true;
+        guidedConfidenceUnknown.hidden = true;
+        return;
+      }
+      guidedConfidenceLabel.textContent =
+        DATA_CONFIDENCE_LABELS[confidence.level];
+      guidedConfidenceReasons.replaceChildren();
+      for (const reason of confidence.reasons) {
+        guidedConfidenceReasons.append(el("li", "", reason));
+      }
+      guidedConfidenceMissingList.textContent =
+        confidence.missingSpecifications.join(", ");
+      guidedConfidenceMissing.hidden =
+        confidence.missingSpecifications.length === 0;
+      guidedConfidenceUnknownList.replaceChildren();
+      for (const check of confidence.unknownCriticalChecks) {
+        guidedConfidenceUnknownList.append(el("li", "", check));
+      }
+      guidedConfidenceUnknown.hidden =
+        confidence.unknownCriticalChecks.length === 0;
+    }
+
+    function applyAlternative(
+      category: ComponentCategory,
+      componentId: string,
+    ): void {
+      if (!currentRecommendation) return;
+      const updated = replaceSelectedComponent(
+        currentRecommendation,
+        category,
+        componentId,
+      );
+      if (updated === currentRecommendation) {
+        announce(
+          "That alternative is not compatible with the current recommendation.",
+        );
+        return;
+      }
+      currentRecommendation = updated;
+      renderGuidedResult(updated);
+      const card = document.querySelector<HTMLElement>(
+        `[data-guided-selection="${category}"]`,
+      );
+      card?.focus();
+      announce(
+        `Replaced ${CATEGORY_LABELS[category]}. ${RECOMMENDATION_STATUS_LABELS[updated.status]}. ${updated.compatibility?.unknownChecks.length ?? 0} unknown check(s) remain.`,
+      );
+    }
+
+    function renderGuidedResult(result: RecommendationResult): void {
+      resultHeadline.textContent = result.summary.headline;
+      resultExplanation.textContent = result.summary.explanation;
+      setRecommendationBadge(resultStatus, result.status);
+      resultStep.textContent = "Step 2 of 2 — Recommendation";
+
+      resultMeta.replaceChildren(
+        metaItem(
+          "Use case",
+          optionLabel(USE_CASE_OPTIONS, result.summary.useCase),
+        ),
+        metaItem(
+          "Resolution",
+          optionLabel(RESOLUTION_OPTIONS, result.summary.resolution),
+        ),
+        metaItem(
+          "Priority",
+          optionLabel(
+            PERFORMANCE_PRIORITY_OPTIONS,
+            result.summary.performancePriority,
+          ),
+        ),
+        metaItem(
+          "Budget",
+          formatBudget(result.summary.budget, result.summary.currency),
+        ),
+        metaItem("Price data", "Unverified — no component prices stored"),
+      );
+
+      guidedSelections.replaceChildren();
+      for (const entry of result.selections) {
+        guidedSelections.append(selectionCard(entry));
+      }
+      guidedSelections.hidden = result.selections.length === 0;
+      guidedTransfer.disabled = !canTransferRecommendation(result);
+
+      renderCompatibilityPanel(result);
+      renderPowerPanel(result);
+      renderBudgetPanel(result);
+      renderConfidencePanel(result);
+
+      guidedLimitations.replaceChildren();
+      for (const limitation of result.limitations) {
+        guidedLimitations.append(el("li", "", limitation));
+      }
+      if (result.limitations.length === 0) {
+        guidedLimitations.append(
+          el("li", "", "No additional limitations were reported."),
+        );
+      }
+
+      guidedUnmetList.replaceChildren();
+      for (const preference of result.unmetPreferences) {
+        guidedUnmetList.append(el("li", "", preference));
+      }
+      guidedUnmet.hidden = result.unmetPreferences.length === 0;
+    }
+
+    function generateRecommendation(): void {
+      const questionnaire = readQuestionnaire();
+      const validation = validateQuestionnaire(questionnaire);
+      showBudgetError("");
+      showFormError("");
+      if (!validation.ok) {
+        const budgetIssue = validation.issues.find(
+          (issue) => issue.field === "budget",
+        );
+        if (budgetIssue) {
+          showBudgetError(budgetIssue.message);
+          budgetInput.focus();
+        }
+        const otherMessages = validation.issues
+          .filter((issue) => issue.field !== "budget")
+          .map((issue) => issue.message);
+        if (otherMessages.length > 0) {
+          showFormError(otherMessages.join(" "));
+        }
+        announce(
+          "Recommendation not generated. Check the highlighted requirements.",
+        );
+        return;
+      }
+
+      const result = recommendBuild(questionnaire);
+      if (result.status === "invalid-questionnaire") {
+        guidedResults.hidden = true;
+        showFormError(
+          result.issues.map((issue) => issue.message).join(" ") ||
+            "The requirements could not be validated.",
+        );
+        announce(
+          "Recommendation not generated. Check the highlighted requirements.",
+        );
+        return;
+      }
+      currentRecommendation = result;
+      guidedStale.hidden = true;
+      guidedStep.textContent = "Step 2 of 2 — Recommendation";
+      guidedStage.textContent = "Recommendation";
+      guidedResults.hidden = false;
+      renderGuidedResult(result);
+      resultHeadline.focus();
+
+      if (result.status === "no-safe-recommendation") {
+        announce(`No safe recommendation. ${result.summary.explanation}`);
+      } else {
+        announce(
+          `Recommendation generated. ${RECOMMENDATION_STATUS_LABELS[result.status]}. ${result.compatibility?.unknownChecks.length ?? 0} unknown check(s), ${result.compatibility?.criticalUnknowns.length ?? 0} critical.`,
+        );
+      }
+    }
+
+    function resetGuided(): void {
+      currentRecommendation = null;
+      guidedResults.hidden = true;
+      guidedStale.hidden = true;
+      guidedStep.textContent = "Step 1 of 2 — Requirements";
+      guidedStage.textContent = "Requirements";
+      guidedTransfer.disabled = true;
+      showBudgetError("");
+      showFormError("");
+      setDefaultQuestionnaire();
+      budgetInput.focus();
+      announce(
+        "Requirements reset. Enter your preferences and generate a recommendation.",
+      );
+    }
+
+    function applyTransfer(nextState: BuildState): void {
+      state = nextState;
+      transferDialog.close();
+      setMode("manual", false);
+      renderAll("Transferred the guided recommendation to the manual builder.");
+      manualHeading.focus();
+    }
+
+    function requestTransfer(): void {
+      if (
+        !currentRecommendation ||
+        !canTransferRecommendation(currentRecommendation)
+      ) {
+        return;
+      }
+      const nextState = recommendationToBuildState(currentRecommendation);
+      if (selectedCount(nextState) === 0) return;
+      if (manualBuildHasSelection(state)) {
+        transferMessage.textContent = `The manual builder already has ${selectedCount(
+          state,
+        )} component(s) selected. Transferring this recommendation will replace them with ${selectedCount(
+          nextState,
+        )} recommended component(s). Continue?`;
+        transferDialog.showModal();
+        transferCancel.focus();
+        return;
+      }
+      applyTransfer(nextState);
     }
 
     /* ---------------------------------------------------------------- */
@@ -1096,6 +2621,66 @@ const multiSlot = new Set<string>(multiSlotCategories);
       renderAll("Build cleared.");
     });
 
+    for (const input of modeInputs) {
+      input.addEventListener("change", () => {
+        if (input.checked) {
+          setMode(input.value === "manual" ? "manual" : "guided", true);
+        }
+      });
+    }
+
+    guidedForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      generateRecommendation();
+    });
+    budgetInput.addEventListener("input", () => {
+      showBudgetError("");
+      markRequirementsDirty();
+    });
+    for (const select of [
+      useCaseSelect,
+      resolutionSelect,
+      prioritySelect,
+      cpuBrandSelect,
+      gpuBrandSelect,
+      coolingSelect,
+      buildSizeSelect,
+      upgradeSelect,
+    ]) {
+      select.addEventListener("change", markRequirementsDirty);
+    }
+
+    requireEl<HTMLButtonElement>("[data-guided-edit]").addEventListener(
+      "click",
+      () => {
+        budgetInput.focus();
+        budgetInput.scrollIntoView({ block: "center" });
+        announce(
+          "Edit the requirements, then generate the recommendation again.",
+        );
+      },
+    );
+    requireEl<HTMLButtonElement>("[data-guided-regenerate]").addEventListener(
+      "click",
+      () => guidedForm.requestSubmit(),
+    );
+    requireEl<HTMLButtonElement>("[data-guided-start-over]").addEventListener(
+      "click",
+      () => resetGuided(),
+    );
+    guidedTransfer.addEventListener("click", () => requestTransfer());
+
+    transferCancel.addEventListener("click", () => transferDialog.close());
+    transferConfirm.addEventListener("click", () => {
+      if (!currentRecommendation) return;
+      applyTransfer(recommendationToBuildState(currentRecommendation));
+    });
+    transferDialog.addEventListener("click", (event) => {
+      if (event.target === transferDialog) transferDialog.close();
+    });
+
+    setDefaultQuestionnaire();
+    setMode("guided", false);
     renderAll();
   }
 </script>
