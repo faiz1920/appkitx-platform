@@ -3,11 +3,18 @@ import { catalogue, componentById } from "../src/lib/pc-builder/catalogue";
 import { identifierRegistry } from "../src/lib/pc-builder/catalogue/identifiers";
 import {
   auditIdentifierRegistry,
+  auditIdentifierUniqueness,
   buildCatalogueIdentities,
+  buildIdentityReviewQueue,
+  computeIdentityFingerprint,
+  effectiveHumanReviewStatus,
+  HUMAN_REVIEW_REQUIRED_FOR_PRODUCTION,
+  isHumanReviewCurrent,
   matchProductWithRegistry,
   validateIdentifierRegistry,
   type CatalogueIdentifierRecord,
   type CatalogueIdentifierRegistry,
+  type HumanReview,
   type ProviderProductRecord,
 } from "../src/lib/pc-builder/pricing";
 
@@ -40,6 +47,25 @@ function sourceRecord(
     gtin: null,
     region: null,
     ...overrides,
+  };
+}
+
+function reviewedRecord(
+  record: CatalogueIdentifierRecord,
+  overrides: Partial<HumanReview> = {},
+): CatalogueIdentifierRecord {
+  return {
+    ...record,
+    humanReview: {
+      status: "reviewed",
+      reviewer: "test-human-reviewer",
+      reviewedAt: "2026-10-31T16:55:00.000Z",
+      notes: "Focused test-only human review.",
+      sourceUrl: record.source.url,
+      evidenceFingerprint: computeIdentityFingerprint(record),
+      previousStatus: "not-reviewed",
+      ...overrides,
+    },
   };
 }
 
@@ -567,34 +593,14 @@ describe("registry validation", () => {
     expect(futureSourceVerification.ok).toBe(false);
 
     const reviewedWithoutReviewer = validateIdentifierRegistry(
-      withRecords([
-        {
-          ...base,
-          humanReview: {
-            status: "reviewed",
-            reviewer: "",
-            reviewedAt: "2026-10-31T16:55:00.000Z",
-            notes: null,
-          },
-        },
-      ]),
+      withRecords([reviewedRecord(base, { reviewer: "" })]),
       catalogue,
       { now: AUDIT_NOW },
     );
     expect(reviewedWithoutReviewer.ok).toBe(false);
 
     const reviewedWithoutDate = validateIdentifierRegistry(
-      withRecords([
-        {
-          ...base,
-          humanReview: {
-            status: "reviewed",
-            reviewer: "test-human-reviewer",
-            reviewedAt: null,
-            notes: null,
-          },
-        },
-      ]),
+      withRecords([reviewedRecord(base, { reviewedAt: null })]),
       catalogue,
       { now: AUDIT_NOW },
     );
@@ -617,25 +623,20 @@ describe("registry validation", () => {
     );
     expect(notReviewedWithReviewer.ok).toBe(false);
 
+    const sourceMoved = {
+      ...base,
+      source: {
+        ...base.source,
+        accessedAt: "2026-10-31T17:00:00.000Z",
+      },
+      sourceVerification: {
+        ...base.sourceVerification,
+        verifiedAt: "2026-10-31T17:05:00.000Z",
+      },
+    };
     const reviewBeforeSourceVerification = validateIdentifierRegistry(
       withRecords([
-        {
-          ...base,
-          source: {
-            ...base.source,
-            accessedAt: "2026-10-31T17:00:00.000Z",
-          },
-          sourceVerification: {
-            ...base.sourceVerification,
-            verifiedAt: "2026-10-31T17:05:00.000Z",
-          },
-          humanReview: {
-            status: "reviewed",
-            reviewer: "test-human-reviewer",
-            reviewedAt: "2026-10-31T17:04:00.000Z",
-            notes: null,
-          },
-        },
+        reviewedRecord(sourceMoved, { reviewedAt: "2026-10-31T17:04:00.000Z" }),
       ]),
       catalogue,
       { now: AUDIT_NOW },
@@ -643,17 +644,7 @@ describe("registry validation", () => {
     expect(reviewBeforeSourceVerification.ok).toBe(false);
 
     const reviewed = validateIdentifierRegistry(
-      withRecords([
-        {
-          ...base,
-          humanReview: {
-            status: "reviewed",
-            reviewer: "test-human-reviewer",
-            reviewedAt: "2026-10-31T16:55:00.000Z",
-            notes: "Focused test-only human review.",
-          },
-        },
-      ]),
+      withRecords([reviewedRecord(base)]),
       catalogue,
       { now: AUDIT_NOW },
     );
@@ -664,6 +655,9 @@ describe("registry validation", () => {
         reviewer: "test-human-reviewer",
         reviewedAt: "2026-10-31T16:55:00.000Z",
         notes: "Focused test-only human review.",
+        sourceUrl: base.source.url,
+        evidenceFingerprint: computeIdentityFingerprint(base),
+        previousStatus: "not-reviewed",
       });
     }
   });
@@ -859,19 +853,15 @@ describe("registry matching integration", () => {
   });
 
   it("does not let human review promote a provisional source record", () => {
-    const record = sourceRecord("ram-corsair-vengeance-32gb-ddr5-6000", {
-      manufacturerPartNumber: "CMK32GX5M2B6000C30",
-      sourceVerification: {
-        ...firstRecord().sourceVerification,
-        status: "provisional",
-      },
-      humanReview: {
-        status: "reviewed",
-        reviewer: "test-human-reviewer",
-        reviewedAt: "2026-10-31T16:55:00.000Z",
-        notes: "Test-only human review.",
-      },
-    });
+    const record = reviewedRecord(
+      sourceRecord("ram-corsair-vengeance-32gb-ddr5-6000", {
+        manufacturerPartNumber: "CMK32GX5M2B6000C30",
+        sourceVerification: {
+          ...firstRecord().sourceVerification,
+          status: "provisional",
+        },
+      }),
+    );
     const registry = withRecords([record]);
     const identities = buildCatalogueIdentities(catalogue, registry);
     expect(identities.ok).toBe(true);
@@ -980,15 +970,11 @@ describe("registry audit reporting", () => {
   });
 
   it("distinguishes source verification from human review", () => {
-    const record = sourceRecord("ram-corsair-vengeance-32gb-ddr5-6000", {
-      manufacturerPartNumber: "CMK32GX5M2B6000C30",
-      humanReview: {
-        status: "reviewed",
-        reviewer: "test-human-reviewer",
-        reviewedAt: "2026-10-31T16:55:00.000Z",
-        notes: "Test-only human review.",
-      },
-    });
+    const record = reviewedRecord(
+      sourceRecord("ram-corsair-vengeance-32gb-ddr5-6000", {
+        manufacturerPartNumber: "CMK32GX5M2B6000C30",
+      }),
+    );
     const registry = withRecords([record]);
     const audit = auditIdentifierRegistry(catalogue, registry, {
       now: AUDIT_NOW,
@@ -1021,7 +1007,7 @@ describe("registry audit reporting", () => {
     const base = sourceRecord("ram-corsair-vengeance-32gb-ddr5-6000", {
       manufacturerPartNumber: "CMK32GX5M2B6000C30",
     });
-    const record = {
+    const oldEvidence = {
       ...base,
       source: {
         ...base.source,
@@ -1031,13 +1017,10 @@ describe("registry audit reporting", () => {
         ...base.sourceVerification,
         verifiedAt: "2025-01-02T00:00:00.000Z",
       },
-      humanReview: {
-        status: "reviewed" as const,
-        reviewer: "test-human-reviewer",
-        reviewedAt: "2025-01-03T00:00:00.000Z",
-        notes: null,
-      },
     };
+    const record = reviewedRecord(oldEvidence, {
+      reviewedAt: "2025-01-03T00:00:00.000Z",
+    });
     const audit = auditIdentifierRegistry(catalogue, withRecords([record]), {
       now: AUDIT_NOW,
     });
@@ -1066,5 +1049,395 @@ describe("registry audit reporting", () => {
       now: AUDIT_NOW,
     });
     expect(audit.ok).toBe(false);
+  });
+});
+
+describe("human review state model", () => {
+  const base = () =>
+    sourceRecord("ram-corsair-vengeance-32gb-ddr5-6000", {
+      manufacturerPartNumber: "CMK32GX5M2B6000C30",
+    });
+
+  const allStatuses = [
+    "not-reviewed",
+    "reviewed",
+    "needs-correction",
+    "rejected",
+    "needs-revalidation",
+  ] as const;
+
+  it("accepts all five states with the required metadata", () => {
+    for (const status of allStatuses) {
+      const record =
+        status === "not-reviewed" ? base() : reviewedRecord(base(), { status });
+      const result = validateIdentifierRegistry(
+        withRecords([record]),
+        catalogue,
+        {
+          now: AUDIT_NOW,
+        },
+      );
+      expect(result.ok, status).toBe(true);
+    }
+  });
+
+  it("rejects invalid review combinations", () => {
+    const cases = [
+      reviewedRecord(base(), { evidenceFingerprint: null }),
+      reviewedRecord(base(), { status: "needs-correction", notes: "" }),
+      reviewedRecord(base(), {
+        status: "rejected",
+        previousStatus: "rejected",
+      }),
+      reviewedRecord(base(), {
+        reviewer: base().sourceVerification.verifiedBy,
+      }),
+      reviewedRecord(base(), {
+        sourceUrl: "https://www.corsair.com/us/en/p/memory/other",
+      }),
+      {
+        ...base(),
+        humanReview: {
+          status: "not-reviewed" as const,
+          reviewer: null,
+          reviewedAt: null,
+          notes: null,
+          evidenceFingerprint: computeIdentityFingerprint(base()),
+        },
+      },
+    ];
+
+    for (const record of cases) {
+      const result = validateIdentifierRegistry(
+        withRecords([record]),
+        catalogue,
+        {
+          now: AUDIT_NOW,
+        },
+      );
+      expect(result.ok).toBe(false);
+    }
+  });
+
+  it("invalidates a review when fingerprinted evidence changes", () => {
+    const record = reviewedRecord(base());
+    expect(isHumanReviewCurrent(record)).toBe(true);
+    expect(effectiveHumanReviewStatus(record)).toBe("reviewed");
+
+    const movedSource = "https://www.corsair.com/us/en/p/memory/other";
+    const mutations = [
+      { ...record, manufacturerPartNumber: "CMK32GX5M2B6000C31" },
+      { ...record, gtin: "9010018100396" },
+      { ...record, region: "US" },
+      {
+        ...record,
+        source: { ...record.source, url: movedSource },
+        humanReview: { ...record.humanReview, sourceUrl: movedSource },
+      },
+      {
+        ...record,
+        source: {
+          ...record.source,
+          accessedAt: "2026-10-31T16:53:35.000Z",
+        },
+      },
+    ];
+
+    for (const mutated of mutations) {
+      expect(isHumanReviewCurrent(mutated)).toBe(false);
+      expect(effectiveHumanReviewStatus(mutated)).toBe("needs-revalidation");
+      const validated = validateIdentifierRegistry(
+        withRecords([mutated]),
+        catalogue,
+        { now: AUDIT_NOW },
+      );
+      expect(validated.ok).toBe(true);
+    }
+
+    const audit = auditIdentifierRegistry(
+      catalogue,
+      withRecords([mutations[0]!]),
+      { now: AUDIT_NOW },
+    );
+    expect(audit.ok).toBe(true);
+    if (!audit.ok) return;
+    expect(audit.value.humanReviewedRecords).toBe(0);
+    expect(audit.value.needsRevalidationRecords).toBe(1);
+    expect(audit.value.invalidatedReviewRecords).toBe(1);
+    expect(audit.value.invalidatedReviewComponentIds).toEqual([
+      "ram-corsair-vengeance-32gb-ddr5-6000",
+    ]);
+  });
+
+  it("does not invalidate review for formatting-only changes", () => {
+    const record = reviewedRecord(base());
+    const changed = {
+      ...record,
+      source: { ...record.source, name: "Renamed source" },
+      sourceVerification: {
+        ...record.sourceVerification,
+        notes: "Updated process note.",
+      },
+      humanReview: {
+        ...record.humanReview,
+        notes: "Updated review note.",
+      },
+    };
+
+    expect(computeIdentityFingerprint(changed)).toBe(
+      record.humanReview.evidenceFingerprint,
+    );
+    expect(isHumanReviewCurrent(changed)).toBe(true);
+  });
+
+  it("does not change matching eligibility for any review state", () => {
+    for (const status of allStatuses) {
+      const record =
+        status === "not-reviewed" ? base() : reviewedRecord(base(), { status });
+      const match = matchProductWithRegistry(
+        providerProduct({
+          manufacturer: "Corsair",
+          manufacturerPartNumber: "CMK32GX5M2B6000C30",
+          category: "ram",
+        }),
+        catalogue,
+        withRecords([record]),
+      );
+      expect(match.ok).toBe(true);
+      if (!match.ok) return;
+      expect(match.value.status, status).toBe("verified");
+      expect(match.value.componentId).toBe(
+        "ram-corsair-vengeance-32gb-ddr5-6000",
+      );
+    }
+    expect(HUMAN_REVIEW_REQUIRED_FOR_PRODUCTION).toBe(false);
+  });
+
+  it("keeps matching stable under identity mutations", () => {
+    const baseline = matchProductWithRegistry(
+      providerProduct({
+        manufacturer: "Corsair",
+        manufacturerPartNumber: "CMK32GX5M2B6000C30",
+        category: "ram",
+      }),
+      catalogue,
+      identifierRegistry,
+    );
+    expect(baseline.ok).toBe(true);
+    if (!baseline.ok) return;
+    expect(baseline.value.status).toBe("verified");
+    expect(baseline.value.confidence).toBe(100);
+
+    const oneCharacterMpn = matchProductWithRegistry(
+      providerProduct({
+        manufacturer: "Corsair",
+        manufacturerPartNumber: "CMK32GX5M2B6000C31",
+        category: "ram",
+      }),
+      catalogue,
+      identifierRegistry,
+    );
+    expect(oneCharacterMpn.ok).toBe(true);
+    if (oneCharacterMpn.ok) {
+      expect(oneCharacterMpn.value.status).not.toBe("verified");
+    }
+
+    const wrongManufacturer = matchProductWithRegistry(
+      providerProduct({
+        manufacturer: "Intel",
+        manufacturerPartNumber: "CMK32GX5M2B6000C30",
+        category: "ram",
+      }),
+      catalogue,
+      identifierRegistry,
+    );
+    expect(wrongManufacturer.ok).toBe(true);
+    if (wrongManufacturer.ok) {
+      expect(wrongManufacturer.value.status).not.toBe("verified");
+    }
+
+    // Exact MPN plus manufacturer is category-independent; exact GTIN keeps
+    // the pre-existing category-agnostic fallback. Neither behaviour changes
+    // in M10.11.
+    const missingCategoryMpn = matchProductWithRegistry(
+      providerProduct({
+        manufacturer: "Corsair",
+        manufacturerPartNumber: "CMK32GX5M2B6000C30",
+        category: undefined as never,
+      }),
+      catalogue,
+      identifierRegistry,
+    );
+    expect(missingCategoryMpn.ok).toBe(true);
+    if (missingCategoryMpn.ok) {
+      expect(missingCategoryMpn.value.status).toBe("verified");
+      expect(missingCategoryMpn.value.confidence).toBe(100);
+    }
+
+    const missingCategoryGtin = matchProductWithRegistry(
+      providerProduct({
+        manufacturer: "NZXT",
+        gtin: "5056547205502",
+        category: undefined as never,
+      }),
+      catalogue,
+      identifierRegistry,
+    );
+    expect(missingCategoryGtin.ok).toBe(true);
+    if (missingCategoryGtin.ok) {
+      expect(missingCategoryGtin.value.status).toBe("verified");
+      expect(missingCategoryGtin.value.confidence).toBe(97);
+    }
+  });
+
+  it("reports every review state and invalidated reviews in the audit", () => {
+    const entries = [
+      sourceRecord("cpu-amd-ryzen-5-5600", {
+        manufacturerPartNumber: "STATE-MPN-1",
+      }),
+      reviewedRecord(
+        sourceRecord("cpu-amd-ryzen-7-5700x", {
+          manufacturerPartNumber: "STATE-MPN-2",
+        }),
+      ),
+      reviewedRecord(
+        sourceRecord("cpu-amd-ryzen-7-5800x3d", {
+          manufacturerPartNumber: "STATE-MPN-3",
+        }),
+        { status: "needs-correction" },
+      ),
+      reviewedRecord(
+        sourceRecord("cpu-amd-ryzen-9-5950x", {
+          manufacturerPartNumber: "STATE-MPN-4",
+        }),
+        { status: "rejected" },
+      ),
+      reviewedRecord(
+        sourceRecord("cpu-amd-ryzen-5-7600", {
+          manufacturerPartNumber: "STATE-MPN-5",
+        }),
+        { status: "needs-revalidation" },
+      ),
+      {
+        ...reviewedRecord(
+          sourceRecord("cpu-amd-ryzen-7-7700", {
+            manufacturerPartNumber: "STATE-MPN-6",
+          }),
+        ),
+        manufacturerPartNumber: "STATE-MPN-6-CHANGED",
+      },
+    ];
+
+    const audit = auditIdentifierRegistry(catalogue, withRecords(entries), {
+      now: AUDIT_NOW,
+    });
+    expect(audit.ok).toBe(true);
+    if (!audit.ok) return;
+    expect(audit.value.humanReviewedRecords).toBe(1);
+    expect(audit.value.awaitingHumanReviewRecords).toBe(1);
+    expect(audit.value.needsCorrectionRecords).toBe(1);
+    expect(audit.value.rejectedRecords).toBe(1);
+    expect(audit.value.needsRevalidationRecords).toBe(2);
+    expect(audit.value.invalidatedReviewRecords).toBe(1);
+    expect(audit.value.duplicateMpnRecords).toBe(0);
+    expect(audit.value.duplicateGtinRecords).toBe(0);
+    expect(audit.value.conflictingComponentRecords).toBe(0);
+    expect(audit.value.humanReviewedComponentIds).toEqual([
+      "cpu-amd-ryzen-7-5700x",
+    ]);
+    expect(audit.value.needsRevalidationComponentIds).toEqual([
+      "cpu-amd-ryzen-5-7600",
+      "cpu-amd-ryzen-7-7700",
+    ]);
+  });
+});
+
+describe("identity review queue and uniqueness", () => {
+  it("queues all 50 source-verified identities in priority order", () => {
+    const queue = buildIdentityReviewQueue(catalogue, identifierRegistry, {
+      now: AUDIT_NOW,
+    });
+    expect(queue.ok).toBe(true);
+    if (!queue.ok) return;
+
+    expect(queue.value.total).toBe(50);
+    expect(queue.value.byStatus).toEqual([
+      { status: "not-reviewed", total: 50 },
+    ]);
+    expect(
+      queue.value.entries.every(
+        (entry) =>
+          entry.humanReviewStatus === "not-reviewed" &&
+          entry.declaredHumanReviewStatus === "not-reviewed" &&
+          entry.reviewCurrent,
+      ),
+    ).toBe(true);
+
+    const categories = queue.value.entries.map((entry) => entry.category);
+    const firstIndex = (category: (typeof categories)[number]) =>
+      categories.indexOf(category);
+    expect(firstIndex("cpu")).toBe(0);
+    expect(firstIndex("psu")).toBeGreaterThan(firstIndex("cpu"));
+    expect(firstIndex("case")).toBeGreaterThan(firstIndex("psu"));
+    expect(firstIndex("ram")).toBeGreaterThan(firstIndex("case"));
+    expect(firstIndex("cooler")).toBeGreaterThan(firstIndex("ram"));
+    expect(firstIndex("storage")).toBeGreaterThan(firstIndex("cooler"));
+    expect(firstIndex("case-fan")).toBeGreaterThan(firstIndex("storage"));
+    expect(categories).not.toContain("gpu");
+    expect(categories).not.toContain("motherboard");
+
+    const cpu = queue.value.entries.find(
+      (entry) => entry.componentId === "cpu-amd-ryzen-5-5600",
+    );
+    expect(cpu?.concerns).toContain("No GTIN evidence.");
+    expect(cpu?.sourceUrl).toBe(
+      "https://www.amd.com/en/products/specifications/processors.html",
+    );
+
+    const psu = queue.value.entries.find(
+      (entry) => entry.componentId === "psu-corsair-cv650",
+    );
+    expect(psu?.concerns).toContain("Regional identity limited to US.");
+  });
+
+  it("counts duplicate MPNs, GTINs and component conflicts", () => {
+    const first = sourceRecord("cpu-amd-ryzen-5-5600", {
+      manufacturerPartNumber: "DUP-MPN-1",
+    });
+    const duplicateMpn = sourceRecord("cpu-amd-ryzen-7-5700x", {
+      manufacturerPartNumber: "DUP-MPN-1",
+    });
+    const duplicateGtinFirst = sourceRecord("cpu-amd-ryzen-5-7600", {
+      manufacturerPartNumber: null,
+      gtin: "5056547205502",
+    });
+    const duplicateGtin = sourceRecord("cpu-amd-ryzen-7-7800x3d", {
+      manufacturerPartNumber: null,
+      gtin: "5056547205502",
+    });
+    const duplicateComponent = {
+      ...first,
+      manufacturerPartNumber: "DUP-MPN-2",
+    };
+
+    const uniqueness = auditIdentifierUniqueness([
+      first,
+      duplicateMpn,
+      duplicateGtinFirst,
+      duplicateGtin,
+      duplicateComponent,
+    ]);
+    expect(uniqueness.duplicateMpnRecords).toBe(1);
+    expect(uniqueness.duplicateGtinRecords).toBe(1);
+    expect(uniqueness.conflictingComponentRecords).toBe(1);
+    expect(uniqueness.duplicateMpnComponentIds).toEqual([
+      "cpu-amd-ryzen-7-5700x",
+    ]);
+    expect(uniqueness.duplicateGtinComponentIds).toEqual([
+      "cpu-amd-ryzen-7-7800x3d",
+    ]);
+    expect(uniqueness.conflictingComponentIds).toEqual([
+      "cpu-amd-ryzen-5-5600",
+    ]);
   });
 });

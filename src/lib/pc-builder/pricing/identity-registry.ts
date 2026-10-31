@@ -80,14 +80,28 @@ export interface SourceVerification {
   readonly notes: string | null;
 }
 
-export type HumanReviewStatus = "not-reviewed" | "reviewed";
+export type HumanReviewStatus =
+  | "not-reviewed"
+  | "reviewed"
+  | "needs-correction"
+  | "rejected"
+  | "needs-revalidation";
 
 export interface HumanReview {
   readonly status: HumanReviewStatus;
-  /** Named human reviewer only when status is "reviewed". */
+  /** Named human reviewer only for non-"not-reviewed" states. */
   readonly reviewer: string | null;
   readonly reviewedAt: string | null;
   readonly notes: string | null;
+  /** Manufacturer source URL re-opened for this review. */
+  readonly sourceUrl?: string | null;
+  /**
+   * Integrity fingerprint of the identity evidence approved by the reviewer.
+   * Optional for compatibility with records created before M10.11.
+   */
+  readonly evidenceFingerprint?: string | null;
+  /** Declared state before this decision, for auditability. */
+  readonly previousStatus?: HumanReviewStatus | null;
 }
 
 export interface CatalogueIdentifierRecord {
@@ -135,8 +149,15 @@ export interface IdentifierRegistryAudit {
   readonly provisionalRecords: number;
   readonly humanReviewedRecords: number;
   readonly awaitingHumanReviewRecords: number;
+  readonly needsCorrectionRecords: number;
+  readonly rejectedRecords: number;
+  readonly needsRevalidationRecords: number;
+  readonly invalidatedReviewRecords: number;
   readonly staleSourceVerificationRecords: number;
   readonly staleHumanReviewRecords: number;
+  readonly duplicateMpnRecords: number;
+  readonly duplicateGtinRecords: number;
+  readonly conflictingComponentRecords: number;
   readonly mpnRecords: number;
   readonly gtinRecords: number;
   readonly bothRecords: number;
@@ -148,10 +169,59 @@ export interface IdentifierRegistryAudit {
   readonly provisionalComponentIds: readonly string[];
   readonly humanReviewedComponentIds: readonly string[];
   readonly awaitingHumanReviewComponentIds: readonly string[];
+  readonly needsCorrectionComponentIds: readonly string[];
+  readonly rejectedComponentIds: readonly string[];
+  readonly needsRevalidationComponentIds: readonly string[];
+  readonly invalidatedReviewComponentIds: readonly string[];
   readonly staleSourceVerificationComponentIds: readonly string[];
   readonly staleHumanReviewComponentIds: readonly string[];
   readonly byCategory: readonly RegistryCategoryCoverage[];
   readonly catalogue: CatalogueIdentityAudit;
+}
+
+export interface IdentityUniquenessAudit {
+  readonly duplicateMpnRecords: number;
+  readonly duplicateGtinRecords: number;
+  readonly conflictingComponentRecords: number;
+  readonly duplicateMpnComponentIds: readonly string[];
+  readonly duplicateGtinComponentIds: readonly string[];
+  readonly conflictingComponentIds: readonly string[];
+}
+
+export interface IdentityReviewQueueEntry {
+  readonly componentId: string;
+  readonly category: ComponentCategory;
+  readonly manufacturer: string;
+  readonly model: string;
+  readonly manufacturerPartNumber: string | null;
+  readonly gtin: string | null;
+  readonly region: string | null;
+  readonly sourceName: string;
+  readonly sourceUrl: string;
+  readonly sourceAccessedAt: string;
+  readonly sourceVerifiedAt: string;
+  readonly declaredHumanReviewStatus: HumanReviewStatus;
+  /** Review state after fingerprint invalidation is applied. */
+  readonly humanReviewStatus: HumanReviewStatus;
+  readonly reviewCurrent: boolean;
+  readonly concerns: readonly string[];
+}
+
+export interface IdentityReviewQueueCategory {
+  readonly category: ComponentCategory;
+  readonly total: number;
+}
+
+export interface IdentityReviewQueueStatus {
+  readonly status: HumanReviewStatus;
+  readonly total: number;
+}
+
+export interface IdentityReviewQueue {
+  readonly total: number;
+  readonly byStatus: readonly IdentityReviewQueueStatus[];
+  readonly byCategory: readonly IdentityReviewQueueCategory[];
+  readonly entries: readonly IdentityReviewQueueEntry[];
 }
 
 const SOURCE_TYPES: readonly IdentitySourceType[] = [
@@ -176,7 +246,100 @@ const SOURCE_VERIFICATION_METHODS: readonly SourceVerificationMethod[] = [
 const HUMAN_REVIEW_STATUSES: readonly HumanReviewStatus[] = [
   "not-reviewed",
   "reviewed",
+  "needs-correction",
+  "rejected",
+  "needs-revalidation",
 ];
+
+/**
+ * Policy hook only. Human review does not gate matching in M10.11 and this
+ * value is deliberately not read by the matching or projection paths.
+ */
+export const HUMAN_REVIEW_REQUIRED_FOR_PRODUCTION = false;
+
+const HUMAN_REVIEW_FINGERPRINT = /^[0-9a-f]{16}$/;
+
+const REVIEW_QUEUE_PRIORITY: Readonly<Record<ComponentCategory, number>> = {
+  cpu: 0,
+  psu: 1,
+  case: 2,
+  ram: 3,
+  cooler: 4,
+  storage: 5,
+  "case-fan": 6,
+  gpu: 7,
+  motherboard: 8,
+};
+
+export type IdentityFingerprintInput = Pick<
+  CatalogueIdentifierRecord,
+  | "componentId"
+  | "manufacturer"
+  | "model"
+  | "manufacturerPartNumber"
+  | "gtin"
+  | "region"
+  | "source"
+>;
+
+/**
+ * Deterministic 64-bit FNV-1a fingerprint over the identity-bearing evidence.
+ * This is an integrity check, not a cryptographic signature. Formatting-only
+ * fields such as source name and review notes are deliberately excluded.
+ */
+export function computeIdentityFingerprint(
+  record: IdentityFingerprintInput,
+): string {
+  const canonical = JSON.stringify([
+    record.componentId,
+    record.manufacturer,
+    record.model,
+    record.manufacturerPartNumber,
+    record.gtin,
+    record.region,
+    record.source.url,
+    record.source.accessedAt,
+  ]);
+  let hash = 0xcbf29ce484222325n;
+  const prime = 0x100000001b3n;
+  for (let index = 0; index < canonical.length; index += 1) {
+    hash ^= BigInt(canonical.charCodeAt(index));
+    hash = BigInt.asUintN(64, hash * prime);
+  }
+  return hash.toString(16).padStart(16, "0");
+}
+
+/**
+ * A review is current only when its fingerprint matches the current evidence.
+ * "not-reviewed" is always current because there is no approval to invalidate.
+ */
+export function isHumanReviewCurrent(
+  record: CatalogueIdentifierRecord,
+): boolean {
+  const review = record.humanReview;
+  if (review.status === "not-reviewed") return true;
+  if (
+    typeof review.evidenceFingerprint !== "string" ||
+    !HUMAN_REVIEW_FINGERPRINT.test(review.evidenceFingerprint)
+  ) {
+    return false;
+  }
+  return review.evidenceFingerprint === computeIdentityFingerprint(record);
+}
+
+/**
+ * Review state after invalidation. A stale decision becomes needs-revalidation
+ * rather than reviewed, rejected or corrected, because the evidence it was
+ * based on no longer exists.
+ */
+export function effectiveHumanReviewStatus(
+  record: CatalogueIdentifierRecord,
+): HumanReviewStatus {
+  if (record.humanReview.status === "not-reviewed") return "not-reviewed";
+  return isHumanReviewCurrent(record)
+    ? record.humanReview.status
+    : "needs-revalidation";
+}
 
 function parseInstant(value: Date | string | undefined): number | null {
   if (value === undefined) return Date.now();
@@ -349,8 +512,10 @@ function validateSourceVerification(
 function validateHumanReview(
   value: unknown,
   path: string,
+  sourceUrl: string,
   sourceAccessedAt: string,
   sourceVerifiedAt: string,
+  sourceVerifiedBy: string,
   nowMs: number,
 ): PricingResult<HumanReview> {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
@@ -360,16 +525,17 @@ function validateHumanReview(
   }
   const record = value as Record<string, unknown>;
   const issues: PricingIssue[] = [];
+  const status = record.status;
 
   if (
-    typeof record.status !== "string" ||
-    !(HUMAN_REVIEW_STATUSES as readonly string[]).includes(record.status)
+    typeof status !== "string" ||
+    !(HUMAN_REVIEW_STATUSES as readonly string[]).includes(status)
   ) {
     issues.push(
       issue(
         `${path}.status`,
         "invalid-value",
-        "Human review status must be not-reviewed or reviewed.",
+        "Human review status must be one of not-reviewed, reviewed, needs-correction, rejected or needs-revalidation.",
       ),
     );
   }
@@ -377,78 +543,23 @@ function validateHumanReview(
   const notes = validateOptionalText(record.notes, `${path}.notes`, 300);
   if (!notes.ok) issues.push(...notes.issues);
 
-  if (record.status === "reviewed") {
-    const reviewer = validateText(record.reviewer, `${path}.reviewer`, 80);
-    if (!reviewer.ok) issues.push(...reviewer.issues);
-
-    const reviewedAt = validateTimestamp(
-      record.reviewedAt,
-      `${path}.reviewedAt`,
-    );
-    if (!reviewedAt.ok) issues.push(...reviewedAt.issues);
-    else if (reviewedAt.value !== null) {
-      const reviewedMs = Date.parse(reviewedAt.value);
-      if (reviewedMs > nowMs) {
+  if (status === "not-reviewed") {
+    for (const field of [
+      "reviewer",
+      "reviewedAt",
+      "sourceUrl",
+      "evidenceFingerprint",
+      "previousStatus",
+    ] as const) {
+      if (record[field] !== null && record[field] !== undefined) {
         issues.push(
           issue(
-            `${path}.reviewedAt`,
-            "invalid-timestamp",
-            "Human review time cannot be in the future.",
-          ),
-        );
-      }
-      if (reviewedMs < Date.parse(sourceAccessedAt)) {
-        issues.push(
-          issue(
-            `${path}.reviewedAt`,
+            `${path}.${field}`,
             "identity-conflict",
-            "Human review time cannot precede source access.",
+            `A not-reviewed record cannot set ${field}.`,
           ),
         );
       }
-      if (reviewedMs < Date.parse(sourceVerifiedAt)) {
-        issues.push(
-          issue(
-            `${path}.reviewedAt`,
-            "identity-conflict",
-            "Human review time cannot precede source verification.",
-          ),
-        );
-      }
-    }
-
-    if (issues.length > 0) return failure(issues);
-    if (!reviewer.ok || !reviewedAt.ok || reviewedAt.value === null) {
-      return failure([
-        issue(path, "invalid-value", "Human review metadata is invalid."),
-      ]);
-    }
-    return success({
-      status: "reviewed",
-      reviewer: reviewer.value,
-      reviewedAt: reviewedAt.value,
-      notes: notes.ok ? notes.value : null,
-    });
-  }
-
-  if (record.status === "not-reviewed") {
-    if (record.reviewer !== null && record.reviewer !== undefined) {
-      issues.push(
-        issue(
-          `${path}.reviewer`,
-          "identity-conflict",
-          "A not-reviewed record cannot name a human reviewer.",
-        ),
-      );
-    }
-    if (record.reviewedAt !== null && record.reviewedAt !== undefined) {
-      issues.push(
-        issue(
-          `${path}.reviewedAt`,
-          "identity-conflict",
-          "A not-reviewed record cannot have a human review time.",
-        ),
-      );
     }
     if (issues.length > 0) return failure(issues);
     return success({
@@ -456,14 +567,159 @@ function validateHumanReview(
       reviewer: null,
       reviewedAt: null,
       notes: notes.ok ? notes.value : null,
+      sourceUrl: null,
+      evidenceFingerprint: null,
+      previousStatus: null,
     });
   }
 
-  return failure(
-    issues.length > 0
-      ? issues
-      : [issue(path, "invalid-value", "Human review metadata is invalid.")],
+  if (
+    status !== "reviewed" &&
+    status !== "needs-correction" &&
+    status !== "rejected" &&
+    status !== "needs-revalidation"
+  ) {
+    return failure(
+      issues.length > 0
+        ? issues
+        : [issue(path, "invalid-value", "Human review metadata is invalid.")],
+    );
+  }
+
+  const reviewer = validateText(record.reviewer, `${path}.reviewer`, 80);
+  if (!reviewer.ok) issues.push(...reviewer.issues);
+  else if (
+    normalizeKey(reviewer.value) === normalizeKey(sourceVerifiedBy) ||
+    /^opencode-/i.test(reviewer.value)
+  ) {
+    issues.push(
+      issue(
+        `${path}.reviewer`,
+        "identity-conflict",
+        "Human reviewer must be a named person, not the source-verification process identity.",
+      ),
+    );
+  }
+
+  const reviewedAt = validateTimestamp(record.reviewedAt, `${path}.reviewedAt`);
+  if (!reviewedAt.ok) issues.push(...reviewedAt.issues);
+  else if (reviewedAt.value !== null) {
+    const reviewedMs = Date.parse(reviewedAt.value);
+    if (reviewedMs > nowMs) {
+      issues.push(
+        issue(
+          `${path}.reviewedAt`,
+          "invalid-timestamp",
+          "Human review time cannot be in the future.",
+        ),
+      );
+    }
+    if (reviewedMs < Date.parse(sourceAccessedAt)) {
+      issues.push(
+        issue(
+          `${path}.reviewedAt`,
+          "identity-conflict",
+          "Human review time cannot precede source access.",
+        ),
+      );
+    }
+    if (reviewedMs < Date.parse(sourceVerifiedAt)) {
+      issues.push(
+        issue(
+          `${path}.reviewedAt`,
+          "identity-conflict",
+          "Human review time cannot precede source verification.",
+        ),
+      );
+    }
+  }
+
+  const reviewNotes = validateText(record.notes, `${path}.notes`, 300);
+  if (!reviewNotes.ok) issues.push(...reviewNotes.issues);
+
+  const reviewSource = validateHttpsUrl(record.sourceUrl, `${path}.sourceUrl`);
+  if (!reviewSource.ok) issues.push(...reviewSource.issues);
+  else if (
+    (status === "reviewed" || status === "needs-revalidation") &&
+    reviewSource.value !== sourceUrl
+  ) {
+    issues.push(
+      issue(
+        `${path}.sourceUrl`,
+        "identity-conflict",
+        "Reviewed evidence must recheck the manufacturer source URL on the record.",
+      ),
+    );
+  }
+
+  const fingerprint = validateText(
+    record.evidenceFingerprint,
+    `${path}.evidenceFingerprint`,
+    32,
   );
+  if (!fingerprint.ok) issues.push(...fingerprint.issues);
+  else if (!HUMAN_REVIEW_FINGERPRINT.test(fingerprint.value)) {
+    issues.push(
+      issue(
+        `${path}.evidenceFingerprint`,
+        "invalid-value",
+        "Evidence fingerprint must be 16 lowercase hexadecimal characters.",
+      ),
+    );
+  }
+
+  let previousStatus: HumanReviewStatus | null = null;
+  if (record.previousStatus !== null && record.previousStatus !== undefined) {
+    if (
+      typeof record.previousStatus !== "string" ||
+      !(HUMAN_REVIEW_STATUSES as readonly string[]).includes(
+        record.previousStatus,
+      )
+    ) {
+      issues.push(
+        issue(
+          `${path}.previousStatus`,
+          "invalid-value",
+          "Previous review status is not supported.",
+        ),
+      );
+    } else if (record.previousStatus === status) {
+      issues.push(
+        issue(
+          `${path}.previousStatus`,
+          "identity-conflict",
+          "Previous review status must differ from the current status.",
+        ),
+      );
+    } else {
+      previousStatus = record.previousStatus as HumanReviewStatus;
+    }
+  }
+
+  if (issues.length > 0) return failure(issues);
+  if (
+    !reviewer.ok ||
+    !reviewedAt.ok ||
+    reviewedAt.value === null ||
+    !reviewNotes.ok ||
+    !reviewSource.ok ||
+    !fingerprint.ok ||
+    typeof status !== "string"
+  ) {
+    return failure([
+      issue(path, "invalid-value", "Human review metadata is invalid."),
+    ]);
+  }
+
+  return success({
+    status: status as HumanReviewStatus,
+    reviewer: reviewer.value,
+    reviewedAt: reviewedAt.value,
+    notes: reviewNotes.value,
+    sourceUrl: reviewSource.value,
+    evidenceFingerprint: fingerprint.value,
+    previousStatus,
+  });
 }
 
 function validateRecord(
@@ -616,8 +872,10 @@ function validateRecord(
       ? validateHumanReview(
           record.humanReview,
           `${path}.humanReview`,
+          source.value.url,
           source.value.accessedAt,
           sourceVerification.value.verifiedAt,
+          sourceVerification.value.verifiedBy,
           nowMs,
         )
       : failure([
@@ -823,6 +1081,153 @@ export function matchProductWithRegistry(
   return matchProduct(raw, identities.value);
 }
 
+/**
+ * Explicit duplicate/conflict counts. Registry validation already fails closed
+ * on these conditions; this helper keeps the audit numbers testable without
+ * weakening that validation.
+ */
+export function auditIdentifierUniqueness(
+  records: readonly CatalogueIdentifierRecord[],
+): IdentityUniquenessAudit {
+  const seenMpn = new Set<string>();
+  const seenGtin = new Set<string>();
+  const seenComponent = new Set<string>();
+  const duplicateMpnComponentIds: string[] = [];
+  const duplicateGtinComponentIds: string[] = [];
+  const conflictingComponentIds: string[] = [];
+
+  for (const record of records) {
+    if (record.manufacturerPartNumber !== null) {
+      const key = `${normalizeKey(record.manufacturer)}|${record.manufacturerPartNumber}`;
+      if (seenMpn.has(key)) duplicateMpnComponentIds.push(record.componentId);
+      else seenMpn.add(key);
+    }
+    if (record.gtin !== null) {
+      if (seenGtin.has(record.gtin)) {
+        duplicateGtinComponentIds.push(record.componentId);
+      } else {
+        seenGtin.add(record.gtin);
+      }
+    }
+    if (seenComponent.has(record.componentId)) {
+      conflictingComponentIds.push(record.componentId);
+    } else {
+      seenComponent.add(record.componentId);
+    }
+  }
+
+  return {
+    duplicateMpnRecords: duplicateMpnComponentIds.length,
+    duplicateGtinRecords: duplicateGtinComponentIds.length,
+    conflictingComponentRecords: conflictingComponentIds.length,
+    duplicateMpnComponentIds: [...new Set(duplicateMpnComponentIds)].sort(),
+    duplicateGtinComponentIds: [...new Set(duplicateGtinComponentIds)].sort(),
+    conflictingComponentIds: [...new Set(conflictingComponentIds)].sort(),
+  };
+}
+
+/**
+ * Deterministic review queue for source-verified identities. Ordering follows
+ * the M10.11 priority: CPU, PSU, case, RAM, cooler, storage, case fan, then
+ * any other category.
+ */
+export function buildIdentityReviewQueue(
+  components: readonly Component[],
+  registry: CatalogueIdentifierRegistry,
+  options: IdentifierRegistryValidationOptions = {},
+): PricingResult<IdentityReviewQueue> {
+  const validated = validateIdentifierRegistry(registry, components, options);
+  if (!validated.ok) return validated;
+
+  const componentById = new Map(
+    components.map((component) => [component.id, component]),
+  );
+  const entries: IdentityReviewQueueEntry[] = [];
+
+  for (const record of validated.value.records) {
+    if (record.sourceVerification.status !== "source-verified") continue;
+    const component = componentById.get(record.componentId);
+    if (component === undefined) continue;
+
+    const reviewCurrent = isHumanReviewCurrent(record);
+    const humanReviewStatus = effectiveHumanReviewStatus(record);
+    const concerns: string[] = [];
+    if (record.humanReview.status !== "not-reviewed" && !reviewCurrent) {
+      concerns.push(
+        "Review fingerprint no longer matches the current evidence.",
+      );
+    }
+    if (record.region !== null) {
+      concerns.push(`Regional identity limited to ${record.region}.`);
+    }
+    if (record.manufacturerPartNumber === null) {
+      concerns.push("No MPN evidence.");
+    }
+    if (record.gtin === null) {
+      concerns.push("No GTIN evidence.");
+    }
+    if (humanReviewStatus === "needs-correction") {
+      concerns.push("Reviewer flagged an identity correction.");
+    }
+    if (humanReviewStatus === "rejected") {
+      concerns.push("Reviewer rejected this identity.");
+    }
+    if (humanReviewStatus === "needs-revalidation" && reviewCurrent) {
+      concerns.push(
+        "Reviewer reported that evidence could not be revalidated.",
+      );
+    }
+
+    entries.push({
+      componentId: record.componentId,
+      category: component.category,
+      manufacturer: record.manufacturer,
+      model: record.model,
+      manufacturerPartNumber: record.manufacturerPartNumber,
+      gtin: record.gtin,
+      region: record.region,
+      sourceName: record.source.name,
+      sourceUrl: record.source.url,
+      sourceAccessedAt: record.source.accessedAt,
+      sourceVerifiedAt: record.sourceVerification.verifiedAt,
+      declaredHumanReviewStatus: record.humanReview.status,
+      humanReviewStatus,
+      reviewCurrent,
+      concerns,
+    });
+  }
+
+  entries.sort((left, right) => {
+    const priority =
+      REVIEW_QUEUE_PRIORITY[left.category] -
+      REVIEW_QUEUE_PRIORITY[right.category];
+    return priority !== 0
+      ? priority
+      : left.componentId.localeCompare(right.componentId);
+  });
+
+  return success({
+    total: entries.length,
+    byStatus: HUMAN_REVIEW_STATUSES.map((status) => ({
+      status,
+      total: entries.filter((entry) => entry.humanReviewStatus === status)
+        .length,
+    })).filter((entry) => entry.total > 0),
+    byCategory: componentCategories
+      .slice()
+      .sort(
+        (left, right) =>
+          REVIEW_QUEUE_PRIORITY[left] - REVIEW_QUEUE_PRIORITY[right],
+      )
+      .map((category) => ({
+        category,
+        total: entries.filter((entry) => entry.category === category).length,
+      }))
+      .filter((entry) => entry.total > 0),
+    entries,
+  });
+}
+
 export function auditIdentifierRegistry(
   components: readonly Component[],
   registry: CatalogueIdentifierRegistry,
@@ -862,18 +1267,38 @@ export function auditIdentifierRegistry(
     components.map((component) => [component.id, component]),
   );
   const records = validated.value.records;
+  const componentIdsOf = (
+    entries: readonly CatalogueIdentifierRecord[],
+  ): string[] => [...new Set(entries.map((entry) => entry.componentId))].sort();
+
   const sourceVerifiedRecords = records.filter(
     (record) => record.sourceVerification.status === "source-verified",
   );
   const provisionalRecords = records.filter(
     (record) => record.sourceVerification.status === "provisional",
   );
+  const invalidatedReviewRecords = records.filter(
+    (record) =>
+      record.humanReview.status !== "not-reviewed" &&
+      !isHumanReviewCurrent(record),
+  );
   const humanReviewedRecords = records.filter(
-    (record) => record.humanReview.status === "reviewed",
+    (record) => effectiveHumanReviewStatus(record) === "reviewed",
   );
   const awaitingHumanReviewRecords = records.filter(
-    (record) => record.humanReview.status === "not-reviewed",
+    (record) => effectiveHumanReviewStatus(record) === "not-reviewed",
   );
+  const needsCorrectionRecords = records.filter(
+    (record) => effectiveHumanReviewStatus(record) === "needs-correction",
+  );
+  const rejectedRecords = records.filter(
+    (record) => effectiveHumanReviewStatus(record) === "rejected",
+  );
+  const needsRevalidationRecords = records.filter(
+    (record) => effectiveHumanReviewStatus(record) === "needs-revalidation",
+  );
+  const uniqueness = auditIdentifierUniqueness(records);
+
   const staleSourceVerificationRecords = records.filter(
     (record) =>
       nowMs - Date.parse(record.sourceVerification.verifiedAt) >
@@ -897,23 +1322,23 @@ export function auditIdentifierRegistry(
   const sourceVerifiedComponentIds = new Set(
     sourceVerifiedRecords.map((record) => record.componentId),
   );
-  const provisionalComponentIds = [
-    ...new Set(provisionalRecords.map((record) => record.componentId)),
-  ].sort();
-  const humanReviewedComponentIds = [
-    ...new Set(humanReviewedRecords.map((record) => record.componentId)),
-  ].sort();
-  const awaitingHumanReviewComponentIds = [
-    ...new Set(awaitingHumanReviewRecords.map((record) => record.componentId)),
-  ].sort();
-  const staleSourceVerificationComponentIds = [
-    ...new Set(
-      staleSourceVerificationRecords.map((record) => record.componentId),
-    ),
-  ].sort();
-  const staleHumanReviewComponentIds = [
-    ...new Set(staleHumanReviewRecords.map((record) => record.componentId)),
-  ].sort();
+  const provisionalComponentIds = componentIdsOf(provisionalRecords);
+  const humanReviewedComponentIds = componentIdsOf(humanReviewedRecords);
+  const awaitingHumanReviewComponentIds = componentIdsOf(
+    awaitingHumanReviewRecords,
+  );
+  const needsCorrectionComponentIds = componentIdsOf(needsCorrectionRecords);
+  const rejectedComponentIds = componentIdsOf(rejectedRecords);
+  const needsRevalidationComponentIds = componentIdsOf(
+    needsRevalidationRecords,
+  );
+  const invalidatedReviewComponentIds = componentIdsOf(
+    invalidatedReviewRecords,
+  );
+  const staleSourceVerificationComponentIds = componentIdsOf(
+    staleSourceVerificationRecords,
+  );
+  const staleHumanReviewComponentIds = componentIdsOf(staleHumanReviewRecords);
 
   const byCategory: RegistryCategoryCoverage[] = [];
   for (const category of componentCategories) {
@@ -932,7 +1357,7 @@ export function auditIdentifierRegistry(
       categorySourceVerified.map((record) => record.componentId),
     );
     const categoryHumanReviewed = categoryRecords.filter(
-      (record) => record.humanReview.status === "reviewed",
+      (record) => effectiveHumanReviewStatus(record) === "reviewed",
     );
 
     byCategory.push({
@@ -963,8 +1388,15 @@ export function auditIdentifierRegistry(
     provisionalRecords: provisionalRecords.length,
     humanReviewedRecords: humanReviewedRecords.length,
     awaitingHumanReviewRecords: awaitingHumanReviewRecords.length,
+    needsCorrectionRecords: needsCorrectionRecords.length,
+    rejectedRecords: rejectedRecords.length,
+    needsRevalidationRecords: needsRevalidationRecords.length,
+    invalidatedReviewRecords: invalidatedReviewRecords.length,
     staleSourceVerificationRecords: staleSourceVerificationRecords.length,
     staleHumanReviewRecords: staleHumanReviewRecords.length,
+    duplicateMpnRecords: uniqueness.duplicateMpnRecords,
+    duplicateGtinRecords: uniqueness.duplicateGtinRecords,
+    conflictingComponentRecords: uniqueness.conflictingComponentRecords,
     mpnRecords: records.filter(
       (record) => record.manufacturerPartNumber !== null,
     ).length,
@@ -981,6 +1413,10 @@ export function auditIdentifierRegistry(
     provisionalComponentIds,
     humanReviewedComponentIds,
     awaitingHumanReviewComponentIds,
+    needsCorrectionComponentIds,
+    rejectedComponentIds,
+    needsRevalidationComponentIds,
+    invalidatedReviewComponentIds,
     staleSourceVerificationComponentIds,
     staleHumanReviewComponentIds,
     byCategory,
