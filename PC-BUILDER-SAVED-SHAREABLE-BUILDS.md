@@ -151,6 +151,16 @@ Manual modes:
 Saving a manual build captures the existing `BuildState`. Saving a guided
 recommendation captures the final recommended selection plus compact
 questionnaire provenance; the transient recommendation result is not stored.
+Saving from Manual mode makes the new entry active, including when the build
+originated from a transferred guided recommendation. A guided recommendation
+saved from Guided mode is added to the library without becoming the active
+manual build.
+
+The builder enforces the same per-category limits as the schema (8 RAM kits,
+12 storage devices, 16 case fans). The add action and picker disable new
+selections at the limit and explain why, so a valid manual selection can
+always be saved or shared. Clearing a manual build asks for confirmation when
+it would discard unsaved changes.
 
 Loading a saved build:
 
@@ -165,7 +175,10 @@ confirmation. Cancelling leaves the current state untouched.
 
 Deleting a saved build requires confirmation. Duplicating and renaming do not
 overwrite a different build. The update action only targets the explicitly
-active saved build.
+active saved build. Rename, duplicate and delete re-render the library, so the
+UI restores keyboard focus to the renamed or duplicate card or to the next
+surviving card (or the Saved builds heading) instead of dropping focus to the
+document body.
 
 ## 5. Share payload and link format
 
@@ -383,6 +396,10 @@ None of those capabilities exist in this MVP.
   persistence, load confirmation, rename/duplicate/delete, update, clipboard
   sharing, read-only shared view, import confirmation, local copy without
   prior storage, malformed links, responsive layouts and keyboard use.
+- `e2e-pc-builder/product-validation.spec.ts` — the full save/share/restore
+  journey, focus restoration, corrupt/quota/unavailable storage recovery,
+  missing and discontinued references, browser back/forward and the
+  cross-browser runs.
 
 ## 14. Production isolation
 

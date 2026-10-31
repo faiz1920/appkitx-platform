@@ -15,6 +15,7 @@
 
 import {
   componentCategories,
+  maxComponentSelections,
   multiSlotCategories,
   singleSlotCategories,
   type Component,
@@ -59,10 +60,21 @@ export function selectComponent(
   }
 
   if (current.includes(componentId)) return state;
+  if (current.length >= maxComponentSelections[category]) return state;
 
   return {
     selected: { ...state.selected, [category]: [...current, componentId] },
   };
+}
+
+/** True when a multi-slot category has reached its supported maximum. */
+export function isAtCategoryLimit(
+  state: BuildState,
+  category: ComponentCategory,
+): boolean {
+  return (
+    (state.selected[category]?.length ?? 0) >= maxComponentSelections[category]
+  );
 }
 
 export function removeComponent(

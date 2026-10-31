@@ -27,5 +27,20 @@ export default defineConfig({
     baseURL: previewUrl,
     trace: "retain-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    // The product-validation journeys are tagged @cross-browser. Running the
+    // whole visual suite three times would add no coverage; these journeys
+    // exercise storage, fragments, native dialogs and keyboard in each engine.
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+      grep: /@cross-browser/,
+    },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+      grep: /@cross-browser/,
+    },
+  ],
 });

@@ -536,15 +536,15 @@ test("status is communicated with text, not colour alone", async ({ page }) => {
   await selectFromCategory(page, "CPU", /AMD Ryzen 5 5600/);
   await selectFromCategory(page, "Motherboard", /MSI B650 TOMAHAWK WIFI/);
 
-  const manual = page.locator('[data-mode-panel="manual"]');
+  const results = page.locator('aside[aria-label="Build results"]');
   await expect(
-    manual.getByText("Incompatible", { exact: true }).first(),
+    results.getByText("Incompatible", { exact: true }).first(),
   ).toBeVisible();
   await expect(
-    manual.getByText("Unknown", { exact: true }).first(),
+    results.getByText("Unknown", { exact: true }).first(),
   ).toBeVisible();
   await expect(
-    manual.getByText("Incompatible", { exact: true }).first(),
+    results.getByText("Incompatible", { exact: true }).first(),
   ).toHaveText("Incompatible");
 });
 
@@ -605,6 +605,11 @@ test("clearing the build removes every selection and resets results", async ({
   await expect(page.locator("[data-count-compatible]")).toHaveText("1");
 
   await page.getByRole("button", { name: "Clear build" }).click();
+  await expect(page.locator("[data-confirm-dialog]")).toBeVisible();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Clear build", exact: true })
+    .click();
 
   await expect(page.getByText("Not selected yet.")).toHaveCount(9);
   await expect(page.locator("[data-count-compatible]")).toHaveText("0");

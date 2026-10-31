@@ -56,6 +56,25 @@ export const multiSlotCategories: readonly ComponentCategory[] = [
 ];
 
 /**
+ * Maximum instances a build may hold per category. Single-slot categories are
+ * capped at one; multi-slot caps match the saved-build schema so the UI cannot
+ * create a selection that is impossible to save or share.
+ */
+export const maxComponentSelections: Readonly<
+  Record<ComponentCategory, number>
+> = {
+  cpu: 1,
+  gpu: 1,
+  motherboard: 1,
+  ram: 8,
+  cooler: 1,
+  storage: 12,
+  psu: 1,
+  case: 1,
+  "case-fan": 16,
+};
+
+/**
  * Lifecycle state. `in-production` is only used when the manufacturer still
  * lists the product; legacy parts stay in the catalogue as discontinued or
  * end-of-life so existing and upgrade builds remain representable.

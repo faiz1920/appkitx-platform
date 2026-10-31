@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   clearBuild,
   createEmptyBuild,
+  isAtCategoryLimit,
   isMultiSlot,
   isSelected,
   isSingleSlot,
@@ -128,6 +129,24 @@ describe("selectComponent", () => {
     const next = selectComponent(state, "storage", "s2");
     expect(state.selected.storage).toEqual(["s1"]);
     expect(next.selected.storage).toEqual(["s1", "s2"]);
+  });
+
+  it("stops at the schema-backed maximum for every multi-slot category", () => {
+    for (const [category, maximum] of [
+      ["ram", 8],
+      ["storage", 12],
+      ["case-fan", 16],
+    ] as const) {
+      let state = createEmptyBuild();
+      for (let index = 0; index < maximum; index += 1) {
+        state = selectComponent(state, category, `${category}-${index}`);
+      }
+      expect(selectedCountForCategory(state, category)).toBe(maximum);
+      expect(isAtCategoryLimit(state, category)).toBe(true);
+      const blocked = selectComponent(state, category, `${category}-overflow`);
+      expect(blocked).toBe(state);
+      expect(selectedCountForCategory(blocked, category)).toBe(maximum);
+    }
   });
 });
 
