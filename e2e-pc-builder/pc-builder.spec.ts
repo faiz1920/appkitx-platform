@@ -48,8 +48,16 @@ async function selectFromCategory(
   await choose(page, name);
 }
 
+async function openManual(page: Page): Promise<void> {
+  await page
+    .locator('label:has(input[name="builder-mode"][value="manual"])')
+    .click();
+  await expect(page.locator('[data-mode-panel="manual"]')).toBeVisible();
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto("/pc-builder");
+  await openManual(page);
 });
 
 test("exposes semantic landmarks, one h1, a skip link and unique ids", async ({
@@ -67,6 +75,7 @@ test("exposes semantic landmarks, one h1, a skip link and unique ids", async ({
   expect(ids.length).toBeGreaterThan(0);
   expect(new Set(ids).size).toBe(ids.length);
 
+  await page.goto("/pc-builder");
   await page.keyboard.press("Tab");
   await expect(
     page.getByRole("link", { name: "Skip to content" }),
@@ -527,14 +536,15 @@ test("status is communicated with text, not colour alone", async ({ page }) => {
   await selectFromCategory(page, "CPU", /AMD Ryzen 5 5600/);
   await selectFromCategory(page, "Motherboard", /MSI B650 TOMAHAWK WIFI/);
 
+  const manual = page.locator('[data-mode-panel="manual"]');
   await expect(
-    page.getByText("Incompatible", { exact: true }).first(),
+    manual.getByText("Incompatible", { exact: true }).first(),
   ).toBeVisible();
   await expect(
-    page.getByText("Unknown", { exact: true }).first(),
+    manual.getByText("Unknown", { exact: true }).first(),
   ).toBeVisible();
   await expect(
-    page.getByText("Incompatible", { exact: true }).first(),
+    manual.getByText("Incompatible", { exact: true }).first(),
   ).toHaveText("Incompatible");
 });
 
@@ -543,6 +553,7 @@ test("mobile layout is a single column with no horizontal overflow", async ({
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
+  await openManual(page);
 
   const grid = page.locator("[data-pc-builder] > div.grid");
   const columns = await grid.evaluate(
@@ -570,6 +581,7 @@ test("desktop layout uses the two-column component/results grid", async ({
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.reload();
+  await openManual(page);
 
   const grid = page.locator("[data-pc-builder] > div.grid");
   const columns = await grid.evaluate(
