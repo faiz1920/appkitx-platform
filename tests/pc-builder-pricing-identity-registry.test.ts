@@ -79,28 +79,28 @@ describe("source-verified identity registry", () => {
 
     expect(audit.value).toMatchObject({
       totalComponents: 101,
-      totalRecords: 24,
-      sourceVerifiedRecords: 24,
+      totalRecords: 50,
+      sourceVerifiedRecords: 50,
       provisionalRecords: 0,
       humanReviewedRecords: 0,
-      awaitingHumanReviewRecords: 24,
+      awaitingHumanReviewRecords: 50,
       staleSourceVerificationRecords: 0,
       staleHumanReviewRecords: 0,
-      mpnRecords: 20,
-      gtinRecords: 8,
-      bothRecords: 4,
-      sourceVerifiedComponents: 24,
-      sourceVerifiedMpn: 20,
-      sourceVerifiedGtin: 8,
-      both: 4,
-      withoutSourceVerified: 77,
+      mpnRecords: 46,
+      gtinRecords: 9,
+      bothRecords: 5,
+      sourceVerifiedComponents: 50,
+      sourceVerifiedMpn: 46,
+      sourceVerifiedGtin: 9,
+      both: 5,
+      withoutSourceVerified: 51,
     });
     expect(audit.value.catalogue).toMatchObject({
       total: 101,
-      verifiedMatchReady: 24,
-      explicitMpn: 20,
+      verifiedMatchReady: 50,
+      explicitMpn: 46,
       explicitGtin: 4,
-      modelMpnShaped: 42,
+      modelMpnShaped: 16,
       modelDescriptive: 35,
       duplicateModels: [],
     });
@@ -141,6 +141,58 @@ describe("source-verified identity registry", () => {
       withoutSourceVerified: 1,
       humanReviewedComponents: 0,
     });
+    const cpu = audit.value.byCategory.find(
+      (entry) => entry.category === "cpu",
+    );
+    expect(cpu).toMatchObject({
+      total: 16,
+      sourceVerifiedComponents: 14,
+      sourceVerifiedMpn: 14,
+      sourceVerifiedGtin: 0,
+      both: 0,
+      withoutSourceVerified: 2,
+      humanReviewedComponents: 0,
+    });
+    const psu = audit.value.byCategory.find(
+      (entry) => entry.category === "psu",
+    );
+    expect(psu).toMatchObject({
+      total: 9,
+      sourceVerifiedComponents: 6,
+      sourceVerifiedMpn: 6,
+      sourceVerifiedGtin: 0,
+      both: 0,
+      withoutSourceVerified: 3,
+      humanReviewedComponents: 0,
+    });
+    const pcCase = audit.value.byCategory.find(
+      (entry) => entry.category === "case",
+    );
+    expect(pcCase).toMatchObject({
+      total: 11,
+      sourceVerifiedComponents: 6,
+      sourceVerifiedMpn: 6,
+      sourceVerifiedGtin: 1,
+      both: 1,
+      withoutSourceVerified: 5,
+      humanReviewedComponents: 0,
+    });
+    const gpu = audit.value.byCategory.find(
+      (entry) => entry.category === "gpu",
+    );
+    expect(gpu).toMatchObject({
+      total: 15,
+      sourceVerifiedComponents: 0,
+      withoutSourceVerified: 15,
+    });
+    const motherboard = audit.value.byCategory.find(
+      (entry) => entry.category === "motherboard",
+    );
+    expect(motherboard).toMatchObject({
+      total: 13,
+      sourceVerifiedComponents: 0,
+      withoutSourceVerified: 13,
+    });
   });
 
   it("projects only source-verified records and preserves model-only components", () => {
@@ -166,15 +218,227 @@ describe("source-verified identity registry", () => {
       withRegistry.value.filter(
         (identity) => identity.manufacturerPartNumber !== null,
       ),
-    ).toHaveLength(20);
+    ).toHaveLength(46);
     expect(
       withRegistry.value.filter((identity) => identity.gtin !== null),
-    ).toHaveLength(8);
+    ).toHaveLength(9);
     expect(
       withRegistry.value.find(
         (identity) => identity.componentId === "cpu-amd-ryzen-7-7800x3d",
       )?.manufacturerPartNumber,
+    ).toBe("100-100000910WOF");
+    expect(
+      withRegistry.value.find(
+        (identity) => identity.componentId === "cpu-amd-ryzen-7-5800x3d",
+      )?.manufacturerPartNumber,
     ).toBeNull();
+  });
+
+  it("covers the M10.10 target categories without promoting deferred variants", () => {
+    const identities = buildCatalogueIdentities(catalogue, identifierRegistry);
+    expect(identities.ok).toBe(true);
+    if (!identities.ok) return;
+
+    const byId = new Map(
+      identities.value.map((identity) => [identity.componentId, identity]),
+    );
+    expect(byId.get("cpu-intel-core-i5-12400f")).toMatchObject({
+      manufacturerPartNumber: "BX8071512400F",
+      gtin: null,
+      region: null,
+    });
+    expect(byId.get("cpu-amd-ryzen-5-5600")).toMatchObject({
+      manufacturerPartNumber: "100-100000927BOX",
+    });
+    expect(byId.get("psu-corsair-cv650")).toMatchObject({
+      manufacturerPartNumber: "CP-9020211-NA",
+      region: "US",
+    });
+    expect(byId.get("case-nzxt-h7-flow")).toMatchObject({
+      manufacturerPartNumber: "CM-H72FB-01",
+      gtin: "5056547205502",
+    });
+
+    // Deferred: AMD boxed IDs differ from the catalogue model, and no
+    // authoritative GPU or motherboard identifier was retrievable.
+    for (const componentId of [
+      "cpu-amd-ryzen-7-5800x3d",
+      "cpu-amd-ryzen-7-7700",
+      "gpu-nvidia-geforce-rtx-4090-fe",
+      "motherboard-asus-tuf-gaming-b550-plus",
+    ]) {
+      expect(byId.get(componentId)?.manufacturerPartNumber).toBeNull();
+      expect(byId.get(componentId)?.gtin).toBeNull();
+    }
+  });
+
+  it("matches new CPU, PSU and case identities only with exact evidence", () => {
+    const cpu = matchProductWithRegistry(
+      providerProduct({
+        manufacturer: "AMD",
+        manufacturerPartNumber: "100-100000910WOF",
+        category: "cpu",
+      }),
+      catalogue,
+      identifierRegistry,
+    );
+    expect(cpu.ok).toBe(true);
+    if (!cpu.ok) return;
+    expect(cpu.value.status).toBe("verified");
+    expect(cpu.value.componentId).toBe("cpu-amd-ryzen-7-7800x3d");
+
+    const psu = matchProductWithRegistry(
+      providerProduct({
+        manufacturer: "Corsair",
+        manufacturerPartNumber: "CP-9020199-NA",
+        category: "psu",
+        region: "US",
+      }),
+      catalogue,
+      identifierRegistry,
+    );
+    expect(psu.ok).toBe(true);
+    if (!psu.ok) return;
+    expect(psu.value.status).toBe("verified");
+    expect(psu.value.componentId).toBe("psu-corsair-rm750x-2021");
+
+    const pcCase = matchProductWithRegistry(
+      providerProduct({
+        manufacturer: "NZXT",
+        gtin: "5056547205502",
+        category: "case",
+      }),
+      catalogue,
+      identifierRegistry,
+    );
+    expect(pcCase.ok).toBe(true);
+    if (!pcCase.ok) return;
+    expect(pcCase.value.status).toBe("verified");
+    expect(pcCase.value.componentId).toBe("case-nzxt-h7-flow");
+
+    const deferred = matchProductWithRegistry(
+      providerProduct({
+        manufacturer: "AMD",
+        manufacturerPartNumber: "100-100000651WOF",
+        category: "cpu",
+      }),
+      catalogue,
+      identifierRegistry,
+    );
+    expect(deferred.ok).toBe(true);
+    if (!deferred.ok) return;
+    expect(deferred.value.status).not.toBe("verified");
+  });
+
+  it("rejects a regional PSU match from a different region", () => {
+    const match = matchProductWithRegistry(
+      providerProduct({
+        manufacturer: "Corsair",
+        manufacturerPartNumber: "CP-9020199-NA",
+        category: "psu",
+        region: "DE",
+      }),
+      catalogue,
+      identifierRegistry,
+    );
+    expect(match.ok).toBe(true);
+    if (!match.ok) return;
+    expect(match.value.status).not.toBe("verified");
+    expect(match.value.reasons).toContain(
+      "The exact part number belongs to a different regional SKU.",
+    );
+  });
+
+  it("rejects duplicate MPNs and GTINs from the expanded registry", () => {
+    const cpu = identifierRegistry.records.find(
+      (record) => record.componentId === "cpu-amd-ryzen-7-7800x3d",
+    );
+    const h7Flow = identifierRegistry.records.find(
+      (record) => record.componentId === "case-nzxt-h7-flow",
+    );
+    if (!cpu || !h7Flow) throw new Error("Expected M10.10 fixtures");
+
+    const duplicateMpn = validateIdentifierRegistry(
+      withRecords([
+        cpu,
+        sourceRecord("cpu-amd-ryzen-9-7900x", {
+          manufacturerPartNumber: "100-100000910WOF",
+        }),
+      ]),
+      catalogue,
+      { now: AUDIT_NOW },
+    );
+    expect(duplicateMpn.ok).toBe(false);
+    if (!duplicateMpn.ok) {
+      expect(duplicateMpn.issues).toContainEqual(
+        expect.objectContaining({
+          path: "records[1].manufacturerPartNumber",
+          code: "duplicate-identifier",
+        }),
+      );
+    }
+
+    const duplicateGtin = validateIdentifierRegistry(
+      withRecords([
+        h7Flow,
+        sourceRecord("case-corsair-4000d-airflow", {
+          gtin: "5056547205502",
+        }),
+      ]),
+      catalogue,
+      { now: AUDIT_NOW },
+    );
+    expect(duplicateGtin.ok).toBe(false);
+    if (!duplicateGtin.ok) {
+      expect(duplicateGtin.issues).toContainEqual(
+        expect.objectContaining({
+          path: "records[1].gtin",
+          code: "duplicate-identifier",
+        }),
+      );
+    }
+  });
+
+  it("rejects a conflicting manufacturer or model association", () => {
+    const wrongManufacturer = validateIdentifierRegistry(
+      withRecords([
+        sourceRecord("cpu-intel-core-i5-12400f", {
+          manufacturer: "AMD",
+          manufacturerPartNumber: "BX8071512400F",
+        }),
+      ]),
+      catalogue,
+      { now: AUDIT_NOW },
+    );
+    expect(wrongManufacturer.ok).toBe(false);
+    if (!wrongManufacturer.ok) {
+      expect(wrongManufacturer.issues).toContainEqual(
+        expect.objectContaining({
+          path: "records[0].manufacturer",
+          code: "identity-conflict",
+        }),
+      );
+    }
+
+    const wrongModel = validateIdentifierRegistry(
+      withRecords([
+        sourceRecord("cpu-intel-core-i5-12400f", {
+          model: "BX8071512400",
+          manufacturerPartNumber: "BX8071512400F",
+        }),
+      ]),
+      catalogue,
+      { now: AUDIT_NOW },
+    );
+    expect(wrongModel.ok).toBe(false);
+    if (!wrongModel.ok) {
+      expect(wrongModel.issues).toContainEqual(
+        expect.objectContaining({
+          path: "records[0].model",
+          code: "identity-conflict",
+        }),
+      );
+    }
   });
 });
 
