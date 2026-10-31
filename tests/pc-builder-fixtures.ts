@@ -91,6 +91,7 @@ export function makeGpu(
       powerDrawW: 220,
       recommendedPsuW: 650,
       powerConnectors: [{ type: "pcie-8pin", count: 2 }],
+      powerAdapter8pin: null,
       displayOutputs: null,
       ...overrides,
     },
@@ -118,8 +119,18 @@ export function makeMotherboard(
       pcieX16Slots: { generation: 4, count: 1 },
       m2Slots: 2,
       m2SlotDetails: [
-        { interface: "both", maxLengthMm: 80, pcieGeneration: 4 },
-        { interface: "both", maxLengthMm: 80, pcieGeneration: 4 },
+        {
+          interface: "both",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "both",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
       ],
       sataPorts: 4,
       fanHeaders: 4,

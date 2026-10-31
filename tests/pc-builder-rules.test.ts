@@ -371,7 +371,10 @@ describe("psu rules", () => {
 
   it("warns when a 16-pin card must use an adapter", () => {
     const report = evaluateBuild([
-      makeGpu({ powerConnectors: [{ type: "12vhpwr-16pin", count: 1 }] }),
+      makeGpu({
+        powerConnectors: [{ type: "12vhpwr-16pin", count: 1 }],
+        powerAdapter8pin: 2,
+      }),
       makePsu({
         connectors: { eps8pin: 2, pcie8pin: 4, pcie16pin: 0, sata: 6 },
       }),
@@ -395,13 +398,78 @@ describe("psu rules", () => {
 
   it("reports incompatible when even the adapter path is impossible", () => {
     const report = evaluateBuild([
-      makeGpu({ powerConnectors: [{ type: "12vhpwr-16pin", count: 1 }] }),
+      makeGpu({
+        powerConnectors: [{ type: "12vhpwr-16pin", count: 1 }],
+        powerAdapter8pin: 2,
+      }),
       makePsu({
         connectors: { eps8pin: 1, pcie8pin: 1, pcie16pin: 0, sata: 4 },
       }),
     ]);
     expect(resultByRule(report.results, "psu-gpu-connectors").status).toBe(
       "incompatible",
+    );
+  });
+
+  it("uses the manufacturer's adapter cable requirement, not a fixed two pins", () => {
+    const report = evaluateBuild([
+      makeGpu({
+        powerConnectors: [{ type: "12vhpwr-16pin", count: 1 }],
+        powerAdapter8pin: 3,
+      }),
+      makePsu({
+        connectors: { eps8pin: 2, pcie8pin: 2, pcie16pin: 0, sata: 6 },
+      }),
+    ]);
+    const result = resultByRule(report.results, "psu-gpu-connectors");
+    expect(result.status).toBe("incompatible");
+    expect(result.message).toContain("adapter needs 3");
+  });
+
+  it("accepts a one-cable adapter when the manufacturer specifies one", () => {
+    const report = evaluateBuild([
+      makeGpu({
+        powerConnectors: [{ type: "12vhpwr-16pin", count: 1 }],
+        powerAdapter8pin: 1,
+      }),
+      makePsu({
+        connectors: { eps8pin: 2, pcie8pin: 1, pcie16pin: 0, sata: 4 },
+      }),
+    ]);
+    expect(resultByRule(report.results, "psu-gpu-connectors").status).toBe(
+      "warning",
+    );
+  });
+
+  it("reports unknown when the adapter cable requirement is undocumented", () => {
+    const report = evaluateBuild([
+      makeGpu({
+        powerConnectors: [{ type: "12vhpwr-16pin", count: 1 }],
+        powerAdapter8pin: null,
+      }),
+      makePsu({
+        connectors: { eps8pin: 2, pcie8pin: 6, pcie16pin: 0, sata: 8 },
+      }),
+    ]);
+    const result = resultByRule(report.results, "psu-gpu-connectors");
+    expect(result.status).toBe("unknown");
+    expect(result.message).toContain(
+      "adapter cable requirement is not documented",
+    );
+  });
+
+  it("prefers a native 16-pin connector even when the adapter requirement is unknown", () => {
+    const report = evaluateBuild([
+      makeGpu({
+        powerConnectors: [{ type: "12vhpwr-16pin", count: 1 }],
+        powerAdapter8pin: null,
+      }),
+      makePsu({
+        connectors: { eps8pin: 2, pcie8pin: 2, pcie16pin: 1, sata: 6 },
+      }),
+    ]);
+    expect(resultByRule(report.results, "psu-gpu-connectors").status).toBe(
+      "compatible",
     );
   });
 
@@ -596,7 +664,12 @@ describe("expanded datasheet rules (M10.3)", () => {
       makeMotherboard({
         m2Slots: 1,
         m2SlotDetails: [
-          { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
+          {
+            interface: "nvme",
+            maxLengthMm: 80,
+            pcieGeneration: 4,
+            sharingNote: null,
+          },
         ],
       }),
       makeStorage({ m2LengthMm: 2280 }),
@@ -611,7 +684,12 @@ describe("expanded datasheet rules (M10.3)", () => {
       makeMotherboard({
         m2Slots: 1,
         m2SlotDetails: [
-          { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
+          {
+            interface: "nvme",
+            maxLengthMm: 80,
+            pcieGeneration: 4,
+            sharingNote: null,
+          },
         ],
       }),
       makeStorage({
@@ -632,7 +710,12 @@ describe("expanded datasheet rules (M10.3)", () => {
       makeMotherboard({
         m2Slots: 1,
         m2SlotDetails: [
-          { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
+          {
+            interface: "nvme",
+            maxLengthMm: 80,
+            pcieGeneration: 4,
+            sharingNote: null,
+          },
         ],
       }),
       makeStorage({ m2LengthMm: 22110 }),
@@ -647,7 +730,12 @@ describe("expanded datasheet rules (M10.3)", () => {
       makeMotherboard({
         m2Slots: 1,
         m2SlotDetails: [
-          { interface: "nvme", maxLengthMm: null, pcieGeneration: 4 },
+          {
+            interface: "nvme",
+            maxLengthMm: null,
+            pcieGeneration: 4,
+            sharingNote: null,
+          },
         ],
       }),
       makeStorage({ m2LengthMm: 2280 }),
@@ -669,12 +757,42 @@ describe("expanded datasheet rules (M10.3)", () => {
     );
   });
 
+  it("surfaces documented M.2 slot-sharing restrictions without changing the verdict", () => {
+    const report = evaluateBuild([
+      makeMotherboard({
+        m2Slots: 1,
+        m2SlotDetails: [
+          {
+            interface: "nvme",
+            maxLengthMm: 80,
+            pcieGeneration: 4,
+            sharingNote:
+              "M2_1 shares bandwidth with SATA3_0; SATA3_0 is disabled when populated.",
+          },
+        ],
+      }),
+      makeStorage(),
+    ]);
+    const result = resultByRule(report.results, "storage-motherboard-m2");
+    expect(result.status).toBe("compatible");
+    expect(result.message).toContain("SATA3_0 is disabled");
+    expect(result.observed).toMatchObject({
+      sharingNotes:
+        "M2_1 shares bandwidth with SATA3_0; SATA3_0 is disabled when populated.",
+    });
+  });
+
   it("rejects more M.2 drives than physical slots", () => {
     const report = evaluateBuild([
       makeMotherboard({
         m2Slots: 1,
         m2SlotDetails: [
-          { interface: "both", maxLengthMm: 80, pcieGeneration: 4 },
+          {
+            interface: "both",
+            maxLengthMm: 80,
+            pcieGeneration: 4,
+            sharingNote: null,
+          },
         ],
       }),
       makeStorage(),
@@ -690,8 +808,18 @@ describe("expanded datasheet rules (M10.3)", () => {
       makeMotherboard({
         m2Slots: 2,
         m2SlotDetails: [
-          { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
-          { interface: "sata", maxLengthMm: 80, pcieGeneration: null },
+          {
+            interface: "nvme",
+            maxLengthMm: 80,
+            pcieGeneration: 4,
+            sharingNote: null,
+          },
+          {
+            interface: "sata",
+            maxLengthMm: 80,
+            pcieGeneration: null,
+            sharingNote: null,
+          },
         ],
       }),
       makeStorage(),
@@ -721,8 +849,18 @@ describe("expanded datasheet rules (M10.3)", () => {
       makeMotherboard({
         m2Slots: 2,
         m2SlotDetails: [
-          { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
-          { interface: "sata", maxLengthMm: 80, pcieGeneration: null },
+          {
+            interface: "nvme",
+            maxLengthMm: 80,
+            pcieGeneration: 4,
+            sharingNote: null,
+          },
+          {
+            interface: "sata",
+            maxLengthMm: 80,
+            pcieGeneration: null,
+            sharingNote: null,
+          },
         ],
       }),
       sataDrive(),

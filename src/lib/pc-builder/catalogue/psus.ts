@@ -15,12 +15,12 @@ export const psus: readonly PsuComponent[] = [
     model: "CP-9020211",
     description:
       "650 W non-modular ATX power supply, 80 PLUS Bronze certified, 120 mm low-noise fan.",
-    url: "https://www.corsair.com/us/en/p/psu/cp-9020211-na/",
+    url: "https://www.corsair.com/us/en/p/psu/cp-9020211-na/cv-series-cv650-650-watt-80-plus-bronze-certified-psu-cp-9020211-na",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
-      "https://www.corsair.com/us/en/p/psu/cp-9020211-na/",
+      "https://www.corsair.com/us/en/p/psu/cp-9020211-na/cv-series-cv650-650-watt-80-plus-bronze-certified-psu-cp-9020211-na",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -46,12 +46,12 @@ export const psus: readonly PsuComponent[] = [
     model: "CP-9020277",
     description:
       "550 W non-modular ATX power supply, 80 PLUS Bronze certified, 120 mm fan.",
-    url: "https://www.corsair.com/us/en/p/psu/cp-9020277-na/",
+    url: "https://www.corsair.com/us/en/p/psu/cp-9020277-na/cx-series-cx550-550-watt-80-plus-bronze-atx-power-supply-cp-9020277-na",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
-      "https://www.corsair.com/us/en/p/psu/cp-9020277-na/",
+      "https://www.corsair.com/us/en/p/psu/cp-9020277-na/cx-series-cx550-550-watt-80-plus-bronze-atx-power-supply-cp-9020277-na",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -108,12 +108,12 @@ export const psus: readonly PsuComponent[] = [
     model: "CP-9020182",
     description:
       "600 W fully modular SFX power supply, 80 PLUS Platinum certified, 92 mm fan for small-form-factor builds.",
-    url: "https://www.corsair.com/us/en/p/psu/cp-9020182-na/",
+    url: "https://www.corsair.com/us/en/p/psu/cp-9020182-na/sf-series-sf600-600-watt-80-plus-platinum-certified-high-performance-sfx-psu-cp-9020182-na",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
-      "https://www.corsair.com/us/en/p/psu/cp-9020182-na/",
+      "https://www.corsair.com/us/en/p/psu/cp-9020182-na/sf-series-sf600-600-watt-80-plus-platinum-certified-high-performance-sfx-psu-cp-9020182-na",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -139,12 +139,12 @@ export const psus: readonly PsuComponent[] = [
     model: "CP-9020199",
     description:
       "750 W fully modular ATX power supply, 80 PLUS Gold certified, Zero RPM fan mode.",
-    url: "https://www.corsair.com/us/en/p/psu/cp-9020199-na/",
+    url: "https://www.corsair.com/us/en/p/psu/cp-9020199-na/rmx-series-rm750x-750-watt-80-plus-gold-fully-modular-atx-psu-cp-9020199-na",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
-      "https://www.corsair.com/us/en/p/psu/cp-9020199-na/",
+      "https://www.corsair.com/us/en/p/psu/cp-9020199-na/rmx-series-rm750x-750-watt-80-plus-gold-fully-modular-atx-psu-cp-9020199-na",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -158,7 +158,7 @@ export const psus: readonly PsuComponent[] = [
         eps8pin: 2,
         pcie8pin: 4,
         pcie16pin: 0,
-        sata: null,
+        sata: 10,
       },
     },
   },
@@ -170,12 +170,12 @@ export const psus: readonly PsuComponent[] = [
     model: "CP-9020263",
     description:
       "850 W fully modular ATX 3.0 power supply, 80 PLUS Gold certified, with a native 16-pin 12VHPWR connector.",
-    url: "https://www.corsair.com/us/en/p/psu/cp-9020263-na/",
+    url: "https://www.corsair.com/us/en/p/psu/cp-9020263-na/rme-series-rm850e-fully-modular-low-noise-atx-power-supply-cp-9020263-na",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
-      "https://www.corsair.com/us/en/p/psu/cp-9020263-na/",
+      "https://www.corsair.com/us/en/p/psu/cp-9020263-na/rme-series-rm850e-fully-modular-low-noise-atx-power-supply-cp-9020263-na",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -187,9 +187,9 @@ export const psus: readonly PsuComponent[] = [
       lengthMm: 140,
       connectors: {
         eps8pin: 2,
-        pcie8pin: 4,
+        pcie8pin: 3,
         pcie16pin: 1,
-        sata: null,
+        sata: 7,
       },
     },
   },
@@ -218,9 +218,9 @@ export const psus: readonly PsuComponent[] = [
       lengthMm: 150,
       connectors: {
         eps8pin: 2,
-        pcie8pin: null,
+        pcie8pin: 6,
         pcie16pin: 1,
-        sata: null,
+        sata: 8,
       },
     },
   },
@@ -232,12 +232,12 @@ export const psus: readonly PsuComponent[] = [
     model: "CP-9020201",
     description:
       "1000 W fully modular ATX power supply, 80 PLUS Gold certified, Zero RPM fan mode.",
-    url: "https://www.corsair.com/us/en/p/psu/cp-9020201-na/",
+    url: "https://www.corsair.com/us/en/p/psu/cp-9020201-na/rmx-series-rm1000x-1000-watt-80-plus-gold-fully-modular-atx-psu-cp-9020201-na",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
-      "https://www.corsair.com/us/en/p/psu/cp-9020201-na/",
+      "https://www.corsair.com/us/en/p/psu/cp-9020201-na/rmx-series-rm1000x-1000-watt-80-plus-gold-fully-modular-atx-psu-cp-9020201-na",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -251,7 +251,7 @@ export const psus: readonly PsuComponent[] = [
         eps8pin: 2,
         pcie8pin: 6,
         pcie16pin: 0,
-        sata: null,
+        sata: 14,
       },
     },
   },
@@ -280,9 +280,9 @@ export const psus: readonly PsuComponent[] = [
       lengthMm: 150,
       connectors: {
         eps8pin: 2,
-        pcie8pin: null,
+        pcie8pin: 6,
         pcie16pin: 1,
-        sata: null,
+        sata: 12,
       },
     },
   },

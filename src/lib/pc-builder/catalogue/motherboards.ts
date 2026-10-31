@@ -31,13 +31,37 @@ export const motherboards: readonly MotherboardComponent[] = [
       ramGeneration: "DDR5",
       ramFormFactor: "DIMM",
       ramSlots: 4,
-      maxRamGB: 128,
-      supportedRamSpeedsMTs: [6400],
+      maxRamGB: 256,
+      supportedRamSpeedsMTs: [
+        4800, 5000, 5200, 5400, 5600, 5800, 6000, 6200, 6400, 6600, 6800, 7000,
+        7200, 7400, 7600,
+      ],
       pcieX16Slots: { generation: 4, count: 2 },
       m2Slots: 3,
-      m2SlotDetails: null,
+      m2SlotDetails: [
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote:
+            "Unavailable when using a Ryzen 8500/8300 series processor.",
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote:
+            "Shares bandwidth with PCI_E2; both run at x2 when both slots are populated.",
+        },
+      ],
       sataPorts: 6,
-      fanHeaders: null,
+      fanHeaders: 6,
       cpuPowerConnectors: "8-pin + 8-pin EPS",
       cpuSupportListUrl:
         "https://www.msi.com/Motherboard/MAG-B650-TOMAHAWK-WIFI/support#cpu",
@@ -68,13 +92,30 @@ export const motherboards: readonly MotherboardComponent[] = [
       ramFormFactor: "DIMM",
       ramSlots: 4,
       maxRamGB: 128,
-      supportedRamSpeedsMTs: [4400],
+      supportedRamSpeedsMTs: [
+        2133, 2400, 2666, 2800, 3000, 3200, 3333, 3466, 3600, 3733, 3866, 4000,
+        4133, 4266, 4400, 4600,
+      ],
       pcieX16Slots: { generation: 4, count: 2 },
       m2Slots: 2,
-      m2SlotDetails: null,
+      m2SlotDetails: [
+        {
+          interface: "both",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "both",
+          maxLengthMm: 110,
+          pcieGeneration: 3,
+          sharingNote:
+            "Shares bandwidth with SATA6G_56; SATA6G_56 is disabled when M2_2 is populated.",
+        },
+      ],
       sataPorts: 6,
-      fanHeaders: null,
-      cpuPowerConnectors: null,
+      fanHeaders: 6,
+      cpuPowerConnectors: "8-pin EPS",
       cpuSupportListUrl:
         "https://www.asus.com/motherboards-components/motherboards/tuf-gaming/tuf-gaming-b550-plus/helpdesk_cpu/",
       biosVersion: null,
@@ -107,9 +148,23 @@ export const motherboards: readonly MotherboardComponent[] = [
       supportedRamSpeedsMTs: [5333],
       pcieX16Slots: { generation: 4, count: 2 },
       m2Slots: 2,
-      m2SlotDetails: null,
+      m2SlotDetails: [
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "both",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote:
+            "SATA8 is unavailable when an M.2 SATA SSD is installed in M2_2.",
+        },
+      ],
       sataPorts: 4,
-      fanHeaders: null,
+      fanHeaders: 4,
       cpuPowerConnectors: null,
       cpuSupportListUrl:
         "https://www.msi.com/Motherboard/PRO-B760M-A-WIFI-DDR4/support#cpu",
@@ -139,13 +194,36 @@ export const motherboards: readonly MotherboardComponent[] = [
       ramGeneration: "DDR5",
       ramFormFactor: "DIMM",
       ramSlots: 4,
-      maxRamGB: 128,
-      supportedRamSpeedsMTs: [6400],
+      maxRamGB: 256,
+      supportedRamSpeedsMTs: [
+        4800, 5000, 5200, 5400, 5600, 5800, 6000, 6200, 6400, 6600, 6800, 7000,
+        7200, 7600,
+      ],
       pcieX16Slots: { generation: 4, count: 2 },
       m2Slots: 3,
-      m2SlotDetails: null,
+      m2SlotDetails: [
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 5,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote:
+            "Shares bandwidth with PCIEX16_2; PCIEX16_2 is suspended when M2_3 is populated.",
+        },
+      ],
       sataPorts: 4,
-      fanHeaders: null,
+      fanHeaders: 7,
       cpuPowerConnectors: "8-pin + 4-pin EPS",
       cpuSupportListUrl:
         "https://www.asus.com/motherboards-components/motherboards/tuf-gaming/tuf-gaming-b650-plus-wifi/helpdesk_cpu/",
@@ -180,11 +258,21 @@ export const motherboards: readonly MotherboardComponent[] = [
       pcieX16Slots: { generation: 4, count: 1 },
       m2Slots: 2,
       m2SlotDetails: [
-        { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
-        { interface: "nvme", maxLengthMm: 110, pcieGeneration: 4 },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
       ],
       sataPorts: 4,
-      fanHeaders: null,
+      fanHeaders: 4,
       cpuPowerConnectors: "8-pin EPS",
       cpuSupportListUrl:
         "https://www.gigabyte.com/Motherboard/B650M-DS3H-rev-10/support#support-cpu",
@@ -214,13 +302,42 @@ export const motherboards: readonly MotherboardComponent[] = [
       ramGeneration: "DDR5",
       ramFormFactor: "DIMM",
       ramSlots: 4,
-      maxRamGB: 128,
-      supportedRamSpeedsMTs: [6400],
+      maxRamGB: 256,
+      supportedRamSpeedsMTs: [
+        4800, 5000, 5200, 5400, 5600, 5800, 6000, 6200, 6400, 6600, 6800, 7000,
+        7200, 7400, 7800,
+      ],
       pcieX16Slots: { generation: 5, count: 2 },
       m2Slots: 4,
-      m2SlotDetails: null,
+      m2SlotDetails: [
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 5,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 5,
+          sharingNote:
+            "Unavailable when using a Ryzen 8500/8300 series processor.",
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+      ],
       sataPorts: 6,
-      fanHeaders: null,
+      fanHeaders: 7,
       cpuPowerConnectors: "8-pin + 8-pin EPS",
       cpuSupportListUrl:
         "https://www.msi.com/Motherboard/MPG-X670E-CARBON-WIFI/support#cpu",
@@ -255,8 +372,18 @@ export const motherboards: readonly MotherboardComponent[] = [
       pcieX16Slots: { generation: 4, count: 1 },
       m2Slots: 2,
       m2SlotDetails: [
-        { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
-        { interface: "nvme", maxLengthMm: 110, pcieGeneration: 3 },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 3,
+          sharingNote: null,
+        },
       ],
       sataPorts: 6,
       fanHeaders: null,
@@ -294,7 +421,12 @@ export const motherboards: readonly MotherboardComponent[] = [
       pcieX16Slots: { generation: 4, count: 1 },
       m2Slots: 1,
       m2SlotDetails: [
-        { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
       ],
       sataPorts: 4,
       fanHeaders: null,
@@ -328,13 +460,35 @@ export const motherboards: readonly MotherboardComponent[] = [
       ramFormFactor: "DIMM",
       ramSlots: 4,
       maxRamGB: 128,
-      supportedRamSpeedsMTs: [5333],
+      supportedRamSpeedsMTs: [
+        2133, 2400, 2666, 2800, 2933, 3000, 3200, 3333, 3400, 3466, 3600, 3733,
+        4000, 4266, 4400, 4600, 4800, 5000, 5066,
+      ],
       pcieX16Slots: { generation: 5, count: 1 },
       m2Slots: 3,
-      m2SlotDetails: null,
+      m2SlotDetails: [
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: "Runs at PCIe 4.0 x2.",
+        },
+      ],
       sataPorts: 4,
-      fanHeaders: null,
-      cpuPowerConnectors: "8-pin + 4-pin EPS",
+      fanHeaders: 5,
+      cpuPowerConnectors: "8-pin EPS",
       cpuSupportListUrl:
         "https://www.asus.com/motherboards-components/motherboards/prime/prime-b760-plus-d4/helpdesk_cpu/",
       biosVersion: null,
@@ -363,13 +517,38 @@ export const motherboards: readonly MotherboardComponent[] = [
       ramGeneration: "DDR5",
       ramFormFactor: "DIMM",
       ramSlots: 4,
-      maxRamGB: 128,
+      maxRamGB: 256,
       supportedRamSpeedsMTs: [7600],
       pcieX16Slots: { generation: 5, count: 1 },
       m2Slots: 4,
-      m2SlotDetails: null,
+      m2SlotDetails: [
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "both",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+      ],
       sataPorts: 6,
-      fanHeaders: null,
+      fanHeaders: 6,
       cpuPowerConnectors: "8-pin + 8-pin EPS",
       cpuSupportListUrl:
         "https://www.gigabyte.com/Motherboard/Z790-AORUS-ELITE-AX-rev-10/support#support-cpu",
@@ -385,7 +564,7 @@ export const motherboards: readonly MotherboardComponent[] = [
     description:
       "Micro-ATX LGA1700 motherboard on the Intel B660 chipset with DDR4 support and dual M.2 slots.",
     url: "https://www.asrock.com/mb/Intel/B660M%20Pro%20RS/",
-    availability: "unknown",
+    availability: "discontinued",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "ASRock product specification",
@@ -400,15 +579,29 @@ export const motherboards: readonly MotherboardComponent[] = [
       ramFormFactor: "DIMM",
       ramSlots: 4,
       maxRamGB: 128,
-      supportedRamSpeedsMTs: [3200],
+      supportedRamSpeedsMTs: [
+        2133, 2400, 2666, 2800, 2933, 3200, 3466, 3600, 4000, 4400, 4800, 5000,
+        5333,
+      ],
       pcieX16Slots: { generation: 4, count: 1 },
       m2Slots: 2,
       m2SlotDetails: [
-        { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
-        { interface: "nvme", maxLengthMm: 110, pcieGeneration: 3 },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "both",
+          maxLengthMm: 80,
+          pcieGeneration: 3,
+          sharingNote:
+            "SATA3_0 is disabled when an M.2 SATA device is installed in M2_2.",
+        },
       ],
       sataPorts: 4,
-      fanHeaders: null,
+      fanHeaders: 5,
       cpuPowerConnectors: "8-pin EPS",
       cpuSupportListUrl:
         "https://www.asrock.com/mb/Intel/B660M%20Pro%20RS/index.asp#CPU",
@@ -423,12 +616,12 @@ export const motherboards: readonly MotherboardComponent[] = [
     model: "ROG STRIX Z890-A GAMING WIFI",
     description:
       "ATX LGA1851 motherboard on the Intel Z890 chipset with DDR5 support, PCIe 5.0 and four M.2 slots.",
-    url: "https://www.asus.com/motherboards-components/motherboards/rog-strix/rog-strix-z890-a-gaming-wifi/",
+    url: "https://rog.asus.com/motherboards/rog-strix/rog-strix-z890-a-gaming-wifi/",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "ASUS product specification",
-      "https://www.asus.com/motherboards-components/motherboards/rog-strix/rog-strix-z890-a-gaming-wifi/techspec/",
+      "https://rog.asus.com/motherboards/rog-strix/rog-strix-z890-a-gaming-wifi/spec/",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -438,16 +631,50 @@ export const motherboards: readonly MotherboardComponent[] = [
       ramGeneration: "DDR5",
       ramFormFactor: "DIMM",
       ramSlots: 4,
-      maxRamGB: 192,
-      supportedRamSpeedsMTs: [8400],
+      maxRamGB: 256,
+      supportedRamSpeedsMTs: [
+        4800, 5200, 5600, 6000, 6400, 6800, 7000, 7200, 7600, 8000, 8400, 8800,
+        9066,
+      ],
       pcieX16Slots: { generation: 5, count: 2 },
-      m2Slots: 4,
-      m2SlotDetails: null,
+      m2Slots: 5,
+      m2SlotDetails: [
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 5,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+        {
+          interface: "both",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
+      ],
       sataPorts: 4,
-      fanHeaders: null,
+      fanHeaders: 8,
       cpuPowerConnectors: "8-pin + 8-pin EPS",
       cpuSupportListUrl:
-        "https://www.asus.com/motherboards-components/motherboards/rog-strix/rog-strix-z890-a-gaming-wifi/helpdesk_cpu/",
+        "https://rog.asus.com/motherboards/rog-strix/rog-strix-z890-a-gaming-wifi/helpdesk/",
       biosVersion: null,
     },
   },
@@ -474,13 +701,36 @@ export const motherboards: readonly MotherboardComponent[] = [
       ramGeneration: "DDR5",
       ramFormFactor: "DIMM",
       ramSlots: 4,
-      maxRamGB: 192,
-      supportedRamSpeedsMTs: [6400],
+      maxRamGB: 256,
+      supportedRamSpeedsMTs: [
+        4800, 5200, 5600, 6000, 6400, 6800, 7200, 7600, 8000, 8400, 8800, 9200,
+      ],
       pcieX16Slots: { generation: 5, count: 1 },
       m2Slots: 3,
-      m2SlotDetails: null,
+      m2SlotDetails: [
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 5,
+          sharingNote: null,
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 110,
+          pcieGeneration: 4,
+          sharingNote:
+            "When a 22110 SSD is installed, M2_3 only supports 2242/2260 modules.",
+        },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote:
+            "Only supports 2242/2260 modules when a 22110 SSD is installed in M2_2.",
+        },
+      ],
       sataPorts: 4,
-      fanHeaders: null,
+      fanHeaders: 7,
       cpuPowerConnectors: "8-pin + 8-pin EPS",
       cpuSupportListUrl:
         "https://www.msi.com/Motherboard/MAG-B860-TOMAHAWK-WIFI/support#cpu",

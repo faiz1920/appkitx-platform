@@ -15,12 +15,12 @@ export const ramKits: readonly RamComponent[] = [
     model: "CMK32GX5M2B6000C30",
     description:
       "32 GB dual-channel DDR5 kit, 6000 MT/s at CL30, Intel XMP 3.0, non-ECC unbuffered DIMMs.",
-    url: "https://www.corsair.com/us/en/p/memory/cmk32gx5m2b6000c30/",
+    url: "https://www.corsair.com/us/en/p/memory/cmk32gx5m2b6000c30/vengeance-32gb-2x16gb-ddr5-dram-6000mt-s-c30-memory-kit-black-cmk32gx5m2b6000c30",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
-      "https://www.corsair.com/us/en/p/memory/cmk32gx5m2b6000c30/",
+      "https://www.corsair.com/us/en/p/memory/cmk32gx5m2b6000c30/vengeance-32gb-2x16gb-ddr5-dram-6000mt-s-c30-memory-kit-black-cmk32gx5m2b6000c30",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -45,12 +45,12 @@ export const ramKits: readonly RamComponent[] = [
     model: "F4-3200C16D-16GVKB",
     description:
       "16 GB dual-channel DDR4 kit, 3200 MT/s at CL16-18-18-38, Intel XMP 2.0, non-ECC unbuffered DIMMs.",
-    url: "https://www.gskill.com/product/165/166/1536650959/F4-3200C16D-16GVKB",
+    url: "https://www.gskill.com/product/165/184/1536110676/F4-3200C16D-16GVKB",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "G.SKILL product specification",
-      "https://www.gskill.com/product/165/166/1536650959/F4-3200C16D-16GVKB",
+      "https://www.gskill.com/product/165/184/1536110676/F4-3200C16D-16GVKB",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -105,12 +105,12 @@ export const ramKits: readonly RamComponent[] = [
     model: "CMK16GX4M2B3200C16",
     description:
       "16 GB dual-channel DDR4 kit, 3200 MT/s at CL16-18-18-36, low-profile heatspreaders, XMP 2.0.",
-    url: "https://www.corsair.com/us/en/p/memory/cmk16gx4m2b3200c16/",
+    url: "https://www.corsair.com/us/en/p/memory/cmk16gx4m2b3200c16/vengeancea-lpx-16gb-2-x-8gb-ddr4-dram-3200mhz-c16-memory-kit-black-cmk16gx4m2b3200c16",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
-      "https://www.corsair.com/us/en/p/memory/cmk16gx4m2b3200c16/",
+      "https://www.corsair.com/us/en/p/memory/cmk16gx4m2b3200c16/vengeancea-lpx-16gb-2-x-8gb-ddr4-dram-3200mhz-c16-memory-kit-black-cmk16gx4m2b3200c16",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -135,12 +135,12 @@ export const ramKits: readonly RamComponent[] = [
     model: "CMK32GX4M4B3200C16",
     description:
       "32 GB four-module DDR4 kit, 3200 MT/s at CL16-18-18-36, low-profile heatspreaders, XMP 2.0.",
-    url: "https://www.corsair.com/us/en/p/memory/cmk32gx4m4b3200c16/",
+    url: "https://www.corsair.com/us/en/p/memory/cmk32gx4m4b3200c16/vengeancea-lpx-32gb-4-x-8gb-ddr4-dram-3200mhz-c16-memory-kit-black-cmk32gx4m4b3200c16",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
-      "https://www.corsair.com/us/en/p/memory/cmk32gx4m4b3200c16/",
+      "https://www.corsair.com/us/en/p/memory/cmk32gx4m4b3200c16/vengeancea-lpx-32gb-4-x-8gb-ddr4-dram-3200mhz-c16-memory-kit-black-cmk32gx4m4b3200c16",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -165,12 +165,12 @@ export const ramKits: readonly RamComponent[] = [
     model: "F4-3600C18D-32GVK",
     description:
       "32 GB dual-channel DDR4 kit, 3600 MT/s at CL18-22-22-42, Intel XMP 2.0, non-ECC unbuffered DIMMs.",
-    url: "https://www.gskill.com/product/165/184/1562833847/F4-3600C18D-32GVK",
+    url: "https://www.gskill.com/specification/165/184/1562833535/F4-3600C18D-32GVK-Specification",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "G.SKILL product specification",
-      "https://www.gskill.com/product/165/184/1562833847/F4-3600C18D-32GVK",
+      "https://www.gskill.com/specification/165/184/1562833535/F4-3600C18D-32GVK-Specification",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -195,12 +195,12 @@ export const ramKits: readonly RamComponent[] = [
     model: "F5-6000J3038F16GX2-FX5",
     description:
       "32 GB dual-channel DDR5 kit tuned for AMD AM5, 6000 MT/s at CL30-38-38-96, AMD EXPO profile.",
-    url: "https://www.gskill.com/product/165/396/1668063036/F5-6000J3038F16GX2-FX5",
+    url: "https://www.gskill.com/specification/165/396/1673491242/F5-6000J3038F16GX2-FX5-Specification",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "G.SKILL product specification",
-      "https://www.gskill.com/product/165/396/1668063036/F5-6000J3038F16GX2-FX5",
+      "https://www.gskill.com/specification/165/396/1673491242/F5-6000J3038F16GX2-FX5-Specification",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -285,12 +285,12 @@ export const ramKits: readonly RamComponent[] = [
     model: "CMK64GX5M2B5600C40",
     description:
       "64 GB dual-channel DDR5 kit, 5600 MT/s at CL40, Intel XMP 3.0, non-ECC unbuffered DIMMs.",
-    url: "https://www.corsair.com/us/en/p/memory/cmk64gx5m2b5600c40/",
+    url: "https://www.corsair.com/us/en/p/memory/cmk64gx5m2b5600c40/vengeancea-64gb-2x32gb-ddr5-dram-5600mhz-c40-memory-kit-a-black-cmk64gx5m2b5600c40",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
-      "https://www.corsair.com/us/en/p/memory/cmk64gx5m2b5600c40/",
+      "https://www.corsair.com/us/en/p/memory/cmk64gx5m2b5600c40/vengeancea-64gb-2x32gb-ddr5-dram-5600mhz-c40-memory-kit-a-black-cmk64gx5m2b5600c40",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {

@@ -226,6 +226,12 @@ export function specLines(component: Component): SpecLine[] {
               .join(", "),
       );
       add(
+        "16-pin adapter input",
+        s.powerAdapter8pin === null
+          ? null
+          : `${s.powerAdapter8pin} × PCIe 8-pin`,
+      );
+      add(
         "Display outputs",
         s.displayOutputs === null ? null : s.displayOutputs.join(", "),
       );
@@ -254,6 +260,37 @@ export function specLines(component: Component): SpecLine[] {
             : `${s.pcieX16Slots.count} × PCIe ${s.pcieX16Slots.generation}.0`,
       );
       add("M.2 slots", s.m2Slots === null ? null : `${s.m2Slots}`);
+      add(
+        "M.2 detail",
+        s.m2SlotDetails === null
+          ? null
+          : s.m2SlotDetails
+              .map((slot, index) => {
+                const protocol =
+                  slot.interface === "both"
+                    ? "NVMe/SATA"
+                    : slot.interface === "nvme"
+                      ? "NVMe"
+                      : "SATA";
+                const pcie =
+                  slot.pcieGeneration === null
+                    ? ""
+                    : ` PCIe ${slot.pcieGeneration}.0`;
+                const length =
+                  slot.maxLengthMm === null ? "" : `, ${slot.maxLengthMm} mm`;
+                return `M2_${index + 1}: ${protocol}${pcie}${length}`;
+              })
+              .join("; "),
+      );
+      add(
+        "M.2 sharing",
+        s.m2SlotDetails === null
+          ? null
+          : s.m2SlotDetails
+              .filter((slot) => slot.sharingNote !== null)
+              .map((slot) => slot.sharingNote)
+              .join(" ") || null,
+      );
       add("SATA ports", s.sataPorts === null ? null : `${s.sataPorts}`);
       add("Fan headers", s.fanHeaders === null ? null : `${s.fanHeaders}`);
       add("CPU power", s.cpuPowerConnectors);
@@ -464,6 +501,14 @@ export function missingSpecLabels(component: Component): string[] {
       gap("power draw", s.powerDrawW === null);
       gap("recommended PSU", s.recommendedPsuW === null);
       gap("power connectors", s.powerConnectors === null);
+      if (
+        s.powerConnectors !== null &&
+        s.powerConnectors.some(
+          (connector) => connector.type === "12vhpwr-16pin",
+        )
+      ) {
+        gap("16-pin adapter cable requirement", s.powerAdapter8pin === null);
+      }
       gap("display outputs", s.displayOutputs === null);
       break;
     }

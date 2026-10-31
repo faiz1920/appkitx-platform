@@ -15,13 +15,12 @@ export const cpus: readonly CpuComponent[] = [
     model: "100-100000927BOX",
     description:
       "6-core / 12-thread AM4 desktop processor, 3.5 GHz base and up to 4.4 GHz boost, Wraith Stealth cooler included.",
-    url: "https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600.html",
     releaseDate: "2022-04-04",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
-      "AMD product specification",
-      "https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600.html",
+      "AMD processor specifications (Ryzen 5000 series)",
+      "https://www.amd.com/en/products/specifications/processors.html",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -50,13 +49,12 @@ export const cpus: readonly CpuComponent[] = [
     model: "100-100000926WOF",
     description:
       "8-core / 16-thread AM4 desktop processor, 3.4 GHz base and up to 4.6 GHz boost, 65 W TDP.",
-    url: "https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-7-5700x.html",
     releaseDate: "2022-04-04",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
-      "AMD product specification",
-      "https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-7-5700x.html",
+      "AMD processor specifications (Ryzen 5000 series)",
+      "https://www.amd.com/en/products/specifications/processors.html",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -606,9 +604,7 @@ export const cpus: readonly CpuComponent[] = [
       memoryTypes: ["DDR5"],
       memoryChannels: 2,
       memorySpeedMTs: 6400,
-      // Intel's published maximum varied between sources (192/256 GB) at
-      // verification time; keep the record honest rather than pick one.
-      maxMemoryGB: null,
+      maxMemoryGB: 256,
       tdpW: 125,
       maxPowerW: 250,
       integratedGraphics: true,

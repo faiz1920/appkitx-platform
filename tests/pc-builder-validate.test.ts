@@ -239,7 +239,12 @@ describe("M10.3 schema validation", () => {
     const board = makeMotherboard({
       m2Slots: 3,
       m2SlotDetails: [
-        { interface: "nvme", maxLengthMm: 80, pcieGeneration: 4 },
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+          sharingNote: null,
+        },
       ],
     });
     const result = validateComponent(board);
@@ -297,5 +302,51 @@ describe("M10.3 schema validation", () => {
       memorySpeedMTs: null,
     });
     expect(validateComponent(cpu).ok).toBe(true);
+  });
+});
+
+describe("M10.3.1 schema validation", () => {
+  it("accepts a documented 16-pin adapter cable count", () => {
+    const gpu = makeGpu({
+      powerConnectors: [{ type: "12vhpwr-16pin", count: 1 }],
+      powerAdapter8pin: 3,
+    });
+    expect(validateComponent(gpu).ok).toBe(true);
+  });
+
+  it("rejects an adapter cable count without a 16-pin connector", () => {
+    const gpu = makeGpu({
+      powerConnectors: [{ type: "pcie-8pin", count: 2 }],
+      powerAdapter8pin: 2,
+    });
+    const result = validateComponent(gpu);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(
+        result.errors.some((error) => error.path === ".specs.powerAdapter8pin"),
+      ).toBe(true);
+    }
+  });
+
+  it("rejects a non-numeric adapter cable count", () => {
+    const gpu = makeGpu({
+      powerConnectors: [{ type: "12vhpwr-16pin", count: 1 }],
+      powerAdapter8pin: 1.5,
+    });
+    expect(validateComponent(gpu).ok).toBe(false);
+  });
+
+  it("requires a sharing note field on every M.2 slot", () => {
+    const board = makeMotherboard({
+      m2Slots: 1,
+      m2SlotDetails: [
+        {
+          interface: "nvme",
+          maxLengthMm: 80,
+          pcieGeneration: 4,
+        } as never,
+      ],
+    });
+    expect(validateComponent(board).ok).toBe(false);
   });
 });

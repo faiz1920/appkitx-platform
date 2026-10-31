@@ -87,6 +87,14 @@ function criticalNullFields(component: Component): string[] {
       gap("slotWidth", s.slotWidth === null);
       gap("powerDrawW", s.powerDrawW === null);
       gap("powerConnectors", s.powerConnectors === null);
+      if (
+        s.powerConnectors !== null &&
+        s.powerConnectors.some(
+          (connector) => connector.type === "12vhpwr-16pin",
+        )
+      ) {
+        gap("powerAdapter8pin", s.powerAdapter8pin === null);
+      }
       break;
     }
     case "motherboard": {
