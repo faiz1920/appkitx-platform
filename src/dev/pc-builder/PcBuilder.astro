@@ -65,7 +65,7 @@ const multiSlot = new Set<string>(multiSlotCategories);
     </div>
   </div>
 
-  <fieldset class="mt-6">
+  <fieldset class="mt-6" data-builder-chrome>
     <legend class="sr-only">Builder mode</legend>
     <div class="segmented max-w-md">
       <label class="min-h-11">
@@ -96,6 +96,299 @@ const multiSlot = new Set<string>(multiSlotCategories);
     </p>
   </fieldset>
 
+  <section
+    class="mt-6 rounded-lg border border-border-subtle bg-surface-subtle p-(--layout-panel-padding)"
+    aria-labelledby="saved-builds-heading"
+    data-saved-builds
+    data-builder-chrome
+  >
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="min-w-0">
+        <p class="text-overline text-text-muted">Local library</p>
+        <h2
+          id="saved-builds-heading"
+          class="mt-1 text-title text-text-primary"
+          tabindex="-1"
+        >
+          Saved builds
+        </h2>
+        <p class="mt-1 max-w-(--layout-prose) text-caption text-text-muted">
+          Stored in this browser only. No account, cloud sync or server copy.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button type="button" class="btn btn-primary" data-save-new>
+          Save as new
+        </button>
+        <button type="button" class="btn btn-secondary" data-save-update>
+          Update saved build
+        </button>
+        <button type="button" class="btn btn-secondary" data-share-current>
+          Share current build
+        </button>
+      </div>
+    </div>
+
+    <p class="mt-2 text-caption text-text-secondary" data-active-saved>
+      No saved build is active. Save the current selection to keep it in this
+      browser.
+    </p>
+
+    <div
+      class="mt-2 rounded-md border border-error bg-error-subtle p-3"
+      role="alert"
+      data-saved-error
+      hidden
+    >
+      <p class="text-small text-error" data-saved-error-message></p>
+    </div>
+
+    <div
+      class="mt-2 rounded-md border border-warning bg-warning-subtle p-3"
+      data-saved-notice
+      hidden
+    >
+      <p class="text-small text-warning" data-saved-notice-message></p>
+    </div>
+
+    <div
+      class="mt-2 rounded-md border border-warning bg-warning-subtle p-3"
+      role="alert"
+      data-saved-corrupt
+      hidden
+    >
+      <p class="text-small text-warning" data-saved-corrupt-message></p>
+      <button type="button" class="btn btn-secondary mt-2" data-saved-reset>
+        Reset saved builds
+      </button>
+    </div>
+
+    <p class="mt-3 text-small text-text-muted" data-saved-empty>
+      No saved builds yet. Configure a build or generate a recommendation, then
+      save it to keep it in this browser.
+    </p>
+    <ul class="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2" data-saved-list></ul>
+  </section>
+
+  <section
+    class="mt-8"
+    data-shared-view
+    aria-labelledby="shared-heading"
+    tabindex="-1"
+    hidden
+  >
+    <div data-shared-content>
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-overline text-text-muted">Shared build — read-only</p>
+          <h2
+            id="shared-heading"
+            class="mt-1 text-headline text-text-primary"
+            tabindex="-1"
+            data-shared-name
+          >
+            Shared build
+          </h2>
+          <p class="mt-2 text-small text-text-secondary" data-shared-meta></p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            class="inline-flex items-center rounded-full border border-border-strong bg-surface-muted px-3 py-1 text-chip text-text-secondary"
+            data-shared-source
+          >
+            Manual
+          </span>
+          <span
+            class="inline-flex items-center rounded-full border px-3 py-1 text-chip"
+            data-shared-compat-badge
+          >
+            Unknown
+          </span>
+        </div>
+      </div>
+
+      <p class="mt-3 max-w-(--layout-prose) text-small text-text-secondary">
+        This view is read-only. Compatibility and power are recalculated from
+        the current catalogue; nothing is added to your manual build until you
+        choose Import.
+      </p>
+
+      <div
+        class="mt-3 rounded-md border border-warning bg-warning-subtle p-3"
+        data-shared-warnings
+        hidden
+      >
+        <p class="text-label text-warning">Catalogue warnings</p>
+        <ul
+          class="mt-1 space-y-1 text-small text-warning"
+          data-shared-warning-list
+        ></ul>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <button type="button" class="btn btn-primary" data-shared-import>
+          Import into manual builder
+        </button>
+        <button type="button" class="btn btn-secondary" data-shared-save>
+          Save a copy locally
+        </button>
+        <button type="button" class="btn btn-ghost" data-shared-return>
+          Return to builder
+        </button>
+      </div>
+      <p
+        class="mt-2 text-caption text-text-secondary"
+        role="status"
+        data-shared-feedback
+      ></p>
+
+      <div class="mt-6 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <section
+          class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+          aria-labelledby="shared-components-heading"
+        >
+          <h3
+            id="shared-components-heading"
+            class="text-title text-text-primary"
+          >
+            Components
+          </h3>
+          <p class="mt-1 text-caption text-text-muted" data-shared-summary></p>
+          <ul class="mt-3 space-y-3" data-shared-components></ul>
+        </section>
+
+        <div class="space-y-4">
+          <section
+            class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+            aria-labelledby="shared-compat-heading"
+          >
+            <h3 id="shared-compat-heading" class="text-title text-text-primary">
+              Compatibility
+            </h3>
+            <p
+              class="mt-1 text-caption text-text-secondary"
+              data-shared-compat-message
+            ></p>
+            <dl class="mt-3 grid grid-cols-2 gap-2">
+              <div class="rounded-md bg-surface-subtle px-3 py-2">
+                <dt class="text-micro text-text-muted">Incompatible</dt>
+                <dd
+                  class="font-mono text-title tabular-nums text-text-primary"
+                  data-shared-count-incompatible
+                >
+                  0
+                </dd>
+              </div>
+              <div class="rounded-md bg-surface-subtle px-3 py-2">
+                <dt class="text-micro text-text-muted">Warnings</dt>
+                <dd
+                  class="font-mono text-title tabular-nums text-text-primary"
+                  data-shared-count-warning
+                >
+                  0
+                </dd>
+              </div>
+              <div class="rounded-md bg-surface-subtle px-3 py-2">
+                <dt class="text-micro text-text-muted">Unknown</dt>
+                <dd
+                  class="font-mono text-title tabular-nums text-text-primary"
+                  data-shared-count-unknown
+                >
+                  0
+                </dd>
+              </div>
+              <div class="rounded-md bg-surface-subtle px-3 py-2">
+                <dt class="text-micro text-text-muted">Compatible</dt>
+                <dd
+                  class="font-mono text-title tabular-nums text-text-primary"
+                  data-shared-count-compatible
+                >
+                  0
+                </dd>
+              </div>
+            </dl>
+            <ul
+              class="mt-2 divide-y divide-border-subtle"
+              data-shared-findings
+            ></ul>
+          </section>
+
+          <section
+            class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+            aria-labelledby="shared-power-heading"
+          >
+            <h3 id="shared-power-heading" class="text-title text-text-primary">
+              Power estimate
+            </h3>
+            <dl class="mt-3 space-y-2 text-small">
+              <div class="flex items-baseline justify-between gap-3">
+                <dt class="text-text-secondary">Estimated load</dt>
+                <dd
+                  class="font-mono text-title tabular-nums text-text-primary"
+                  data-shared-power-load
+                >
+                  —
+                </dd>
+              </div>
+              <div class="flex items-baseline justify-between gap-3">
+                <dt class="text-text-secondary">Recommended PSU</dt>
+                <dd
+                  class="font-mono tabular-nums"
+                  data-shared-power-recommended
+                >
+                  —
+                </dd>
+              </div>
+              <div class="flex items-baseline justify-between gap-3">
+                <dt class="text-text-secondary">Selected PSU</dt>
+                <dd class="font-mono tabular-nums" data-shared-power-selected>
+                  —
+                </dd>
+              </div>
+            </dl>
+            <p class="mt-2 text-micro text-text-muted">
+              Manufacturer power figures are combined with generic estimates.
+              This is not a certified PSU requirement.
+            </p>
+          </section>
+        </div>
+      </div>
+
+      <section
+        class="mt-4 rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+        aria-labelledby="shared-limitations-heading"
+      >
+        <h3
+          id="shared-limitations-heading"
+          class="text-title text-text-primary"
+        >
+          Limitations
+        </h3>
+        <ul
+          class="mt-2 space-y-1 text-small text-text-secondary"
+          data-shared-limitations
+        ></ul>
+      </section>
+    </div>
+
+    <div data-shared-error role="alert" hidden>
+      <p class="text-overline text-text-muted">Shared build — read-only</p>
+      <h2
+        id="shared-error-heading"
+        class="mt-1 text-headline text-text-primary"
+      >
+        Shared build could not be opened
+      </h2>
+      <p
+        class="mt-2 text-small text-text-secondary"
+        data-shared-error-message
+      ></p>
+      <button type="button" class="btn btn-secondary mt-4" data-shared-return>
+        Return to builder
+      </button>
+    </div>
+  </section>
+
   <noscript>
     <p class="mt-6 rounded-lg border border-warning bg-warning-subtle p-4 text-small text-warning">
       The PC Builder requires JavaScript to manage the selection and run
@@ -106,6 +399,7 @@ const multiSlot = new Set<string>(multiSlotCategories);
   <section
     class="mt-8"
     data-mode-panel="guided"
+    data-builder-chrome
     aria-labelledby="guided-heading"
   >
     <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
@@ -447,6 +741,9 @@ const multiSlot = new Set<string>(multiSlotCategories);
         <button type="button" class="btn btn-secondary" data-guided-regenerate>
           Regenerate
         </button>
+        <button type="button" class="btn btn-secondary" data-guided-save>
+          Save recommendation
+        </button>
         <button type="button" class="btn btn-primary" data-guided-transfer>
           Transfer to manual builder
         </button>
@@ -709,6 +1006,7 @@ const multiSlot = new Set<string>(multiSlotCategories);
   <div
     class="mt-8 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]"
     data-mode-panel="manual"
+    data-builder-chrome
     hidden
   >
     <section aria-labelledby="components-heading" class="min-w-0">
@@ -1015,6 +1313,184 @@ const multiSlot = new Set<string>(multiSlotCategories);
     </div>
   </dialog>
 
+  <dialog
+    class="m-auto w-[min(520px,calc(100vw-2rem))] rounded-xl border border-border-subtle bg-surface p-0 shadow-lg backdrop:bg-overlay"
+    aria-labelledby="save-dialog-title"
+    aria-describedby="save-dialog-description"
+    data-save-dialog
+  >
+    <div class="p-5">
+      <h2 id="save-dialog-title" class="text-title text-text-primary">
+        Save build
+      </h2>
+      <p
+        id="save-dialog-description"
+        class="mt-1 text-caption text-text-muted"
+        data-save-context
+      ></p>
+      <label
+        for="save-build-name"
+        class="mt-4 block text-label text-text-primary"
+      >
+        Build name
+      </label>
+      <input
+        id="save-build-name"
+        type="text"
+        class="input mt-1"
+        maxlength="80"
+        autocomplete="off"
+        aria-describedby="save-build-help save-build-error"
+        data-save-name
+      />
+      <p id="save-build-help" class="mt-1 text-caption text-text-muted">
+        Names are stored only in this browser.
+      </p>
+      <p
+        id="save-build-error"
+        class="field-error mt-1"
+        role="alert"
+        hidden
+        data-save-error
+      ></p>
+      <div class="mt-5 flex flex-wrap justify-end gap-2">
+        <button type="button" class="btn btn-secondary" data-save-cancel>
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" data-save-confirm>
+          Save build
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog
+    class="m-auto w-[min(520px,calc(100vw-2rem))] rounded-xl border border-border-subtle bg-surface p-0 shadow-lg backdrop:bg-overlay"
+    aria-labelledby="rename-dialog-title"
+    data-rename-dialog
+  >
+    <div class="p-5">
+      <h2 id="rename-dialog-title" class="text-title text-text-primary">
+        Rename saved build
+      </h2>
+      <label
+        for="rename-build-name"
+        class="mt-4 block text-label text-text-primary"
+      >
+        Build name
+      </label>
+      <input
+        id="rename-build-name"
+        type="text"
+        class="input mt-1"
+        maxlength="80"
+        autocomplete="off"
+        aria-describedby="rename-build-error"
+        data-rename-name
+      />
+      <p
+        id="rename-build-error"
+        class="field-error mt-1"
+        role="alert"
+        hidden
+        data-rename-error
+      ></p>
+      <div class="mt-5 flex flex-wrap justify-end gap-2">
+        <button type="button" class="btn btn-secondary" data-rename-cancel>
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" data-rename-confirm>
+          Rename build
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog
+    class="m-auto w-[min(520px,calc(100vw-2rem))] rounded-xl border border-border-subtle bg-surface p-0 shadow-lg backdrop:bg-overlay"
+    aria-labelledby="confirm-dialog-title"
+    aria-describedby="confirm-dialog-message"
+    data-confirm-dialog
+  >
+    <div class="p-5">
+      <h2
+        id="confirm-dialog-title"
+        class="text-title text-text-primary"
+        data-confirm-title
+      >
+        Confirm
+      </h2>
+      <p
+        id="confirm-dialog-message"
+        class="mt-2 text-small text-text-secondary"
+        data-confirm-message
+      ></p>
+      <div class="mt-5 flex flex-wrap justify-end gap-2">
+        <button type="button" class="btn btn-secondary" data-confirm-cancel>
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" data-confirm-accept>
+          Continue
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog
+    class="m-auto w-[min(620px,calc(100vw-2rem))] rounded-xl border border-border-subtle bg-surface p-0 shadow-lg backdrop:bg-overlay"
+    aria-labelledby="share-dialog-title"
+    aria-describedby="share-dialog-description"
+    data-share-dialog
+  >
+    <div class="p-5">
+      <h2 id="share-dialog-title" class="text-title text-text-primary">
+        Share build
+      </h2>
+      <p
+        id="share-dialog-description"
+        class="mt-1 text-caption text-text-muted"
+        data-share-context
+      ></p>
+      <label for="share-link" class="mt-4 block text-label text-text-primary">
+        Share link
+      </label>
+      <input
+        id="share-link"
+        type="text"
+        readonly
+        class="input mt-1 font-mono text-caption"
+        aria-describedby="share-link-help"
+        data-share-link
+      />
+      <p id="share-link-help" class="mt-1 text-caption text-text-muted">
+        The payload lives in the URL fragment and is not sent to the server.
+        Share links work only where the development PC Builder preview is
+        available.
+      </p>
+      <p
+        class="mt-2 text-small text-text-secondary"
+        role="status"
+        data-share-feedback
+      ></p>
+      <div class="mt-5 flex flex-wrap justify-end gap-2">
+        <button type="button" class="btn btn-ghost" data-share-close>
+          Close
+        </button>
+        <a
+          class="btn btn-secondary"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-share-open
+        >
+          Open shared view
+        </a>
+        <button type="button" class="btn btn-primary" data-share-copy>
+          Copy link
+        </button>
+      </div>
+    </div>
+  </dialog>
+
   <div
     class="sr-only"
     role="status"
@@ -1092,6 +1568,30 @@ const multiSlot = new Set<string>(multiSlotCategories);
     type RecommendationResult,
     type RecommendationStatus,
   } from "../../lib/pc-builder/recommendations";
+  import {
+    BUILD_SOURCE_LABELS,
+    buildShareLink,
+    createBrowserStorage,
+    createSavedBuildRepository,
+    createSharePayload,
+    decodeSharePayload,
+    encodeSharePayload,
+    extractSharePayloadFromHash,
+    normalizeBuildName,
+    questionnaireMetadataFromQuestionnaire,
+    resolveSavedBuild,
+    resolveSharePayload,
+    savedBuildToSharePayload,
+    selectionsFromBuildState,
+    shareErrorMessage,
+    validateBuildName,
+    type BuildSource,
+    type SavedBuild,
+    type SavedBuildQuestionnaire,
+    type SavedBuildResolution,
+    type SavedBuildSelection,
+    type ShareBuildPayload,
+  } from "../../lib/pc-builder/saved-builds";
 
   const root = document.querySelector<HTMLElement>("[data-pc-builder]");
 
@@ -1272,6 +1772,111 @@ const multiSlot = new Set<string>(multiSlotCategories);
     const transferConfirm = requireEl<HTMLButtonElement>(
       "[data-transfer-confirm]",
     );
+
+    const builderChrome = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-builder-chrome]"),
+    );
+    const savedHeading = requireEl<HTMLElement>("#saved-builds-heading");
+    const saveNewButton = requireEl<HTMLButtonElement>("[data-save-new]");
+    const saveUpdateButton = requireEl<HTMLButtonElement>("[data-save-update]");
+    const shareCurrentButton = requireEl<HTMLButtonElement>(
+      "[data-share-current]",
+    );
+    const activeSaved = requireEl<HTMLElement>("[data-active-saved]");
+    const savedError = requireEl<HTMLElement>("[data-saved-error]");
+    const savedErrorMessage = requireEl<HTMLElement>(
+      "[data-saved-error-message]",
+    );
+    const savedNotice = requireEl<HTMLElement>("[data-saved-notice]");
+    const savedNoticeMessage = requireEl<HTMLElement>(
+      "[data-saved-notice-message]",
+    );
+    const savedCorrupt = requireEl<HTMLElement>("[data-saved-corrupt]");
+    const savedCorruptMessage = requireEl<HTMLElement>(
+      "[data-saved-corrupt-message]",
+    );
+    const savedReset = requireEl<HTMLButtonElement>("[data-saved-reset]");
+    const savedEmpty = requireEl<HTMLElement>("[data-saved-empty]");
+    const savedList = requireEl<HTMLElement>("[data-saved-list]");
+
+    const saveDialog = requireEl<HTMLDialogElement>("[data-save-dialog]");
+    const saveName = requireEl<HTMLInputElement>("[data-save-name]");
+    const saveContext = requireEl<HTMLElement>("[data-save-context]");
+    const saveError = requireEl<HTMLElement>("[data-save-error]");
+    const saveConfirm = requireEl<HTMLButtonElement>("[data-save-confirm]");
+    const saveCancel = requireEl<HTMLButtonElement>("[data-save-cancel]");
+
+    const renameDialog = requireEl<HTMLDialogElement>("[data-rename-dialog]");
+    const renameName = requireEl<HTMLInputElement>("[data-rename-name]");
+    const renameError = requireEl<HTMLElement>("[data-rename-error]");
+    const renameConfirm = requireEl<HTMLButtonElement>("[data-rename-confirm]");
+    const renameCancel = requireEl<HTMLButtonElement>("[data-rename-cancel]");
+
+    const confirmDialog = requireEl<HTMLDialogElement>("[data-confirm-dialog]");
+    const confirmTitle = requireEl<HTMLElement>("[data-confirm-title]");
+    const confirmMessage = requireEl<HTMLElement>("[data-confirm-message]");
+    const confirmAccept = requireEl<HTMLButtonElement>("[data-confirm-accept]");
+    const confirmCancel = requireEl<HTMLButtonElement>("[data-confirm-cancel]");
+
+    const shareDialog = requireEl<HTMLDialogElement>("[data-share-dialog]");
+    const shareContext = requireEl<HTMLElement>("[data-share-context]");
+    const shareLink = requireEl<HTMLInputElement>("[data-share-link]");
+    const shareFeedback = requireEl<HTMLElement>("[data-share-feedback]");
+    const shareOpen = requireEl<HTMLAnchorElement>("[data-share-open]");
+    const shareCopy = requireEl<HTMLButtonElement>("[data-share-copy]");
+    const shareClose = requireEl<HTMLButtonElement>("[data-share-close]");
+
+    const sharedView = requireEl<HTMLElement>("[data-shared-view]");
+    const sharedContent = requireEl<HTMLElement>("[data-shared-content]");
+    const sharedError = requireEl<HTMLElement>("[data-shared-error]");
+    const sharedErrorMessage = requireEl<HTMLElement>(
+      "[data-shared-error-message]",
+    );
+    const sharedName = requireEl<HTMLElement>("[data-shared-name]");
+    const sharedMeta = requireEl<HTMLElement>("[data-shared-meta]");
+    const sharedSource = requireEl<HTMLElement>("[data-shared-source]");
+    const sharedCompatBadge = requireEl<HTMLElement>(
+      "[data-shared-compat-badge]",
+    );
+    const sharedWarnings = requireEl<HTMLElement>("[data-shared-warnings]");
+    const sharedWarningList = requireEl<HTMLElement>(
+      "[data-shared-warning-list]",
+    );
+    const sharedSummary = requireEl<HTMLElement>("[data-shared-summary]");
+    const sharedComponents = requireEl<HTMLElement>("[data-shared-components]");
+    const sharedCountIncompatible = requireEl<HTMLElement>(
+      "[data-shared-count-incompatible]",
+    );
+    const sharedCountWarning = requireEl<HTMLElement>(
+      "[data-shared-count-warning]",
+    );
+    const sharedCountUnknown = requireEl<HTMLElement>(
+      "[data-shared-count-unknown]",
+    );
+    const sharedCountCompatible = requireEl<HTMLElement>(
+      "[data-shared-count-compatible]",
+    );
+    const sharedCompatMessage = requireEl<HTMLElement>(
+      "[data-shared-compat-message]",
+    );
+    const sharedFindings = requireEl<HTMLElement>("[data-shared-findings]");
+    const sharedPowerLoad = requireEl<HTMLElement>("[data-shared-power-load]");
+    const sharedPowerRecommended = requireEl<HTMLElement>(
+      "[data-shared-power-recommended]",
+    );
+    const sharedPowerSelected = requireEl<HTMLElement>(
+      "[data-shared-power-selected]",
+    );
+    const sharedLimitations = requireEl<HTMLElement>(
+      "[data-shared-limitations]",
+    );
+    const sharedFeedback = requireEl<HTMLElement>("[data-shared-feedback]");
+    const sharedImport = requireEl<HTMLButtonElement>("[data-shared-import]");
+    const sharedSave = requireEl<HTMLButtonElement>("[data-shared-save]");
+    const sharedReturnButtons = Array.from(
+      root.querySelectorAll<HTMLButtonElement>("[data-shared-return]"),
+    );
+
     const overallBadge = requireEl<HTMLElement>("[data-overall-badge]");
     const overallMessage = requireEl<HTMLElement>("[data-overall-message]");
     const findingsEmpty = requireEl<HTMLElement>("[data-findings-empty]");
@@ -1330,6 +1935,28 @@ const multiSlot = new Set<string>(multiSlotCategories);
     let state: BuildState = createEmptyBuild();
     let activeCategory: ComponentCategory | null = null;
     let currentRecommendation: RecommendationResult | null = null;
+    let builderMode: "guided" | "manual" = "guided";
+    let activeSavedBuildId: string | null = null;
+    let currentBuildSource: BuildSource = "manual";
+    let currentGuidedQuestionnaire: SavedBuildQuestionnaire | null = null;
+    let savedBuildsCache: SavedBuild[] = [];
+    let storageAvailable = true;
+    let corruptSavedStore: "invalid" | "unsupported-version" | null = null;
+    let pendingSave: {
+      selections: SavedBuildSelection[];
+      source: BuildSource;
+      questionnaire: SavedBuildQuestionnaire | null;
+    } | null = null;
+    let pendingRenameId: string | null = null;
+    let pendingConfirmation: (() => void) | null = null;
+    let currentShared: {
+      payload: ShareBuildPayload;
+      resolution: SavedBuildResolution;
+    } | null = null;
+    let sharedViewOpen = false;
+
+    const savedRepository = createSavedBuildRepository(createBrowserStorage());
+    const componentLookup = (id: string) => byId.get(id);
 
     function statusBadge(status: CompatibilityStatus): HTMLElement {
       const badge = el(
@@ -1717,6 +2344,7 @@ const multiSlot = new Set<string>(multiSlotCategories);
           `${announcement} ${overallStatusLabel(report, resolved.components.length)}. ${report.summary.counts.incompatible} incompatible, ${report.summary.counts.warning} warning(s), ${report.summary.counts.unknown} unknown finding(s).`,
         );
       }
+      refreshBuildActions();
     }
 
     /* ---------------------------------------------------------------- */
@@ -1752,10 +2380,12 @@ const multiSlot = new Set<string>(multiSlotCategories);
     }
 
     function setMode(mode: "guided" | "manual", focus = false): void {
-      guidedPanel.hidden = mode !== "guided";
-      manualPanel.hidden = mode !== "manual";
+      builderMode = mode;
+      guidedPanel.hidden = sharedViewOpen || mode !== "guided";
+      manualPanel.hidden = sharedViewOpen || mode !== "manual";
       for (const input of modeInputs) input.checked = input.value === mode;
       for (const node of manualOnly) node.hidden = mode !== "manual";
+      refreshBuildActions();
       if (mode === "manual" && focus) {
         renderAll();
         manualHeading.focus();
@@ -2364,9 +2994,18 @@ const multiSlot = new Set<string>(multiSlotCategories);
 
     function applyTransfer(nextState: BuildState): void {
       state = nextState;
+      activeSavedBuildId = null;
+      currentBuildSource = "guided";
+      currentGuidedQuestionnaire = currentRecommendation
+        ? questionnaireMetadataFromQuestionnaire(
+            currentRecommendation.questionnaire,
+          )
+        : null;
+      clearSavedNotice();
       transferDialog.close();
       setMode("manual", false);
       renderAll("Transferred the guided recommendation to the manual builder.");
+      refreshSavedBuilds();
       manualHeading.focus();
     }
 
@@ -2390,6 +3029,1036 @@ const multiSlot = new Set<string>(multiSlotCategories);
         return;
       }
       applyTransfer(nextState);
+    }
+
+    /* ---------------------------------------------------------------- */
+    /* Saved builds and sharing                                          */
+    /* ---------------------------------------------------------------- */
+
+    function formatSavedDate(iso: string): string {
+      const date = new Date(iso);
+      if (Number.isNaN(date.getTime())) return iso;
+      return new Intl.DateTimeFormat(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(date);
+    }
+
+    function selectionsKey(selections: readonly SavedBuildSelection[]): string {
+      return selections
+        .map(
+          (selection) =>
+            `${selection.category}:${selection.componentIds.join(",")}`,
+        )
+        .join("|");
+    }
+
+    function countSelections(
+      selections: readonly SavedBuildSelection[],
+    ): number {
+      return selections.reduce(
+        (sum, selection) => sum + selection.componentIds.length,
+        0,
+      );
+    }
+
+    function guidedContextActive(): boolean {
+      return (
+        builderMode === "guided" &&
+        currentRecommendation !== null &&
+        canTransferRecommendation(currentRecommendation)
+      );
+    }
+
+    function currentSelections(): SavedBuildSelection[] {
+      if (builderMode === "guided") {
+        return guidedContextActive() && currentRecommendation
+          ? selectionsFromBuildState(
+              recommendationToBuildState(currentRecommendation),
+            )
+          : [];
+      }
+      return selectionsFromBuildState(state);
+    }
+
+    function currentSource(): BuildSource {
+      return guidedContextActive() ? "guided" : currentBuildSource;
+    }
+
+    function currentQuestionnaire(): SavedBuildQuestionnaire | null {
+      return guidedContextActive() && currentRecommendation
+        ? questionnaireMetadataFromQuestionnaire(
+            currentRecommendation.questionnaire,
+          )
+        : currentGuidedQuestionnaire;
+    }
+
+    function hasUnsavedBuildChanges(): boolean {
+      if (selectedCount(state) === 0) return false;
+      if (activeSavedBuildId === null) return true;
+      const active = savedRepository.get(activeSavedBuildId);
+      if (!active) return true;
+      return (
+        selectionsKey(selectionsFromBuildState(state)) !==
+        selectionsKey(active.selections)
+      );
+    }
+
+    function defaultSavedName(): string {
+      if (guidedContextActive() && currentRecommendation) {
+        const { useCase, resolution } = currentRecommendation.questionnaire;
+        const useLabel = useCase === "general" ? "general purpose" : useCase;
+        const resolutionLabel =
+          resolution === "not-applicable"
+            ? ""
+            : ` ${resolution === "4k" ? "4K" : resolution}`;
+        return `Guided ${useLabel}${resolutionLabel} build`;
+      }
+      if (activeSavedBuildId) {
+        const active = savedRepository.get(activeSavedBuildId);
+        if (active) return active.name;
+      }
+      return "My PC build";
+    }
+
+    function showSavedError(message: string): void {
+      savedErrorMessage.textContent = message;
+      savedError.hidden = message === "";
+      if (message !== "") savedNotice.hidden = true;
+    }
+
+    function clearSavedError(): void {
+      showSavedError("");
+    }
+
+    function showSavedNotice(message: string): void {
+      savedNoticeMessage.textContent = message;
+      savedNotice.hidden = message === "";
+      if (message !== "") savedError.hidden = true;
+    }
+
+    function clearSavedNotice(): void {
+      showSavedNotice("");
+    }
+
+    function refreshBuildActions(): void {
+      const selections = currentSelections();
+      const hasBuild = countSelections(selections) > 0;
+      const active =
+        activeSavedBuildId === null
+          ? null
+          : savedRepository.get(activeSavedBuildId);
+      const canWrite = storageAvailable && corruptSavedStore === null;
+
+      saveNewButton.disabled = !hasBuild || !canWrite;
+      saveUpdateButton.disabled =
+        !hasBuild || !active || builderMode !== "manual" || !canWrite;
+      shareCurrentButton.disabled = !hasBuild;
+      saveNewButton.textContent = guidedContextActive()
+        ? "Save recommendation as new"
+        : "Save as new";
+      shareCurrentButton.textContent = guidedContextActive()
+        ? "Share recommendation"
+        : "Share current build";
+
+      if (active) {
+        activeSaved.textContent = `Active saved build: ${active.name} (${
+          BUILD_SOURCE_LABELS[active.source]
+        }).${
+          hasUnsavedBuildChanges()
+            ? " Modified since the last save."
+            : " Up to date."
+        }`;
+      } else if (!storageAvailable) {
+        activeSaved.textContent =
+          "Browser storage is unavailable. You can still open and import share links.";
+      } else if (corruptSavedStore !== null) {
+        activeSaved.textContent =
+          "Saved builds could not be read. Reset them before saving new builds.";
+      } else {
+        activeSaved.textContent =
+          "No saved build is active. Save the current selection to keep it in this browser.";
+      }
+    }
+
+    function savedBuildCard(build: SavedBuild): HTMLElement {
+      const resolution = resolveSavedBuild(build, componentLookup);
+      const card = el(
+        "li",
+        "rounded-md border border-border-subtle bg-surface p-4",
+      );
+      card.dataset.savedBuildId = build.id;
+
+      const header = el(
+        "div",
+        "flex flex-wrap items-start justify-between gap-2",
+      );
+      const title = el("div", "min-w-0");
+      const name = el("h3", "text-body-strong text-text-primary", build.name);
+      name.dataset.savedBuildName = "";
+      title.append(
+        name,
+        el(
+          "p",
+          "mt-1 text-micro text-text-muted",
+          `Created ${formatSavedDate(build.createdAt)} · Updated ${formatSavedDate(
+            build.updatedAt,
+          )}`,
+        ),
+      );
+      const badges = el("div", "flex flex-wrap items-center gap-2");
+      badges.append(
+        el(
+          "span",
+          "rounded-full border border-border-subtle bg-surface-muted px-2.5 py-0.5 text-micro text-text-secondary",
+          BUILD_SOURCE_LABELS[build.source],
+        ),
+      );
+      if (build.id === activeSavedBuildId) {
+        badges.append(
+          el(
+            "span",
+            "rounded-full border border-accent-subtle-border bg-accent-subtle px-2.5 py-0.5 text-micro text-accent",
+            "Active",
+          ),
+        );
+      }
+      header.append(title, badges);
+      card.append(header);
+
+      const componentCount = countSelections(build.selections);
+      const names = resolution.components
+        .slice(0, 3)
+        .map((component) => componentDisplayName(component));
+      const extra = resolution.components.length - names.length;
+      const summary =
+        resolution.components.length === 0
+          ? `${componentCount} saved component reference(s), none available in the current catalogue.`
+          : `${resolution.components.length} of ${componentCount} component(s) resolve · ${names.join(
+              " · ",
+            )}${extra > 0 ? ` · +${extra} more` : ""}`;
+      card.append(
+        el("p", "mt-2 break-words text-caption text-text-secondary", summary),
+      );
+
+      if (resolution.warnings.length > 0) {
+        card.append(
+          el(
+            "p",
+            "mt-2 break-words text-caption text-warning",
+            resolution.warnings.join(" "),
+          ),
+        );
+      }
+
+      const actions = el("div", "mt-3 flex flex-wrap items-center gap-2");
+      const load = button("Load", "btn btn-secondary");
+      load.dataset.savedLoad = "";
+      load.disabled = !resolution.importable;
+      load.setAttribute("aria-label", `Load ${build.name}`);
+      load.addEventListener("click", () => requestLoadSavedBuild(build));
+      actions.append(load);
+
+      const share = button("Share", "btn btn-ghost px-3 text-caption");
+      share.dataset.savedShare = "";
+      share.setAttribute("aria-label", `Share ${build.name}`);
+      share.addEventListener("click", () => shareSavedBuild(build));
+      actions.append(share);
+
+      const rename = button("Rename", "btn btn-ghost px-3 text-caption");
+      rename.dataset.savedRename = "";
+      rename.setAttribute("aria-label", `Rename ${build.name}`);
+      rename.addEventListener("click", () => openRenameDialog(build));
+      actions.append(rename);
+
+      const duplicate = button("Duplicate", "btn btn-ghost px-3 text-caption");
+      duplicate.dataset.savedDuplicate = "";
+      duplicate.setAttribute("aria-label", `Duplicate ${build.name}`);
+      duplicate.addEventListener("click", () =>
+        requestDuplicateSavedBuild(build),
+      );
+      actions.append(duplicate);
+
+      const remove = button(
+        "Delete",
+        "btn btn-ghost px-3 text-caption hover:bg-error-subtle hover:text-error",
+      );
+      remove.dataset.savedDelete = "";
+      remove.setAttribute("aria-label", `Delete ${build.name}`);
+      remove.addEventListener("click", () => requestDeleteSavedBuild(build));
+      actions.append(remove);
+
+      card.append(actions);
+      return card;
+    }
+
+    function renderSavedBuilds(): void {
+      savedList.replaceChildren();
+      for (const build of savedBuildsCache) {
+        savedList.append(savedBuildCard(build));
+      }
+
+      if (!storageAvailable) {
+        savedEmpty.textContent =
+          "Saved builds are unavailable in this browser context. Share links still work.";
+        savedEmpty.hidden = false;
+        return;
+      }
+      if (corruptSavedStore !== null) {
+        savedEmpty.hidden = true;
+        return;
+      }
+      savedEmpty.textContent =
+        "No saved builds yet. Configure a build or generate a recommendation, then save it to keep it in this browser.";
+      savedEmpty.hidden = savedBuildsCache.length > 0;
+    }
+
+    function refreshSavedBuilds(): void {
+      const result = savedRepository.list();
+      savedList.replaceChildren();
+      savedCorrupt.hidden = true;
+      corruptSavedStore = null;
+
+      if (!result.ok) {
+        storageAvailable = false;
+        savedBuildsCache = [];
+        savedEmpty.hidden = true;
+        showSavedError(result.error.message);
+      } else {
+        storageAvailable = true;
+        clearSavedError();
+        savedBuildsCache = result.builds;
+        if (result.corrupt) {
+          corruptSavedStore = result.corruptReason;
+          savedBuildsCache = [];
+          savedCorrupt.hidden = false;
+          savedCorruptMessage.textContent =
+            result.corruptReason === "unsupported-version"
+              ? "Saved builds use a newer storage format than this preview supports. They were left untouched. Reset only if you do not need them."
+              : "Saved-build data in this browser could not be read. It was left untouched. Reset only if you do not need it.";
+        }
+      }
+
+      renderSavedBuilds();
+      refreshBuildActions();
+    }
+
+    function showSaveDialogError(message: string): void {
+      saveError.textContent = message;
+      saveError.hidden = message === "";
+      if (message === "") {
+        saveName.removeAttribute("aria-invalid");
+      } else {
+        saveName.setAttribute("aria-invalid", "true");
+      }
+    }
+
+    function openSaveDialog(): void {
+      const selections = currentSelections();
+      if (countSelections(selections) === 0) {
+        announce("Add components before saving a build.");
+        return;
+      }
+      pendingSave = {
+        selections,
+        source: currentSource(),
+        questionnaire: currentQuestionnaire(),
+      };
+      saveName.value = defaultSavedName();
+      saveContext.textContent = `${
+        guidedContextActive() ? "Guided recommendation" : "Manual build"
+      } · ${countSelections(selections)} component(s). Stored in this browser only.`;
+      showSaveDialogError("");
+      saveDialog.showModal();
+      saveName.focus();
+      saveName.select();
+    }
+
+    function submitSave(): void {
+      if (!pendingSave) return;
+      const name = normalizeBuildName(saveName.value);
+      const validation = validateBuildName(name);
+      if (!validation.ok) {
+        showSaveDialogError(
+          validation.issues[0]?.message ?? "Enter a valid build name.",
+        );
+        saveName.focus();
+        return;
+      }
+
+      const result = savedRepository.create({
+        name,
+        selections: pendingSave.selections,
+        source: pendingSave.source,
+        questionnaire: pendingSave.questionnaire,
+      });
+      if (!result.ok) {
+        showSaveDialogError(result.error.message);
+        return;
+      }
+
+      if (pendingSave.source === "manual") {
+        activeSavedBuildId = result.value.id;
+      }
+      pendingSave = null;
+      saveDialog.close();
+      clearSavedError();
+      showSavedNotice(`Saved "${result.value.name}" to this browser.`);
+      refreshSavedBuilds();
+      announce(`Saved "${result.value.name}" to this browser.`);
+    }
+
+    function updateActiveSavedBuild(): void {
+      if (activeSavedBuildId === null || builderMode !== "manual") return;
+      const active = savedRepository.get(activeSavedBuildId);
+      if (!active) {
+        refreshSavedBuilds();
+        showSavedError(
+          "The active saved build no longer exists. Save the current build as a new entry.",
+        );
+        return;
+      }
+
+      const result = savedRepository.update(activeSavedBuildId, {
+        selections: selectionsFromBuildState(state),
+        source: currentBuildSource,
+        questionnaire: currentGuidedQuestionnaire,
+      });
+      if (!result.ok) {
+        showSavedError(result.error.message);
+        announce(`The saved build was not updated. ${result.error.message}`);
+        return;
+      }
+
+      clearSavedError();
+      showSavedNotice(`Updated "${result.value.name}".`);
+      refreshSavedBuilds();
+      announce(`Updated "${result.value.name}".`);
+    }
+
+    function openRenameDialog(build: SavedBuild): void {
+      pendingRenameId = build.id;
+      renameName.value = build.name;
+      renameError.textContent = "";
+      renameError.hidden = true;
+      renameName.removeAttribute("aria-invalid");
+      renameDialog.showModal();
+      renameName.focus();
+      renameName.select();
+    }
+
+    function submitRename(): void {
+      if (pendingRenameId === null) return;
+      const name = normalizeBuildName(renameName.value);
+      const validation = validateBuildName(name);
+      if (!validation.ok) {
+        renameError.textContent =
+          validation.issues[0]?.message ?? "Enter a valid build name.";
+        renameError.hidden = false;
+        renameName.setAttribute("aria-invalid", "true");
+        renameName.focus();
+        return;
+      }
+
+      const result = savedRepository.rename(pendingRenameId, name);
+      if (!result.ok) {
+        renameError.textContent = result.error.message;
+        renameError.hidden = false;
+        return;
+      }
+
+      const renamedId = pendingRenameId;
+      pendingRenameId = null;
+      renameDialog.close();
+      clearSavedError();
+      showSavedNotice(`Renamed the saved build to "${result.value.name}".`);
+      refreshSavedBuilds();
+      if (activeSavedBuildId === renamedId) refreshBuildActions();
+      announce(`Renamed the saved build to "${result.value.name}".`);
+    }
+
+    function requestConfirmation(options: {
+      title: string;
+      message: string;
+      confirmLabel: string;
+      destructive?: boolean;
+      onConfirm: () => void;
+    }): void {
+      pendingConfirmation = options.onConfirm;
+      confirmTitle.textContent = options.title;
+      confirmMessage.textContent = options.message;
+      confirmAccept.textContent = options.confirmLabel;
+      confirmAccept.className = options.destructive
+        ? "btn btn-secondary text-error"
+        : "btn btn-primary";
+      confirmDialog.showModal();
+      confirmCancel.focus();
+    }
+
+    function applyLoadedBuild(
+      build: SavedBuild,
+      resolution: SavedBuildResolution,
+    ): void {
+      state = resolution.state;
+      activeSavedBuildId = build.id;
+      currentBuildSource = build.source;
+      currentGuidedQuestionnaire = build.questionnaire ?? null;
+      clearSavedError();
+      clearSavedNotice();
+      if (resolution.warnings.length > 0) {
+        showSavedNotice(resolution.warnings.join(" "));
+      } else if (resolution.missingReferences.length > 0) {
+        showSavedNotice(
+          `${resolution.missingReferences.length} saved component reference(s) were unavailable and skipped.`,
+        );
+      }
+      setMode("manual", false);
+      renderAll(
+        `Loaded "${build.name}".${
+          resolution.warnings.length > 0
+            ? ` ${resolution.warnings.join(" ")}`
+            : ""
+        }`,
+      );
+      refreshSavedBuilds();
+      manualHeading.focus();
+    }
+
+    function requestLoadSavedBuild(build: SavedBuild): void {
+      const resolution = resolveSavedBuild(build, componentLookup);
+      if (!resolution.importable) {
+        showSavedError(
+          "None of this build's components exist in the current catalogue, so it cannot be loaded.",
+        );
+        announce(
+          "The saved build could not be loaded because no component references resolve.",
+        );
+        return;
+      }
+
+      const load = () => applyLoadedBuild(build, resolution);
+      const currentKey = selectionsKey(selectionsFromBuildState(state));
+      const targetKey = selectionsKey(
+        selectionsFromBuildState(resolution.state),
+      );
+      if (selectedCount(state) > 0 && currentKey !== targetKey) {
+        requestConfirmation({
+          title: "Replace the current manual build?",
+          message: `The manual builder currently has ${selectedCount(
+            state,
+          )} selected component(s)${
+            hasUnsavedBuildChanges() ? ", including unsaved changes" : ""
+          }. Loading "${build.name}" will replace them.`,
+          confirmLabel: "Load saved build",
+          onConfirm: load,
+        });
+        return;
+      }
+      load();
+    }
+
+    function requestDuplicateSavedBuild(build: SavedBuild): void {
+      const result = savedRepository.duplicate(build.id);
+      if (!result.ok) {
+        showSavedError(result.error.message);
+        announce(`The saved build was not duplicated. ${result.error.message}`);
+        return;
+      }
+      clearSavedError();
+      showSavedNotice(`Duplicated as "${result.value.name}".`);
+      refreshSavedBuilds();
+      announce(`Duplicated as "${result.value.name}".`);
+    }
+
+    function requestDeleteSavedBuild(build: SavedBuild): void {
+      requestConfirmation({
+        title: `Delete "${build.name}"?`,
+        message:
+          "This permanently removes the saved build from this browser. The current build and any share links are not changed.",
+        confirmLabel: "Delete build",
+        destructive: true,
+        onConfirm: () => {
+          const result = savedRepository.remove(build.id);
+          if (!result.ok) {
+            showSavedError(result.error.message);
+            announce(
+              `The saved build was not deleted. ${result.error.message}`,
+            );
+            return;
+          }
+          if (activeSavedBuildId === build.id) activeSavedBuildId = null;
+          clearSavedError();
+          showSavedNotice(`Deleted "${build.name}".`);
+          refreshSavedBuilds();
+          announce(`Deleted "${build.name}".`);
+        },
+      });
+    }
+
+    function openShareDialog(payload: ShareBuildPayload): void {
+      const encoded = encodeSharePayload(payload);
+      if (!encoded.ok) {
+        showSavedError(shareErrorMessage(encoded.error));
+        announce(
+          `The share link could not be generated. ${encoded.error.message}`,
+        );
+        return;
+      }
+      const link = buildShareLink(
+        `${location.origin}${location.pathname}`,
+        encoded.value,
+      );
+      if (!link.ok) {
+        showSavedError(shareErrorMessage(link.error));
+        return;
+      }
+
+      shareLink.value = link.value;
+      shareOpen.href = link.value;
+      shareContext.textContent = `"${payload.name}" · ${
+        BUILD_SOURCE_LABELS[payload.source]
+      } build · ${countSelections(payload.selections)} component(s)`;
+      shareFeedback.textContent = "";
+      shareDialog.showModal();
+      shareLink.focus();
+      shareLink.select();
+    }
+
+    function shareSavedBuild(build: SavedBuild): void {
+      openShareDialog(savedBuildToSharePayload(build));
+    }
+
+    function shareCurrentBuild(): void {
+      const selections = currentSelections();
+      if (countSelections(selections) === 0) {
+        announce("Add components before creating a share link.");
+        return;
+      }
+      const active =
+        builderMode === "manual" && activeSavedBuildId !== null
+          ? savedRepository.get(activeSavedBuildId)
+          : null;
+      const payload = createSharePayload({
+        name: active?.name ?? defaultSavedName(),
+        source: currentSource(),
+        selections,
+        questionnaire: currentQuestionnaire(),
+        createdAt: active?.createdAt ?? new Date().toISOString(),
+      });
+      if (!payload.ok) {
+        showSavedError(shareErrorMessage(payload.error));
+        announce(
+          `The share link could not be generated. ${payload.error.message}`,
+        );
+        return;
+      }
+      openShareDialog(payload.value);
+    }
+
+    async function copyShareLink(): Promise<void> {
+      const link = shareLink.value;
+      if (link === "") return;
+      try {
+        if (
+          !navigator.clipboard ||
+          typeof navigator.clipboard.writeText !== "function"
+        ) {
+          throw new Error("Clipboard unavailable");
+        }
+        await navigator.clipboard.writeText(link);
+        shareFeedback.textContent = "Link copied to the clipboard.";
+        announce("Share link copied to the clipboard.");
+      } catch {
+        shareLink.focus();
+        shareLink.select();
+        shareFeedback.textContent =
+          "Clipboard access is unavailable. The link is selected — copy it manually.";
+        announce(
+          "Clipboard access is unavailable. The link is selected for manual copying.",
+        );
+      }
+    }
+
+    function setStatusChip(
+      element: HTMLElement,
+      status: CompatibilityStatus,
+    ): void {
+      element.className =
+        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-chip " +
+        STATUS_BADGE_CLASS[status];
+      element.replaceChildren();
+      const icon = el("span", STATUS_ICON_CLASS);
+      icon.setAttribute("aria-hidden", "true");
+      icon.innerHTML = STATUS_ICON[status];
+      element.append(
+        icon,
+        document.createTextNode(COMPATIBILITY_STATUS_LABELS[status]),
+      );
+    }
+
+    function renderSharedComponents(resolution: SavedBuildResolution): void {
+      sharedComponents.replaceChildren();
+
+      for (const component of resolution.components) {
+        const item = el(
+          "li",
+          "rounded-md border border-border-subtle bg-surface-subtle p-4",
+        );
+        item.dataset.sharedComponent = component.category;
+        const header = el(
+          "div",
+          "flex flex-wrap items-start justify-between gap-2",
+        );
+        const title = el("div", "min-w-0");
+        title.append(
+          el(
+            "p",
+            "text-overline text-text-muted",
+            CATEGORY_LABELS[component.category],
+          ),
+          el(
+            "h4",
+            "mt-1 text-body-strong text-text-primary",
+            componentDisplayName(component),
+          ),
+          el("p", "font-mono text-caption text-text-muted", component.model),
+        );
+        header.append(
+          title,
+          el(
+            "span",
+            "rounded-full border border-border-subtle bg-surface px-2.5 py-0.5 text-micro text-text-secondary",
+            availabilityLabel(component),
+          ),
+        );
+        item.append(header);
+
+        const specs = specLines(component).slice(0, 4);
+        if (specs.length > 0) {
+          const list = el(
+            "ul",
+            "mt-2 space-y-1 text-caption text-text-secondary",
+          );
+          for (const line of specs) {
+            const row = el("li");
+            row.append(
+              el("span", "text-text-muted", `${line.label}: `),
+              document.createTextNode(line.value),
+            );
+            list.append(row);
+          }
+          item.append(list);
+        }
+        sharedComponents.append(item);
+      }
+
+      if (resolution.missingReferences.length > 0) {
+        const item = el(
+          "li",
+          "rounded-md border border-warning bg-warning-subtle p-4",
+        );
+        item.append(
+          el(
+            "h4",
+            "text-label text-warning",
+            `Unavailable references (${resolution.missingReferences.length})`,
+          ),
+          el(
+            "p",
+            "mt-1 text-caption text-warning",
+            "These ids are not in the current catalogue and are excluded from the imported build.",
+          ),
+        );
+        const list = el(
+          "ul",
+          "mt-1 space-y-1 font-mono text-micro text-warning",
+        );
+        for (const reference of resolution.missingReferences) {
+          list.append(
+            el(
+              "li",
+              "break-all",
+              `${reference.category}: ${reference.componentId} (${
+                reference.reason === "category-mismatch"
+                  ? "category mismatch"
+                  : "not found"
+              })`,
+            ),
+          );
+        }
+        item.append(list);
+        sharedComponents.append(item);
+      }
+
+      if (sharedComponents.childElementCount === 0) {
+        sharedComponents.append(
+          el(
+            "li",
+            "text-small text-text-muted",
+            "No component references in this shared build resolve to the current catalogue.",
+          ),
+        );
+      }
+    }
+
+    function renderSharedView(
+      payload: ShareBuildPayload,
+      resolution: SavedBuildResolution,
+    ): void {
+      sharedContent.hidden = false;
+      sharedError.hidden = true;
+      sharedView.setAttribute("aria-labelledby", "shared-heading");
+      sharedName.textContent = payload.name;
+      sharedName.className = "mt-1 break-words text-headline text-text-primary";
+      sharedSource.textContent = `${BUILD_SOURCE_LABELS[payload.source]} origin`;
+
+      const questionnaire = payload.questionnaire;
+      const origin = questionnaire
+        ? `${questionnaire.useCase} · ${
+            questionnaire.resolution === "not-applicable"
+              ? "no resolution target"
+              : questionnaire.resolution
+          } · ${questionnaire.performancePriority.replace("-", " ")} · ${formatBudget(
+            questionnaire.budget,
+            questionnaire.currency,
+          )}`
+        : "";
+      sharedMeta.textContent = `${
+        payload.createdAt
+          ? `Build created ${formatSavedDate(payload.createdAt)} · `
+          : ""
+      }${countSelections(payload.selections)} component(s) in the payload${
+        origin ? ` · ${origin}` : ""
+      }.`;
+
+      sharedWarningList.replaceChildren();
+      for (const warning of resolution.warnings) {
+        sharedWarningList.append(el("li", "", warning));
+      }
+      sharedWarnings.hidden = resolution.warnings.length === 0;
+
+      const summary = resolution.components
+        .slice(0, 4)
+        .map((component) => componentDisplayName(component));
+      sharedSummary.textContent =
+        resolution.components.length === 0
+          ? "No components resolve against the current catalogue."
+          : `${resolution.components.length} resolved component(s): ${summary.join(
+              " · ",
+            )}${resolution.components.length > summary.length ? " · …" : ""}`;
+      renderSharedComponents(resolution);
+
+      const compatibility = resolution.compatibility;
+      setStatusChip(sharedCompatBadge, compatibility.summary.status);
+      sharedCompatMessage.textContent = overallMessageFor(
+        compatibility,
+        resolution.components.length,
+      );
+      sharedCountIncompatible.textContent = String(
+        compatibility.summary.counts.incompatible,
+      );
+      sharedCountWarning.textContent = String(
+        compatibility.summary.counts.warning,
+      );
+      sharedCountUnknown.textContent = String(
+        compatibility.summary.counts.unknown,
+      );
+      sharedCountCompatible.textContent = String(
+        compatibility.summary.counts.compatible,
+      );
+      sharedFindings.replaceChildren();
+      const actionable = compatibility.results.filter(
+        (result) => result.status !== "compatible",
+      );
+      for (const result of actionable) {
+        sharedFindings.append(
+          findingItem(
+            result.ruleId,
+            result.status,
+            result.message,
+            result.componentIds,
+            result.recommendation,
+          ),
+        );
+      }
+      if (actionable.length === 0) {
+        sharedFindings.append(
+          el(
+            "li",
+            "py-3 text-small text-text-secondary",
+            "No incompatibilities, warnings or Unknown checks were reported.",
+          ),
+        );
+      }
+
+      sharedPowerLoad.textContent = formatPower(resolution.power.loadWatts);
+      sharedPowerRecommended.textContent = formatPower(
+        resolution.power.recommendedPsuW,
+      );
+      const psu = resolution.components.find(
+        (component) => component.category === "psu",
+      );
+      sharedPowerSelected.textContent =
+        psu?.category === "psu" ? formatPower(psu.specs.wattage) : "—";
+
+      const limitations = [
+        "Compatibility and power were recalculated from the current catalogue. Serialized verdicts are never reused.",
+        "No component prices are stored; no quote or market estimate is implied.",
+        "Share links work only where the development PC Builder preview is available. They are not public or permanently hosted.",
+        "Nothing is added to your manual build until you choose Import.",
+      ];
+      if (resolution.missingReferences.length > 0) {
+        limitations.unshift(
+          `${resolution.missingReferences.length} saved component reference(s) are unavailable and excluded from the shared build.`,
+        );
+      }
+      if (resolution.nonProductionComponents.length > 0) {
+        limitations.unshift(
+          `${resolution.nonProductionComponents.length} component(s) are discontinued or not verified for production availability.`,
+        );
+      }
+      sharedLimitations.replaceChildren();
+      for (const limitation of limitations) {
+        sharedLimitations.append(el("li", "", limitation));
+      }
+
+      sharedSave.disabled = !storageAvailable || corruptSavedStore !== null;
+      sharedSave.title = sharedSave.disabled
+        ? "Browser storage is unavailable or unreadable, so a local copy cannot be saved."
+        : "";
+      sharedFeedback.textContent = sharedSave.disabled
+        ? "Saving a local copy is unavailable because browser storage cannot be used. You can still import this build."
+        : "";
+    }
+
+    function renderSharedError(message: string): void {
+      currentShared = null;
+      sharedContent.hidden = true;
+      sharedError.hidden = false;
+      sharedView.setAttribute("aria-labelledby", "shared-error-heading");
+      sharedErrorMessage.textContent = message;
+      sharedFeedback.textContent = "";
+    }
+
+    function openSharedView(): void {
+      sharedViewOpen = true;
+      for (const node of builderChrome) node.hidden = true;
+      for (const node of manualOnly) node.hidden = true;
+      sharedView.hidden = false;
+      if (!sharedContent.hidden) {
+        sharedName.focus();
+      } else {
+        sharedView.focus();
+      }
+    }
+
+    function closeSharedView(clearHash: boolean): void {
+      sharedViewOpen = false;
+      sharedView.hidden = true;
+      currentShared = null;
+      for (const node of builderChrome) node.hidden = false;
+      setMode(builderMode, false);
+      if (clearHash) {
+        try {
+          history.replaceState(
+            null,
+            "",
+            `${location.pathname}${location.search}`,
+          );
+        } catch {
+          // History replacement is a convenience; the decoder stays safe.
+        }
+      }
+      savedHeading.focus();
+    }
+
+    function handleSharedHash(): void {
+      const encoded = extractSharePayloadFromHash(location.hash);
+      if (encoded === null) {
+        if (sharedViewOpen) closeSharedView(false);
+        return;
+      }
+
+      const decoded = decodeSharePayload(encoded);
+      if (!decoded.ok) {
+        renderSharedError(decoded.error.message);
+        openSharedView();
+        return;
+      }
+
+      const resolution = resolveSharePayload(decoded.value, componentLookup);
+      if (!resolution.importable) {
+        renderSharedError(
+          "None of the component references in this shared build exist in the current catalogue, so it cannot be imported.",
+        );
+        openSharedView();
+        return;
+      }
+
+      currentShared = { payload: decoded.value, resolution };
+      renderSharedView(decoded.value, resolution);
+      openSharedView();
+    }
+
+    function importSharedBuild(): void {
+      if (!currentShared) return;
+      const { payload, resolution } = currentShared;
+      const importNow = () => {
+        state = resolution.state;
+        activeSavedBuildId = null;
+        currentBuildSource = payload.source;
+        currentGuidedQuestionnaire = payload.questionnaire ?? null;
+        clearSavedError();
+        clearSavedNotice();
+        closeSharedView(true);
+        setMode("manual", false);
+        renderAll(
+          `Imported "${payload.name}" into the manual builder.${
+            resolution.warnings.length > 0
+              ? ` ${resolution.warnings.join(" ")}`
+              : ""
+          }`,
+        );
+        refreshSavedBuilds();
+        manualHeading.focus();
+      };
+
+      const currentKey = selectionsKey(selectionsFromBuildState(state));
+      const targetKey = selectionsKey(
+        selectionsFromBuildState(resolution.state),
+      );
+      if (selectedCount(state) > 0 && currentKey !== targetKey) {
+        requestConfirmation({
+          title: "Replace the current manual build?",
+          message: `The manual builder currently has ${selectedCount(
+            state,
+          )} selected component(s). Importing "${payload.name}" will replace them.`,
+          confirmLabel: "Import and replace",
+          onConfirm: importNow,
+        });
+        return;
+      }
+      importNow();
+    }
+
+    function saveSharedCopy(): void {
+      if (!currentShared) return;
+      const { payload } = currentShared;
+      const result = savedRepository.create({
+        name: payload.name,
+        source: payload.source,
+        selections: payload.selections,
+        questionnaire: payload.questionnaire ?? null,
+      });
+      if (!result.ok) {
+        sharedFeedback.textContent = `Could not save a copy: ${result.error.message}`;
+        announce(`The shared build was not saved. ${result.error.message}`);
+        return;
+      }
+      refreshSavedBuilds();
+      sharedSave.disabled = true;
+      sharedFeedback.textContent = `Saved a copy as "${result.value.name}". It is available after you return to the builder.`;
+      announce(`Saved a copy of the shared build as "${result.value.name}".`);
     }
 
     /* ---------------------------------------------------------------- */
@@ -2618,7 +4287,12 @@ const multiSlot = new Set<string>(multiSlotCategories);
 
     clearButton.addEventListener("click", () => {
       state = clearBuild();
+      activeSavedBuildId = null;
+      currentBuildSource = "manual";
+      currentGuidedQuestionnaire = null;
+      clearSavedNotice();
       renderAll("Build cleared.");
+      refreshSavedBuilds();
     });
 
     for (const input of modeInputs) {
@@ -2679,8 +4353,105 @@ const multiSlot = new Set<string>(multiSlotCategories);
       if (event.target === transferDialog) transferDialog.close();
     });
 
+    saveNewButton.addEventListener("click", openSaveDialog);
+    saveUpdateButton.addEventListener("click", updateActiveSavedBuild);
+    shareCurrentButton.addEventListener("click", shareCurrentBuild);
+    requireEl<HTMLButtonElement>("[data-guided-save]").addEventListener(
+      "click",
+      openSaveDialog,
+    );
+
+    saveConfirm.addEventListener("click", submitSave);
+    saveCancel.addEventListener("click", () => saveDialog.close());
+    saveName.addEventListener("input", () => showSaveDialogError(""));
+    saveName.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitSave();
+      }
+    });
+    saveDialog.addEventListener("click", (event) => {
+      if (event.target === saveDialog) saveDialog.close();
+    });
+
+    renameConfirm.addEventListener("click", submitRename);
+    renameCancel.addEventListener("click", () => renameDialog.close());
+    renameName.addEventListener("input", () => {
+      renameError.textContent = "";
+      renameError.hidden = true;
+      renameName.removeAttribute("aria-invalid");
+    });
+    renameName.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitRename();
+      }
+    });
+    renameDialog.addEventListener("click", (event) => {
+      if (event.target === renameDialog) renameDialog.close();
+    });
+
+    confirmAccept.addEventListener("click", () => {
+      const action = pendingConfirmation;
+      pendingConfirmation = null;
+      confirmDialog.close();
+      action?.();
+    });
+    confirmCancel.addEventListener("click", () => {
+      pendingConfirmation = null;
+      confirmDialog.close();
+    });
+    confirmDialog.addEventListener("click", (event) => {
+      if (event.target === confirmDialog) {
+        pendingConfirmation = null;
+        confirmDialog.close();
+      }
+    });
+
+    shareCopy.addEventListener("click", () => {
+      void copyShareLink();
+    });
+    shareClose.addEventListener("click", () => shareDialog.close());
+    shareOpen.addEventListener("click", () => shareDialog.close());
+    shareDialog.addEventListener("click", (event) => {
+      if (event.target === shareDialog) shareDialog.close();
+    });
+
+    sharedImport.addEventListener("click", importSharedBuild);
+    sharedSave.addEventListener("click", saveSharedCopy);
+    for (const returnButton of sharedReturnButtons) {
+      returnButton.addEventListener("click", () => closeSharedView(true));
+    }
+
+    savedReset.addEventListener("click", () => {
+      requestConfirmation({
+        title: "Reset saved builds?",
+        message:
+          "This permanently removes all saved-build data from this browser. The current build and any share links are not changed.",
+        confirmLabel: "Reset saved builds",
+        destructive: true,
+        onConfirm: () => {
+          const result = savedRepository.reset();
+          if (!result.ok) {
+            showSavedError(result.error.message);
+            announce(`Saved builds were not reset. ${result.error.message}`);
+            return;
+          }
+          activeSavedBuildId = null;
+          clearSavedError();
+          clearSavedNotice();
+          refreshSavedBuilds();
+          announce("Saved-build data reset.");
+        },
+      });
+    });
+
+    window.addEventListener("hashchange", handleSharedHash);
+
     setDefaultQuestionnaire();
     setMode("guided", false);
+    refreshSavedBuilds();
     renderAll();
+    handleSharedHash();
   }
 </script>
