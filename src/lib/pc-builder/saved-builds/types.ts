@@ -18,7 +18,11 @@ import type {
   TargetResolution,
   UseCase,
 } from "../recommendations/types";
-import type { Component, ComponentCategory } from "../types";
+import {
+  maxComponentSelections,
+  type Component,
+  type ComponentCategory,
+} from "../types";
 
 export const SAVED_BUILD_SCHEMA_VERSION = 1 as const;
 export const SAVED_BUILDS_STORAGE_KEY = "appkitx.pc-builder.saved-builds.v1";
@@ -39,17 +43,8 @@ export const MAX_SHARE_ENCODED_LENGTH = 8 * 1024;
  * Per-category component limits. These mirror the builder's single- and
  * multi-slot rules; validation never trusts the payload to enforce them.
  */
-export const MAX_COMPONENT_IDS: Record<ComponentCategory, number> = {
-  cpu: 1,
-  gpu: 1,
-  motherboard: 1,
-  ram: 8,
-  cooler: 1,
-  storage: 12,
-  psu: 1,
-  case: 1,
-  "case-fan": 16,
-};
+export const MAX_COMPONENT_IDS: Readonly<Record<ComponentCategory, number>> =
+  maxComponentSelections;
 
 export type BuildSource = "manual" | "guided";
 

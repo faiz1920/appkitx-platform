@@ -103,6 +103,7 @@ test("replaces an individual component with a compatible alternative", async ({
 }) => {
   await generate(page);
   const gpuCard = page.locator('[data-guided-selection="gpu"]');
+  await gpuCard.locator("summary").click();
   const alternative = gpuCard
     .getByRole("button", { name: /alternative/i })
     .first();
@@ -203,7 +204,8 @@ test("edits requirements, regenerates, and starts over", async ({ page }) => {
   await page.locator("#guided-budget").fill("");
   await page.locator("#guided-budget").fill("3000");
   await expect(page.locator("[data-guided-stale]")).toBeVisible();
-  await page.getByRole("button", { name: "Regenerate" }).click();
+  await expect(page.locator("[data-guided-results]")).toBeHidden();
+  await page.getByRole("button", { name: "Generate recommendation" }).click();
   await expect(page.locator("[data-guided-results]")).toBeVisible();
   await expect(page.locator("[data-guided-stale]")).toBeHidden();
 
@@ -242,7 +244,6 @@ test("guided layout is single-column on mobile without horizontal overflow", asy
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
   await openGuided(page);
-  await generate(page);
 
   const formGrid = page.locator("[data-guided-form] > div.grid");
   const formColumns = await formGrid.evaluate(
@@ -251,6 +252,7 @@ test("guided layout is single-column on mobile without horizontal overflow", asy
   );
   expect(formColumns).toBe(1);
 
+  await generate(page);
   const resultGrid = page.locator("[data-guided-selections]");
   const resultColumns = await resultGrid.evaluate(
     (element) =>

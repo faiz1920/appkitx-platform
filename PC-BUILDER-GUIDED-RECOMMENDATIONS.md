@@ -53,6 +53,11 @@ generic units. Currency is a label only; no conversion is applied.
 Defaults: 1,200 generic units, gaming, 1440p, balanced priority, no brand or
 optional preferences, standard size, balanced upgrade flexibility.
 
+Every select shows the selected option's description as visible helper text.
+The same text is associated with the control through `aria-describedby`, so
+the meaning of values such as "High" upgrade flexibility is available without
+outside documentation.
+
 ## 3. Candidate generation
 
 The engine is deterministic: score descending, then component id ascending.
@@ -254,7 +259,23 @@ The UI checks `manualBuildHasSelection(state)` before transfer:
 
 No separate manual-builder state or compatibility implementation exists.
 
-## 10. Result model
+## 10. Result model and presentation
+
+The preview presents the result as a two-step flow. Generating a
+recommendation collapses the requirements panel; **Edit requirements** reveals
+it again. Changing any requirement after generation clears the displayed
+result immediately and shows a "requirements changed" notice. A stale
+recommendation is never left on screen or offered for transfer/save/share.
+
+Result presentation order:
+
+1. Headline, status, explanation, action row and requirement summary.
+2. Compatibility, power, budget allocation and data-confidence panels.
+3. A "Recommended components" section with an explicit note that selection
+   fit is a specification weighting, not a benchmark, FPS or price score.
+4. Per-category selection cards. Alternatives are collapsed behind a labelled
+   "Compare N alternatives" disclosure to keep the first view scannable.
+5. Unmet preferences and limitations.
 
 Each result includes:
 
@@ -311,6 +332,9 @@ Each result includes:
 - `e2e-pc-builder/guided-recommendations.spec.ts`: questionnaire validation,
   result rendering, alternatives, manual transfer, replacement confirmation,
   keyboard generation, mobile/desktop layout.
+- `e2e-pc-builder/product-validation.spec.ts`: the six M10.6 end-to-end
+  journeys, questionnaire option matrix, stale-result invalidation,
+  accessibility checks, responsive widths and cross-browser runs.
 - Existing manual builder E2E tests remain in
   `e2e-pc-builder/pc-builder.spec.ts`.
 
