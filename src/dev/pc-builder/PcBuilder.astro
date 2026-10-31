@@ -14,7 +14,7 @@ import {
   multiSlotCategories,
 } from "../../lib/pc-builder/types";
 import { manufacturerOptions } from "../../lib/pc-builder/ui";
-import { EXAMPLE_MARKETS } from "../../lib/pc-builder/pricing";
+import { EXAMPLE_MARKETS, INDIA_MARKET_ID } from "../../lib/pc-builder/pricing";
 import {
   BUILD_SIZE_OPTIONS,
   COOLING_OPTIONS,
@@ -1395,7 +1395,10 @@ const descriptionFor = (
               data-pricing-market
             >
               {EXAMPLE_MARKETS.map((market) => (
-                <option value={market.id}>
+                <option
+                  value={market.id}
+                  selected={market.id === INDIA_MARKET_ID}
+                >
                   {market.name} — {market.defaultCurrency}
                 </option>
               ))}
