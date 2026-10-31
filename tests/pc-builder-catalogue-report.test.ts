@@ -48,10 +48,14 @@ describe("buildCatalogueReport", () => {
   });
 
   it("reports critical unknown specifications without failing", () => {
+    const amd = report.criticalUnknown.find(
+      (entry) => entry.id === "cpu-amd-ryzen-7-7800x3d",
+    );
+    expect(amd?.fields).toContain("maxPowerW");
     const ultra = report.criticalUnknown.find(
       (entry) => entry.id === "cpu-intel-core-ultra-7-265k",
     );
-    expect(ultra?.fields).toContain("maxMemoryGB");
+    expect(ultra).toBeUndefined();
     expect(report.ok).toBe(true);
   });
 

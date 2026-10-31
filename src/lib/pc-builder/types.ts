@@ -144,6 +144,8 @@ export interface M2SlotInfo {
   /** Longest module the slot physically supports (e.g. 2280 -> 80). */
   maxLengthMm: number | null;
   pcieGeneration: number | null;
+  /** Documented bandwidth-sharing or configuration restriction, if any. */
+  sharingNote: string | null;
 }
 
 export interface CaseRadiatorMount {
@@ -210,6 +212,10 @@ export interface GpuSpecs {
   recommendedPsuW: number | null;
   /** Auxiliary power connectors present on the card. */
   powerConnectors: GpuPowerConnector[] | null;
+  /** PCIe 8-pin cables the supplied 16-pin adapter requires, when the
+   *  manufacturer documents an adapter path. Null when not documented or
+   *  the card has no 16-pin connector. */
+  powerAdapter8pin: number | null;
   displayOutputs: string[] | null;
 }
 

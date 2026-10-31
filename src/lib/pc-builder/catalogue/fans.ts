@@ -96,15 +96,15 @@ export const caseFans: readonly CaseFanComponent[] = [
     category: "case-fan",
     manufacturer: "ARCTIC",
     name: "P14 PWM",
-    model: "P14 PWM",
+    model: "ACFAN00124A",
     description:
       "140 mm pressure-optimised fan, 4-pin PWM, 200–1700 rpm speed range.",
-    url: "https://www.arctic.de/en/P14-PWM/ACFAN00138A",
+    url: "https://www.arctic.de/en/P14-PWM/ACFAN00124A",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "ARCTIC product specification",
-      "https://www.arctic.de/en/P14-PWM/ACFAN00138A",
+      "https://www.arctic.de/en/P14-PWM/ACFAN00124A",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -155,12 +155,12 @@ export const caseFans: readonly CaseFanComponent[] = [
     model: "AF120 ELITE",
     description:
       "120 mm airflow fan with eight RGB LEDs, 4-pin PWM, 400–1850 rpm speed range.",
-    url: "https://www.corsair.com/us/en/p/case-fans/co-9050141-ww/",
+    url: "https://www.corsair.com/us/en/p/case-fans/co-9050141-ww/af120-elite-120mm-pwm-fan-co-9050141-ww",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
       "Corsair product specification",
-      "https://www.corsair.com/us/en/p/case-fans/co-9050141-ww/",
+      "https://www.corsair.com/us/en/p/case-fans/co-9050141-ww/af120-elite-120mm-pwm-fan-co-9050141-ww",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {

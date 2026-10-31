@@ -45,13 +45,12 @@ export const storageDevices: readonly StorageComponent[] = [
     model: "MZ-V8P2T0BW",
     description:
       "PCIe 4.0 x4 NVMe M.2 2280 SSD with Samsung V-NAND TLC, up to 7,000 MB/s sequential read.",
-    url: "https://semiconductor.samsung.com/consumer-storage/internal-ssd/980-pro/",
     releaseDate: "2020-09-22",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
-      "Samsung product specification",
-      "https://semiconductor.samsung.com/consumer-storage/internal-ssd/980-pro/",
+      "Samsung 980 PRO data sheet",
+      "https://download.semiconductor.samsung.com/resources/data-sheet/Samsung-NVMe-SSD-980-PRO-Data-Sheet_Rev.2.1_230509_10129505081019.pdf",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -163,12 +162,11 @@ export const storageDevices: readonly StorageComponent[] = [
     model: "CT1000MX500SSD1",
     description:
       "2.5-inch SATA 6 Gb/s SSD with Micron 3D NAND, up to 560 MB/s sequential read.",
-    url: "https://www.crucial.com/ssd/mx500/ct1000mx500ssd1",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
-      "Crucial product specification",
-      "https://www.crucial.com/ssd/mx500/ct1000mx500ssd1",
+      "Crucial MX500 product flyer",
+      "https://assets.micron.com/adobe/assets/urn:aaid:aem:3c743a1f-9319-4b34-9b20-15cdad1ee2ce/renditions/original/as/crucial-mx500-ssd-productflyer-en.pdf",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {
@@ -192,13 +190,12 @@ export const storageDevices: readonly StorageComponent[] = [
     model: "MZ-77E1T0B",
     description:
       "2.5-inch SATA 6 Gb/s SSD with Samsung V-NAND TLC, up to 560 MB/s sequential read.",
-    url: "https://semiconductor.samsung.com/consumer-storage/internal-ssd/870-evo/",
     releaseDate: "2021-01-19",
     availability: "in-production",
     provenance: "manufacturer-specification",
     source: manufacturerSource(
-      "Samsung product specification",
-      "https://semiconductor.samsung.com/consumer-storage/internal-ssd/870-evo/",
+      "Samsung 870 EVO / QVO brochure",
+      "https://download.semiconductor.samsung.com/resources/brochure/SATA_SSD_870_EVO_QVO_Brochure.pdf",
     ),
     lastVerified: CATALOGUE_VERIFIED_DATE,
     specs: {

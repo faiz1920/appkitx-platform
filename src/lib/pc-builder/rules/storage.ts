@@ -213,13 +213,30 @@ function m2Result(
     );
   }
 
+  const sharingNotes = m2Devices
+    .map((_, index) => {
+      const slotIndex = assigned[index];
+      return slotIndex === undefined ? null : slotStates[slotIndex].sharingNote;
+    })
+    .filter((note): note is string => note !== null && note.trim() !== "");
+  const noteText =
+    sharingNotes.length > 0 ? ` Note: ${sharingNotes.join(" ")}` : "";
+
   return makeResult(
     RULE_STORAGE_M2,
     "compatible",
     ids,
-    `All ${m2Devices.length} M.2 drive(s) match a documented slot protocol and length on this motherboard.`,
+    `All ${m2Devices.length} M.2 drive(s) match a documented slot protocol and length on this motherboard.${noteText}`,
     {
-      observed: { m2DevicesSelected: m2Devices.length, m2Slots: slots.length },
+      observed: {
+        m2DevicesSelected: m2Devices.length,
+        m2Slots: slots.length,
+        sharingNotes: sharingNotes.join(" "),
+      },
+      recommendation:
+        sharingNotes.length > 0
+          ? "Review the documented M.2 bandwidth-sharing restriction before populating other slots or SATA ports."
+          : undefined,
     },
   );
 }

@@ -225,6 +225,28 @@ describe("specLines", () => {
     expect(map["16-pin (12VHPWR)"]).toBe("0");
   });
 
+  it("renders manufacturer adapter requirements for 16-pin cards", () => {
+    const map = Object.fromEntries(
+      specLines(cpu("gpu-nvidia-geforce-rtx-4090-fe")).map((l) => [
+        l.label,
+        l.value,
+      ]),
+    );
+    expect(map["16-pin adapter input"]).toBe("3 × PCIe 8-pin");
+  });
+
+  it("renders per-slot M.2 detail and sharing restrictions", () => {
+    const map = Object.fromEntries(
+      specLines(cpu("motherboard-msi-b650-tomahawk-wifi")).map((l) => [
+        l.label,
+        l.value,
+      ]),
+    );
+    expect(map["M.2 detail"]).toContain("M2_1: NVMe PCIe 4.0, 110 mm");
+    expect(map["M.2 sharing"]).toContain("Ryzen 8500/8300");
+    expect(map["M.2 sharing"]).toContain("PCI_E2");
+  });
+
   it("handles every catalogue record without throwing", () => {
     for (const component of catalogue) {
       expect(Array.isArray(specLines(component))).toBe(true);

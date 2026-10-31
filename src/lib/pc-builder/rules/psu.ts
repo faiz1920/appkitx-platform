@@ -194,20 +194,41 @@ export const psuGpuConnectorsRule: CompatibilityRule = (ctx) => {
         ),
       ];
     }
-    // Adapter path: 16-pin cards ship with adapters that need multiple 8-pins.
-    const adapterPins = need16pin * 2;
+    // Adapter path: the manufacturer documents how many PCIe 8-pin cables
+    // its 16-pin adapter needs. Never assume a universal 2-cable adapter.
+    if (gpu.specs.powerAdapter8pin === null) {
+      return [
+        makeResult(
+          RULE_PSU_GPU_CONNECTORS,
+          "unknown",
+          ids,
+          "The graphics card uses a 16-pin connector and the PSU has no native 16-pin output, but the manufacturer's adapter cable requirement is not documented in the available data.",
+          {
+            observed: {
+              required16pin: need16pin,
+              available16pin: available16,
+              availablePcie8pin: available8,
+            },
+            recommendation:
+              "Check the graphics card manual for the number of PCIe 8-pin cables its 16-pin adapter requires.",
+          },
+        ),
+      ];
+    }
+    const adapterPins = need16pin * gpu.specs.powerAdapter8pin;
     if (available8 >= adapterPins) {
       return [
         makeResult(
           RULE_PSU_GPU_CONNECTORS,
           "warning",
           ids,
-          `The graphics card uses a 16-pin connector and the PSU has no native 16-pin output; it can only be powered via the manufacturer's adapter using ${adapterPins} PCIe 8-pin connectors.`,
+          `The graphics card uses a 16-pin connector and the PSU has no native 16-pin output; it can only be powered via the manufacturer's adapter using ${adapterPins} PCIe 8-pin connector(s).`,
           {
             observed: {
               required16pin: need16pin,
               available16pin: available16,
               availablePcie8pin: available8,
+              adapterRequiredPcie8pin: adapterPins,
             },
             recommendation:
               "Prefer a PSU with a native 12VHPWR/12V-2x6 connector; adapters must be fully seated to avoid damage.",
@@ -220,15 +241,16 @@ export const psuGpuConnectorsRule: CompatibilityRule = (ctx) => {
         RULE_PSU_GPU_CONNECTORS,
         "incompatible",
         ids,
-        `The graphics card requires a 16-pin power connector; the PSU has no native 16-pin output and only ${available8} PCIe 8-pin connector(s), which is not enough for the adapter.`,
+        `The graphics card requires a 16-pin power connector; the PSU has no native 16-pin output and only ${available8} PCIe 8-pin connector(s), but the manufacturer's adapter needs ${adapterPins}.`,
         {
           observed: {
             required16pin: need16pin,
             available16pin: available16,
             availablePcie8pin: available8,
+            adapterRequiredPcie8pin: adapterPins,
           },
           recommendation:
-            "Choose a PSU with a native 16-pin connector or more PCIe 8-pin connectors.",
+            "Choose a PSU with a native 16-pin connector or enough PCIe 8-pin connectors for the adapter.",
         },
       ),
     ];

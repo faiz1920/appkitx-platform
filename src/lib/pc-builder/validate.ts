@@ -388,6 +388,7 @@ function validateSpecs(
         "powerDrawW",
         "recommendedPsuW",
         "powerConnectors",
+        "powerAdapter8pin",
         "displayOutputs",
       ]);
       checkNonEmptyString(errors, specs, "chipset", p);
@@ -402,6 +403,7 @@ function validateSpecs(
       checkNumberOrNull(errors, specs, "recommendedPsuW", p, {
         positive: true,
       });
+      checkPositiveIntOrNull(errors, specs, "powerAdapter8pin", p);
       checkStringArrayOrNull(errors, specs, "displayOutputs", p);
       const connectors = specs.powerConnectors;
       if (connectors !== null) {
@@ -422,6 +424,20 @@ function validateSpecs(
             checkPositiveInt(errors, connector, "count", cp);
           });
         }
+      }
+      if (
+        typeof specs.powerAdapter8pin === "number" &&
+        (!Array.isArray(connectors) ||
+          !connectors.some(
+            (connector) =>
+              isObj(connector) && connector.type === "12vhpwr-16pin",
+          ))
+      ) {
+        err(
+          errors,
+          `${p}.powerAdapter8pin`,
+          "can only be set when the card has a 16-pin power connector",
+        );
       }
       break;
     }
@@ -474,6 +490,7 @@ function validateSpecs(
               "interface",
               "maxLengthMm",
               "pcieGeneration",
+              "sharingNote",
             ]);
             checkEnum(errors, slot, "interface", sp, M2_INTERFACES);
             checkNumberOrNull(errors, slot, "maxLengthMm", sp, {
@@ -482,6 +499,7 @@ function validateSpecs(
             checkNumberOrNull(errors, slot, "pcieGeneration", sp, {
               positive: true,
             });
+            checkStringOrNull(errors, slot, "sharingNote", sp);
           });
           if (typeof specs.m2Slots !== "number") {
             err(
