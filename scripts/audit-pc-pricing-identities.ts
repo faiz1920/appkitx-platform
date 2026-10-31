@@ -39,8 +39,15 @@ if (!audit.ok) {
     `Provisional records: ${result.provisionalRecords}`,
     `Human-reviewed records: ${result.humanReviewedRecords}`,
     `Awaiting human review: ${result.awaitingHumanReviewRecords}`,
+    `Needs correction: ${result.needsCorrectionRecords}`,
+    `Rejected: ${result.rejectedRecords}`,
+    `Needs revalidation: ${result.needsRevalidationRecords}`,
+    `Invalidated reviews: ${result.invalidatedReviewRecords}`,
     `Stale source verifications: ${result.staleSourceVerificationRecords}`,
     `Stale human reviews: ${result.staleHumanReviewRecords}`,
+    `Duplicate MPN records: ${result.duplicateMpnRecords}`,
+    `Duplicate GTIN records: ${result.duplicateGtinRecords}`,
+    `Conflicting component records: ${result.conflictingComponentRecords}`,
     `Records with MPN: ${result.mpnRecords}`,
     `Records with GTIN: ${result.gtinRecords}`,
     `Records with both MPN and GTIN: ${result.bothRecords}`,
@@ -77,6 +84,30 @@ if (!audit.ok) {
       `Human-reviewed components: ${result.humanReviewedComponentIds.join(", ")}`,
     );
   }
+  if (result.needsCorrectionComponentIds.length > 0) {
+    lines.push(
+      "",
+      `Needs-correction components: ${result.needsCorrectionComponentIds.join(", ")}`,
+    );
+  }
+  if (result.rejectedComponentIds.length > 0) {
+    lines.push(
+      "",
+      `Rejected components: ${result.rejectedComponentIds.join(", ")}`,
+    );
+  }
+  if (result.needsRevalidationComponentIds.length > 0) {
+    lines.push(
+      "",
+      `Needs-revalidation components: ${result.needsRevalidationComponentIds.join(", ")}`,
+    );
+  }
+  if (result.invalidatedReviewComponentIds.length > 0) {
+    lines.push(
+      "",
+      `Invalidated-review components: ${result.invalidatedReviewComponentIds.join(", ")}`,
+    );
+  }
   if (result.staleSourceVerificationComponentIds.length > 0) {
     lines.push(
       "",
@@ -99,7 +130,8 @@ if (!audit.ok) {
   lines.push(
     "",
     "Matching eligibility is based on source verification, not human approval.",
-    "Every initial record is source-verified and awaiting human review.",
+    "Human review is a separate governance gate and does not gate matching in M10.11.",
+    "Invalidated reviews are reported as needs-revalidation, never as reviewed.",
     "Provisional records and MPN-shaped model strings are never counted as",
     "verified matches, and no retailer SKU or provider identifier is inferred.",
   );
