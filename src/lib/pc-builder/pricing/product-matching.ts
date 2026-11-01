@@ -41,6 +41,19 @@ import type {
 
 const GTIN_LENGTHS = new Set([8, 12, 13, 14]);
 
+/**
+ * Canonical confidence values for commercial product matching. These are
+ * exported so later mapping layers can preserve the exact M10.7 semantics
+ * instead of re-declaring the numbers.
+ */
+export const PRODUCT_MATCH_CONFIDENCE = {
+  exactManufacturerPartNumber: 100,
+  exactGtin: 97,
+  gtinManufacturerMismatch: 55,
+  exactModelNumber: 85,
+  unverified: 0,
+} as const;
+
 export function normalizePartNumber(value: string): string {
   return value.normalize("NFKC").trim().toUpperCase().replace(/\s+/g, " ");
 }
@@ -308,7 +321,7 @@ export function matchProduct(
       return success({
         status: "verified",
         componentId: single.componentId,
-        confidence: 100,
+        confidence: PRODUCT_MATCH_CONFIDENCE.exactManufacturerPartNumber,
         reasons: ["Exact manufacturer part number and manufacturer match."],
         evidence: {
           ...emptyEvidence(bestTitle),
@@ -337,7 +350,9 @@ export function matchProduct(
       return success({
         status: manufacturerMatch ? "verified" : "probable",
         componentId: single.componentId,
-        confidence: manufacturerMatch ? 97 : 55,
+        confidence: manufacturerMatch
+          ? PRODUCT_MATCH_CONFIDENCE.exactGtin
+          : PRODUCT_MATCH_CONFIDENCE.gtinManufacturerMismatch,
         reasons: manufacturerMatch
           ? ["Exact GTIN, category and manufacturer match."]
           : ["Exact GTIN and category match, but the manufacturer differs."],
@@ -372,7 +387,7 @@ export function matchProduct(
       return success({
         status: "probable",
         componentId: single.componentId,
-        confidence: 85,
+        confidence: PRODUCT_MATCH_CONFIDENCE.exactModelNumber,
         reasons: [
           "Exact model number and manufacturer match; separate verification is still required.",
         ],
@@ -400,7 +415,7 @@ export function matchProduct(
   return success({
     status: "unverified",
     componentId: null,
-    confidence: 0,
+    confidence: PRODUCT_MATCH_CONFIDENCE.unverified,
     reasons: [
       "No exact manufacturer part number, GTIN or model evidence.",
       "Title similarity is diagnostic only and never establishes a match.",
