@@ -1,0 +1,20 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import GuideArticleView from "../../views/GuideArticleView.astro";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const entries = await getCollection(
+    "guides",
+    ({ data }) => data.lang === "en",
+  );
+  return entries.map((entry) => ({
+    params: { slug: entry.data.slug },
+    props: { slug: entry.data.slug },
+  }));
+};
+
+const { slug } = Astro.props as { slug: string };
+---
+
+<GuideArticleView locale="en" slug={slug} />

@@ -1,0 +1,57 @@
+---
+import infoIcon from "lucide-static/icons/info.svg?raw";
+import { defaultLocale, type LocaleCode } from "../i18n/config";
+import { infoPageHref } from "../lib/editorial";
+
+interface Props {
+  /** Compact variant for article footers; full variant for the policy page. */
+  variant?: "compact" | "full";
+  locale?: LocaleCode;
+}
+
+const { variant = "compact", locale = defaultLocale } = Astro.props;
+
+const copy =
+  locale === "es"
+    ? {
+        ariaLabel: "Divulgación de afiliados",
+        label: "Divulgación de afiliados de uso futuro",
+        body: "AppKitX no participa actualmente en ningún programa de afiliados y no obtiene comisiones por los enlaces de este sitio. Si AppKitX se une en el futuro a un programa de afiliados, algunos enlaces externos podrían ser enlaces de afiliado: AppKitX podría obtener una comisión si compras a través de ellos, sin coste adicional para ti. Cualquier enlace de afiliado se divulgará claramente en la página que lo contenga antes de publicarse.",
+        link: "Leer la divulgación de afiliados completa",
+      }
+    : {
+        ariaLabel: "Affiliate disclosure",
+        label: "Future-use affiliate disclosure",
+        body: "AppKitX does not currently participate in any affiliate program and does not earn commissions from links on this site. If AppKitX joins an affiliate program in future, some outbound links may be affiliate links: AppKitX could earn a commission if you buy through them, at no additional cost to you. Any affiliate link will be disclosed clearly on the page that contains it before it is published.",
+        link: "Read the full affiliate disclosure",
+      };
+---
+
+<aside
+  class:list={[
+    "rounded-lg border border-border-subtle bg-surface-subtle p-4",
+    variant === "full" && "p-6",
+  ]}
+  aria-label={copy.ariaLabel}
+  data-affiliate-disclosure
+>
+  <p class="flex items-center gap-2 text-label text-text-primary">
+    <span
+      class="h-4 w-4 shrink-0 text-text-muted [&_svg]:h-4 [&_svg]:w-4"
+      aria-hidden="true"
+      set:html={infoIcon}
+    />
+    {copy.label}
+  </p>
+  <p class="mt-2 text-small text-text-secondary">{copy.body}</p>
+  {variant === "compact" && (
+    <p class="mt-2 text-small">
+      <a
+        href={infoPageHref("affiliateDisclosure", locale)}
+        class="focus-ring text-accent underline underline-offset-2 hover:text-accent-hover active:text-accent-active"
+      >
+        {copy.link}
+      </a>
+    </p>
+  )}
+</aside>

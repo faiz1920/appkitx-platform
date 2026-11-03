@@ -5,31 +5,73 @@ import {
   stripLocalePrefix,
   translatedPagePaths,
 } from "../src/i18n/routing";
+import {
+  GUIDES_PATH,
+  GUIDE_SLUGS,
+  INFO_PAGE_PATHS,
+} from "../src/lib/editorial";
 
 const LOCALE_CODES = Object.keys(locales) as Array<keyof typeof locales>;
 const INDEXABLE_ROUTES = LOCALE_CODES.flatMap((locale) =>
   translatedPagePaths().map((path) => localizedHref(path, locale)),
 );
 
+const GUIDE_ROUTES = LOCALE_CODES.flatMap((locale) =>
+  GUIDE_SLUGS.map((slug) => localizedHref(`${GUIDES_PATH}/${slug}`, locale)),
+);
+
+const CHROME_PATHS = new Set([
+  "/",
+  ...translatedPagePaths().filter(
+    (path) => !path.startsWith(`${GUIDES_PATH}/`),
+  ),
+]);
+
 const NAV_LABELS: Record<
   string,
-  { tools: string; categories: string; about: string }
+  { tools: string; categories: string; guides: string; about: string }
 > = {
   en: {
     tools: "Tools",
     categories: "Categories",
+    guides: "Guides",
     about: "About",
   },
   es: {
     tools: "Herramientas",
     categories: "Categorías",
+    guides: "Guías",
     about: "Acerca de",
   },
 };
 
-const REMOVED_FOOTER_LABELS: Record<string, string[]> = {
-  en: ["About", "Contact", "Privacy", "Terms"],
-  es: ["Acerca de", "Contacto", "Privacidad", "Términos"],
+const FOOTER_LABELS: Record<
+  string,
+  {
+    about: string;
+    contact: string;
+    privacy: string;
+    terms: string;
+    affiliateDisclosure: string;
+    guides: string;
+  }
+> = {
+  en: {
+    about: "About",
+    contact: "Contact",
+    privacy: "Privacy",
+    terms: "Terms",
+    affiliateDisclosure: "Affiliate disclosure",
+    guides: "PC hardware guides",
+  },
+  es: {
+    about: "Acerca de",
+    contact: "Contacto",
+    privacy: "Privacidad",
+    terms: "Términos",
+    affiliateDisclosure: "Divulgación de afiliados",
+    guides: "Guías de hardware",
+  },
 };
 
 const isExternal = (href: string): boolean =>
@@ -43,7 +85,7 @@ test("all indexable routes keep canonical internal links and working chrome", as
   page,
   request,
 }) => {
-  expect(INDEXABLE_ROUTES).toHaveLength(20);
+  expect(INDEXABLE_ROUTES).toHaveLength(52);
 
   const internalPaths = new Set<string>();
 
@@ -66,17 +108,33 @@ test("all indexable routes keep canonical internal links and working chrome", as
       `${route} Categories navigation`,
     ).toHaveAttribute("href", `${home}#categories`);
     await expect(
+      nav.getByRole("link", { name: labels.guides }),
+      `${route} Guides navigation`,
+    ).toHaveAttribute("href", localizedHref(GUIDES_PATH, locale));
+    await expect(
       nav.getByRole("link", { name: labels.about }),
-      `${route} must not render an About link`,
+      `${route} must not render an About link in the global nav`,
     ).toHaveCount(0);
 
     await expect(footer.locator('a[href="#"]')).toHaveCount(0);
-    for (const label of REMOVED_FOOTER_LABELS[locale]) {
+
+    const footerLinks = FOOTER_LABELS[locale];
+    for (const [key, label] of [
+      ["about", footerLinks.about],
+      ["contact", footerLinks.contact],
+      ["privacy", footerLinks.privacy],
+      ["terms", footerLinks.terms],
+      ["affiliateDisclosure", footerLinks.affiliateDisclosure],
+    ] as const) {
       await expect(
         footer.getByRole("link", { name: label }),
-        `${route} must not render a ${label} footer link`,
-      ).toHaveCount(0);
+        `${route} must render a ${label} footer link`,
+      ).toHaveAttribute("href", localizedHref(INFO_PAGE_PATHS[key], locale));
     }
+    await expect(
+      footer.getByRole("link", { name: footerLinks.guides }),
+      `${route} must link the localized guides index`,
+    ).toHaveAttribute("href", localizedHref(GUIDES_PATH, locale));
 
     const hrefs = await page
       .locator("a[href]")
@@ -90,7 +148,7 @@ test("all indexable routes keep canonical internal links and working chrome", as
       if (href.startsWith("#")) {
         const target = href.slice(1);
         await expect(
-          page.locator(`#${target}`),
+          page.locator(`[id="${target}"]`),
           `${route} fragment ${href} must resolve on the page`,
         ).toHaveCount(1);
         continue;
@@ -112,11 +170,14 @@ test("all indexable routes keep canonical internal links and working chrome", as
     }
   }
 
-  for (const route of INDEXABLE_ROUTES) {
-    expect(
-      internalPaths.has(route),
-      `${route} must be linked from the site chrome`,
-    ).toBe(true);
+  for (const path of CHROME_PATHS) {
+    for (const locale of LOCALE_CODES) {
+      const route = localizedHref(path, locale);
+      expect(
+        internalPaths.has(route),
+        `${route} must be linked from the site chrome`,
+      ).toBe(true);
+    }
   }
 
   for (const pathname of internalPaths) {
@@ -132,6 +193,22 @@ test("all indexable routes keep canonical internal links and working chrome", as
     await expect(page.locator("#tools")).toHaveCount(1);
     await expect(page.locator("#categories")).toHaveCount(1);
   }
+});
+
+test("both guide indexes link every localized guide", async ({ page }) => {
+  for (const locale of LOCALE_CODES) {
+    await page.goto(localizedHref(GUIDES_PATH, locale));
+    for (const slug of GUIDE_SLUGS) {
+      await expect(
+        page.locator(
+          `a[href="${localizedHref(`${GUIDES_PATH}/${slug}`, locale)}"]`,
+        ),
+        `${locale} guides index must link ${slug}`,
+      ).toHaveCount(1);
+    }
+  }
+
+  expect(GUIDE_ROUTES).toHaveLength(20);
 });
 
 test("Categories navigation clears the sticky header from a non-home page", async ({

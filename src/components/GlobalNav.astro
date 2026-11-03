@@ -3,6 +3,7 @@ import menuIcon from "lucide-static/icons/menu.svg?raw";
 import searchIcon from "lucide-static/icons/search.svg?raw";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
 import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+import { guideIndexHref } from "../lib/editorial";
 import { localizedHref } from "../i18n/routing";
 
 interface Props {
@@ -13,9 +14,10 @@ const { locale = defaultLocale } = Astro.props;
 const t = getDictionary(locale);
 
 const homeHref = localizedHref("/", locale);
-const links = [
+const links: Array<{ href: string; label: string }> = [
   { href: `${homeHref}#tools`, label: t.nav.tools },
   { href: `${homeHref}#categories`, label: t.nav.categories },
+  { href: guideIndexHref(locale), label: t.nav.guides },
 ];
 ---
 
@@ -26,7 +28,7 @@ const links = [
   >
     <a
       href={homeHref}
-      class="focus-ring font-sans text-[18px] leading-none font-semibold text-text-primary"
+      class="focus-ring inline-flex min-h-11 items-center font-sans text-[18px] leading-none font-semibold text-text-primary"
     >
       AppKitX
     </a>
@@ -37,7 +39,7 @@ const links = [
           <li>
             <a
               href={link.href}
-              class="focus-ring text-label text-text-secondary hover:text-text-primary active:text-accent-active"
+              class="focus-ring inline-flex min-h-11 items-center text-label text-text-secondary hover:text-text-primary active:text-accent-active"
             >
               {link.label}
             </a>

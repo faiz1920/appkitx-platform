@@ -7,6 +7,11 @@ import {
   isCategoryPublished,
   type ToolCategory,
 } from "../lib/categories";
+import {
+  guideIndexHref,
+  infoPageHref,
+  type InfoPageKey,
+} from "../lib/editorial";
 
 interface Props {
   locale?: LocaleCode;
@@ -49,13 +54,25 @@ const footerCategories: ToolCategory[] = [
   "Date & time",
 ];
 
+const infoLink = (key: InfoPageKey, label: string) => ({
+  label,
+  href: infoPageHref(key, locale),
+});
+
 const columns: Array<{
   heading: string;
   links: Array<{ label: string; href?: string }>;
 }> = [
   {
     heading: footer.tools.heading,
-    links: [...shippedTools, ...placeholderTools],
+    links: [
+      ...shippedTools,
+      {
+        label: t.footer.guides,
+        href: guideIndexHref(locale),
+      },
+      ...placeholderTools,
+    ],
   },
   {
     heading: footer.categories.heading,
@@ -66,24 +83,39 @@ const columns: Array<{
         : {}),
     })),
   },
+  {
+    heading: footer.company.heading,
+    links: [
+      infoLink("about", footer.company.about),
+      infoLink("contact", footer.company.contact),
+    ],
+  },
+  {
+    heading: footer.legal.heading,
+    links: [
+      infoLink("privacy", footer.legal.privacy),
+      infoLink("terms", footer.legal.terms),
+      infoLink("affiliateDisclosure", footer.legal.affiliateDisclosure),
+    ],
+  },
 ];
 ---
 
 <footer class="border-t border-border-subtle bg-surface-subtle">
   <div class="mx-auto max-w-(--layout-container) px-6 py-12">
-    <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+    <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
       {columns.map((column) => (
         <div>
-          <h3 class="text-overline text-text-muted uppercase">
+          <h2 class="text-overline text-text-muted uppercase">
             {column.heading}
-          </h3>
+          </h2>
           <ul class="mt-4 space-y-2">
             {column.links.map((link) => (
               <li>
                 {link.href ? (
                   <a
                     href={link.href}
-                    class="focus-ring text-small text-text-secondary hover:text-accent active:text-accent-active"
+                    class="focus-ring inline-flex min-h-6 items-center text-small text-text-secondary hover:text-accent active:text-accent-active"
                   >
                     {link.label}
                   </a>

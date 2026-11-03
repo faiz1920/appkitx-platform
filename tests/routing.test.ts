@@ -14,6 +14,11 @@ import {
   translatedPagePaths,
 } from "../src/i18n/routing";
 import { publishedCategoryPaths } from "../src/lib/categories";
+import {
+  GUIDES_PATH,
+  GUIDE_SLUGS,
+  INFO_PAGE_PATHS,
+} from "../src/lib/editorial";
 import { tools } from "../src/lib/tools";
 
 /*
@@ -153,6 +158,9 @@ describe("locale path helpers", () => {
       "/",
       ...tools.map((tool) => tool.href),
       ...publishedCategoryPaths(),
+      GUIDES_PATH,
+      ...GUIDE_SLUGS.map((slug) => `${GUIDES_PATH}/${slug}`),
+      ...Object.values(INFO_PAGE_PATHS),
     ];
     expect(translatedPagePaths()).toEqual(expected);
     expect(translatedPagePaths()).toEqual(
@@ -167,6 +175,11 @@ describe("locale path helpers", () => {
         "/date-calculator",
         "/age-calculator",
         "/date-time",
+        "/guides",
+        "/guides/how-to-choose-a-cpu",
+        "/privacy",
+        "/terms",
+        "/affiliate-disclosure",
       ]),
     );
   });
@@ -175,8 +188,10 @@ describe("locale path helpers", () => {
     expect(isTranslatedPage("/")).toBe(true);
     expect(isTranslatedPage("/percentage-calculator/")).toBe(true);
     expect(isTranslatedPage("/es/calculators/")).toBe(true);
-    expect(isTranslatedPage("/privacy")).toBe(false);
-    expect(isTranslatedPage("/es/privacy/")).toBe(false);
+    expect(isTranslatedPage("/privacy")).toBe(true);
+    expect(isTranslatedPage("/es/privacy/")).toBe(true);
+    expect(isTranslatedPage("/guides/how-to-choose-a-cpu/")).toBe(true);
+    expect(isTranslatedPage("/es/guides/how-to-choose-a-cpu/")).toBe(true);
   });
 
   it("includes every published category path in the translated set", () => {
@@ -232,10 +247,23 @@ describe("alternateLinks", () => {
     }
   });
 
+  it("pairs guide and information pages across locales", () => {
+    expect(alternateLinks("/guides/how-to-choose-a-cpu/")).toEqual([
+      { hreflang: "en", path: "/guides/how-to-choose-a-cpu" },
+      { hreflang: "es", path: "/es/guides/how-to-choose-a-cpu" },
+      { hreflang: "x-default", path: "/guides/how-to-choose-a-cpu" },
+    ]);
+    expect(alternateLinks("/es/privacy/")).toEqual([
+      { hreflang: "en", path: "/privacy" },
+      { hreflang: "es", path: "/es/privacy" },
+      { hreflang: "x-default", path: "/privacy" },
+    ]);
+  });
+
   it("emits no alternates for pages outside the translated set", () => {
-    expect(alternateLinks("/privacy")).toEqual([]);
-    expect(alternateLinks("/privacy/")).toEqual([]);
-    expect(alternateLinks("/es/privacy/")).toEqual([]);
+    expect(alternateLinks("/not-a-real-page")).toEqual([]);
+    expect(alternateLinks("/not-a-real-page/")).toEqual([]);
+    expect(alternateLinks("/es/not-a-real-page/")).toEqual([]);
   });
 });
 

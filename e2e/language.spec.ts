@@ -41,7 +41,7 @@ test("the switcher shows a visible label, the current language, and 44px targets
   await expect(switcher(page).locator("[data-locale-choice]")).toHaveCount(
     Object.keys(locales).length,
   );
-  await expect(switcher(page).locator('[aria-current="true"]')).toHaveAttribute(
+  await expect(switcher(page).locator('[aria-current="page"]')).toHaveAttribute(
     "data-locale-choice",
     "en",
   );
@@ -81,6 +81,34 @@ test("the switcher links to canonical trailing-slash page URLs", async ({
   ).toHaveAttribute("href", "/es/calculators/");
 });
 
+test("the switcher preserves bilingual guide and information pages", async ({
+  page,
+}) => {
+  const pairs = [
+    ["/guides/", "/es/guides/"],
+    ["/guides/how-to-choose-a-cpu/", "/es/guides/how-to-choose-a-cpu/"],
+    ["/about/", "/es/about/"],
+    ["/contact/", "/es/contact/"],
+    ["/privacy/", "/es/privacy/"],
+    ["/terms/", "/es/terms/"],
+    ["/affiliate-disclosure/", "/es/affiliate-disclosure/"],
+  ] as const;
+
+  for (const [english, spanish] of pairs) {
+    await page.goto(english);
+    await summary(page).click();
+    await expect(
+      switcher(page).locator('[data-locale-choice="es"]'),
+    ).toHaveAttribute("href", spanish);
+
+    await page.goto(spanish);
+    await summary(page).click();
+    await expect(
+      switcher(page).locator('[data-locale-choice="en"]'),
+    ).toHaveAttribute("href", english);
+  }
+});
+
 test("the switcher marks provisional translations without hiding the language", async ({
   page,
 }) => {
@@ -108,7 +136,7 @@ test("the switcher marks provisional translations without hiding the language", 
   await page.goto("/es/");
   await summary(page).click();
   const current = switcher(page).locator('[data-locale-choice="es"]');
-  await expect(current).toHaveAttribute("aria-current", "true");
+  await expect(current).toHaveAttribute("aria-current", "page");
   await expect(current.locator("[data-provisional-caption]")).toHaveText(
     "Traducción provisional",
   );

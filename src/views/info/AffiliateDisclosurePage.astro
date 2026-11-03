@@ -1,0 +1,224 @@
+---
+import InfoPageLayout from "../../layouts/InfoPageLayout.astro";
+import AffiliateDisclosure from "../../components/AffiliateDisclosure.astro";
+import { defaultLocale, type LocaleCode } from "../../i18n/config";
+import {
+  CONTACT_EMAIL,
+  INFO_COPY,
+  INTENDED_JURISDICTION,
+  LEGAL_LAST_UPDATED,
+  infoPageHref,
+} from "../../lib/editorial";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const copy = INFO_COPY[locale];
+const isEs = locale === "es";
+
+const reviewNotice = isEs
+  ? `Borrador para revisión del propietario y legal. Jurisdicción prevista: ${INTENDED_JURISDICTION}. Esta es una divulgación general de uso futuro, no una afirmación de que AppKitX participe hoy en algún programa de afiliados. Debe revisarse antes de publicar cualquier enlace de afiliado.`
+  : `Draft for owner and legal review. Intended jurisdiction: ${INTENDED_JURISDICTION}. This is a general future-use disclosure, not a statement that AppKitX participates in any affiliate program today. It must be reviewed before any affiliate link is published.`;
+
+const translationNote = isEs
+  ? "Traducción al español provisional. La versión inglesa es el borrador de referencia y prevalece hasta que ambas versiones hayan sido revisadas legalmente."
+  : undefined;
+---
+
+<InfoPageLayout
+  locale={locale}
+  title={copy.pageLabels.affiliateDisclosure}
+  description={
+    isEs
+      ? "Divulgación de afiliados de uso futuro de AppKitX: hoy no hay ningún programa de afiliados activo y cualquier enlace con comisión se divulgará claramente."
+      : "AppKitX's future-use affiliate disclosure: no affiliate program is active today, and any future commission link will be disclosed clearly."
+  }
+  current="affiliateDisclosure"
+  lastUpdated={LEGAL_LAST_UPDATED}
+  reviewNotice={reviewNotice}
+  translationNote={translationNote}
+>
+  <AffiliateDisclosure variant="full" locale={locale} />
+
+  {isEs ? (
+    <>
+      <h2>Situación actual</h2>
+      <p>
+        AppKitX no participa actualmente en ningún programa de afiliados y no
+        obtiene comisiones por los enlaces de este sitio. Hoy no hay enlaces de
+        afiliado en las páginas públicas. El sitio se financia y opera de forma
+        independiente.
+      </p>
+
+      <h2>Qué es un enlace de afiliado</h2>
+      <p>
+        Un enlace de afiliado es un enlace externo que incluye un identificador
+        de seguimiento. Si lo sigues y compras algo, el vendedor de destino
+        puede pagar una comisión al sitio que lo refirió. El precio que pagas no
+        aumenta por la comisión.
+      </p>
+
+      <h2>Si AppKitX añade enlaces de afiliado</h2>
+      <p>
+        Si AppKitX se une en el futuro a un programa de afiliados, el sitio
+        puede obtener una comisión por compras válidas realizadas a través de
+        enlaces elegibles. Cualquier relación de este tipo se divulgará:
+      </p>
+      <ul>
+        <li>
+          en la página que contenga el enlace, lo bastante cerca como para que
+          no se pase por alto;
+        </li>
+        <li>
+          en esta página de divulgación, con el programa y la fecha de inicio de
+          la relación;
+        </li>
+        <li>
+          de forma que no implique que un vendedor, fabricante o programa
+          respalda a AppKitX.
+        </li>
+      </ul>
+      <p>
+        AppKitX no publicará un enlace de afiliado antes de que la divulgación
+        esté en su sitio.
+      </p>
+
+      <h2>Independencia editorial</h2>
+      <p>
+        Las relaciones de afiliación no determinarán clasificaciones,
+        recomendaciones ni conclusiones. Las guías se escriben a partir de
+        especificaciones documentadas, estándares y contrapartidas explicadas.
+        Una comisión no es razón para recomendar un producto que no encaja con
+        las necesidades del lector, y la ausencia de comisión no es razón para
+        omitir una opción relevante.
+      </p>
+      <p>
+        Si una guía no puede escribirse con honestidad bajo una relación
+        comercial, debe eliminarse la relación en lugar de ajustar la
+        conclusión.
+      </p>
+
+      <h2>Qué no es esta página</h2>
+      <p>
+        Esta página no afirma que AppKitX participe en el programa de afiliados
+        de ningún vendedor ni que sea parte de un acuerdo de afiliación. Es una
+        divulgación general de uso futuro preparada antes de que exista tal
+        relación.
+      </p>
+
+      <h2>Preguntas</h2>
+      <p>
+        Las preguntas sobre esta divulgación deben enviarse a{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        .
+      </p>
+
+      <h2>Información relacionada</h2>
+      <ul>
+        <li>
+          <a href={infoPageHref("about", locale)}>
+            Acerca de AppKitX y sus principios editoriales
+          </a>
+        </li>
+        <li>
+          <a href={infoPageHref("privacy", locale)}>Política de privacidad</a>
+        </li>
+        <li>
+          <a href={infoPageHref("terms", locale)}>Términos de uso</a>
+        </li>
+      </ul>
+    </>
+  ) : (
+    <>
+      <h2>Current status</h2>
+      <p>
+        AppKitX does not currently participate in any affiliate program and does
+        not earn commissions from links on this site. There are no affiliate
+        links on the public pages today. The site is funded and operated
+        independently.
+      </p>
+
+      <h2>What an affiliate link is</h2>
+      <p>
+        An affiliate link is an outbound link that includes a tracking
+        identifier. If you follow it and buy something, the destination retailer
+        may pay the referring site a commission. The price you pay is not
+        increased by the commission.
+      </p>
+
+      <h2>If AppKitX adds affiliate links</h2>
+      <p>
+        If AppKitX joins an affiliate program in future, the site may earn a
+        commission on qualifying purchases made through eligible links. Any such
+        relationship will be disclosed:
+      </p>
+      <ul>
+        <li>
+          on the page that contains the link, close enough to the link that it
+          is not missed;
+        </li>
+        <li>
+          in this disclosure page, with the program and the date the
+          relationship began;
+        </li>
+        <li>
+          in a way that does not imply that a retailer, manufacturer, or program
+          endorses AppKitX.
+        </li>
+      </ul>
+      <p>
+        AppKitX will not publish an affiliate link before the disclosure is in
+        place.
+      </p>
+
+      <h2>Editorial independence</h2>
+      <p>
+        Affiliate relationships will not determine rankings, recommendations, or
+        conclusions. Guides are written from documented specifications,
+        standards, and stated trade-offs. A commission is not a reason to
+        recommend a product that does not fit the reader's needs, and the
+        absence of a commission is not a reason to omit a relevant option.
+      </p>
+      <p>
+        If a guide cannot be written honestly under a commercial relationship,
+        the relationship should be removed rather than the conclusion adjusted.
+      </p>
+
+      <h2>What this page is not</h2>
+      <p>
+        This page is not a claim that AppKitX participates in any retailer's
+        affiliate program or is a party to any affiliate agreement. It is a
+        general future-use disclosure prepared before any such relationship
+        exists.
+      </p>
+
+      <h2>Questions</h2>
+      <p>
+        Questions about this disclosure should be emailed to{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        .
+      </p>
+
+      <h2>Related information</h2>
+      <ul>
+        <li>
+          <a href={infoPageHref("about", locale)}>
+            About AppKitX and its editorial principles
+          </a>
+        </li>
+        <li>
+          <a href={infoPageHref("privacy", locale)}>Privacy policy</a>
+        </li>
+        <li>
+          <a href={infoPageHref("terms", locale)}>Terms of use</a>
+        </li>
+      </ul>
+    </>
+  )}
+</InfoPageLayout>

@@ -1,0 +1,53 @@
+---
+import arrowIcon from "lucide-static/icons/arrow-right.svg?raw";
+import { defaultLocale, type LocaleCode } from "../i18n/config";
+import {
+  GUIDE_CATEGORY_LABELS,
+  GUIDE_COPY,
+  guideHref,
+  type GuideCategory,
+} from "../lib/editorial";
+
+interface Props {
+  slug: string;
+  title: string;
+  description: string;
+  category: GuideCategory;
+  readingMinutes: number;
+  locale?: LocaleCode;
+}
+
+const {
+  slug,
+  title,
+  description,
+  category,
+  readingMinutes,
+  locale = defaultLocale,
+} = Astro.props;
+const copy = GUIDE_COPY[locale];
+---
+
+<a
+  href={guideHref(slug, locale)}
+  class="focus-ring group block rounded-lg border border-border-subtle bg-surface p-(--layout-card-padding) hover:border-border-strong hover:shadow-sm"
+>
+  <span class="text-overline text-text-muted uppercase">
+    {GUIDE_CATEGORY_LABELS[locale][category]}
+  </span>
+  <h3 class="mt-2 text-body-strong text-text-primary">{title}</h3>
+  <p class="mt-1 line-clamp-2 text-small text-text-secondary">{description}</p>
+  <span class="mt-4 flex items-center justify-between gap-3">
+    <span class="flex items-center gap-1 text-label text-accent">
+      {copy.readGuide}
+      <span
+        class="h-4 w-4 transition-transform group-hover:translate-x-0.5 [&_svg]:h-4 [&_svg]:w-4"
+        aria-hidden="true"
+        set:html={arrowIcon}
+      />
+    </span>
+    <span class="text-caption text-text-muted">
+      {readingMinutes} {copy.readingTimeSuffix}
+    </span>
+  </span>
+</a>

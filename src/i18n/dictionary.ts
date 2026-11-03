@@ -31,6 +31,7 @@ export interface NavStrings {
   ariaLabel: string;
   tools: string;
   categories: string;
+  guides: string;
   about: string;
   searchLabel: string;
   searchShortcut: string;
@@ -74,8 +75,11 @@ export interface FooterStrings {
       heading: string;
       privacy: string;
       terms: string;
+      affiliateDisclosure: string;
     };
   };
+  /** Link from the Tools column to the English-only hardware guides. */
+  guides: string;
   copyright: string;
 }
 

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildArticleJsonLd,
   buildBreadcrumbJsonLd,
   buildCollectionPageJsonLd,
   buildWebApplicationJsonLd,
@@ -267,6 +268,75 @@ describe("buildCollectionPageJsonLd", () => {
     );
     expect(() =>
       buildCollectionPageJsonLd({ ...input, inLanguage: "" }),
+    ).toThrow(/must not be empty/);
+  });
+});
+
+describe("buildArticleJsonLd", () => {
+  const input = {
+    headline: "How to Choose a CPU for Your PC Build",
+    description:
+      "A practical guide to cores, clocks, sockets, integrated graphics, cooling, and platform costs when choosing a desktop CPU.",
+    datePublished: "2026-11-01",
+    dateModified: "2026-11-01",
+    authorName: "AppKitX Editorial",
+    authorUrl: "https://appkitx.com/about/",
+    publisherName: "AppKitX",
+    publisherUrl: "https://appkitx.com/",
+    url: "https://appkitx.com/guides/how-to-choose-a-cpu/",
+    inLanguage: "en",
+    articleSection: "Choosing components",
+    keywords: ["cpu", "motherboard"],
+  };
+
+  it("emits an Article with an organizational byline", () => {
+    expect(buildArticleJsonLd(input)).toEqual({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: input.headline,
+      description: input.description,
+      datePublished: "2026-11-01",
+      dateModified: "2026-11-01",
+      author: {
+        "@type": "Organization",
+        name: "AppKitX Editorial",
+        url: "https://appkitx.com/about/",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "AppKitX",
+        url: "https://appkitx.com/",
+      },
+      mainEntityOfPage: input.url,
+      inLanguage: "en",
+      articleSection: "Choosing components",
+      keywords: ["cpu", "motherboard"],
+    });
+  });
+
+  it("never emits ratings, reviews, prices, offers, or a Person author", () => {
+    const document = buildArticleJsonLd(input);
+    for (const forbidden of ["aggregateRating", "review", "offers", "price"]) {
+      expect(document).not.toHaveProperty(forbidden);
+    }
+    expect(document.author["@type"]).toBe("Organization");
+  });
+
+  it("rejects invalid dates and empty required fields", () => {
+    expect(() =>
+      buildArticleJsonLd({ ...input, datePublished: "November 2026" }),
+    ).toThrow(/ISO 8601/);
+    expect(() =>
+      buildArticleJsonLd({ ...input, dateModified: "2026-13-40" }),
+    ).toThrow(/ISO 8601/);
+    expect(() => buildArticleJsonLd({ ...input, headline: " " })).toThrow(
+      /must not be empty/,
+    );
+    expect(() =>
+      buildArticleJsonLd({ ...input, publisherUrl: "not-a-url" }),
+    ).toThrow(/absolute URL/);
+    expect(() =>
+      buildArticleJsonLd({ ...input, keywords: ["cpu", ""] }),
     ).toThrow(/must not be empty/);
   });
 });

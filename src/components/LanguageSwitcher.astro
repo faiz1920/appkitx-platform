@@ -73,7 +73,7 @@ const options = Object.values(locales).map((meta) => ({
             href={option.href}
             hreflang={option.hreflang}
             lang={option.hreflang}
-            aria-current={option.isCurrent ? "true" : undefined}
+            aria-current={option.isCurrent ? "page" : undefined}
             data-locale-choice={option.code}
             data-translation-status={option.translationStatus}
             class:list={[

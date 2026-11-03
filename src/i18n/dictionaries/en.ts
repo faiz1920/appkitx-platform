@@ -18,6 +18,7 @@ export const en: Dictionary = {
     ariaLabel: "Global",
     tools: "Tools",
     categories: "Categories",
+    guides: "Guides",
     about: "About",
     searchLabel: "Search",
     searchShortcut: "⌘K",
@@ -45,8 +46,10 @@ export const en: Dictionary = {
         heading: "Legal",
         privacy: "Privacy",
         terms: "Terms",
+        affiliateDisclosure: "Affiliate disclosure",
       },
     },
+    guides: "PC hardware guides",
     copyright: "© 2026 AppKitX",
   },
   search: {

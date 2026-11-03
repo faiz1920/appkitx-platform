@@ -2,7 +2,7 @@
 version: 1.0
 name: AppKitX Design System
 description: Precision — a light, technical visual system for a global platform of free calculators, converters, and developer utilities. Teal accent, cool neutral grays, compact density, monospace details for numeric and code work, and a search-first navigation model.
-updated: 2026-10-17
+updated: 2026-11-01
 ---
 
 # AppKitX Design System
@@ -339,7 +339,7 @@ Compact locale selector in the global navigation — desktop cluster and mobile 
 
 - **Trigger**: 44px outlined button (border-control, radius-md — the same grammar as the search trigger): globe icon (20px), the visible label `"<Language>: <current native name>"` in `--text-label`, and a 16px chevron that rotates 180° while open.
 - **Panel**: right-aligned dropdown below the trigger, width 224px, `--radius-md`, `1px solid --color-border-subtle`, `--shadow-md`, 8px padding.
-- **Rows**: real links to the same page in that language, minimum 44px tall: native name (`--text-label`, text-primary) over the English name (`--text-caption`, muted); links carry `hreflang` and `lang`. Current language: `--color-accent-subtle` fill, `--color-accent` text, check icon, `aria-current="true"`.
+- **Rows**: real links to the same page in that language, minimum 44px tall: native name (`--text-label`, text-primary) over the English name (`--text-caption`, muted); links carry `hreflang` and `lang`. Current language: `--color-accent-subtle` fill, `--color-accent` text, check icon, `aria-current="page"`.
 - **Provisional translation**: when a locale's provenance is `provisional` (see README → Translation status), its row shows a `--text-micro` muted caption in that locale below the English name — “Traducción provisional” for Spanish. The caption is additional text only; it never replaces the language name or the current-language check.
 - **States**: hover — row fill `--color-surface-subtle`, text-primary; focus — the standard `2px` ring + `2px` offset on the trigger and on every row; open panel keeps the trigger's pressed treatment. `prefers-reduced-motion` disables the chevron rotation transition.
 - **Behavior**: Enter/Space toggles (native), Escape closes and returns focus to the trigger, clicking outside light-dismisses. Selecting a language stores it as the explicit preference (`appkitx.locale`) and navigates to the same page in that locale; paths without a translation (for example the 404) link to that locale's homepage instead.
@@ -450,10 +450,45 @@ Validation: errors appear inline under the offending field (error color, 13px, a
 - Blockquotes: 2px accent left border, 16px padding-left, text-secondary.
 - This is where trust is built: show the formula, the assumptions, and the worked example for every calculator.
 
+### Editorial guide index
+
+- Hero header on the default surface: breadcrumb rail, H1 at hero scale, 1–2 lead paragraphs at `--text-body-lg` / `--text-secondary` (max `--layout-prose`), and a `--text-caption` line with the guide count and latest update date.
+- Category sections on a `--color-surface-subtle` band, separated by `--layout-section-y` rhythm. Section heading `--text-headline`; guide grid 3 / 2 / 1 columns (same gutters as the tool grid).
+- No decorative imagery. The index is a navigation surface, not a magazine cover.
+
+### Editorial guide page
+
+- Header: breadcrumb rail, category overline (`--text-overline`, muted), H1 at hero scale (max 820px), lead paragraph `--text-body-lg` / `--text-secondary` (max `--layout-prose`), then a byline row at `--text-caption` / muted: organizational author, published date, updated date, reading time. Dates use `<time datetime>`.
+- Body: `--layout-prose` column plus a 240px "In this guide" rail at ≥1024px; single column below. The rail is sticky below the 64px nav and lists H2 links with a `border-subtle` left rule. Show it only when the article has at least three H2 sections.
+- Prose follows Educational content, plus ordered lists, tables (overline headers, `border-subtle` row rules, 12px cells), blockquotes (2px accent left rule), and code blocks (`--color-surface-muted`, `--radius-md`, mono 14px, horizontal scroll).
+- References: H2, short explanatory line, ordered list of external links at `--text-small`. External links use `rel="noopener noreferrer"`.
+- Disclosure note: see Disclosure note below, placed after references.
+- Author note: `--color-surface-subtle` panel, `--radius-lg`, `--text-label` name and `--text-small` description. It states the research basis and never claims personal testing or credentials.
+- Related guides: `--color-surface-subtle` band, H2 `--text-title`, "All guides" ghost link, three guide cards.
+
+### Guide card
+
+- Same geometry and states as the tool card: whole-card link, `--radius-lg`, `border-subtle`, `--layout-card-padding`, hover `border-strong` + `--shadow-sm`, focus ring wraps the card.
+- Contents: category overline (`--text-overline`, muted), title (`--text-body-strong`), description (`--text-small`, 2-line clamp), and a footer row with "Read guide" (`--text-label`, accent + arrow) and reading time (`--text-caption`, muted).
+- No icon tile: guide cards are editorial navigation, not tools. Never present a guide as a working tool.
+
+### Disclosure note
+
+- `--color-surface-subtle` fill, `border-subtle`, `--radius-lg`, 16px padding (24px in the full policy variant).
+- Info icon (16px, muted), label `--text-label`, body `--text-small` / `--text-secondary`, link accent with underline and 2px offset.
+- The label must say it is a future-use disclosure while no affiliate programme is active. Status colors are not used because this is standing disclosure copy, not a warning state.
+
+### Information page (About, Contact, Privacy, Terms, Disclosure)
+
+- Header: breadcrumb rail, H1 at hero scale, `--text-caption` "Last updated" line with `<time datetime>`.
+- Body: `--layout-prose` column plus a 240px "Information" rail at ≥1024px; single column below. The rail lists the other information pages and the guide index.
+- Optional review notice: `--color-warning-subtle` fill, `border-subtle`, `--radius-lg`, 16px padding, `--text-small` / `--color-warning`, `role="note"`. Use only for genuine draft/review status, never for decoration.
+- Legal pages use the same prose typography as educational content.
+
 ### Footer
 
 - `--color-surface-subtle` background, `1px` border-top (border-subtle), padding 48px top/bottom.
-- Columns: Tools, Categories — headings `--text-overline` (muted), links `--text-small` text-secondary, hover accent. 2 columns ≥640px → 1. Company and Legal columns return only when those pages exist.
+- Columns: Tools, Categories, Company, Legal — headings `--text-overline` (muted), links `--text-small` text-secondary, hover accent. 2 columns ≥640px, 4 columns ≥1024px → 1 below 640px. Company and Legal columns render because those pages exist; the Tools column also links the localized guide index. Every destination is served in the current locale.
 - Legal row: border-top, 12px `--text-micro` in text-muted: "© 2026 AppKitX".
 
 ### Legal pages

@@ -1,0 +1,689 @@
+---
+import InfoPageLayout from "../../layouts/InfoPageLayout.astro";
+import { defaultLocale, type LocaleCode } from "../../i18n/config";
+import {
+  CONTACT_EMAIL,
+  INFO_COPY,
+  INTENDED_JURISDICTION,
+  PRIVACY_LAST_UPDATED,
+  infoPageHref,
+} from "../../lib/editorial";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const copy = INFO_COPY[locale];
+const isEs = locale === "es";
+
+const reviewNotice = isEs
+  ? `Borrador para revisión del propietario y legal. Jurisdicción prevista: ${INTENDED_JURISDICTION}. Esta política describe el comportamiento actual del sitio web, no una configuración de producción verificada. Debe comprobarse con la configuración desplegada de Cloudflare, el acuerdo de Google Search Console y las obligaciones de la entidad legal antes de publicarse.`
+  : `Draft for owner and legal review. Intended jurisdiction: ${INTENDED_JURISDICTION}. This policy describes the current website's behavior, not a verified production configuration. It must be checked against the deployed Cloudflare settings, the Google Search Console arrangement, and the legal entity's obligations before publication.`;
+
+const translationNote = isEs
+  ? "Traducción al español provisional. La versión inglesa es el borrador de referencia y prevalece hasta que ambas versiones hayan sido revisadas legalmente."
+  : undefined;
+---
+
+<InfoPageLayout
+  locale={locale}
+  title={copy.pageLabels.privacy}
+  description={
+    isEs
+      ? "Cómo trata AppKitX los datos: herramientas en el navegador, preferencia de idioma, alojamiento y analítica de Cloudflare, informes CSP y contacto."
+      : "How AppKitX handles data: browser-only tools, language preference storage, Cloudflare hosting and analytics, CSP reports, and contact messages."
+  }
+  current="privacy"
+  lastUpdated={PRIVACY_LAST_UPDATED}
+  reviewNotice={reviewNotice}
+  translationNote={translationNote}
+>
+  {isEs ? (
+    <>
+      <p>
+        Esta política explica qué datos puede tratar AppKitX, por qué y qué
+        opciones tienes. Está redactada para coincidir con el código actual del
+        sitio y la documentación de alojamiento. No es asesoramiento legal y no
+        afirma que se cumplan todos los requisitos legales de todos los países.
+      </p>
+
+      <h2>Quién opera AppKitX</h2>
+      <p>
+        AppKitX es una marca independiente y separada. Todavía no está
+        legalmente registrada. La entidad legal que opera el sitio, su dirección
+        registrada y la identidad legal no se han confirmado. La jurisdicción
+        prevista es {INTENDED_JURISDICTION}. Esos datos deben añadirse antes de
+        publicar esta política. Hasta entonces, esta página es un borrador.
+      </p>
+
+      <h2>Resumen</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Actividad</th>
+            <th>Qué ocurre</th>
+            <th>Quién participa</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Usar una calculadora o herramienta</td>
+            <td>
+              Los datos se procesan en tu navegador. No se envían a un servidor
+              de AppKitX.
+            </td>
+            <td>Solo tu dispositivo</td>
+          </tr>
+          <tr>
+            <td>Elegir idioma</td>
+            <td>
+              La elección se guarda en el almacenamiento local del navegador con
+              la clave <code>appkitx.locale</code>.
+            </td>
+            <td>Solo tu dispositivo</td>
+          </tr>
+          <tr>
+            <td>Cargar una página</td>
+            <td>
+              La red de alojamiento procesa metadatos de la solicitud, como la
+              dirección IP, el agente de usuario y la URL solicitada, para
+              entregar y proteger el sitio.
+            </td>
+            <td>Cloudflare, como proveedor de alojamiento</td>
+          </tr>
+          <tr>
+            <td>Analítica web de producción</td>
+            <td>
+              La documentación del sitio indica que Cloudflare Web Analytics con
+              Real User Measurements está activado. El beacon lo inyecta
+              Cloudflare y no forma parte del build estático del sitio.
+            </td>
+            <td>Cloudflare</td>
+          </tr>
+          <tr>
+            <td>Administración de búsquedas</td>
+            <td>
+              Google Search Console se usa para revisar indexación y rendimiento
+              en búsquedas. No es un script de seguimiento integrado en las
+              páginas públicas.
+            </td>
+            <td>Google y las cuentas autorizadas del propietario</td>
+          </tr>
+          <tr>
+            <td>Informes de seguridad</td>
+            <td>
+              El navegador puede enviar informes de violación de Content
+              Security Policy a un endpoint del mismo origen para supervisión de
+              seguridad.
+            </td>
+            <td>Worker de AppKitX y Cloudflare Analytics Engine</td>
+          </tr>
+          <tr>
+            <td>Contactar con AppKitX</td>
+            <td>
+              El proveedor de correo procesa el mensaje que envías a la
+              dirección publicada.
+            </td>
+            <td>Tu proveedor de correo y el buzón de AppKitX</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Información que proporcionas</h2>
+      <p>
+        AppKitX no ofrece cuentas de usuario, registros, perfiles guardados ni
+        un sistema público de comentarios. Puedes usar las herramientas sin
+        proporcionar información personal.
+      </p>
+      <p>
+        Si escribes a la dirección de la{" "}
+        <a href={infoPageHref("contact", locale)}>página de contacto</a>,
+        AppKitX recibe tu dirección de correo, el contenido del mensaje y la
+        información que decidas incluir. Esa información se usa para responder y
+        para corregir o mejorar el sitio. No envíes contraseñas, datos de pago
+        ni otra información sensible.
+      </p>
+      <p>
+        La dirección pública es{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        . Es para consultas generales y soporte.
+      </p>
+
+      <h2>Entradas de las herramientas</h2>
+      <p>
+        Las calculadoras y herramientas de desarrollo se ejecutan como código en
+        tu navegador. Los valores que escribes en una calculadora, un
+        codificador Base64, un formateador JSON o una herramienta de fechas se
+        procesan en tu dispositivo y no se suben a AppKitX. El sitio no registra
+        esos valores.
+      </p>
+      <p>
+        Las extensiones del navegador, tu sistema operativo, tu red o la gestión
+        de dispositivos de tu empresa pueden observar lo que ocurre en tu
+        dispositivo. Eso queda fuera del control de AppKitX.
+      </p>
+
+      <h2>Preferencia de idioma</h2>
+      <p>
+        Cuando eliges un idioma, el sitio guarda la elección en el
+        almacenamiento local del navegador con la clave{" "}
+        <code>appkitx.locale</code>. Esto mantiene el selector de idioma
+        coherente en visitas posteriores. No es una cookie, el código del sitio
+        no la envía a AppKitX en cada solicitud y puedes eliminarla borrando los
+        datos del sitio en tu navegador.
+      </p>
+      <p>
+        El sitio no activa la detección automática del idioma del navegador de
+        forma predeterminada. La preferencia guardada solo se lee para respetar
+        una elección explícita.
+      </p>
+
+      <h2>Cookies y tecnologías similares</h2>
+      <p>
+        El código del sitio AppKitX no establece cookies publicitarias, cookies
+        de analítica ni píxeles de seguimiento. El build estático no contiene
+        redes publicitarias, embeds sociales ni scripts de analítica. En
+        producción, Cloudflare inyecta su beacon de Web Analytics en el borde;
+        no forma parte del código fuente ni del build estático. Consulta la
+        sección de analítica web más abajo.
+      </p>
+      <p>
+        Cloudflare, como proveedor de alojamiento y red, puede establecer
+        cookies de seguridad o rendimiento en el borde según la configuración de
+        la cuenta, como una cookie de gestión de bots o una cookie de desafío.
+        La configuración exacta de producción no se puede verificar desde el
+        sitio público y debe confirmarse antes de la publicación.
+      </p>
+      <p>
+        Google Search Console no añade un script de seguimiento a las páginas
+        públicas. Es una herramienta de administración que usa datos de búsqueda
+        de Google, no un sistema de analítica de visitantes incrustado en el
+        sitio.
+      </p>
+
+      <h2>Alojamiento y registros del servidor</h2>
+      <p>
+        AppKitX se sirve a través de Cloudflare. Cuando solicitas una página,
+        Cloudflare procesa datos técnicos necesarios para entregar la respuesta
+        y proteger el servicio. Pueden incluir tu dirección IP, agente de
+        usuario, URL solicitada, referente, marca temporal y metadatos de red.
+        El aviso de privacidad de Cloudflare y la configuración de retención de
+        la cuenta rigen ese tratamiento.
+      </p>
+      <p>
+        AppKitX no opera una base de datos de perfiles de visitantes. La única
+        recopilación a nivel de aplicación descrita en este sitio es el endpoint
+        de informes de seguridad que aparece más abajo.
+      </p>
+
+      <h2>Analítica web</h2>
+      <p>
+        La documentación del sitio indica que Cloudflare Web Analytics con Real
+        User Measurements está activado en producción, que la configuración
+        actual del panel excluye los datos de visitantes de la UE y que el
+        propietario ha decidido mantener esta configuración. El beacon de
+        analítica lo inyecta Cloudflare; no forma parte del build estático del
+        sitio y no aparece en las vistas previas locales.
+      </p>
+      <p>
+        Este borrador no afirma que el servicio de analítica no use cookies, que
+        se aplique un periodo de retención concreto ni que exista una base legal
+        determinada. Esos puntos dependen de la configuración desplegada y
+        requieren confirmación del propietario y legal. Si la analítica está
+        activada, el propietario debe asegurarse de que la política publicada,
+        el enfoque de consentimiento y la retención coincidan con el servicio
+        real.
+      </p>
+
+      <h2>Administración del rendimiento en búsquedas</h2>
+      <p>
+        Google Search Console es un servicio de Google independiente que el
+        propietario utiliza para revisar la indexación y el rendimiento en
+        búsquedas. No es un script de seguimiento integrado en las páginas
+        públicas de AppKitX. Los datos de Search Console se rigen por los
+        términos y la política de privacidad de Google.
+      </p>
+      <p>
+        La propiedad de dominio <code>appkitx.com</code> está verificada en
+        Search Console. La cuenta principal es{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        , y la cuenta personal de Google del propietario se mantiene como
+        propietario de respaldo. La verificación utiliza un registro TXT de DNS
+        gestionado a través de Cloudflare. El mapa del sitio se envió
+        correctamente; a fecha 29 de octubre de 2026 el informe de indexación de
+        páginas seguía en proceso. No se ha accedido ni modificado ninguna
+        cuenta de Google ni Search Console desde este sitio.
+      </p>
+
+      <h2>Informes de Content Security Policy</h2>
+      <p>
+        El sitio envía una cabecera Content-Security-Policy-Report-Only. Si tu
+        navegador detecta una violación de la política, puede enviar un informe
+        al endpoint del mismo origen <code>/__csp-report</code>. El endpoint
+        normaliza el informe y escribe un registro acotado en Cloudflare
+        Analytics Engine para supervisión de seguridad.
+      </p>
+      <p>
+        El registro normalizado contiene la directiva efectiva e incumplida, la
+        disposición, un origen o palabra clave bloqueados, una ruta de documento
+        saneada, una familia de navegador y un recuento. El código de la
+        aplicación no escribe tu dirección IP, la cadena de consulta completa ni
+        el contenido del mensaje en ese registro. Cloudflare puede seguir
+        procesando metadatos de la solicitud al entregar el informe.
+      </p>
+      <p>
+        Estos informes se usan para encontrar comportamientos rotos o inseguros.
+        No se usan para publicidad ni para elaborar perfiles.
+      </p>
+
+      <h2>Enlaces de terceros</h2>
+      <p>
+        Las guías pueden enlazar a documentación de fabricantes, organismos de
+        estándares u otros sitios externos. Esos sitios tienen sus propias
+        políticas de privacidad. AppKitX no controla su contenido ni su
+        tratamiento de datos. Seguir un enlace externo abandona el sitio de
+        AppKitX.
+      </p>
+      <p>
+        AppKitX no usa actualmente enlaces de afiliado. Si se añaden en el
+        futuro, se divulgarán en la página que los contenga y en la
+        <a href={infoPageHref("affiliateDisclosure", locale)}>
+          divulgación de afiliados
+        </a>
+        .
+      </p>
+
+      <h2>Compartición y divulgación</h2>
+      <p>
+        AppKitX no vende información personal. Los datos pueden ser tratados por
+        proveedores de servicios que alojan, protegen o miden el sitio,
+        principalmente Cloudflare y Google para Search Console. También pueden
+        divulgarse si lo exige la ley, para proteger el sitio o a sus usuarios,
+        o en relación con una reorganización del proyecto, sujeto a la
+        legislación aplicable.
+      </p>
+
+      <h2>Transferencias internacionales</h2>
+      <p>
+        Cloudflare opera una red global, por lo que los datos técnicos pueden
+        procesarse fuera de tu país. Google también puede procesar datos de
+        Search Console fuera de tu país. El mecanismo legal para cualquier
+        transferencia restringida y los países implicados deben confirmarse a
+        partir de la configuración desplegada y de los acuerdos de la entidad
+        operadora antes de publicar esta política.
+      </p>
+
+      <h2>Conservación</h2>
+      <p>
+        La conservación depende del servicio. La retención de registros y
+        analítica de Cloudflare se controla desde la configuración de la cuenta.
+        La retención de Search Console la controla Google según sus términos y
+        la configuración de la cuenta. Los correos de contacto se conservan solo
+        el tiempo necesario para responder y mantener un registro de
+        correcciones, salvo que la ley exija un periodo mayor. Los periodos
+        exactos deben confirmarse antes de la publicación.
+      </p>
+
+      <h2>Tus derechos</h2>
+      <p>
+        Según dónde vivas, puedes tener derecho a acceder, corregir, eliminar,
+        limitar u oponerte al tratamiento de tus datos personales, y a reclamar
+        ante una autoridad de control. Para hacer una solicitud, escribe a{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        . Este borrador no crea derechos distintos de los que otorga la
+        legislación aplicable.
+      </p>
+
+      <h2>Menores</h2>
+      <p>
+        AppKitX es un sitio de herramientas y guías de hardware para público
+        general. No está dirigido a menores, no crea cuentas y no recopila
+        conscientemente información personal de menores. Si crees que un menor
+        ha enviado información personal, contacta con el sitio para que se
+        elimine.
+      </p>
+
+      <h2>Cambios en esta política</h2>
+      <p>
+        Esta política se actualizará cuando cambie el tratamiento de datos, el
+        alojamiento, la analítica o los acuerdos legales del sitio. La fecha de
+        "Última actualización" de la parte superior cambiará con ella. Los
+        cambios materiales deben describirse en la página, no aplicarse en
+        silencio.
+      </p>
+
+      <h2>Contacto</h2>
+      <p>
+        Las preguntas sobre privacidad deben enviarse a{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        .
+      </p>
+    </>
+  ) : (
+    <>
+      <p>
+        This policy explains what data AppKitX may handle, why, and what choices
+        you have. It is written to match the current website code and the
+        hosting documentation. It is not legal advice, and it does not claim
+        that every legal requirement in every country has been satisfied.
+      </p>
+
+      <h2>Who operates AppKitX</h2>
+      <p>
+        AppKitX is a separate, independent brand. It is not yet legally
+        registered. The legal entity that operates the site, its registered
+        address, and its legal identity have not been confirmed. The intended
+        jurisdiction is {INTENDED_JURISDICTION}. Those details must be added
+        before this policy is published. Until then, this page is a draft.
+      </p>
+
+      <h2>Summary</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Activity</th>
+            <th>What happens</th>
+            <th>Who is involved</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Using a calculator or developer tool</td>
+            <td>
+              Inputs are processed in your browser. They are not submitted to an
+              AppKitX server.
+            </td>
+            <td>Your device only</td>
+          </tr>
+          <tr>
+            <td>Choosing a language</td>
+            <td>
+              The choice is stored in your browser's local storage under
+              <code>appkitx.locale</code>.
+            </td>
+            <td>Your device only</td>
+          </tr>
+          <tr>
+            <td>Loading a page</td>
+            <td>
+              The hosting network processes request metadata such as IP address,
+              user agent, and requested URL to deliver and protect the site.
+            </td>
+            <td>Cloudflare, as the hosting provider</td>
+          </tr>
+          <tr>
+            <td>Production website analytics</td>
+            <td>
+              The site's documentation states that Cloudflare Web Analytics with
+              Real User Measurements is enabled. The beacon is injected by
+              Cloudflare and is not part of the site's static build.
+            </td>
+            <td>Cloudflare</td>
+          </tr>
+          <tr>
+            <td>Search performance administration</td>
+            <td>
+              Google Search Console is used to review indexing and search
+              performance. It is not a tracking script embedded in the public
+              pages.
+            </td>
+            <td>Google and authorized owner accounts</td>
+          </tr>
+          <tr>
+            <td>Security reports</td>
+            <td>
+              Browsers may send Content Security Policy violation reports to a
+              same-origin endpoint for security monitoring.
+            </td>
+            <td>AppKitX worker and Cloudflare Analytics Engine</td>
+          </tr>
+          <tr>
+            <td>Contacting AppKitX</td>
+            <td>
+              The email provider processes the message you send to the published
+              address.
+            </td>
+            <td>Your email provider and the AppKitX mailbox</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Information you provide</h2>
+      <p>
+        AppKitX does not offer user accounts, sign-ups, saved profiles, or a
+        public comment system. You can use the tools without providing personal
+        information.
+      </p>
+      <p>
+        If you email the address on the
+        <a href={infoPageHref("contact", locale)}>contact page</a>, AppKitX
+        receives your email address, the contents of your message, and any
+        information you choose to include. That information is used to answer
+        your message and to correct or improve the site. Do not send passwords,
+        payment details, or other sensitive information.
+      </p>
+      <p>
+        The public address is{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        . It is for general enquiries and support.
+      </p>
+
+      <h2>Tool inputs</h2>
+      <p>
+        The calculators and developer tools run as client-side code in your
+        browser. Values you type into a calculator, Base64 encoder, JSON
+        formatter, or date tool are processed on your device and are not
+        uploaded to AppKitX. The site does not log those values.
+      </p>
+      <p>
+        Browser extensions, your operating system, your network, or your
+        employer's device management can observe what happens on your device.
+        Those are outside AppKitX's control.
+      </p>
+
+      <h2>Language preference</h2>
+      <p>
+        When you choose a language, the site stores the choice in your browser's
+        local storage under the key <code>appkitx.locale</code>. This keeps the
+        language switcher consistent on later visits. It is not a cookie, the
+        site code does not send it to AppKitX with each request, and you can
+        remove it by clearing site data in your browser.
+      </p>
+      <p>
+        The site does not enable automatic browser-language detection by
+        default. The stored preference is read only to honor an explicit choice.
+      </p>
+
+      <h2>Cookies and similar technologies</h2>
+      <p>
+        The AppKitX site code does not set advertising cookies, analytics
+        cookies, or tracking pixels. The static build contains no advertising
+        network, social embed, or analytics script. In production, Cloudflare
+        injects its Web Analytics beacon at the edge; it is not part of the
+        site's source or static build. See the website analytics section below.
+      </p>
+      <p>
+        Cloudflare, as the hosting and network provider, may set security or
+        performance cookies at the edge depending on the account configuration,
+        such as a bot-management cookie or a challenge cookie. The exact
+        production configuration is not verifiable from the public site and must
+        be confirmed before publication.
+      </p>
+      <p>
+        Google Search Console does not add a tracking script to the public
+        pages. It is an administrative tool that uses Google's search data, not
+        a visitor analytics system embedded in the site.
+      </p>
+
+      <h2>Hosting and server logs</h2>
+      <p>
+        AppKitX is served through Cloudflare. When you request a page,
+        Cloudflare processes technical request data needed to deliver the
+        response and protect the service. That can include your IP address, user
+        agent, requested URL, referrer, timestamp, and network metadata.
+        Cloudflare's own privacy notice and the account's retention settings
+        govern that processing.
+      </p>
+      <p>
+        AppKitX does not operate a separate application database of visitor
+        profiles. The only application-level collection described on this site
+        is the security report endpoint below.
+      </p>
+
+      <h2>Website analytics</h2>
+      <p>
+        The site's documentation states that production Cloudflare Web Analytics
+        with Real User Measurements is enabled, that the current dashboard
+        setting excludes visitor data in the EU, and that the owner has decided
+        to retain this configuration. The analytics beacon is injected by
+        Cloudflare; it is not part of the site's static build and does not
+        appear in local previews.
+      </p>
+      <p>
+        This draft does not claim that the analytics service is cookieless, that
+        a particular retention period applies, or that a particular legal basis
+        has been established. Those points depend on the deployed configuration
+        and require owner and legal confirmation. If analytics is enabled, the
+        site owner must ensure that the published policy, consent approach, and
+        retention settings match the actual service.
+      </p>
+
+      <h2>Search performance administration</h2>
+      <p>
+        Google Search Console is a separate Google service used by the site
+        owner to review indexing and search performance. It is not a tracking
+        script embedded in AppKitX public pages. Search Console data is governed
+        by Google's terms and privacy policy.
+      </p>
+      <p>
+        The domain property <code>appkitx.com</code> is verified in Search
+        Console. The primary owner is{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        , and the owner's personal Google account remains a backup owner.
+        Verification uses a DNS TXT record managed through Cloudflare. The
+        sitemap was submitted successfully; as of 29 October 2026 the page
+        indexing report was still processing. No Google account or Search
+        Console setting has been accessed or modified from this site.
+      </p>
+
+      <h2>Content Security Policy reports</h2>
+      <p>
+        The site sends a Content-Security-Policy-Report-Only header. If your
+        browser detects a policy violation, it may send a report to the
+        same-origin endpoint <code>/__csp-report</code>. The endpoint normalizes
+        the report and writes a bounded record to Cloudflare Analytics Engine
+        for security monitoring.
+      </p>
+      <p>
+        The normalized record contains the effective and violated directive, the
+        disposition, a blocked origin or keyword, a sanitized document path, a
+        browser family, and a count. The application code does not write your IP
+        address, full query string, or message content to that record.
+        Cloudflare may still process request metadata as part of delivering the
+        report.
+      </p>
+      <p>
+        These reports are used to find broken or unsafe page behavior. They are
+        not used for advertising or profiling.
+      </p>
+
+      <h2>Third-party links</h2>
+      <p>
+        Guides may link to manufacturer documentation, standards bodies, or
+        other external sites. Those sites have their own privacy policies.
+        AppKitX does not control their content or data handling. Following an
+        external link leaves the AppKitX site.
+      </p>
+      <p>
+        AppKitX does not currently use affiliate links. If affiliate links are
+        added in future, they will be disclosed on the page that contains them
+        and in the
+        <a href={infoPageHref("affiliateDisclosure", locale)}>
+          affiliate disclosure
+        </a>
+        .
+      </p>
+
+      <h2>Sharing and disclosure</h2>
+      <p>
+        AppKitX does not sell personal information. Data may be processed by
+        service providers that host, secure, or measure the site, primarily
+        Cloudflare and Google for Search Console. Data may also be disclosed if
+        required by law, to protect the site or its users, or in connection with
+        a reorganization of the project, subject to applicable law.
+      </p>
+
+      <h2>International transfers</h2>
+      <p>
+        Cloudflare operates a global network, so technical data may be processed
+        outside your country. Google may also process Search Console data
+        outside your country. The legal mechanism for any restricted transfer,
+        and the countries involved, must be confirmed from the deployed
+        configuration and the operating entity's agreements before this policy
+        is published.
+      </p>
+
+      <h2>Retention</h2>
+      <p>
+        Retention depends on the service. Cloudflare log and analytics retention
+        is controlled by the Cloudflare account configuration. Search Console
+        retention is controlled by Google under its terms and the account
+        configuration. Contact emails are kept only as long as needed to answer
+        the message and maintain a record of corrections, unless a longer period
+        is required by law. The exact periods must be confirmed before
+        publication.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>
+        Depending on where you live, you may have rights to access, correct,
+        delete, restrict, or object to the processing of your personal data, and
+        to complain to a supervisory authority. To make a request, email{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        . This draft does not create rights beyond those provided by applicable
+        law.
+      </p>
+
+      <h2>Children</h2>
+      <p>
+        AppKitX is a general-audience tools and hardware-guidance site. It is
+        not directed at children, does not create accounts, and does not
+        knowingly collect personal information from children. If you believe a
+        child has sent personal information, contact the site so it can be
+        removed.
+      </p>
+
+      <h2>Changes to this policy</h2>
+      <p>
+        This policy will be updated when the site's data handling, hosting,
+        analytics, or legal arrangements change. The "Last updated" date at the
+        top of the page will change with it. Material changes should be
+        described on the page rather than silently applied.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Privacy questions should be emailed to{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        .
+      </p>
+    </>
+  )}
+</InfoPageLayout>
