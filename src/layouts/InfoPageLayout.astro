@@ -1,0 +1,139 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import GlobalNav from "../components/GlobalNav.astro";
+import Footer from "../components/Footer.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+import { localizedHref } from "../i18n/routing";
+import {
+  INFO_COPY,
+  INFO_PAGE_PATHS,
+  formatEditorialDate,
+  guideIndexHref,
+  infoPageHref,
+  type InfoPageKey,
+} from "../lib/editorial";
+import { buildBreadcrumbJsonLd } from "../lib/seo";
+
+interface Props {
+  locale?: LocaleCode;
+  title: string;
+  description: string;
+  current: InfoPageKey;
+  lastUpdated: string;
+  /** Owner/legal review notice. Rendered as a status panel, not body copy. */
+  reviewNotice?: string;
+  /** Translation provenance note, e.g. the Spanish legal draft caveat. */
+  translationNote?: string;
+}
+
+const {
+  locale = defaultLocale,
+  title,
+  description,
+  current,
+  lastUpdated,
+  reviewNotice,
+  translationNote,
+} = Astro.props;
+
+const t = getDictionary(locale);
+const copy = INFO_COPY[locale];
+const updatedDate = new Date(`${lastUpdated}T00:00:00Z`);
+
+const breadcrumb = [
+  { label: t.toolLayout.breadcrumbHome, href: localizedHref("/", locale) },
+  { label: copy.pageLabels[current] },
+];
+
+const infoLinks = (Object.keys(INFO_PAGE_PATHS) as InfoPageKey[])
+  .filter((key) => key !== current)
+  .map((key) => ({
+    key,
+    href: infoPageHref(key, locale),
+    label: copy.pageLabels[key],
+  }));
+
+const jsonLd = [
+  buildBreadcrumbJsonLd({ entries: breadcrumb, site: Astro.site }),
+];
+---
+
+<BaseLayout
+  title={`${title} — AppKitX`}
+  description={description}
+  locale={locale}
+  jsonLd={jsonLd}
+>
+  <GlobalNav locale={locale} />
+  <main id="main">
+    <header class="bg-surface">
+      <div class="mx-auto max-w-(--layout-container) px-6 pt-10 pb-8 md:pt-16 md:pb-12">
+        <Breadcrumbs label={t.toolLayout.breadcrumbLabel} items={breadcrumb} />
+        <h1 class="hero-title mt-4 max-w-[820px] text-text-primary">{title}</h1>
+        <p class="mt-3 text-caption text-text-muted">
+          {copy.lastUpdated}
+          <time datetime={lastUpdated} class="ml-1">
+            {formatEditorialDate(updatedDate, locale)}
+          </time>
+        </p>
+      </div>
+    </header>
+
+    <div class="mx-auto grid max-w-(--layout-container) gap-12 px-6 py-10 md:py-12 lg:grid-cols-[minmax(0,var(--layout-prose))_240px] lg:justify-center">
+      <div>
+        {reviewNotice && (
+          <div
+            class="mb-8 rounded-lg border border-border-subtle bg-warning-subtle p-4 text-small text-warning"
+            role="note"
+          >
+            {reviewNotice}
+          </div>
+        )}
+        {translationNote && (
+          <div
+            class="mb-8 rounded-lg border border-border-subtle bg-surface-subtle p-4 text-small text-text-secondary"
+            role="note"
+          >
+            {translationNote}
+          </div>
+        )}
+        <div class="prose">
+          <slot />
+        </div>
+      </div>
+
+      <aside class="lg:pt-1">
+        <nav
+          aria-label={copy.infoAria}
+          class="sticky top-[calc(var(--layout-nav-height)+24px)]"
+        >
+          <p class="text-overline text-text-muted uppercase">
+            {copy.information}
+          </p>
+          <ul class="mt-3 space-y-2 border-l border-border-subtle pl-4">
+            {infoLinks.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="focus-ring text-small text-text-secondary hover:text-accent active:text-accent-active"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a
+                href={guideIndexHref(locale)}
+                class="focus-ring text-small text-text-secondary hover:text-accent active:text-accent-active"
+              >
+                {copy.guidesLink}
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+    </div>
+  </main>
+  <Footer locale={locale} />
+</BaseLayout>

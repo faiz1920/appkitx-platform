@@ -1,0 +1,174 @@
+---
+import InfoPageLayout from "../../layouts/InfoPageLayout.astro";
+import { defaultLocale, type LocaleCode } from "../../i18n/config";
+import {
+  COMPANY_LAST_UPDATED,
+  CONTACT_EMAIL,
+  INFO_COPY,
+  infoPageHref,
+} from "../../lib/editorial";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const copy = INFO_COPY[locale];
+const isEs = locale === "es";
+---
+
+<InfoPageLayout
+  locale={locale}
+  title={copy.pageLabels.contact}
+  description={
+    isEs
+      ? "Cómo contactar con AppKitX para correcciones, accesibilidad, privacidad o comentarios generales."
+      : "How to contact AppKitX about corrections, accessibility, privacy, or general feedback."
+  }
+  current="contact"
+  lastUpdated={COMPANY_LAST_UPDATED}
+>
+  {isEs ? (
+    <>
+      <p>
+        AppKitX agradece las correcciones, los informes de accesibilidad, las
+        preguntas sobre privacidad y los comentarios generales sobre las
+        herramientas y las guías.
+      </p>
+
+      <p>
+        Escríbenos a{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        . Esta dirección es para consultas generales y soporte.
+      </p>
+
+      <h2>Qué incluir</h2>
+      <ul>
+        <li>
+          <strong>Correcciones:</strong> la URL de la página, la frase o
+          afirmación y la fuente que respalda la corrección.
+        </li>
+        <li>
+          <strong>Accesibilidad:</strong> la página, la tecnología de asistencia
+          o el navegador que usaste y qué te impidió completar la tarea.
+        </li>
+        <li>
+          <strong>Privacidad:</strong> la página y la pregunta sobre el
+          tratamiento de datos. No envíes contraseñas, datos de pago ni otra
+          información sensible.
+        </li>
+        <li>
+          <strong>Comentarios generales:</strong> qué intentabas hacer y qué lo
+          habría facilitado.
+        </li>
+      </ul>
+
+      <h2>Qué no enviar</h2>
+      <p>
+        No envíes contraseñas, datos financieros, identificadores
+        gubernamentales ni otra información personal sensible. AppKitX no opera
+        un sistema de cuentas de usuario y no necesita esa información para
+        responder a una pregunta sobre el sitio.
+      </p>
+
+      <h2>Expectativas de respuesta</h2>
+      <p>
+        Los tiempos de respuesta dependen de la capacidad del proyecto y no
+        están garantizados. Esta dirección se revisa para consultas generales y
+        soporte; no se promete un plazo concreto.
+      </p>
+
+      <h2>Otra información</h2>
+      <ul>
+        <li>
+          <a href={infoPageHref("about", locale)}>
+            Acerca de AppKitX y sus principios editoriales
+          </a>
+        </li>
+        <li>
+          <a href={infoPageHref("privacy", locale)}>Política de privacidad</a>
+        </li>
+        <li>
+          <a href={infoPageHref("terms", locale)}>Términos de uso</a>
+        </li>
+        <li>
+          <a href={infoPageHref("affiliateDisclosure", locale)}>
+            Divulgación de afiliados
+          </a>
+        </li>
+      </ul>
+    </>
+  ) : (
+    <>
+      <p>
+        AppKitX welcomes corrections, accessibility reports, privacy questions,
+        and general feedback about the tools and guides.
+      </p>
+
+      <p>
+        Email{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        . This address is for general enquiries and support.
+      </p>
+
+      <h2>What to include</h2>
+      <ul>
+        <li>
+          <strong>Corrections:</strong> the page URL, the sentence or claim, and
+          the source that supports the correction.
+        </li>
+        <li>
+          <strong>Accessibility:</strong> the page, the assistive technology or
+          browser you used, and what prevented you from completing the task.
+        </li>
+        <li>
+          <strong>Privacy:</strong> the page and the data-handling question. Do
+          not send passwords, payment details, or other sensitive information.
+        </li>
+        <li>
+          <strong>General feedback:</strong> what you were trying to do and what
+          would have made it easier.
+        </li>
+      </ul>
+
+      <h2>What not to send</h2>
+      <p>
+        Do not send passwords, financial details, government identifiers, or
+        other sensitive personal information. AppKitX does not operate a user
+        account system and does not need that information to answer a site
+        question.
+      </p>
+
+      <h2>Response expectations</h2>
+      <p>
+        Response times depend on the capacity behind the project and are not
+        guaranteed. The address is monitored for general enquiries and support;
+        no specific response time is promised.
+      </p>
+
+      <h2>Other information</h2>
+      <ul>
+        <li>
+          <a href={infoPageHref("about", locale)}>
+            About AppKitX and its editorial principles
+          </a>
+        </li>
+        <li>
+          <a href={infoPageHref("privacy", locale)}>Privacy policy</a>
+        </li>
+        <li>
+          <a href={infoPageHref("terms", locale)}>Terms of use</a>
+        </li>
+        <li>
+          <a href={infoPageHref("affiliateDisclosure", locale)}>
+            Affiliate disclosure
+          </a>
+        </li>
+      </ul>
+    </>
+  )}
+</InfoPageLayout>

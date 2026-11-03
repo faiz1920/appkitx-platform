@@ -67,6 +67,29 @@ export interface CollectionPageJsonLd {
   inLanguage: string;
 }
 
+export interface ArticleJsonLd {
+  "@context": "https://schema.org";
+  "@type": "Article";
+  headline: string;
+  description: string;
+  datePublished: string;
+  dateModified: string;
+  author: {
+    "@type": "Organization";
+    name: string;
+    url: string;
+  };
+  publisher: {
+    "@type": "Organization";
+    name: string;
+    url: string;
+  };
+  mainEntityOfPage: string;
+  inLanguage: string;
+  articleSection: string;
+  keywords: string[];
+}
+
 /**
  * Every JSON-LD document the site can render into a page head. New document
  * types join this union so BaseLayout's prop surface stays closed.
@@ -75,7 +98,8 @@ export type JsonLdDocument =
   | BreadcrumbListJsonLd
   | WebSiteJsonLd
   | WebApplicationJsonLd
-  | CollectionPageJsonLd;
+  | CollectionPageJsonLd
+  | ArticleJsonLd;
 
 function requireNonEmpty(value: string, field: string): string {
   if (value.trim() === "") {
@@ -255,6 +279,78 @@ export function buildCollectionPageJsonLd(options: {
     inLanguage: requireNonEmpty(
       options.inLanguage,
       "CollectionPage inLanguage",
+    ),
+  };
+}
+
+function requireIsoDate(value: string, field: string): string {
+  requireNonEmpty(value, field);
+  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? new Date(`${value}T00:00:00Z`)
+    : null;
+  if (
+    parsed === null ||
+    Number.isNaN(parsed.getTime()) ||
+    parsed.toISOString().slice(0, 10) !== value
+  ) {
+    throw new Error(
+      `SEO configuration error: ${field} must be an ISO 8601 calendar date`,
+    );
+  }
+  return value;
+}
+
+/*
+ * Article structured data for editorial guides. The byline is an
+ * Organization because AppKitX has no verified individual author; emitting a
+ * Person would invent an identity. No ratings, reviews, prices, offers, or
+ * testing claims are emitted.
+ */
+export function buildArticleJsonLd(options: {
+  headline: string;
+  description: string;
+  datePublished: string;
+  dateModified: string;
+  authorName: string;
+  authorUrl: string;
+  publisherName: string;
+  publisherUrl: string;
+  url: string;
+  inLanguage: string;
+  articleSection: string;
+  keywords: readonly string[];
+}): ArticleJsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: requireNonEmpty(options.headline, "Article headline"),
+    description: requireNonEmpty(options.description, "Article description"),
+    datePublished: requireIsoDate(
+      options.datePublished,
+      "Article datePublished",
+    ),
+    dateModified: requireIsoDate(options.dateModified, "Article dateModified"),
+    author: {
+      "@type": "Organization",
+      name: requireNonEmpty(options.authorName, "Article author name"),
+      url: requireAbsoluteUrl(options.authorUrl, "Article author url"),
+    },
+    publisher: {
+      "@type": "Organization",
+      name: requireNonEmpty(options.publisherName, "Article publisher name"),
+      url: requireAbsoluteUrl(options.publisherUrl, "Article publisher url"),
+    },
+    mainEntityOfPage: requireAbsoluteUrl(
+      options.url,
+      "Article mainEntityOfPage",
+    ),
+    inLanguage: requireNonEmpty(options.inLanguage, "Article inLanguage"),
+    articleSection: requireNonEmpty(
+      options.articleSection,
+      "Article articleSection",
+    ),
+    keywords: options.keywords.map((keyword, index) =>
+      requireNonEmpty(keyword, `Article keyword ${index + 1}`),
     ),
   };
 }

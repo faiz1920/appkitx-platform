@@ -1,0 +1,375 @@
+---
+import InfoPageLayout from "../../layouts/InfoPageLayout.astro";
+import { defaultLocale, type LocaleCode } from "../../i18n/config";
+import {
+  CONTACT_EMAIL,
+  INFO_COPY,
+  INTENDED_JURISDICTION,
+  LEGAL_LAST_UPDATED,
+  infoPageHref,
+} from "../../lib/editorial";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const copy = INFO_COPY[locale];
+const isEs = locale === "es";
+
+const reviewNotice = isEs
+  ? `Borrador para revisión del propietario y legal. Jurisdicción prevista: ${INTENDED_JURISDICTION}. AppKitX todavía no está legalmente registrada. La entidad legal, la ley aplicable y la jurisdicción definitivas deben confirmarse antes de publicar.`
+  : `Draft for owner and legal review. Intended jurisdiction: ${INTENDED_JURISDICTION}. AppKitX is not yet legally registered. The final legal entity, governing law, and jurisdiction must be confirmed before publication.`;
+
+const translationNote = isEs
+  ? "Traducción al español provisional. La versión inglesa es el borrador de referencia y prevalece hasta que ambas versiones hayan sido revisadas legalmente."
+  : undefined;
+---
+
+<InfoPageLayout
+  locale={locale}
+  title={copy.pageLabels.terms}
+  description={
+    isEs
+      ? "Términos aplicables al sitio web de AppKitX, sus herramientas gratuitas y sus guías de hardware."
+      : "The terms that apply to the AppKitX website, its free tools, and its PC hardware guides."
+  }
+  current="terms"
+  lastUpdated={LEGAL_LAST_UPDATED}
+  reviewNotice={reviewNotice}
+  translationNote={translationNote}
+>
+  {isEs ? (
+    <>
+      <p>
+        Estos términos describen cómo puedes usar el sitio web de AppKitX, sus
+        herramientas y su contenido editorial. Al usar el sitio, aceptas estos
+        términos. Si no estás de acuerdo, no uses el sitio.
+      </p>
+
+      <h2>Qué ofrece AppKitX</h2>
+      <p>
+        AppKitX ofrece calculadoras, utilidades para desarrolladores,
+        herramientas de fecha y hora y guías de hardware para PC, todo gratis y
+        en el navegador. Las herramientas se proporcionan con fines informativos
+        y de productividad general. Las guías son contenido educativo general,
+        no asesoramiento específico para un producto ni un sustituto de la
+        documentación del fabricante.
+      </p>
+      <p>
+        Hay un configurador de PC en desarrollo. No forma parte del sitio
+        público y no está cubierto por estos términos hasta que se publique.
+      </p>
+
+      <h2>No es asesoramiento profesional</h2>
+      <p>
+        Nada de lo publicado en AppKitX es asesoramiento legal, financiero,
+        fiscal, médico, de seguridad o de ingeniería profesional. Montar un PC
+        implica electricidad, calor, piezas móviles y componentes caros. Eres
+        responsable de verificar la compatibilidad, los espacios libres, los
+        requisitos de alimentación y el montaje seguro según los manuales
+        exactos de tus piezas. Si tienes dudas, consulta a un profesional
+        cualificado o al fabricante.
+      </p>
+
+      <h2>Exactitud y limitaciones</h2>
+      <p>
+        AppKitX intenta ser exacto y explicar sus supuestos, pero el sitio se
+        ofrece "tal cual" y "según disponibilidad". Las especificaciones, el
+        firmware, las revisiones de producto, las variantes regionales, los
+        precios y la disponibilidad cambian. Una guía puede quedar
+        desactualizada y una recomendación general puede no encajar con tu
+        combinación exacta de piezas.
+      </p>
+      <p>
+        Las herramientas realizan cálculos en tu navegador. Eres responsable de
+        comprobar los datos de entrada, las unidades, el redondeo y los
+        resultados antes de confiar en ellos, especialmente en decisiones
+        financieras, de planificación o de ingeniería. AppKitX no garantiza que
+        un resultado esté libre de errores ni que sea adecuado para un fin
+        concreto.
+      </p>
+
+      <h2>Tus responsabilidades</h2>
+      <ul>
+        <li>Usar el sitio de forma lícita y solo para sus fines previstos.</li>
+        <li>
+          No intentar interrumpir, sobrecargar, extraer a gran escala, aplicar
+          ingeniería inversa ni eludir los controles de seguridad del sitio.
+        </li>
+        <li>
+          No subir ni transmitir malware, contenido ilícito ni información
+          personal sensible de otras personas.
+        </li>
+        <li>
+          No presentar el contenido de AppKitX como asesoramiento de un
+          fabricante, vendedor u otra organización.
+        </li>
+        <li>
+          Comprobar la documentación exacta del producto y las condiciones del
+          vendedor antes de comprar.
+        </li>
+      </ul>
+
+      <h2>Propiedad intelectual</h2>
+      <p>
+        El nombre AppKitX, el diseño del sitio, los textos explicativos
+        originales y las guías originales pertenecen al proyecto AppKitX o a sus
+        licenciantes. Puedes leer, enlazar y citar extractos breves con
+        atribución para fines no comerciales. No republiques partes
+        sustanciales, elimines la atribución ni uses el contenido para entrenar
+        o poblar un servicio competidor sin permiso escrito.
+      </p>
+      <p>
+        Los nombres, logotipos y marcas de fabricantes y productos mencionados
+        en el sitio pertenecen a sus respectivos propietarios. Se usan solo para
+        identificar productos y explicar compatibilidad. Su uso no implica
+        patrocinio, respaldo ni afiliación.
+      </p>
+
+      <h2>Servicios y enlaces de terceros</h2>
+      <p>
+        El sitio está alojado por Cloudflare y puede enlazar a documentación de
+        fabricantes, organismos de estándares u otros sitios externos. AppKitX
+        no controla esos servicios o sitios y no es responsable de su contenido,
+        disponibilidad o prácticas de privacidad. Seguir un enlace externo es
+        responsabilidad tuya y está sujeto a los términos del destino.
+      </p>
+
+      <h2>Enlaces de afiliado</h2>
+      <p>
+        AppKitX no usa actualmente enlaces de afiliado. Si se añaden en el
+        futuro, se divulgarán claramente en la página que los contenga y en la
+        <a href={infoPageHref("affiliateDisclosure", locale)}>
+          divulgación de afiliados
+        </a>
+        . Una comisión de afiliado no cambiaría el precio que pagas.
+      </p>
+
+      <h2>Disponibilidad y cambios</h2>
+      <p>
+        AppKitX puede cambiar, suspender o eliminar cualquier herramienta, guía
+        o página en cualquier momento. El sitio puede no estar disponible
+        durante tareas de mantenimiento, incidentes de alojamiento o problemas
+        de red. No se ofrece garantía de disponibilidad.
+      </p>
+      <p>
+        Estos términos pueden actualizarse cuando cambie el sitio. La fecha de
+        "Última actualización" de la parte superior cambiará con la revisión. El
+        uso continuado después de una revisión implica que aceptas los términos
+        actualizados.
+      </p>
+
+      <h2>Limitación de responsabilidad</h2>
+      <p>
+        En la máxima medida permitida por la legislación aplicable, AppKitX y
+        las personas que lo operan no son responsables de daños indirectos,
+        incidentales, especiales, consecuentes o punitivos, ni de la pérdida de
+        datos, beneficios o fondo de comercio, derivados del uso del sitio o de
+        la confianza en su contenido. Esto incluye decisiones sobre comprar,
+        montar, actualizar u operar hardware informático.
+      </p>
+      <p>
+        Nada en estos términos excluye o limita la responsabilidad que no pueda
+        excluirse o limitarse por ley, incluidos los derechos que puedas tener
+        como consumidor.
+      </p>
+
+      <h2>Ley aplicable y jurisdicción</h2>
+      <p>
+        La jurisdicción prevista es {INTENDED_JURISDICTION}. AppKitX todavía no
+        está legalmente registrada. La entidad operadora, la ley aplicable y la
+        jurisdicción definitivas deben confirmarse con asesoramiento legal antes
+        de publicar. No supongas que se aplica la ley de tu país ni que una
+        disputa puede llevarse a tus tribunales locales.
+      </p>
+
+      <h2>Contacto</h2>
+      <p>
+        Las preguntas sobre estos términos deben enviarse a{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        .
+      </p>
+
+      <h2>Información relacionada</h2>
+      <ul>
+        <li>
+          <a href={infoPageHref("about", locale)}>Acerca de AppKitX</a>
+        </li>
+        <li>
+          <a href={infoPageHref("privacy", locale)}>Política de privacidad</a>
+        </li>
+        <li>
+          <a href={infoPageHref("affiliateDisclosure", locale)}>
+            Divulgación de afiliados
+          </a>
+        </li>
+      </ul>
+    </>
+  ) : (
+    <>
+      <p>
+        These terms describe how you may use the AppKitX website, its tools, and
+        its editorial content. By using the site, you agree to these terms. If
+        you do not agree, do not use the site.
+      </p>
+
+      <h2>What AppKitX provides</h2>
+      <p>
+        AppKitX provides free browser-based calculators, developer utilities,
+        date-and-time tools, and PC hardware guidance. The tools are provided
+        for general informational and productivity purposes. The guides are
+        general educational content, not product-specific advice or a substitute
+        for a manufacturer's documentation.
+      </p>
+      <p>
+        A PC builder is in development. It is not part of the public site and is
+        not covered by these terms until it is released.
+      </p>
+
+      <h2>No professional advice</h2>
+      <p>
+        Nothing on AppKitX is legal, financial, tax, medical, safety, or
+        professional engineering advice. PC building involves electricity, heat,
+        moving parts, and expensive components. You are responsible for
+        verifying compatibility, clearances, power requirements, and safe
+        assembly against the exact manuals for your parts. If you are unsure,
+        consult a qualified professional or the manufacturer.
+      </p>
+
+      <h2>Accuracy and limitations</h2>
+      <p>
+        AppKitX aims to be accurate and to explain its assumptions, but the site
+        is provided on an "as is" and "as available" basis. Specifications,
+        firmware, product revisions, regional SKUs, prices, and availability
+        change. A guide can become outdated, and a general recommendation may
+        not fit your exact combination of parts.
+      </p>
+      <p>
+        The tools perform calculations in your browser. You are responsible for
+        checking inputs, units, rounding, and results before relying on them,
+        especially for financial, scheduling, or engineering decisions. AppKitX
+        does not guarantee that a result is error-free or suitable for a
+        particular purpose.
+      </p>
+
+      <h2>Your responsibilities</h2>
+      <ul>
+        <li>Use the site lawfully and only for its intended purposes.</li>
+        <li>
+          Do not attempt to disrupt, overload, scrape at scale, reverse
+          engineer, or bypass security controls on the site.
+        </li>
+        <li>
+          Do not upload or transmit malware, unlawful content, or other people's
+          sensitive personal information.
+        </li>
+        <li>
+          Do not misrepresent AppKitX content as advice from a manufacturer,
+          retailer, or other organization.
+        </li>
+        <li>
+          Check the exact product documentation and retailer terms before making
+          a purchase.
+        </li>
+      </ul>
+
+      <h2>Intellectual property</h2>
+      <p>
+        The AppKitX name, site design, original explanatory text, and original
+        guides are owned by the AppKitX project or its licensors. You may read,
+        link to, and quote short excerpts with attribution for non-commercial
+        purposes. Do not republish substantial portions, remove attribution, or
+        use the content to train or populate a competing service without written
+        permission.
+      </p>
+      <p>
+        Manufacturer and product names, logos, and trademarks mentioned on the
+        site belong to their respective owners. They are used for identification
+        and compatibility discussion only. Their use does not imply sponsorship,
+        endorsement, or affiliation.
+      </p>
+
+      <h2>Third-party services and links</h2>
+      <p>
+        The site is hosted by Cloudflare and may link to manufacturer
+        documentation, standards bodies, or other external sites. AppKitX does
+        not control those services or sites and is not responsible for their
+        content, availability, or privacy practices. Following an external link
+        is at your own risk and is subject to the destination's terms.
+      </p>
+
+      <h2>Affiliate links</h2>
+      <p>
+        AppKitX does not currently use affiliate links. If affiliate links are
+        added in future, they will be disclosed clearly on the page that
+        contains them and in the
+        <a href={infoPageHref("affiliateDisclosure", locale)}>
+          affiliate disclosure
+        </a>
+        . An affiliate commission would not change the price you pay.
+      </p>
+
+      <h2>Availability and changes</h2>
+      <p>
+        AppKitX may change, suspend, or remove any tool, guide, or page at any
+        time. The site may be unavailable during maintenance, hosting incidents,
+        or network problems. No availability guarantee is made.
+      </p>
+      <p>
+        These terms may be updated as the site changes. The "Last updated" date
+        at the top of the page will change with a revision. Continued use after
+        a revision means you accept the updated terms.
+      </p>
+
+      <h2>Limitation of liability</h2>
+      <p>
+        To the maximum extent permitted by applicable law, AppKitX and the
+        people who operate it are not liable for indirect, incidental, special,
+        consequential, or punitive damages, or for loss of data, profits, or
+        goodwill, arising from your use of the site or reliance on its content.
+        This includes decisions about purchasing, assembling, upgrading, or
+        operating computer hardware.
+      </p>
+      <p>
+        Nothing in these terms excludes or limits liability that cannot be
+        excluded or limited by law, including rights you may have as a consumer.
+      </p>
+
+      <h2>Governing law and jurisdiction</h2>
+      <p>
+        The intended jurisdiction is {INTENDED_JURISDICTION}. AppKitX is not yet
+        legally registered. The final operating entity, governing law, and
+        jurisdiction must be confirmed with legal advice before publication. Do
+        not assume that the law of your country applies or that a dispute can be
+        brought in your local courts.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions about these terms should be emailed to{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        .
+      </p>
+
+      <h2>Related information</h2>
+      <ul>
+        <li>
+          <a href={infoPageHref("about", locale)}>About AppKitX</a>
+        </li>
+        <li>
+          <a href={infoPageHref("privacy", locale)}>Privacy policy</a>
+        </li>
+        <li>
+          <a href={infoPageHref("affiliateDisclosure", locale)}>
+            Affiliate disclosure
+          </a>
+        </li>
+      </ul>
+    </>
+  )}
+</InfoPageLayout>

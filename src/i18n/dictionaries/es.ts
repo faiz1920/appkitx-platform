@@ -30,6 +30,7 @@ export const es: Dictionary = {
     ariaLabel: "Global",
     tools: "Herramientas",
     categories: "Categorías",
+    guides: "Guías",
     about: "Acerca de",
     searchLabel: "Buscar",
     searchShortcut: "⌘K",
@@ -57,8 +58,10 @@ export const es: Dictionary = {
         heading: "Legal",
         privacy: "Privacidad",
         terms: "Términos",
+        affiliateDisclosure: "Divulgación de afiliados",
       },
     },
+    guides: "Guías de hardware",
     copyright: "© 2026 AppKitX",
   },
   search: {

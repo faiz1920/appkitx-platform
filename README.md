@@ -21,6 +21,8 @@ Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (
 
 Category landing pages are live in both locales for [Calculators](/calculators), [Developer tools](/developer-tools), and [Date & time](/date-time). Unit Converter and Loan Calculator are the two remaining planned tools: they appear on the homepage and in the footer as non-interactive "Coming soon" entries, are absent from the tool registry, and can never surface in search results, related-tools sections, or category pages.
 
+The M10.15 / M10.15.1 branch adds a bilingual PC-hardware editorial library: ten source-based guides in English (`/guides/`) and Spanish (`/es/guides/`), plus About, Contact, Privacy Policy, Terms of Use, and Affiliate Disclosure pages in both locales. The legal pages are drafts with visible review notices and must not be published until the owner inputs in [PC-BUILDER-M10-15-OWNER-INPUTS.md](./PC-BUILDER-M10-15-OWNER-INPUTS.md) are resolved. The guides are research-based and do not claim hands-on testing, benchmarks, or product ownership. The public contact address is `appkitx@gmail.com`. The PC Builder remains development-only and has no public route, navigation entry, or sitemap entry.
+
 Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches the typed tool registry, localized per page. English is the source locale and Spanish (`/es/…`) is shipped as a provisional translation (see [Translation status](#translation-status)).
 
 ## Languages
@@ -56,8 +58,8 @@ Do not register a language or expose it in the switcher until its translations a
 
 ### SEO output
 
-- Every indexable page carries a self-referencing canonical, reciprocal `hreflang` alternates for every supported locale, and `x-default` pointing at the unprefixed English URL — in the HTML head only.
-- Every indexable page also shares one 1200×630 PNG social preview image at `/images/appkitx-og.png`, with localized alt text, explicit dimensions, and `summary_large_image` Twitter metadata.
+- Every indexable page carries a self-referencing canonical and reciprocal `hreflang` alternates for every supported locale, with `x-default` pointing at the unprefixed English URL — in the HTML head only. This includes the guide index, every guide, and the information pages.
+- Every indexable page also shares one 1200×630 PNG social preview image at `/images/appkitx-og.png`, with localized alt text, explicit dimensions, and `summary_large_image` Twitter metadata. Guide articles use `og:type=article` with publication and modification timestamps.
 - The sitemap pairs each translated page with its `en`/`es` alternates (emitted by `@astrojs/sitemap` from the registry via `sitemapI18n()`); it never contains `x-default` — the plugin has no support for it — and never lists `/en` URLs.
 - **404 limitation**: static output has a single `404.html`, so unknown paths — including `/es/…` paths — serve the English noindex 404 page. Localized 404s are a future enhancement.
 
@@ -98,11 +100,29 @@ A future Content Security Policy must account for the externally injected Cloudf
 
 ### Privacy and consent
 
-The current Cloudflare dashboard setting excludes visitor data in the EU. That setting is not, by itself, a determination that GDPR, ePrivacy, or any other privacy or consent requirement is satisfied. Privacy and consent requirements need a separate, informed assessment if applicable. This documentation does not add a cookie banner, consent manager, privacy-policy text, or legal conclusion.
+The current Cloudflare dashboard setting excludes visitor data in the EU. That setting is not, by itself, a determination that GDPR, ePrivacy, or any other privacy or consent requirement is satisfied. Privacy and consent requirements need a separate, informed assessment if applicable.
+
+The M10.15 branch adds a draft privacy policy and terms page with visible owner/legal review notices. They describe the current code and the documented Cloudflare configuration, but they are not final, have not been legally reviewed, and must be checked against the deployed account before publication. This documentation does not add a cookie banner, consent manager, or legal conclusion.
 
 ## Search Console monitoring
 
-Google Search Console is a manual, maintainer-operated surface. Nothing in this repository submits sitemaps, requests indexing, or reads Search Console data, and this section deliberately contains no results — no Search Console data has been collected or verified in this repository. Search Console remains a separate source of organic search performance data from the Cloudflare RUM described above; it is not the only measurement surface, and this repository does not read or record its data.
+Google Search Console is a manual, maintainer-operated surface. Nothing in this repository submits sitemaps, requests indexing, or reads Search Console data. Search Console remains a separate source of organic search performance data from the Cloudflare RUM described above; it is not the only measurement surface, and this repository does not read or record its data.
+
+The confirmed arrangement, read on **2026-10-29**, is:
+
+| Item             | State                                                          |
+| ---------------- | -------------------------------------------------------------- |
+| Property         | Domain property `appkitx.com`                                  |
+| Primary owner    | `appkitx@gmail.com` (verified)                                 |
+| Backup owner     | Owner's personal Gmail                                         |
+| Verification     | DNS TXT record managed through Cloudflare                      |
+| Sitemap          | `https://appkitx.com/sitemap-index.xml` submitted successfully |
+| Sitemap index    | Publicly references `https://appkitx.com/sitemap-0.xml`        |
+| Discovered pages | 20 (current production site, not this undeployed branch)       |
+| Page indexing    | Report still processing; no page is recorded as indexed        |
+| `robots.txt`     | Allows crawling                                                |
+
+No Google account or Search Console setting is accessed or modified by this repository. The table is a read-only record supplied by the owner; it does not claim that any page is indexed.
 
 ### Automated checks (this repository)
 

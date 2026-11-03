@@ -1,0 +1,56 @@
+---
+import { getCollection, render } from "astro:content";
+import ArticleLayout from "../layouts/ArticleLayout.astro";
+import { defaultLocale, type LocaleCode } from "../i18n/config";
+import {
+  selectRelatedGuides,
+  sortGuidesByDate,
+  toGuideSummary,
+} from "../lib/editorial";
+
+interface Props {
+  locale?: LocaleCode;
+  slug: string;
+}
+
+const { locale = defaultLocale, slug } = Astro.props;
+
+const entries = await getCollection(
+  "guides",
+  ({ data }) => data.lang === locale && data.slug === slug,
+);
+const entry = entries[0];
+
+if (entry === undefined) {
+  throw new Error(`Missing ${locale} guide entry for slug: ${slug}`);
+}
+
+const { Content, headings } = await render(entry);
+
+const allGuides = sortGuidesByDate(
+  (await getCollection("guides", ({ data }) => data.lang === locale)).map(
+    toGuideSummary,
+  ),
+);
+const summary = toGuideSummary(entry);
+const related = selectRelatedGuides(allGuides, summary.slug);
+---
+
+<ArticleLayout
+  locale={locale}
+  slug={summary.slug}
+  title={summary.title}
+  seoTitle={entry.data.seoTitle}
+  description={summary.description}
+  category={summary.category}
+  tags={summary.tags}
+  published={summary.published}
+  updated={summary.updated}
+  author={entry.data.author}
+  readingMinutes={summary.readingMinutes}
+  headings={headings}
+  references={entry.data.references}
+  related={related}
+>
+  <Content />
+</ArticleLayout>

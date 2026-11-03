@@ -1,0 +1,305 @@
+---
+import InfoPageLayout from "../../layouts/InfoPageLayout.astro";
+import { defaultLocale, type LocaleCode } from "../../i18n/config";
+import { localizedHref } from "../../i18n/routing";
+import {
+  COMPANY_LAST_UPDATED,
+  CONTACT_EMAIL,
+  INFO_COPY,
+  guideIndexHref,
+  infoPageHref,
+} from "../../lib/editorial";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const copy = INFO_COPY[locale];
+const isEs = locale === "es";
+const homeTools = `${localizedHref("/", locale)}#tools`;
+---
+
+<InfoPageLayout
+  locale={locale}
+  title={copy.pageLabels.about}
+  description={
+    isEs
+      ? "AppKitX es una marca independiente que ofrece herramientas online gratuitas y guías prácticas de hardware para un público global."
+      : "AppKitX is an independent brand offering free online tools and practical PC hardware guidance for a global audience."
+  }
+  current="about"
+  lastUpdated={COMPANY_LAST_UPDATED}
+>
+  {isEs ? (
+    <>
+      <p>
+        AppKitX es una marca independiente y separada que ofrece herramientas
+        online gratuitas y guías prácticas de hardware para PC. Está pensada
+        para quien quiere terminar una tarea rápido o entender una decisión de
+        componentes sin perderse en texto de marketing.
+      </p>
+
+      <h2>Qué encontrarás</h2>
+      <p>
+        El sitio tiene dos partes. Las <a href={homeTools}>herramientas</a>
+        cubren el trabajo cotidiano con calculadoras, desarrollo y fechas y
+        horas: porcentajes, descuentos, Base64, JSON, diferencias entre fechas y
+        edad. Las <a href={guideIndexHref(locale)}>guías de hardware</a>
+        explican cómo elegir componentes, comprobar la compatibilidad y
+        planificar un montaje o una actualización.
+      </p>
+      <p>
+        Todo funciona en el navegador. Las herramientas no requieren cuenta y
+        los valores que introduces no se suben a un servidor. Hay un
+        configurador de PC en desarrollo; todavía no forma parte del sitio
+        público.
+      </p>
+
+      <h2>Para quién es</h2>
+      <p>
+        AppKitX se publica en inglés y español. El inglés es el idioma de origen
+        y el español es una traducción provisional. Las guías evitan
+        afirmaciones sobre precios o disponibilidad específicos de un país,
+        porque cambian constantemente y varían por región. Cuando una decisión
+        depende de una variante regional, de un vendedor o de la documentación
+        local del fabricante, las guías lo indican.
+      </p>
+
+      <h2 id="editorial-principles">Principios editoriales</h2>
+      <p>
+        Estos principios se aplican a todas las guías y a cualquier consejo de
+        compra futuro.
+      </p>
+      <ul>
+        <li>
+          <strong>Primero, la utilidad.</strong> Una página debe ayudar a tomar
+          una decisión o completar una tarea. No debe existir solo para ocupar
+          un resultado de búsqueda.
+        </li>
+        <li>
+          <strong>Explicar el razonamiento.</strong> Las recomendaciones se
+          apoyan en especificaciones documentadas, estándares y contrapartidas,
+          no en clasificaciones sin explicación.
+        </li>
+        <li>
+          <strong>No inventar experiencia.</strong> AppKitX no afirma haber
+          probado físicamente, poseído o medido hardware salvo que una página lo
+          diga y exista evidencia. Las guías se basan en investigación, no son
+          análisis de laboratorio.
+        </li>
+        <li>
+          <strong>Mostrar los límites.</strong> Cada guía indica sus supuestos,
+          advertencias y los casos en los que una respuesta general puede no
+          aplicarse.
+        </li>
+        <li>
+          <strong>Fechar el trabajo.</strong> Las guías muestran fecha de
+          publicación y de actualización. Una fecha no garantiza que todas las
+          especificaciones enlazadas sigan vigentes; consulta la documentación
+          del fabricante antes de comprar.
+        </li>
+        <li>
+          <strong>Mantener la independencia.</strong> Las relaciones comerciales
+          no determinan clasificaciones ni conclusiones. Cualquier relación de
+          afiliación futura se divulgará claramente y no cambiará el precio que
+          pagas.
+        </li>
+        <li>
+          <strong>Corregir errores.</strong> Si una guía es incorrecta, la
+          corrección debe reflejarse en la página y en su fecha de
+          actualización. Las opiniones son bienvenidas a través de la
+          <a href={infoPageHref("contact", locale)}>página de contacto</a>.
+        </li>
+      </ul>
+
+      <h2>Cómo se investigan las guías</h2>
+      <p>
+        Las guías se escriben a partir de documentación de productos de
+        fabricantes, estándares publicados, requisitos de plataforma y prácticas
+        de montaje establecidas. Cada guía enumera las fuentes utilizadas. Esas
+        fuentes son puntos de partida: una revisión de placa base, una variante
+        regional o una actualización de firmware pueden cambiar la respuesta
+        para un producto concreto.
+      </p>
+      <p>
+        Las guías no sustituyen el manual de tu placa base, fuente de
+        alimentación, caja o refrigerador. Consulta la documentación exacta del
+        modelo antes de comprar o montar un sistema.
+      </p>
+
+      <h2>Propiedad e independencia</h2>
+      <p>
+        AppKitX es una marca independiente y separada. Todavía no está
+        legalmente registrada. No se afirma ningún nombre de empresa registrada,
+        dirección registrada ni identidad legal. AppKitX no está afiliada,
+        patrocinada ni respaldada por ningún fabricante o vendedor de hardware.
+      </p>
+      <p>
+        La jurisdicción prevista para el sitio y sus documentos legales es
+        India. Los documentos legales siguen siendo borradores pendientes de
+        revisión legal.
+      </p>
+
+      <h2>Contacto</h2>
+      <p>
+        Las correcciones, los informes de accesibilidad y las preguntas sobre
+        privacidad son bienvenidos. Escríbenos a{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        . Esta dirección es para consultas generales y soporte.
+      </p>
+
+      <h2>Información relacionada</h2>
+      <ul>
+        <li>
+          <a href={infoPageHref("privacy", locale)}>Política de privacidad</a>
+        </li>
+        <li>
+          <a href={infoPageHref("terms", locale)}>Términos de uso</a>
+        </li>
+        <li>
+          <a href={infoPageHref("affiliateDisclosure", locale)}>
+            Divulgación de afiliados
+          </a>
+        </li>
+        <li>
+          <a href={guideIndexHref(locale)}>Guías de hardware</a>
+        </li>
+      </ul>
+    </>
+  ) : (
+    <>
+      <p>
+        AppKitX is a separate, independent brand that provides free online tools
+        and practical PC hardware guidance. It is built for people who want to
+        finish a task quickly or understand a component decision without wading
+        through marketing copy.
+      </p>
+
+      <h2>What you will find</h2>
+      <p>
+        The site has two parts. The <a href={homeTools}>tools</a> cover everyday
+        calculator, developer, and date-and-time work: percentages, discounts,
+        Base64, JSON, date differences, and age. The
+        <a href={guideIndexHref(locale)}>PC hardware guides</a> explain how to
+        choose components, check compatibility, and plan a build or upgrade.
+      </p>
+      <p>
+        Everything runs in the browser. The tools do not require an account, and
+        the values you enter are not uploaded to a server. A PC builder is in
+        development; it is not part of the public site yet.
+      </p>
+
+      <h2>Who it is for</h2>
+      <p>
+        AppKitX is published in English and Spanish. English is the source
+        language and Spanish is a provisional translation. The guidance avoids
+        country-specific pricing and availability claims because those change
+        constantly and vary by region. Where a decision depends on a regional
+        SKU, a retailer, or a manufacturer's local documentation, the guides say
+        so.
+      </p>
+
+      <h2 id="editorial-principles">Editorial principles</h2>
+      <p>
+        These principles apply to every guide and to any future buying advice on
+        the site.
+      </p>
+      <ul>
+        <li>
+          <strong>Useful first.</strong> A page should help someone make a
+          decision or complete a task. It should not exist only to occupy a
+          search result.
+        </li>
+        <li>
+          <strong>Explain the reasoning.</strong> Recommendations are tied to
+          documented specifications, standards, and trade-offs rather than
+          unexplained rankings.
+        </li>
+        <li>
+          <strong>Do not invent experience.</strong> AppKitX does not claim to
+          have physically tested, owned, or benchmarked hardware unless a page
+          says so and the evidence exists. The guides are research-based, not
+          lab reviews.
+        </li>
+        <li>
+          <strong>Show the limits.</strong> Every guide states its assumptions,
+          caveats, and the cases where a general answer may not apply.
+        </li>
+        <li>
+          <strong>Date the work.</strong> Guides show a publication date and an
+          update date. A date is not a claim that every linked specification is
+          still current; readers should check the manufacturer's documentation
+          before buying.
+        </li>
+        <li>
+          <strong>Stay independent.</strong> Commercial relationships do not
+          determine rankings or conclusions. Any future affiliate relationship
+          will be disclosed clearly and will not change the price you pay.
+        </li>
+        <li>
+          <strong>Correct mistakes.</strong> If a guide is wrong, the correction
+          should be reflected in the page and its update date. Feedback is
+          welcome through the
+          <a href={infoPageHref("contact", locale)}>contact page</a>.
+        </li>
+      </ul>
+
+      <h2>How the guides are researched</h2>
+      <p>
+        Guides are written from manufacturer product documentation, published
+        standards, platform requirements, and established building practice.
+        Each guide lists the sources used. Those sources are starting points: a
+        motherboard revision, a regional SKU, or a firmware update can change
+        the answer for a specific product.
+      </p>
+      <p>
+        The guides do not replace the manual for your motherboard, power supply,
+        case, or cooler. Check the exact model's documentation before you buy or
+        assemble a system.
+      </p>
+
+      <h2>Ownership and independence</h2>
+      <p>
+        AppKitX is a separate, independent brand. It is not yet legally
+        registered. No registered company name, registered address, or legal
+        identity is claimed. AppKitX is not affiliated with, sponsored by, or
+        endorsed by any hardware manufacturer or retailer.
+      </p>
+      <p>
+        The intended jurisdiction for the site and its legal documents is India.
+        The legal documents remain drafts pending legal review.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Corrections, accessibility reports, and privacy questions are welcome.
+        Email{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="break-all">
+          {CONTACT_EMAIL}
+        </a>
+        . This address is for general enquiries and support.
+      </p>
+
+      <h2>Related information</h2>
+      <ul>
+        <li>
+          <a href={infoPageHref("privacy", locale)}>Privacy policy</a>
+        </li>
+        <li>
+          <a href={infoPageHref("terms", locale)}>Terms of use</a>
+        </li>
+        <li>
+          <a href={infoPageHref("affiliateDisclosure", locale)}>
+            Affiliate disclosure
+          </a>
+        </li>
+        <li>
+          <a href={guideIndexHref(locale)}>PC hardware guides</a>
+        </li>
+      </ul>
+    </>
+  )}
+</InfoPageLayout>

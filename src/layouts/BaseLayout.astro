@@ -25,6 +25,13 @@ import {
   type JsonLdDocument,
 } from "../lib/seo";
 
+interface ArticleMeta {
+  publishedTime: string;
+  modifiedTime: string;
+  section?: string;
+  tags?: readonly string[];
+}
+
 interface Props {
   title?: string;
   description?: string;
@@ -34,6 +41,10 @@ interface Props {
   locale?: LocaleCode;
   /** JSON-LD documents rendered as application/ld+json scripts in the head. */
   jsonLd?: readonly JsonLdDocument[];
+  /** Open Graph document type. Editorial guides use "article". */
+  ogType?: "website" | "article";
+  /** Article timestamps and taxonomy, rendered only when ogType is "article". */
+  article?: ArticleMeta;
 }
 
 const {
@@ -42,6 +53,8 @@ const {
   noindex = false,
   locale = defaultLocale,
   jsonLd = [],
+  ogType = "website",
+  article,
 } = Astro.props;
 
 const t = getDictionary(locale);
@@ -92,8 +105,23 @@ const preferenceScript = noindex
     {alternates.map((link) => (
       <link rel="alternate" hreflang={link.hreflang} href={link.href} />
     ))}
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={SITE_NAME} />
+    {ogType === "article" && article && (
+      <>
+        <meta
+          property="article:published_time"
+          content={article.publishedTime}
+        />
+        <meta property="article:modified_time" content={article.modifiedTime} />
+        {article.section && (
+          <meta property="article:section" content={article.section} />
+        )}
+        {article.tags?.map((tag) => (
+          <meta property="article:tag" content={tag} />
+        ))}
+      </>
+    )}
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
     {!noindex && <meta property="og:url" content={canonical} />}

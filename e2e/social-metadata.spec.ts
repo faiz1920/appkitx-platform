@@ -7,6 +7,7 @@ import {
   stripLocalePrefix,
   translatedPagePaths,
 } from "../src/i18n/routing";
+import { GUIDES_PATH, INFO_PAGE_PATHS } from "../src/lib/editorial";
 import {
   SOCIAL_IMAGE_HEIGHT,
   SOCIAL_IMAGE_PATH,
@@ -204,6 +205,11 @@ for (const route of actualRoutes) {
     const dictionary = getDictionary(locale);
     const canonical = `${ORIGIN}${route}`;
     const image = `${ORIGIN}${SOCIAL_IMAGE_PATH}`;
+    const isGuideArticle =
+      path.startsWith(`${GUIDES_PATH}/`) && path !== GUIDES_PATH;
+    const isInfoPage = (Object.values(INFO_PAGE_PATHS) as string[]).includes(
+      path,
+    );
 
     expect(head.lang).toBe(localeMeta.hreflang);
     expect(head.dir).toBe(localeMeta.dir);
@@ -221,7 +227,9 @@ for (const route of actualRoutes) {
     );
     expect(ogTitle).toBe(title);
     expect(ogDescription).toBe(description);
-    expect(single(head.og.type, `${route} og:type`)).toBe("website");
+    expect(single(head.og.type, `${route} og:type`)).toBe(
+      isGuideArticle ? "article" : "website",
+    );
     expect(single(head.og.siteName, `${route} og:site_name`)).toBe("AppKitX");
     expect(single(head.og.url, `${route} og:url`)).toBe(canonical);
     expect(single(head.og.locale, `${route} og:locale`)).toBe(
@@ -283,7 +291,7 @@ for (const route of actualRoutes) {
       },
     ]);
 
-    const expectedJsonLdCount = path === "/" ? 1 : 2;
+    const expectedJsonLdCount = path === "/" || isInfoPage ? 1 : 2;
     expect(head.jsonLd, `${route} structured data`).toHaveLength(
       expectedJsonLdCount,
     );

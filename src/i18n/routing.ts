@@ -1,5 +1,6 @@
 import { defaultLocale, locales, type LocaleCode } from "./config";
 import { publishedCategoryPaths } from "../lib/categories";
+import { GUIDES_PATH, GUIDE_SLUGS, INFO_PAGE_PATHS } from "../lib/editorial";
 import { tools } from "../lib/tools";
 
 /*
@@ -92,13 +93,21 @@ export function swapLocalePath(pathname: string, locale: LocaleCode): string {
 
 /*
  * Every page that exists in every supported locale. Registry-derived: the
- * homepage, the tools registry, and the published category pages. The
- * [locale] route generation, the preference script guard, and the
- * language-switcher fallback all consume this list, so a page can never be
+ * homepage, the tools registry, the published category pages, the bilingual
+ * guide index and guide slugs, and the information pages. The [locale] route
+ * generation, the preference script guard, hreflang alternates, the sitemap,
+ * and the language switcher all consume this list, so a page can never be
  * advertised for a locale that lacks it.
  */
 export function translatedPagePaths(): string[] {
-  return ["/", ...tools.map((tool) => tool.href), ...publishedCategoryPaths()];
+  return [
+    "/",
+    ...tools.map((tool) => tool.href),
+    ...publishedCategoryPaths(),
+    GUIDES_PATH,
+    ...GUIDE_SLUGS.map((slug) => `${GUIDES_PATH}/${slug}`),
+    ...Object.values(INFO_PAGE_PATHS),
+  ];
 }
 
 /**

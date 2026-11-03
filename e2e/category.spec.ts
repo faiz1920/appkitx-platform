@@ -17,9 +17,9 @@ test("the English category page lists both registered calculators", async ({
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Calculators",
   );
-  await expect(page.getByRole("heading", { level: 2 })).toHaveText(
-    "Free online calculators",
-  );
+  await expect(
+    page.getByRole("main").getByRole("heading", { level: 2 }),
+  ).toHaveText("Free online calculators");
 
   const breadcrumb = page.getByRole("navigation", { name: "Breadcrumb" });
   await expect(breadcrumb.getByRole("link", { name: "Home" })).toHaveAttribute(
@@ -62,9 +62,9 @@ test("the Spanish category page is fully localized", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Calculadoras",
   );
-  await expect(page.getByRole("heading", { level: 2 })).toHaveText(
-    "Calculadoras online gratis",
-  );
+  await expect(
+    page.getByRole("main").getByRole("heading", { level: 2 }),
+  ).toHaveText("Calculadoras online gratis");
 
   const breadcrumb = page.getByRole("navigation", {
     name: "Ruta de navegación",
@@ -108,9 +108,9 @@ test("the English developer tools page lists both registered tools", async ({
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Developer tools",
   );
-  await expect(page.getByRole("heading", { level: 2 })).toHaveText(
-    "Free developer tools",
-  );
+  await expect(
+    page.getByRole("main").getByRole("heading", { level: 2 }),
+  ).toHaveText("Free developer tools");
 
   const breadcrumb = page.getByRole("navigation", { name: "Breadcrumb" });
   await expect(breadcrumb.getByRole("link", { name: "Home" })).toHaveAttribute(
@@ -147,9 +147,9 @@ test("the Spanish developer tools page is fully localized", async ({
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Herramientas de desarrollo",
   );
-  await expect(page.getByRole("heading", { level: 2 })).toHaveText(
-    "Herramientas de desarrollo gratis",
-  );
+  await expect(
+    page.getByRole("main").getByRole("heading", { level: 2 }),
+  ).toHaveText("Herramientas de desarrollo gratis");
 
   const breadcrumb = page.getByRole("navigation", {
     name: "Ruta de navegación",
@@ -187,9 +187,9 @@ test("the English date & time page lists both registered tools", async ({
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Date & time",
   );
-  await expect(page.getByRole("heading", { level: 2 })).toHaveText(
-    "Free date & time tools",
-  );
+  await expect(
+    page.getByRole("main").getByRole("heading", { level: 2 }),
+  ).toHaveText("Free date & time tools");
 
   const breadcrumb = page.getByRole("navigation", { name: "Breadcrumb" });
   await expect(breadcrumb.getByRole("link", { name: "Home" })).toHaveAttribute(
@@ -224,9 +224,9 @@ test("the Spanish date & time page is fully localized", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Fecha y hora",
   );
-  await expect(page.getByRole("heading", { level: 2 })).toHaveText(
-    "Herramientas de fecha y hora gratis",
-  );
+  await expect(
+    page.getByRole("main").getByRole("heading", { level: 2 }),
+  ).toHaveText("Herramientas de fecha y hora gratis");
 
   const breadcrumb = page.getByRole("navigation", {
     name: "Ruta de navegación",
