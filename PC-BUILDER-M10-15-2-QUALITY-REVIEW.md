@@ -1,23 +1,64 @@
 # M10.15.2 — Editorial, Accessibility, and Compliance Quality Review
 
 Status: **repository-level review complete; independent reviews outstanding**.
-Gate A remains **CONDITIONALLY READY — NOT PASSED**. Nothing was committed,
-pushed, opened as a pull request, merged, or deployed.
+The public editorial site was subsequently merged in PR #50 and automatically
+deployed to production on 2026-11-03. Gate A remains **CONDITIONALLY READY — NOT
+PASSED**. The review below is retained as the pre-deployment record; the
+Production Deployment Record supersedes its deployment-status statements.
 
 - Repository: `/Users/faiz/Work/nexverra/appkitx-platform-clean`
-- Branch: `feature/m10-15-public-site-readiness`
+- Historical feature branch: `feature/m10-15-public-site-readiness` (merged in
+  PR #50)
 - Baseline: `db3f2d805700d10dc1819c44570597604a93dc0f`
 - Review window: **2026-11-02 to 2026-11-04**
-- Deployment: **none**
+- Merge commit: `019fd602d7a779f4035ae58339238781fa0c280f`
+- Deployment: automatic Cloudflare Workers Builds production deployment after
+  the PR #50 merge; completed **2026-11-03T19:14:39Z**
 - Amazon account, application, credentials, API call, affiliate link, or ASIN:
   **none**
 - Legal pages: visible drafts with review notices in English and Spanish
 - Companion register:
   [`PC-BUILDER-M10-15-2-LEGAL-REVIEW-REGISTER.md`](./PC-BUILDER-M10-15-2-LEGAL-REVIEW-REGISTER.md)
 
+## Production Deployment Record — 2026-11-03
+
+PR #50 was merged by `faiz1920` at `2026-11-03T19:13:20Z`; the merge commit is
+`019fd602d7a779f4035ae58339238781fa0c280f`. The merge triggered a Cloudflare
+Workers Builds production build, which completed successfully at
+`2026-11-03T19:14:39Z`. No manual deployment was run by the owner. The Cloudflare
+dashboard was not accessed; the evidence is GitHub PR/check-run metadata plus the
+owner report.
+
+Owner-reported live checks, independently rechecked on **2026-11-04**:
+
+| URL                                                                | Result                                            |
+| ------------------------------------------------------------------ | ------------------------------------------------- |
+| `https://appkitx.com/guides/`                                      | HTTP 200 — English guide index                    |
+| `https://appkitx.com/es/guides/`                                   | HTTP 200 — Spanish guide index                    |
+| `https://appkitx.com/privacy/`                                     | HTTP 200 — English privacy page, dated 2026-11-02 |
+| `https://appkitx.com/es/privacy/`                                  | HTTP 200 — Spanish privacy page                   |
+| `https://appkitx.com/guides/how-to-choose-the-right-power-supply/` | HTTP 200 — ATX 3.1 / 12V-2x6 correction live      |
+| `https://appkitx.com/sitemap-0.xml`                                | HTTP 200 — 52 URLs                                |
+| `https://appkitx.com/pc-builder/`                                  | HTTP 404 — PC Builder remains unpublished         |
+
+The production sitemap exposes 52 URLs. `/pc-builder/` remains HTTP 404. CSP
+remains Report-Only; HSTS, X-Content-Type-Options, Referrer-Policy, and
+Permissions-Policy remain present. No security-header changes were made in
+M10.15.
+
+The repository uses Cloudflare Workers Builds, so a documentation-only PR may
+trigger another production deployment when merged. Do not disable or bypass the
+automation; any merge requires explicit approval.
+
+Gate A remains **CONDITIONALLY READY — NOT PASSED**. Deployment of the editorial
+site does not authorize an Amazon Associates application, Creators API access,
+affiliate links, live Amazon integration, a public PC Builder release, or
+pricing-provider activation.
+
 ## 1. Scope and method
 
-This review covers the M10.15/M10.15.1 public-site work on the feature branch:
+This review covers the M10.15/M10.15.1 public-site work on the feature branch
+that was subsequently merged in PR #50:
 
 - 10 English and 10 Spanish guides in `src/content/guides/`;
 - bilingual guide indexes and article routes;
@@ -209,9 +250,11 @@ and both privacy locales:
 - the page-indexing report was still processing.
 
 RI-7 is therefore marked complete. The documentation no longer treats Search
-Console ownership as an open item. It also does **not** claim that all pages are
-indexed, that the M10.15 pages are in production, or that the undeployed branch
-has affected the 20-page production count.
+Console ownership as an open item. It does **not** claim that all pages are
+indexed or that Google has discovered all 52 production URLs. At the time of this
+review, the M10.15 pages were not yet in production; they have since been
+deployed, but the 20-page count has not been re-read. A fresh Search Console
+sitemap and indexing review is required.
 
 ## 8. Legal and privacy preparation
 
@@ -249,8 +292,8 @@ review claims legal compliance or authorizes an Amazon application.
 
 ## 9. Validation results
 
-These are the final results for the production code on the branch. The quality
-review document itself is documentation and does not affect the build.
+These are the final pre-merge results for the production code on the branch. The
+quality review document itself is documentation and does not affect the build.
 
 | Command                                                     | Result                                                                       |
 | ----------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -283,27 +326,34 @@ Visual proof captured by Playwright in `test-results/`:
   `astro.config.ts`, `src/worker.ts`, and the CSP integration have no diffs.
 - No Cloudflare setting, CSP enforcement, HSTS, or security header was changed.
 - No production deployment, publication, DNS change, or Search Console
-  modification was made.
+  modification was made as part of the M10.15.2 review itself. The later PR #50
+  merge triggered an automatic Cloudflare Workers Builds production deployment;
+  see the Production Deployment Record.
 - The PC Builder remains mounted only by
   `src/integrations/pc-builder-dev-preview.ts` during `astro dev`; it has no
   public route, navigation entry, or sitemap entry.
 - `PC-BUILDER-M10-13-AMAZON-IN-FEASIBILITY.md` is unchanged
   (SHA-256 `390f8c79eb963112f1ba602c9c65d8937bcb8c4e4954517c9ac3c361690b4dee`).
 - The M10.14 readiness gate and ASIN mapping template are unchanged.
-- Nothing is staged, committed, pushed, or opened as a pull request.
+- At the time of this review, nothing was staged, committed, pushed, or opened
+  as a pull request. PR #50 was subsequently opened, merged, and deployed.
 
 ## 11. Remaining external reviews
 
-| Review                                    | Status   | Blocks Gate A? |
-| ----------------------------------------- | -------- | -------------- |
-| Privacy policy and analytics confirmation | Open     | Yes            |
-| Terms, liability, and India jurisdiction  | Open     | Yes            |
-| Affiliate disclosure wording              | Open     | Yes            |
-| Independent editorial/technical review    | Open     | Yes            |
-| Spanish translation review                | Open     | Yes            |
-| Manual accessibility audit                | Open     | Recommended    |
-| Release/merge/deployment approval         | Open     | Yes            |
-| Search Console ownership and sitemap      | Complete | No             |
+| Review                                             | Status   | Blocks Gate A? |
+| -------------------------------------------------- | -------- | -------------- |
+| Privacy policy and analytics confirmation          | Open     | Yes            |
+| Terms, liability, and India jurisdiction           | Open     | Yes            |
+| Affiliate disclosure wording                       | Open     | Yes            |
+| Independent editorial/technical review             | Open     | Yes            |
+| Spanish translation review                         | Open     | Yes            |
+| Manual accessibility audit                         | Open     | Recommended    |
+| Release approval for remaining gated functionality | Open     | Yes            |
+| Post-deployment sitemap/indexing review            | Open     | Recommended    |
+| Search Console ownership and sitemap               | Complete | No             |
+
+The public editorial site is deployed. This table tracks the remaining approvals
+and reviews, not the deployment itself.
 
 Gate B remains blocked: there is no Amazon.in Associates account, no qualifying
 sales history, no Creators API credentials, and no India regional approval.
@@ -317,7 +367,7 @@ release approval exists.
 
 | Gate A criterion                           | Status                  | M10.15.2 evidence                                                                    |
 | ------------------------------------------ | ----------------------- | ------------------------------------------------------------------------------------ |
-| Public, accessible, owned site             | Pass, ownership pending | Static site, no login/paywall, robots allow, sitemap                                 |
+| Public, accessible, owned site             | Pass, ownership pending | Live at `appkitx.com`; static site, no login/paywall, robots allow, sitemap          |
 | Original content, not thin affiliate pages | Pass by inspection      | 20 guides, 32,860 prose words, 6 tools, 3 categories, no affiliate links             |
 | PC-hardware relevance                      | Pass                    | CPU, GPU, motherboard, memory, storage, PSU, cooling, compatibility, first build     |
 | At least 10 substantive posts/pages        | Pass by count           | 10 guides per locale plus tool and category pages                                    |
@@ -330,8 +380,12 @@ release approval exists.
 | Authorship and dates                       | Pass                    | AppKitX Editorial approved for both locales; no individual author invented           |
 | Multilingual coverage                      | Pass                    | 10 guides and 5 information pages per locale; switcher, hreflang, sitemap            |
 | Navigation and discoverability             | Pass                    | Localized Guides in nav/footer; Company/Legal in footer; internal links tested       |
-| No dev-only PC Builder exposure            | Pass                    | No route, link, or sitemap entry in `dist`                                           |
+| No dev-only PC Builder exposure            | Pass                    | No route, link, or sitemap entry in `dist`; live `/pc-builder/` returns 404          |
 | No policy/legal blockers                   | Not yet                 | Legal review, analytics confirmation, editorial/translation review, release approval |
+
+The editorial site is now deployed; Gate A remains conditional because the
+legal, editorial, translation, and manual accessibility approvals are
+outstanding.
 
 Gate A moves to **PASSED** only when the legal drafts are reviewed, the
 production analytics configuration is confirmed, the 20 guides and Spanish
@@ -340,15 +394,18 @@ recorded, and release approval is given. A Gate A pass would authorize preparing
 an Amazon.in Associates application; it would **not** authorize API access, live
 integration, or a public PC Builder release.
 
-## 13. PR #50 status
+## 13. PR #50 and deployment status
 
-**No PR #50 exists.** `gh pr view 50` returns
-`GraphQL: Could not resolve to a PullRequest with the number of 50.` The branch
-has no upstream and has not been pushed. Nothing is staged or committed.
+PR #50 was opened from `feature/m10-15-public-site-readiness`, merged by
+`faiz1920` at `2026-11-03T19:13:20Z`, with merge commit
+`019fd602d7a779f4035ae58339238781fa0c280f`. The merge triggered a Cloudflare
+Workers Builds production deployment, completed at `2026-11-03T19:14:39Z`. No
+manual deployment was run by the owner. The pre-deployment text above is retained
+as historical context.
 
-The working tree is ready for owner inspection, but it is **not ready for PR
-review**: there is no PR to review, the external reviews above are outstanding,
-and release approval has not been given. Do not merge or deploy.
+The public editorial site is deployed, but the external reviews above are still
+outstanding and Gate A has not passed. Do not merge or deploy further gated
+functionality without explicit approval.
 
 ## 14. Limitations and sign-off
 
@@ -361,6 +418,9 @@ does not replace:
 - a manual assistive-technology, zoom, and high-contrast audit;
 - confirmation of the production Cloudflare configuration, cookie set,
   retention, and transfer mechanisms;
-- a Search Console indexing report for the undeployed M10.15 pages.
+- a Search Console indexing report for the deployed M10.15 pages; no indexing or
+  full-discovery claim is made;
+- independent access to the Cloudflare dashboard; the deployment record relies on
+  owner-supplied evidence and GitHub PR/check-run metadata.
 
 Prepared for owner review. No approval is implied by this document.

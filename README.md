@@ -21,7 +21,7 @@ Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (
 
 Category landing pages are live in both locales for [Calculators](/calculators), [Developer tools](/developer-tools), and [Date & time](/date-time). Unit Converter and Loan Calculator are the two remaining planned tools: they appear on the homepage and in the footer as non-interactive "Coming soon" entries, are absent from the tool registry, and can never surface in search results, related-tools sections, or category pages.
 
-The M10.15 / M10.15.1 branch adds a bilingual PC-hardware editorial library: ten source-based guides in English (`/guides/`) and Spanish (`/es/guides/`), plus About, Contact, Privacy Policy, Terms of Use, and Affiliate Disclosure pages in both locales. The legal pages are drafts with visible review notices and must not be published until the owner inputs in [PC-BUILDER-M10-15-OWNER-INPUTS.md](./PC-BUILDER-M10-15-OWNER-INPUTS.md) are resolved. The guides are research-based and do not claim hands-on testing, benchmarks, or product ownership. The public contact address is `appkitx@gmail.com`. The PC Builder remains development-only and has no public route, navigation entry, or sitemap entry.
+The M10.15 / M10.15.1 public-site release adds a bilingual PC-hardware editorial library: ten source-based guides in English (`/guides/`) and Spanish (`/es/guides/`), plus About, Contact, Privacy Policy, Terms of Use, and Affiliate Disclosure pages in both locales. The legal pages are deployed as visible drafts with review notices and must not be presented as final or compliant until the owner inputs in [PC-BUILDER-M10-15-OWNER-INPUTS.md](./PC-BUILDER-M10-15-OWNER-INPUTS.md) are resolved. The guides are research-based and do not claim hands-on testing, benchmarks, or product ownership. The public contact address is `appkitx@gmail.com`. The PC Builder remains development-only and has no public route, navigation entry, or sitemap entry.
 
 Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches the typed tool registry, localized per page. English is the source locale and Spanish (`/es/…`) is shipped as a provisional translation (see [Translation status](#translation-status)).
 
@@ -102,7 +102,7 @@ A future Content Security Policy must account for the externally injected Cloudf
 
 The current Cloudflare dashboard setting excludes visitor data in the EU. That setting is not, by itself, a determination that GDPR, ePrivacy, or any other privacy or consent requirement is satisfied. Privacy and consent requirements need a separate, informed assessment if applicable.
 
-The M10.15 branch adds a draft privacy policy and terms page with visible owner/legal review notices. They describe the current code and the documented Cloudflare configuration, but they are not final, have not been legally reviewed, and must be checked against the deployed account before publication. This documentation does not add a cookie banner, consent manager, or legal conclusion.
+The deployed M10.15 public site includes draft privacy policy and terms pages with visible owner/legal review notices. They describe the current code and the documented Cloudflare configuration, but they are not final, have not been legally reviewed, and remain drafts pending review; deployment does not make them final or compliant. This documentation does not add a cookie banner, consent manager, or legal conclusion.
 
 ## Search Console monitoring
 
@@ -118,11 +118,11 @@ The confirmed arrangement, read on **2026-10-29**, is:
 | Verification     | DNS TXT record managed through Cloudflare                      |
 | Sitemap          | `https://appkitx.com/sitemap-index.xml` submitted successfully |
 | Sitemap index    | Publicly references `https://appkitx.com/sitemap-0.xml`        |
-| Discovered pages | 20 (current production site, not this undeployed branch)       |
-| Page indexing    | Report still processing; no page is recorded as indexed        |
+| Discovered pages | 20 as of 2026-10-29; production sitemap now exposes 52 URLs    |
+| Page indexing    | Report was still processing; no page is recorded as indexed    |
 | `robots.txt`     | Allows crawling                                                |
 
-No Google account or Search Console setting is accessed or modified by this repository. The table is a read-only record supplied by the owner; it does not claim that any page is indexed.
+No Google account or Search Console setting is accessed or modified by this repository. The table is a read-only record supplied by the owner; it does not claim that any page is indexed. The production sitemap now exposes 52 URLs, but this is not a claim that Google has discovered or indexed all of them. A fresh sitemap and indexing review is still required.
 
 ### Automated checks (this repository)
 
@@ -189,13 +189,13 @@ The site is a static Astro build deployed as Cloudflare Workers Static Assets. `
 | Compatibility date | `2026-10-17` (configured in `wrangler.jsonc`)                                          |
 | Node.js            | 22.22.0 or newer (the `engines` requirement of the pinned Astro release)               |
 
-Deployments run through the Wrangler CLI against `wrangler.jsonc`; the `previews` block in that file is required by the external deploy command. Wrangler is a development dependency here for the local preview used by Playwright. The exact deployment invocation and any CI wiring are maintained outside this repository, so this file does not pin a deploy command.
+Production deployment is currently automatic: Cloudflare Workers Builds builds and deploys the merge commit when a pull request merges to `main`. The production deployment of PR #50 completed on **2026-11-03T19:14:39Z**. `wrangler.jsonc` remains the deployment contract, and Wrangler is a development dependency for the local preview used by Playwright. The exact Workers Builds configuration is maintained in Cloudflare, outside this repository, so this file does not pin the build command or deployment trigger.
 
-Validate a preview deployment before promoting to production.
+Preview deployments remain available for validation; production is currently promoted automatically from `main`. A documentation-only PR can also trigger a production deployment when merged, so merges require explicit approval.
 
 Deployment provenance, private attestation, rollback, and post-deployment verification are covered in [DEPLOYMENT-RUNBOOK.md](./DEPLOYMENT-RUNBOOK.md).
 
-The intended production domain is `appkitx.com` (canonical), with `www.appkitx.com` redirecting to it. Domain binding and DNS setup are manual Cloudflare steps and are not configured by this repository.
+The production domain is `appkitx.com` (canonical), with `www.appkitx.com` redirecting to it. Domain binding and DNS setup are manual Cloudflare steps and are not configured by this repository.
 
 Security headers come from two layers. Repository-managed headers ship via `public/_headers`: content-type sniffing, referrer policy, framing, permissions policy, and immutable caching for hashed assets. HSTS is not defined in `public/_headers`; Cloudflare manages it at the edge for `appkitx.com`. The verified production policy is `Strict-Transport-Security: max-age=2592000` (one month), with `includeSubDomains` off and `preload` off, present on both the apex `200` response and the `www` `301` redirect. This verifies HSTS only and does not make the overall security posture complete.
 

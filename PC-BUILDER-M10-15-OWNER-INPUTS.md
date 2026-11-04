@@ -1,10 +1,45 @@
 # M10.15.1 — Owner Decisions and Remaining Inputs
 
 Status: **owner decisions incorporated; legal and quality review still open**.
-This document records what is confirmed, what remains unresolved, and what must
-happen before Gate A or publication. Nothing here authorizes an Amazon
-Associates application, Creators API access, an affiliate link, a public PC
-Builder release, or a deployment.
+The public editorial site was merged in PR #50 and automatically deployed on
+2026-11-03. Gate A remains **CONDITIONALLY READY — NOT PASSED**. This document
+records what is confirmed, what remains unresolved, and what must happen before
+Gate A or any further release. Nothing here authorizes an Amazon Associates
+application, Creators API access, an affiliate link, a public PC Builder release,
+pricing-provider activation, or any further deployment.
+
+## Production Deployment Record — 2026-11-03
+
+PR #50 was merged by `faiz1920` at `2026-11-03T19:13:20Z` (merge commit
+`019fd602d7a779f4035ae58339238781fa0c280f`). Cloudflare Workers Builds
+automatically deployed the merge commit; the production build completed at
+`2026-11-03T19:14:39Z`. No manual deployment was run by the owner, and the
+Cloudflare dashboard was not accessed.
+
+Owner-reported live checks, independently rechecked on **2026-11-04**:
+
+| URL                                                                | Result                                            |
+| ------------------------------------------------------------------ | ------------------------------------------------- |
+| `https://appkitx.com/guides/`                                      | HTTP 200 — English guide index                    |
+| `https://appkitx.com/es/guides/`                                   | HTTP 200 — Spanish guide index                    |
+| `https://appkitx.com/privacy/`                                     | HTTP 200 — English privacy page, dated 2026-11-02 |
+| `https://appkitx.com/es/privacy/`                                  | HTTP 200 — Spanish privacy page                   |
+| `https://appkitx.com/guides/how-to-choose-the-right-power-supply/` | HTTP 200 — ATX 3.1 / 12V-2x6 correction live      |
+| `https://appkitx.com/sitemap-0.xml`                                | HTTP 200 — 52 URLs                                |
+| `https://appkitx.com/pc-builder/`                                  | HTTP 404 — PC Builder remains unpublished         |
+
+The production sitemap exposes 52 URLs. `/pc-builder/` returns HTTP 404. CSP
+remains Report-Only; HSTS, X-Content-Type-Options, Referrer-Policy, and
+Permissions-Policy remain present. No security-header changes were made in
+M10.15.
+
+The repository uses Cloudflare Workers Builds, so a documentation-only PR may
+trigger another production deployment when merged. Do not disable or bypass the
+automation; any merge requires explicit approval.
+
+This deployment does not change Gate A. It does not authorize an Amazon
+Associates application, Creators API access, affiliate links, live Amazon
+integration, a public PC Builder release, or pricing-provider activation.
 
 ## 1. Confirmed owner decisions (2026-11-01)
 
@@ -28,16 +63,16 @@ drafts pending legal review.
 
 ## 2. Remaining decisions and reviews
 
-| ID   | Item                                                              | Owner                      | Blocks Gate A?                          | Current state                                                                                                                                           |
-| ---- | ----------------------------------------------------------------- | -------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| RI-1 | Privacy policy legal review and production analytics confirmation | Site owner + legal counsel | **Yes**                                 | Draft with review notice; Cloudflare RUM and Search Console described but retention, consent, cookie behavior, and transfer mechanism need confirmation |
-| RI-2 | Terms, liability, and India jurisdiction review                   | Site owner + legal counsel | **Yes**                                 | Draft with review notice; India is stated as intended jurisdiction, not a legal conclusion                                                              |
-| RI-3 | Affiliate disclosure review                                       | Site owner + legal counsel | **Yes**                                 | Future-use draft; no program or link exists                                                                                                             |
-| RI-4 | External editorial/technical review of the 20 guides              | Site owner / reviewer      | **Yes**                                 | Not recorded                                                                                                                                            |
-| RI-5 | Spanish translation review                                        | Site owner / reviewer      | **Yes** for Spanish publication quality | Spanish is provisional; no native-speaker review is recorded                                                                                            |
-| RI-6 | Accessibility audit                                               | Site owner                 | Recommended                             | Automated focus, keyboard, link, and 320px checks pass; no manual assistive-technology audit                                                            |
-| RI-7 | Search Console ownership transition                               | Site owner                 | No                                      | Complete: `appkitx@gmail.com` is the verified primary owner, personal Gmail is backup owner; sitemap submitted; page indexing still processing          |
-| RI-8 | Release, merge, and deployment approval                           | Site owner                 | **Yes** for publication                 | Not requested                                                                                                                                           |
+| ID   | Item                                                              | Owner                      | Blocks Gate A?                          | Current state                                                                                                                                                                                            |
+| ---- | ----------------------------------------------------------------- | -------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RI-1 | Privacy policy legal review and production analytics confirmation | Site owner + legal counsel | **Yes**                                 | Draft with review notice; Cloudflare RUM and Search Console described but retention, consent, cookie behavior, and transfer mechanism need confirmation                                                  |
+| RI-2 | Terms, liability, and India jurisdiction review                   | Site owner + legal counsel | **Yes**                                 | Draft with review notice; India is stated as intended jurisdiction, not a legal conclusion                                                                                                               |
+| RI-3 | Affiliate disclosure review                                       | Site owner + legal counsel | **Yes**                                 | Future-use draft; no program or link exists                                                                                                                                                              |
+| RI-4 | External editorial/technical review of the 20 guides              | Site owner / reviewer      | **Yes**                                 | Not recorded                                                                                                                                                                                             |
+| RI-5 | Spanish translation review                                        | Site owner / reviewer      | **Yes** for Spanish publication quality | Spanish is provisional; no native-speaker review is recorded                                                                                                                                             |
+| RI-6 | Accessibility audit                                               | Site owner                 | Recommended                             | Automated focus, keyboard, link, and 320px checks pass; no manual assistive-technology audit                                                                                                             |
+| RI-7 | Search Console ownership transition                               | Site owner                 | No                                      | Complete: `appkitx@gmail.com` is the verified primary owner, personal Gmail is backup owner; sitemap submitted; 20 discovered pages on 2026-10-29; production sitemap now 52 URLs; fresh review required |
+| RI-8 | Release approval for remaining gated functionality                | Site owner                 | **Yes** for further release             | Public editorial site deployed on 2026-11-03; Amazon integration, affiliate links, pricing providers, and public PC Builder remain unauthorized                                                          |
 
 ## 3. Privacy, analytics, and Search Console (RI-1, RI-7)
 
@@ -55,8 +90,11 @@ The privacy policy now distinguishes:
   through Cloudflare. The sitemap `https://appkitx.com/sitemap-index.xml` was
   submitted successfully and the sitemap index publicly references
   `https://appkitx.com/sitemap-0.xml`. Search Console reported **20 discovered
-  pages**; the page indexing report was still processing, so no claim is made
-  that any page is indexed. `robots.txt` allows crawling.
+  pages** as of 2026-10-29; the page indexing report was still processing, so no
+  claim is made that any page is indexed. The production sitemap now exposes
+  **52 URLs**, but this record does not claim that Google has discovered or
+  indexed all of them. A fresh sitemap and indexing review is still required.
+  `robots.txt` allows crawling.
 
 Still required:
 
@@ -71,17 +109,18 @@ Still required:
 
 ### Search Console status (confirmed 2026-10-29)
 
-| Item             | Confirmed state                                                |
-| ---------------- | -------------------------------------------------------------- |
-| Property         | Domain property `appkitx.com`                                  |
-| Primary owner    | `appkitx@gmail.com` (verified)                                 |
-| Backup owner     | Owner's personal Gmail                                         |
-| Verification     | DNS TXT record via Cloudflare                                  |
-| Sitemap          | `https://appkitx.com/sitemap-index.xml` submitted successfully |
-| Sitemap index    | Publicly references `https://appkitx.com/sitemap-0.xml`        |
-| Discovered pages | 20 (current production site, not the undeployed M10.15 branch) |
-| Page indexing    | Report still processing; indexing not confirmed for any page   |
-| `robots.txt`     | Allows crawling                                                |
+| Item             | Confirmed state                                                                                                          |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Property         | Domain property `appkitx.com`                                                                                            |
+| Primary owner    | `appkitx@gmail.com` (verified)                                                                                           |
+| Backup owner     | Owner's personal Gmail                                                                                                   |
+| Verification     | DNS TXT record via Cloudflare                                                                                            |
+| Sitemap          | `https://appkitx.com/sitemap-index.xml` submitted successfully                                                           |
+| Sitemap index    | Publicly references `https://appkitx.com/sitemap-0.xml`                                                                  |
+| Discovered pages | 20 as of 2026-10-29; production sitemap now exposes 52 URLs                                                              |
+| Page indexing    | Report was still processing; no page indexing is confirmed, and Google has not been shown to have discovered all 52 URLs |
+| Fresh review     | Required; Search Console was not accessed or modified in this milestone                                                  |
+| `robots.txt`     | Allows crawling                                                                                                          |
 
 No Google account or Search Console setting was accessed or modified in this
 milestone; the state above is a read-only record supplied by the owner.
@@ -93,7 +132,7 @@ carry visible draft notices. Spanish legal pages also carry a provisional
 translation note; the English draft is the reference version until both are
 reviewed.
 
-Required before publication:
+Required before the legal pages are finalized:
 
 - Confirm the operating legal entity or confirm that no entity is registered.
 - Confirm the registered address if one exists. Do not invent one.
@@ -139,7 +178,12 @@ Recommended before release:
 
 ## 7. Release and deployment (RI-8)
 
-The branch remains uncommitted and undeployed. Before publication:
+The public editorial site is deployed. PR #50 was merged on 2026-11-03 and
+Cloudflare Workers Builds automatically deployed the merge commit; see the
+Production Deployment Record above. That deployment did not resolve the open
+reviews and does not authorize further gated functionality.
+
+Before any further release:
 
 - Resolve RI-1 through RI-5.
 - Confirm the privacy policy matches the deployed Cloudflare and Search Console
@@ -147,11 +191,14 @@ The branch remains uncommitted and undeployed. Before publication:
 - Remove or update draft notices only after legal review.
 - Run `npm run format:check`, `npm run check`, `npm run build`, `npm test`, and
   `npm run test:e2e`.
-- Obtain explicit approval to commit, push, open a PR, merge, and deploy.
-- Do not deploy from this milestone.
+- Obtain explicit approval for any further commit, push, PR, merge, or
+  deployment. A documentation-only PR may itself trigger a production deployment
+  through Cloudflare Workers Builds; do not disable or bypass that automation.
 - Do not expose the PC Builder or add PC Builder routes/navigation/sitemap
   entries.
 - Do not enable CSP enforcement, change HSTS, or modify security headers.
+- Do not submit an Amazon Associates application, request Creators API access,
+  add affiliate links, activate pricing providers, or integrate Amazon live.
 
 ## 8. Amazon-specific decisions (Gate B, not Gate A)
 
@@ -175,21 +222,21 @@ Gate A is passed and Gate B is explicitly authorized.
 
 ## 9. Sign-off record
 
-| ID   | Decision                    | Status    | Approved by | Date       | Notes                                                                                |
-| ---- | --------------------------- | --------- | ----------- | ---------- | ------------------------------------------------------------------------------------ |
-| OD-1 | Contact email               | Confirmed | Owner       | 2026-11-01 | `appkitx@gmail.com`; general enquiries and support                                   |
-| OD-2 | Ownership status            | Confirmed | Owner       | 2026-11-01 | Independent brand; not legally registered                                            |
-| OD-3 | Intended jurisdiction       | Confirmed | Owner       | 2026-11-01 | India; legal drafts pending review                                                   |
-| OD-4 | Editorial identity          | Confirmed | Owner       | 2026-11-01 | `AppKitX Editorial` for English and Spanish                                          |
-| OD-5 | Bilingual coverage          | Confirmed | Owner       | 2026-11-01 | Ten guides and five information pages per locale                                     |
-| OD-6 | Cloudflare Web Analytics    | Confirmed | Owner       | 2026-11-01 | Production analytics; configuration details still to verify                          |
-| OD-7 | Search Console arrangement  | Confirmed | Owner       | 2026-11-01 | `appkitx@gmail.com` primary verified owner; personal Gmail backup; sitemap submitted |
-| OD-8 | Affiliate status            | Confirmed | Owner       | 2026-11-01 | No program or links today; future-use disclosure                                     |
-| RI-1 | Privacy/legal review        | Open      |             |            |                                                                                      |
-| RI-2 | Terms/jurisdiction review   | Open      |             |            |                                                                                      |
-| RI-3 | Affiliate disclosure review | Open      |             |            |                                                                                      |
-| RI-4 | Editorial/technical review  | Open      |             |            |                                                                                      |
-| RI-5 | Spanish translation review  | Open      |             |            |                                                                                      |
-| RI-6 | Accessibility audit         | Open      |             |            | Automated checks added in M10.15.2; manual assistive-technology pass still open      |
-| RI-7 | Search Console transition   | Complete  | Owner       | 2026-10-29 | Domain property verified; primary and backup owners set; sitemap submitted           |
-| RI-8 | Release/deployment          | Open      |             |            |                                                                                      |
+| ID   | Decision                                           | Status    | Approved by | Date       | Notes                                                                                                                          |
+| ---- | -------------------------------------------------- | --------- | ----------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| OD-1 | Contact email                                      | Confirmed | Owner       | 2026-11-01 | `appkitx@gmail.com`; general enquiries and support                                                                             |
+| OD-2 | Ownership status                                   | Confirmed | Owner       | 2026-11-01 | Independent brand; not legally registered                                                                                      |
+| OD-3 | Intended jurisdiction                              | Confirmed | Owner       | 2026-11-01 | India; legal drafts pending review                                                                                             |
+| OD-4 | Editorial identity                                 | Confirmed | Owner       | 2026-11-01 | `AppKitX Editorial` for English and Spanish                                                                                    |
+| OD-5 | Bilingual coverage                                 | Confirmed | Owner       | 2026-11-01 | Ten guides and five information pages per locale                                                                               |
+| OD-6 | Cloudflare Web Analytics                           | Confirmed | Owner       | 2026-11-01 | Production analytics; configuration details still to verify                                                                    |
+| OD-7 | Search Console arrangement                         | Confirmed | Owner       | 2026-11-01 | `appkitx@gmail.com` primary verified owner; personal Gmail backup; sitemap submitted                                           |
+| OD-8 | Affiliate status                                   | Confirmed | Owner       | 2026-11-01 | No program or links today; future-use disclosure                                                                               |
+| RI-1 | Privacy/legal review                               | Open      |             |            |                                                                                                                                |
+| RI-2 | Terms/jurisdiction review                          | Open      |             |            |                                                                                                                                |
+| RI-3 | Affiliate disclosure review                        | Open      |             |            |                                                                                                                                |
+| RI-4 | Editorial/technical review                         | Open      |             |            |                                                                                                                                |
+| RI-5 | Spanish translation review                         | Open      |             |            |                                                                                                                                |
+| RI-6 | Accessibility audit                                | Open      |             |            | Automated checks added in M10.15.2; manual assistive-technology pass still open                                                |
+| RI-7 | Search Console transition                          | Complete  | Owner       | 2026-10-29 | Domain property verified; primary and backup owners set; sitemap submitted                                                     |
+| RI-8 | Release approval for remaining gated functionality | Open      |             |            | Editorial site deployed 2026-11-03; Amazon integration, affiliate links, pricing providers, and public PC Builder not approved |
