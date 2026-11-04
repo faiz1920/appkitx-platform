@@ -1,19 +1,38 @@
 # M10.15.2 — Legal and Privacy Review Register
 
-Status: **preparation only — no legal review has been completed**.
-This register records what the M10.15 bilingual legal pages say, what the
-repository can verify, and what must be decided by the owner and qualified
-counsel before publication. It is not legal advice and does not certify
-compliance with any law.
+Status: **preparation only — no legal review has been completed**. The public
+editorial site, including the draft legal pages, was merged in PR #50 and
+automatically deployed on 2026-11-03. This register records what the M10.15
+bilingual legal pages say, what the repository can verify, and what must be
+decided by the owner and qualified counsel before the drafts are finalized. It is
+not legal advice and does not certify compliance with any law.
 
 - Repository: `/Users/faiz/Work/nexverra/appkitx-platform-clean`
-- Branch: `feature/m10-15-public-site-readiness`
+- Historical feature branch: `feature/m10-15-public-site-readiness` (merged in
+  PR #50)
 - Baseline: `db3f2d805700d10dc1819c44570597604a93dc0f`
+- Merge commit: `019fd602d7a779f4035ae58339238781fa0c280f`
 - Review date: **2026-11-02**
-- Deployment: **none**
+- Deployment: automatic Cloudflare Workers Builds production deployment after
+  the PR #50 merge; completed **2026-11-03T19:14:39Z**
 - Amazon account, application, credentials, API call, or affiliate link:
   **none**
 - Legal pages: visible drafts with review notices in English and Spanish
+
+## Production Deployment Record — 2026-11-03
+
+PR #50 was merged by `faiz1920` at `2026-11-03T19:13:20Z` with merge commit
+`019fd602d7a779f4035ae58339238781fa0c280f`. Cloudflare Workers Builds
+automatically deployed the merge commit; the production build completed at
+`2026-11-03T19:14:39Z`. No manual deployment was run by the owner, and the
+Cloudflare dashboard was not accessed.
+
+The deployed production sitemap exposes **52 URLs**, and `/pc-builder/` returns
+HTTP 404. The legal pages remain visible drafts with review notices. The
+deployment does not authorize an Amazon Associates application, Creators API
+access, affiliate links, live Amazon integration, a public PC Builder release, or
+pricing-provider activation. Gate A remains **CONDITIONALLY READY — NOT
+PASSED**.
 
 ## 1. What was reviewed
 
@@ -52,34 +71,34 @@ already documented in `README.md` and `PC-BUILDER-M10-15-OWNER-INPUTS.md`.
 
 ## 3. Page-level register
 
-Severity reflects publication risk, not a legal conclusion.
+Severity reflects the risk of the drafts remaining publicly deployed, not a legal conclusion.
 
-| ID    | Page / locale         | Finding                                                                                                                                                                                                            | Severity | Required action                                                                                                                                            |
-| ----- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| LR-01 | Privacy EN/ES         | The operator is described as an unregistered independent brand; no legal entity, address, or registration number is given.                                                                                         | High     | Supply the operating entity and registered address, or publish only after counsel approves an unregistered-brand formulation.                              |
-| LR-02 | Privacy EN/ES         | Cloudflare Web Analytics is described from documentation: automatic setup, RUM enabled, EU visitor data excluded. Retention, cookie behavior, legal basis, and consent approach are expressly unresolved.          | High     | Confirm the deployed dashboard settings and obtain counsel's position on retention, cookies, legal basis, and consent.                                     |
-| LR-03 | Privacy EN/ES         | Cloudflare may set security or performance cookies at the edge, but the exact production cookie set is not verified.                                                                                               | High     | Inspect production response headers and cookie behavior; document the actual cookies and their purpose.                                                    |
-| LR-04 | Privacy EN/ES         | International transfers are acknowledged for Cloudflare and Google, but no transfer mechanism, safeguard, or destination list is confirmed.                                                                        | High     | Confirm the Cloudflare and Google contracting entities, data-processing terms, and transfer mechanism.                                                     |
-| LR-05 | Privacy EN/ES         | Retention periods are described as configuration-dependent; no concrete period is stated for Cloudflare logs, analytics, Search Console, CSP reports, or contact email.                                            | High     | Set and document retention periods, or obtain counsel-approved wording that does not promise a period.                                                     |
-| LR-06 | Privacy EN/ES         | CSP reports are written to the `appkitx_csp_reports` Analytics Engine dataset. The normalized record excludes IP address, full query string, and message content, but Cloudflare still processes request metadata. | Medium   | Confirm Analytics Engine retention and access; document it in the policy and the security runbook.                                                         |
-| LR-07 | Privacy EN/ES         | Contact is `appkitx@gmail.com`. Gmail processing, mailbox access, retention, and international transfers are not covered by a documented agreement.                                                                | High     | Confirm mailbox ownership, two-factor authentication, access list, retention, and the provider's terms; consider a dedicated domain mailbox before launch. |
-| LR-08 | Privacy EN/ES         | The policy states that AppKitX does not sell personal information. No advertising, data-broker, or sale mechanism exists in the code.                                                                              | Low      | Re-confirm if analytics, affiliate, or advertising integrations are added.                                                                                 |
-| LR-09 | Privacy EN/ES         | The policy says the site does not operate a visitor-profile database; the only application-level collection is the CSP endpoint. This matches the repository.                                                      | Low      | Re-check if any server-side form, account, or comment system is added.                                                                                     |
-| LR-10 | Privacy EN/ES         | The language preference is stored under `appkitx.locale`; automatic browser-language detection is disabled. This matches `src/i18n/preferences.ts`.                                                                | Low      | Re-check if detection is enabled or the storage key changes.                                                                                               |
-| LR-11 | Privacy EN/ES         | The policy distinguishes Search Console from an embedded tracking script and records the confirmed domain property, primary owner, backup owner, DNS TXT verification, and sitemap submission.                     | Low      | Keep the statement read-only and factual; do not claim indexing or ranking outcomes.                                                                       |
-| LR-12 | Privacy EN/ES         | The Cookies section now distinguishes the static build from the Cloudflare edge-injected beacon. This matches the documented production behavior.                                                                  | Low      | Re-verify after any hosting or analytics change.                                                                                                           |
-| LR-13 | Terms EN/ES           | "By using the site, you agree to these terms" is browsewrap language. Its enforceability in India is unconfirmed.                                                                                                  | High     | Counsel to confirm whether clickwrap, notice, or revised wording is required.                                                                              |
-| LR-14 | Terms EN/ES           | The limitation of liability excludes indirect, incidental, special, consequential, and punitive damages, subject to non-excludable law. Consumer-law effect in India is unconfirmed.                               | High     | Counsel to review against the Consumer Protection Act, 2019 and applicable contract law.                                                                   |
-| LR-15 | Terms EN/ES           | The intellectual-property clause restricts republishing, attribution removal, and use to train or populate a competing service. Enforceability and scope are unconfirmed.                                          | Medium   | Counsel to review the wording and the ownership statement for an unregistered brand.                                                                       |
-| LR-16 | Terms EN/ES           | Governing law and jurisdiction are stated as intended India, with an express warning that the final position is unconfirmed.                                                                                       | High     | Confirm the operating entity and the governing-law/jurisdiction clause with counsel.                                                                       |
-| LR-17 | Terms EN/ES           | The terms say a PC builder is in development and is not part of the public site. The build contains no `/pc-builder` route or link.                                                                                | Low      | Keep the PC Builder out of the public build until a separate release review.                                                                               |
-| LR-18 | Affiliate EN/ES       | The disclosure is explicitly future-use. It states that no affiliate program is active and no affiliate links exist. This matches the repository.                                                                  | Low      | Re-review before any affiliate link, program application, or commission claim.                                                                             |
-| LR-19 | Affiliate EN/ES       | The disclosure says a commission would not change the price paid. This is a general statement, not a guarantee about every retailer's pricing.                                                                     | Medium   | Counsel to confirm wording, especially for Amazon Associates and India.                                                                                    |
-| LR-20 | Affiliate EN/ES       | No Amazon branding, ASIN, tracking tag, API call, account claim, or program membership appears in the public pages.                                                                                                | Low      | Keep it that way until written program approval and a separate compliance review.                                                                          |
-| LR-21 | Contact EN/ES         | The page promises no response time and asks users not to send sensitive data. This matches the absence of a ticketing system.                                                                                      | Low      | Confirm mailbox monitoring and retention expectations.                                                                                                     |
-| LR-22 | About EN/ES           | The page states that AppKitX is independent, not legally registered, and not affiliated with manufacturers or retailers. No Nexverra association is claimed.                                                       | Low      | Re-confirm before any corporate or brand change.                                                                                                           |
-| LR-23 | All legal pages EN/ES | Visible review notices and a provisional-translation note are present. They must remain until review is recorded.                                                                                                  | Low      | Do not remove the notices or change the status to "reviewed" without evidence.                                                                             |
-| LR-24 | All legal pages EN/ES | English is identified as the reference draft and Spanish as provisional. Both locales contain the same substantive sections.                                                                                       | Medium   | Record a Spanish legal/translation review before publication.                                                                                              |
+| ID    | Page / locale         | Finding                                                                                                                                                                                                            | Severity | Required action                                                                                                                                                              |
+| ----- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LR-01 | Privacy EN/ES         | The operator is described as an unregistered independent brand; no legal entity, address, or registration number is given.                                                                                         | High     | Supply the operating entity and registered address, or retain the published unregistered-brand formulation only after counsel approves it.                                   |
+| LR-02 | Privacy EN/ES         | Cloudflare Web Analytics is described from documentation: automatic setup, RUM enabled, EU visitor data excluded. Retention, cookie behavior, legal basis, and consent approach are expressly unresolved.          | High     | Confirm the deployed dashboard settings and obtain counsel's position on retention, cookies, legal basis, and consent.                                                       |
+| LR-03 | Privacy EN/ES         | Cloudflare may set security or performance cookies at the edge, but the exact production cookie set is not verified.                                                                                               | High     | Inspect production response headers and cookie behavior; document the actual cookies and their purpose.                                                                      |
+| LR-04 | Privacy EN/ES         | International transfers are acknowledged for Cloudflare and Google, but no transfer mechanism, safeguard, or destination list is confirmed.                                                                        | High     | Confirm the Cloudflare and Google contracting entities, data-processing terms, and transfer mechanism.                                                                       |
+| LR-05 | Privacy EN/ES         | Retention periods are described as configuration-dependent; no concrete period is stated for Cloudflare logs, analytics, Search Console, CSP reports, or contact email.                                            | High     | Set and document retention periods, or obtain counsel-approved wording that does not promise a period.                                                                       |
+| LR-06 | Privacy EN/ES         | CSP reports are written to the `appkitx_csp_reports` Analytics Engine dataset. The normalized record excludes IP address, full query string, and message content, but Cloudflare still processes request metadata. | Medium   | Confirm Analytics Engine retention and access; document it in the policy and the security runbook.                                                                           |
+| LR-07 | Privacy EN/ES         | Contact is `appkitx@gmail.com`. Gmail processing, mailbox access, retention, and international transfers are not covered by a documented agreement.                                                                | High     | Confirm mailbox ownership, two-factor authentication, access list, retention, and the provider's terms; consider a dedicated domain mailbox before the drafts are finalized. |
+| LR-08 | Privacy EN/ES         | The policy states that AppKitX does not sell personal information. No advertising, data-broker, or sale mechanism exists in the code.                                                                              | Low      | Re-confirm if analytics, affiliate, or advertising integrations are added.                                                                                                   |
+| LR-09 | Privacy EN/ES         | The policy says the site does not operate a visitor-profile database; the only application-level collection is the CSP endpoint. This matches the repository.                                                      | Low      | Re-check if any server-side form, account, or comment system is added.                                                                                                       |
+| LR-10 | Privacy EN/ES         | The language preference is stored under `appkitx.locale`; automatic browser-language detection is disabled. This matches `src/i18n/preferences.ts`.                                                                | Low      | Re-check if detection is enabled or the storage key changes.                                                                                                                 |
+| LR-11 | Privacy EN/ES         | The policy distinguishes Search Console from an embedded tracking script and records the confirmed domain property, primary owner, backup owner, DNS TXT verification, and sitemap submission.                     | Low      | Keep the statement read-only and factual; do not claim indexing or ranking outcomes.                                                                                         |
+| LR-12 | Privacy EN/ES         | The Cookies section now distinguishes the static build from the Cloudflare edge-injected beacon. This matches the documented production behavior.                                                                  | Low      | Re-verify after any hosting or analytics change.                                                                                                                             |
+| LR-13 | Terms EN/ES           | "By using the site, you agree to these terms" is browsewrap language. Its enforceability in India is unconfirmed.                                                                                                  | High     | Counsel to confirm whether clickwrap, notice, or revised wording is required.                                                                                                |
+| LR-14 | Terms EN/ES           | The limitation of liability excludes indirect, incidental, special, consequential, and punitive damages, subject to non-excludable law. Consumer-law effect in India is unconfirmed.                               | High     | Counsel to review against the Consumer Protection Act, 2019 and applicable contract law.                                                                                     |
+| LR-15 | Terms EN/ES           | The intellectual-property clause restricts republishing, attribution removal, and use to train or populate a competing service. Enforceability and scope are unconfirmed.                                          | Medium   | Counsel to review the wording and the ownership statement for an unregistered brand.                                                                                         |
+| LR-16 | Terms EN/ES           | Governing law and jurisdiction are stated as intended India, with an express warning that the final position is unconfirmed.                                                                                       | High     | Confirm the operating entity and the governing-law/jurisdiction clause with counsel.                                                                                         |
+| LR-17 | Terms EN/ES           | The terms say a PC builder is in development and is not part of the public site. The build contains no `/pc-builder` route or link.                                                                                | Low      | Keep the PC Builder out of the public build until a separate release review.                                                                                                 |
+| LR-18 | Affiliate EN/ES       | The disclosure is explicitly future-use. It states that no affiliate program is active and no affiliate links exist. This matches the repository.                                                                  | Low      | Re-review before any affiliate link, program application, or commission claim.                                                                                               |
+| LR-19 | Affiliate EN/ES       | The disclosure says a commission would not change the price paid. This is a general statement, not a guarantee about every retailer's pricing.                                                                     | Medium   | Counsel to confirm wording, especially for Amazon Associates and India.                                                                                                      |
+| LR-20 | Affiliate EN/ES       | No Amazon branding, ASIN, tracking tag, API call, account claim, or program membership appears in the public pages.                                                                                                | Low      | Keep it that way until written program approval and a separate compliance review.                                                                                            |
+| LR-21 | Contact EN/ES         | The page promises no response time and asks users not to send sensitive data. This matches the absence of a ticketing system.                                                                                      | Low      | Confirm mailbox monitoring and retention expectations.                                                                                                                       |
+| LR-22 | About EN/ES           | The page states that AppKitX is independent, not legally registered, and not affiliated with manufacturers or retailers. No Nexverra association is claimed.                                                       | Low      | Re-confirm before any corporate or brand change.                                                                                                                             |
+| LR-23 | All legal pages EN/ES | Visible review notices and a provisional-translation note are present. They must remain until review is recorded.                                                                                                  | Low      | Do not remove the notices or change the status to "reviewed" without evidence.                                                                                               |
+| LR-24 | All legal pages EN/ES | English is identified as the reference draft and Spanish as provisional. Both locales contain the same substantive sections.                                                                                       | Medium   | Record a Spanish legal/translation review before the drafts are finalized.                                                                                                   |
 
 ## 4. Cross-cutting issues for counsel
 
@@ -87,7 +106,7 @@ Severity reflects publication risk, not a legal conclusion.
 
 AppKitX is a separate, independent brand and is **not yet legally registered**.
 The pages do not invent a company, address, registration number, or director.
-Before publication, the owner must decide whether to:
+Before the drafts are finalized, the owner must decide whether to:
 
 1. register an entity and publish its legal name and registered address;
 2. publish as an unregistered sole proprietor with a verified business address;
@@ -128,7 +147,7 @@ The repository does not set cookies. Cloudflare may set security or performance
 cookies at the edge depending on account configuration. The exact production
 cookie set has not been inspected. The policy says so and must remain accurate.
 
-Required before publication:
+Required before the drafts are finalized:
 
 - Inspect production `Set-Cookie` headers and browser storage.
 - Document each cookie's name, purpose, duration, and provider.
@@ -174,7 +193,7 @@ request metadata to the dataset, and whether the policy should call this
 ### 4.7 Contact mailbox
 
 `appkitx@gmail.com` is published in both locales. It is a Gmail address, not a
-domain mailbox. Before publication, confirm:
+domain mailbox. Before the drafts are finalized, confirm:
 
 - who controls the account and the recovery methods;
 - whether two-factor authentication is enabled;
@@ -223,7 +242,7 @@ professional advice" section are sufficient for the hardware-safety content.
 ## 5. Questions for counsel
 
 1. What operating-entity and address details must appear in the privacy policy
-   and terms before publication in India?
+   and terms before the drafts are finalized for India?
 2. Is the intended India governing-law and jurisdiction clause enforceable, and
    what wording should replace it if not?
 3. Does the browsewrap acceptance mechanism satisfy the intended jurisdictions?
@@ -244,7 +263,7 @@ professional advice" section are sufficient for the hardware-safety content.
     and which version prevails in a dispute?
 13. Are the hardware-safety disclaimers sufficient for the editorial content?
 14. What security-incident and data-subject-request process must be documented
-    before launch?
+    before the drafts are finalized?
 
 ## 6. Owner inputs still required
 
@@ -273,8 +292,8 @@ professional advice" section are sufficient for the hardware-safety content.
 - It does not claim that the Spanish legal text has been professionally
   reviewed.
 - It does not claim that AppKitX is a registered legal entity.
-- It does not authorize an Amazon Associates application, an affiliate link, a
-  deployment, or a public PC Builder release.
+- It does not authorize an Amazon Associates application, an affiliate link, any
+  further deployment, or a public PC Builder release.
 
 ## 8. Effect on Gate A
 

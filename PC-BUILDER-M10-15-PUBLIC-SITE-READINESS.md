@@ -1,19 +1,108 @@
 # M10.15.1 / M10.15.2 — Owner Decisions, Multilingual Readiness, and Quality Review
 
-Status: **bilingual implementation complete on a feature branch; uncommitted and
-undeployed**. M10.15.2 adds the editorial, accessibility, legal-preparation, and
-Search Console documentation corrections. Gate A is **CONDITIONALLY READY — NOT
-PASSED** pending legal and independent editorial/translation review.
+Status: **public editorial site merged and automatically deployed to production
+on 2026-11-03**. M10.15.2 adds the editorial, accessibility, legal-preparation,
+and Search Console documentation corrections. Gate A remains **CONDITIONALLY
+READY — NOT PASSED** pending legal and independent editorial/translation review.
 
 - Repository: `/Users/faiz/Work/nexverra/appkitx-platform-clean`
-- Branch: `feature/m10-15-public-site-readiness`
+- Historical feature branch: `feature/m10-15-public-site-readiness` (merged in
+  PR #50)
 - Baseline: `db3f2d805700d10dc1819c44570597604a93dc0f`
 - Baseline verification: local `main` = `origin/main`, HEAD = expected baseline
+- Merge commit: `019fd602d7a779f4035ae58339238781fa0c280f`
+- Deployment: automatic Cloudflare Workers Builds production deployment after
+  the PR #50 merge; completed **2026-11-03T19:14:39Z**
+- Live site: `https://appkitx.com`
 - M10.13 report preserved unchanged:
   `390f8c79eb963112f1ba602c9c65d8937bcb8c4e4954517c9ac3c361690b4dee`
 - Research/access date: **2026-11-01**
-- Deployment: **none**
 - Amazon account, application, credentials, API call, affiliate link: **none**
+
+## Production Deployment Record — 2026-11-03
+
+This section supersedes the pre-deployment statements in this document. The
+M10.15.2 review was written while the work was still on a feature branch; PR #50
+was subsequently merged and Cloudflare Workers Builds deployed the merge commit
+to production.
+
+### Merge and deployment evidence
+
+| Item              | Recorded value                                       | Evidence                        |
+| ----------------- | ---------------------------------------------------- | ------------------------------- |
+| Pull request      | #50, `feature/m10-15-public-site-readiness` → `main` | GitHub PR metadata              |
+| Merged by         | `faiz1920`                                           | GitHub PR metadata              |
+| Merge time        | `2026-11-03T19:13:20Z`                               | GitHub PR metadata              |
+| Merge commit      | `019fd602d7a779f4035ae58339238781fa0c280f`           | GitHub PR metadata              |
+| Deployment        | Cloudflare Workers Builds production build           | GitHub check-run metadata       |
+| Build started     | `2026-11-03T19:14:10Z`                               | GitHub check-run metadata       |
+| Build completed   | `2026-11-03T19:14:39Z`                               | Owner report and check-run data |
+| Manual deployment | None by the owner                                    | Owner report                    |
+
+The Cloudflare dashboard was not accessed. The deployment evidence above comes
+from GitHub PR/check-run metadata and the owner-supplied report. The check run
+for the merge commit reported `completed / success`; its details URL points to
+the Cloudflare dashboard, which was not opened.
+
+### Live verification
+
+Owner-reported and independently rechecked by the agent on **2026-11-04** with
+HTTP requests. Results matched. No additional HTTP results are claimed.
+
+| URL                                                                | Result                                              |
+| ------------------------------------------------------------------ | --------------------------------------------------- |
+| `https://appkitx.com/guides/`                                      | HTTP 200 — English guide index                      |
+| `https://appkitx.com/es/guides/`                                   | HTTP 200 — Spanish guide index                      |
+| `https://appkitx.com/privacy/`                                     | HTTP 200 — English privacy page, dated `2026-11-02` |
+| `https://appkitx.com/es/privacy/`                                  | HTTP 200 — Spanish privacy page                     |
+| `https://appkitx.com/guides/how-to-choose-the-right-power-supply/` | HTTP 200 — ATX 3.1 / 12V-2x6 correction live        |
+| `https://appkitx.com/sitemap-0.xml`                                | HTTP 200 — 52 URLs                                  |
+| `https://appkitx.com/pc-builder/`                                  | HTTP 404 — PC Builder remains unpublished           |
+
+### Production security status
+
+Owner-reported and independently observed in live response headers on
+**2026-11-04**:
+
+| Header                                | Observed state                                       |
+| ------------------------------------- | ---------------------------------------------------- |
+| `Content-Security-Policy-Report-Only` | Present; CSP remains Report-Only                     |
+| `Strict-Transport-Security`           | Present (`max-age=2592000`)                          |
+| `X-Content-Type-Options`              | Present (`nosniff`)                                  |
+| `Referrer-Policy`                     | Present (`strict-origin-when-cross-origin`)          |
+| `Permissions-Policy`                  | Present (`camera=(), geolocation=(), microphone=()`) |
+
+No security-header changes were made as part of M10.15. CSP enforcement remains
+off.
+
+### Production state and limits
+
+- The production sitemap exposes **52 URLs**.
+- `/pc-builder/` remains HTTP 404 and is not linked from navigation or the
+  sitemap.
+- The public editorial website is deployed. This does **not** authorize an Amazon
+  Associates application, Creators API access, affiliate links, live Amazon
+  integration, a public PC Builder release, or pricing-provider activation.
+- Gate A remains **CONDITIONALLY READY — NOT PASSED**. The outstanding reviews are
+  listed in section 10.
+
+### Deployment automation warning
+
+The repository uses Cloudflare Workers Builds automation. A documentation-only
+pull request may trigger another production deployment when merged. Do not
+attempt to disable or bypass the existing deployment automation; any merge
+requires explicit approval.
+
+### Search Console state after deployment
+
+The last known Search Console read remains **2026-10-29**: domain property
+`appkitx.com`, `appkitx@gmail.com` as verified primary owner, personal Gmail as
+backup owner, and `https://appkitx.com/sitemap-index.xml` submitted successfully.
+The previous discovered-page count was **20**. The production sitemap now exposes
+**52 URLs**, but this record does not claim that Google has discovered or indexed
+all 52. The page-indexing report was previously processing. A fresh sitemap and
+indexing review is still required; Search Console was not accessed or modified in
+this milestone.
 
 ## 1. Executive summary
 
@@ -52,13 +141,17 @@ Gate A is **not passed**. The content, localization, contact, ownership, and
 editorial identity are in place, M10.15.2 corrects verified technical and
 accessibility defects, but the privacy/terms drafts still need legal review, the
 Spanish translation and 20 guides need independent quality review, the
-production analytics configuration needs confirmation, and release approval has
-not been given. See `PC-BUILDER-M10-15-OWNER-INPUTS.md` and
+production analytics configuration needs confirmation, and release approval for
+remaining gated functionality has not been given. See
+`PC-BUILDER-M10-15-OWNER-INPUTS.md` and
 `PC-BUILDER-M10-15-2-QUALITY-REVIEW.md`.
 
-No Amazon Associates application was submitted, no account or credential was
-created, no API was called, no ASIN was discovered, no affiliate link was added,
-and nothing was deployed.
+At the time of the M10.15.2 review, no deployment had been made. PR #50 was
+subsequently merged and automatically deployed by Cloudflare Workers Builds; the
+deployment record above supersedes the earlier "undeployed" status. No Amazon
+Associates application was submitted, no account or credential was created, no
+API was called, no ASIN was discovered, no affiliate link was added, and no
+manual deployment was run.
 
 ## 2. Baseline and branch verification
 
@@ -69,23 +162,26 @@ and nothing was deployed.
 | `origin/main`            | `db3f2d805700d10dc1819c44570597604a93dc0f`                                     |
 | Working tree before work | Clean except the untracked M10.13 report and the existing M10.15 work          |
 | M10.13 SHA-256           | `390f8c79eb963112f1ba602c9c65d8937bcb8c4e4954517c9ac3c361690b4dee` (unchanged) |
-| Feature branch           | `feature/m10-15-public-site-readiness`                                         |
+| Feature branch           | `feature/m10-15-public-site-readiness` (merged in PR #50)                      |
 | M10.14 deliverables      | Unchanged                                                                      |
+
+This table records the pre-M10.15 baseline. It is retained as historical context
+and is superseded by the Production Deployment Record — 2026-11-03.
 
 No reset, stash, clean, or discard was used. Existing M10.15 work was preserved.
 
 ## 3. Confirmed owner decisions
 
-| Decision              | Confirmed value                                                                                  | Implementation                                                                                                               |
-| --------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| Public contact email  | `appkitx@gmail.com`                                                                              | Published with `mailto:` links on Contact, About, Privacy, Terms, and Affiliate Disclosure in both locales                   |
-| Ownership             | Separate, independent brand; not yet legally registered                                          | About and legal pages state the status without inventing a registered entity, address, or legal identity                     |
-| Intended jurisdiction | India                                                                                            | Privacy, Terms, and Affiliate Disclosure state India as the intended jurisdiction and remain drafts pending legal review     |
-| Editorial identity    | `AppKitX Editorial` for English and Spanish                                                      | All 20 guide entries use the organizational byline; no individual author or credentials are invented                         |
-| Multilingual strategy | English and Spanish are existing supported languages                                             | Ten guides and five information pages exist in both locales; routes, hreflang, sitemap, and language switcher pair them      |
-| Analytics             | Production uses Cloudflare Web Analytics                                                         | Privacy policy describes Cloudflare Web Analytics separately from search administration                                      |
-| Search Console        | Domain property `appkitx.com`; `appkitx@gmail.com` primary verified owner; personal Gmail backup | Documented in the privacy policy and README; sitemap submitted; 20 discovered pages on 2026-10-29; indexing still processing |
-| Affiliate status      | No active affiliate program or links                                                             | Future-use disclosure only; no current-participation claim                                                                   |
+| Decision              | Confirmed value                                                                                  | Implementation                                                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Public contact email  | `appkitx@gmail.com`                                                                              | Published with `mailto:` links on Contact, About, Privacy, Terms, and Affiliate Disclosure in both locales                                               |
+| Ownership             | Separate, independent brand; not yet legally registered                                          | About and legal pages state the status without inventing a registered entity, address, or legal identity                                                 |
+| Intended jurisdiction | India                                                                                            | Privacy, Terms, and Affiliate Disclosure state India as the intended jurisdiction and remain drafts pending legal review                                 |
+| Editorial identity    | `AppKitX Editorial` for English and Spanish                                                      | All 20 guide entries use the organizational byline; no individual author or credentials are invented                                                     |
+| Multilingual strategy | English and Spanish are existing supported languages                                             | Ten guides and five information pages exist in both locales; routes, hreflang, sitemap, and language switcher pair them                                  |
+| Analytics             | Production uses Cloudflare Web Analytics                                                         | Privacy policy describes Cloudflare Web Analytics separately from search administration                                                                  |
+| Search Console        | Domain property `appkitx.com`; `appkitx@gmail.com` primary verified owner; personal Gmail backup | Documented in the privacy policy and README; sitemap submitted; 20 discovered pages on 2026-10-29; production sitemap now 52 URLs; fresh review required |
+| Affiliate status      | No active affiliate program or links                                                             | Future-use disclosure only; no current-participation claim                                                                                               |
 
 AppKitX is not associated with any other company or technology brand. No public
 page mentions another company.
@@ -335,7 +431,9 @@ Playwright captured:
 - `package.json`, `package-lock.json`, `wrangler.jsonc`, `public/_headers`,
   `astro.config.ts`, `src/worker.ts`, and the CSP integration are unchanged.
 - No Cloudflare setting, CSP enforcement, HSTS, or security header was changed.
-- No deployment was triggered.
+- No deployment was triggered during the M10.15.2 review itself. The later PR #50
+  merge triggered an automatic Cloudflare Workers Builds production deployment;
+  see the Production Deployment Record.
 - The PC Builder remains mounted only by
   `src/integrations/pc-builder-dev-preview.ts` during `astro dev`; it is not in
   the production build.
@@ -362,8 +460,9 @@ The full list is in `PC-BUILDER-M10-15-OWNER-INPUTS.md`. The Gate A blockers are
 6. **Accessibility audit** — M10.15.2 adds automated landmark, heading, name,
    language, focus, target-size, and contrast checks plus source review. A manual
    screen-reader and 200% zoom pass remains open.
-7. **Release approval** — explicit approval to commit, push, open a PR, merge,
-   and deploy.
+7. **Release approval for remaining gated functionality** — the public editorial
+   site is deployed, but Amazon integration, affiliate links, pricing-provider
+   activation, and a public PC Builder release remain unauthorized.
 
 Search Console ownership is no longer an open item: `appkitx@gmail.com` is the
 verified primary owner, the personal Gmail is a backup owner, and the sitemap is
@@ -376,7 +475,7 @@ processing.
 
 | Gate A criterion                           | Status                                 | Evidence                                                                                                    |
 | ------------------------------------------ | -------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Public, accessible, owned site             | Pass (legal ownership wording pending) | Static site, no login/paywall, robots allow, sitemap                                                        |
+| Public, accessible, owned site             | Pass (legal ownership wording pending) | Live at `appkitx.com`; static site, no login/paywall, robots allow, sitemap                                 |
 | Original content, not thin affiliate pages | Pass by inspection                     | 20 guides (~32k words), 6 tools, 3 categories, no affiliate links                                           |
 | PC-hardware relevance                      | Pass                                   | CPU, GPU, motherboard, memory, storage, PSU, cooling, compatibility, first build                            |
 | At least 10 substantive posts/pages        | Pass by count                          | 10 guides per locale plus tool/category pages                                                               |
@@ -389,7 +488,7 @@ processing.
 | Authorship and dates                       | Pass                                   | AppKitX Editorial approved for both locales; no individual author invented                                  |
 | Multilingual coverage                      | Pass                                   | 10 guides and 5 information pages per locale; switcher, hreflang, sitemap                                   |
 | Navigation and discoverability             | Pass                                   | Localized Guides in nav/footer; Company/Legal in footer; internal links tested                              |
-| No dev-only PC Builder exposure            | Pass                                   | No route, link, or sitemap entry in `dist`                                                                  |
+| No dev-only PC Builder exposure            | Pass                                   | No route, link, or sitemap entry in `dist`; live `/pc-builder/` returns 404                                 |
 | No policy/legal blockers                   | **Not yet**                            | Legal review, analytics confirmation, editorial/translation review, release approval                        |
 
 Gate A moves to **PASSED** only when the legal drafts are reviewed, the
@@ -412,15 +511,21 @@ access, live integration, or a public PC Builder release.
    TOC).
 6. Re-check Gate A. Only then decide whether to apply for Amazon.in Associates.
 
-Do not submit an Associates application, request Creators API access, implement
-an Amazon adapter, add affiliate links, expose the PC Builder, or deploy this
-branch until those steps are complete and separately approved.
+The public editorial site is already deployed. Do not submit an Associates
+application, request Creators API access, implement an Amazon adapter, add
+affiliate links, activate pricing providers, or expose the PC Builder until
+those steps are complete and separately approved. Any further deployment
+requires explicit approval.
 
 ## 13. Limitations
 
 - No live crawl, Search Console data export, or production analytics were used.
   The Search Console state recorded here is a read-only owner report from
-  2026-10-29.
+  2026-10-29; the production sitemap now exposes 52 URLs, but no indexing or
+  full-discovery claim is made.
+- The deployment record uses owner-supplied evidence and GitHub PR/check-run
+  metadata; the Cloudflare dashboard was not accessed. The live checks listed in
+  that record were independently rechecked on 2026-11-04.
 - No Amazon account, application, credential, or API call was created or used.
 - No ASIN was discovered or fabricated.
 - No affiliate link or Amazon branding was added to the public pages.
