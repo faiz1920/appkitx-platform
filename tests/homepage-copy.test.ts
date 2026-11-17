@@ -5,31 +5,35 @@ import { toolsInCategory } from "../src/lib/categories";
 /*
  * Homepage copy contract: the hero, default metadata description, and social
  * image alt text describe only tool families that are actually registered.
- * The converter category is a placeholder for planned work, not a shipped
- * tool family, so none of these strings may advertise converters.
+ * Converters ship as a registered tool family, so the copy must mention them.
  */
-
-const CONVERTER_CLAIM = /\b(?:converters?|conversores?)\b/i;
 
 const FAMILY_TERMS: Record<
   string,
-  { calculator: RegExp; developer: RegExp; date: RegExp }
+  {
+    calculator: RegExp;
+    converter: RegExp;
+    developer: RegExp;
+    date: RegExp;
+  }
 > = {
   en: {
     calculator: /calculators?/i,
+    converter: /converters?/i,
     developer: /developer/i,
     date: /date and time/i,
   },
   es: {
     calculator: /calculadoras?/i,
+    converter: /conversores?/i,
     developer: /desarrollador/i,
     date: /fecha y hora/i,
   },
 };
 
 describe("homepage copy", () => {
-  it("does not claim that converter tools are available", () => {
-    expect(toolsInCategory("Converters")).toEqual([]);
+  it("claims converters only because a converter is registered", () => {
+    expect(toolsInCategory("Converters").length).toBeGreaterThan(0);
 
     for (const [code, dictionary] of Object.entries(dictionaries)) {
       const copy = [
@@ -38,7 +42,9 @@ describe("homepage copy", () => {
         dictionary.layout.socialImageAlt,
       ].join(" ");
 
-      expect(copy, `${code} homepage copy`).not.toMatch(CONVERTER_CLAIM);
+      expect(copy, `${code} homepage copy`).toMatch(
+        FAMILY_TERMS[code]?.converter ?? /converters?/i,
+      );
     }
   });
 
@@ -55,6 +61,7 @@ describe("homepage copy", () => {
       ].join(" ");
 
       expect(copy, `${code} calculator coverage`).toMatch(terms.calculator);
+      expect(copy, `${code} converter coverage`).toMatch(terms.converter);
       expect(copy, `${code} developer coverage`).toMatch(terms.developer);
       expect(copy, `${code} date and time coverage`).toMatch(terms.date);
     }

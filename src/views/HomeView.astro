@@ -33,6 +33,8 @@ const localeMeta = getLocale(locale);
 
 const registryIcons: Record<string, string> = {
   calculator: calculatorIcon,
+  landmark: landmarkIcon,
+  ruler: rulerIcon,
   tag: tagIcon,
   binary: binaryIcon,
   braces: bracesIcon,
@@ -42,36 +44,19 @@ const registryIcons: Record<string, string> = {
 
 /*
  * Registered tools come from the localized catalog with locale-aware hrefs.
- * The two remaining planned tools render as non-interactive "Coming soon"
- * cards (no href) so the grid never presents a placeholder as a working
- * tool.
+ * Only shipped tools are registered, so every card links to a working page.
  */
 const tools: Array<{
   title: string;
   description: string;
   icon: string;
-  href?: string;
-  comingSoon?: boolean;
-}> = [
-  ...localizedToolCatalog(locale).map((tool) => ({
-    title: tool.title,
-    description: tool.description,
-    icon: registryIcons[tool.icon] ?? "",
-    href: localizedHref(tool.href, locale),
-  })),
-  {
-    title: t.home.placeholderTools.unitConverter.title,
-    description: t.home.placeholderTools.unitConverter.description,
-    icon: rulerIcon,
-    comingSoon: true,
-  },
-  {
-    title: t.home.placeholderTools.loanCalculator.title,
-    description: t.home.placeholderTools.loanCalculator.description,
-    icon: landmarkIcon,
-    comingSoon: true,
-  },
-];
+  href: string;
+}> = localizedToolCatalog(locale).map((tool) => ({
+  title: tool.title,
+  description: tool.description,
+  icon: registryIcons[tool.icon] ?? "",
+  href: localizedHref(tool.href, locale),
+}));
 
 /*
  * Chips follow the taxonomy order. Published categories link to their
@@ -151,7 +136,6 @@ const jsonLd = [
               description={tool.description}
               icon={tool.icon}
               href={tool.href}
-              comingSoon={tool.comingSoon}
               locale={locale}
             />
           ))}

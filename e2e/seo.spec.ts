@@ -32,6 +32,16 @@ const TOOLS = [
     canonical: "https://appkitx.com/discount-calculator/",
   },
   {
+    path: "/loan-calculator",
+    name: "Loan Calculator",
+    canonical: "https://appkitx.com/loan-calculator/",
+  },
+  {
+    path: "/unit-converter",
+    name: "Unit Converter",
+    canonical: "https://appkitx.com/unit-converter/",
+  },
+  {
     path: "/base64-encoder",
     name: "Base64 Encoder",
     canonical: "https://appkitx.com/base64-encoder/",
