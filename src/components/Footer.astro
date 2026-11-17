@@ -29,6 +29,8 @@ const footer = t.footer.columns;
 const shippedTools = resolveLocalizedTools(locale, [
   "/percentage-calculator",
   "/discount-calculator",
+  "/loan-calculator",
+  "/unit-converter",
   "/base64-encoder",
   "/json-formatter",
   "/date-calculator",
@@ -37,15 +39,6 @@ const shippedTools = resolveLocalizedTools(locale, [
   label: tool.title,
   href: localizedHref(tool.href, locale),
 }));
-
-/*
- * Planned tools and unpublished categories render as plain muted text, not
- * links, so the footer never presents a placeholder as a working tool.
- */
-const placeholderTools = [
-  t.home.placeholderTools.unitConverter.title,
-  t.home.placeholderTools.loanCalculator.title,
-].map((label) => ({ label }));
 
 const footerCategories: ToolCategory[] = [
   "Calculators",
@@ -71,7 +64,6 @@ const columns: Array<{
         label: t.footer.guides,
         href: guideIndexHref(locale),
       },
-      ...placeholderTools,
     ],
   },
   {

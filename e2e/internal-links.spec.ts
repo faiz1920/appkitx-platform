@@ -85,7 +85,7 @@ test("all indexable routes keep canonical internal links and working chrome", as
   page,
   request,
 }) => {
-  expect(INDEXABLE_ROUTES).toHaveLength(52);
+  expect(INDEXABLE_ROUTES).toHaveLength(56);
 
   const internalPaths = new Set<string>();
 

@@ -1,5 +1,12 @@
 import type { ToolCategory } from "../lib/tools";
 import type { Mode } from "../lib/percentage";
+import type {
+  LengthUnit,
+  TemperatureUnit,
+  UnitCategory,
+  WeightUnit,
+} from "../lib/unit-convert";
+import type { TermUnit } from "../lib/loan";
 
 /*
  * Shared dictionary contract for every registered locale (audit M1, extended
@@ -117,7 +124,7 @@ export interface NotFoundStrings {
   goHome: string;
 }
 
-/** Homepage hero, category rail, and preview cards (HomeView). */
+/** Homepage hero, category rail, and tool grid (HomeView). */
 export interface HomeStrings {
   heroTitle: string;
   heroSubline: string;
@@ -125,14 +132,6 @@ export interface HomeStrings {
   browseByCategory: string;
   /** Heading above the tool grid. */
   exploreHeading: string;
-  /**
-   * Visible but nonfunctional homepage preview cards. They are never added
-   * to the tools registry and never appear in search results.
-   */
-  placeholderTools: {
-    unitConverter: { title: string; description: string };
-    loanCalculator: { title: string; description: string };
-  };
 }
 
 /** Landing-page copy for one published category (CategoryView). */
@@ -311,6 +310,89 @@ export interface DiscountToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** Loan Calculator page labels and interface strings. */
+export interface LoanCalculatorToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  amountLabel: string;
+  amountHint: string;
+  rateLabel: string;
+  rateHint: string;
+  termLabel: string;
+  termHint: string;
+  /** Label for the years/months select beside the term field. */
+  termUnitLabel: string;
+  /** Option labels for the term unit select. */
+  termUnits: Record<TermUnit, string>;
+  monthlyLabel: string;
+  interestLabel: string;
+  totalLabel: string;
+  errors: {
+    amount: string;
+    rate: string;
+    term: string;
+  };
+  /** Result caption template; tokens: {amount}, {rate}, {months}. */
+  caption: string;
+  /** Clipboard text template; tokens: {monthly}, {interest}, {total}. */
+  copyText: string;
+  /** Unsubstituted template and derived monthly-rate line. */
+  formulas: {
+    template: string;
+    /** Tokens: {rate}, {monthlyRate}. */
+    describe: string;
+  };
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
+}
+
+/** Unit Converter page labels and interface strings. */
+export interface UnitConverterToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  categoryLegend: string;
+  /** Option labels for the conversion category control. */
+  categories: Record<UnitCategory, string>;
+  /**
+   * Localized unit names, keyed by the registry ids in
+   * src/lib/unit-convert.ts. Symbols are appended by the component.
+   */
+  units: {
+    length: Record<LengthUnit, string>;
+    weight: Record<WeightUnit, string>;
+    temperature: Record<TemperatureUnit, string>;
+  };
+  valueLabel: string;
+  valueHint: string;
+  fromLabel: string;
+  toLabel: string;
+  errors: {
+    belowAbsoluteZero: string;
+  };
+  /** Conversion line template; tokens: {value}, {from}, {result}, {to}. */
+  caption: string;
+  /** Clipboard text template; tokens: {value}, {from}, {result}, {to}. */
+  copyText: string;
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** One Base64 Encoder mode: pane labels, hint, and the action button label. */
 export interface Base64ModeStrings {
   optionLabel: string;
@@ -483,6 +565,8 @@ export interface AgeCalculatorToolStrings {
 export interface ToolsStrings {
   percentage: PercentageToolStrings;
   discount: DiscountToolStrings;
+  loanCalculator: LoanCalculatorToolStrings;
+  unitConverter: UnitConverterToolStrings;
   base64: Base64ToolStrings;
   json: JsonFormatterToolStrings;
   dateCalculator: DateCalculatorToolStrings;

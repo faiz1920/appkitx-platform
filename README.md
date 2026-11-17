@@ -8,18 +8,20 @@ The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKi
 
 ## Status
 
-Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Six tools are shipped, each built on the reusable `ToolLayout` template with cross-linked related tools:
+Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Eight tools are shipped, each built on the reusable `ToolLayout` template with cross-linked related tools:
 
 | Tool                  | Category        | English route            | Spanish route               |
 | --------------------- | --------------- | ------------------------ | --------------------------- |
 | Percentage Calculator | Calculators     | `/percentage-calculator` | `/es/percentage-calculator` |
 | Discount Calculator   | Calculators     | `/discount-calculator`   | `/es/discount-calculator`   |
+| Loan Calculator       | Calculators     | `/loan-calculator`       | `/es/loan-calculator`       |
+| Unit Converter        | Converters      | `/unit-converter`        | `/es/unit-converter`        |
 | Base64 Encoder        | Developer tools | `/base64-encoder`        | `/es/base64-encoder`        |
 | JSON Formatter        | Developer tools | `/json-formatter`        | `/es/json-formatter`        |
 | Date Calculator       | Date & time     | `/date-calculator`       | `/es/date-calculator`       |
 | Age Calculator        | Date & time     | `/age-calculator`        | `/es/age-calculator`        |
 
-Category landing pages are live in both locales for [Calculators](/calculators), [Developer tools](/developer-tools), and [Date & time](/date-time). Unit Converter and Loan Calculator are the two remaining planned tools: they appear on the homepage and in the footer as non-interactive "Coming soon" entries, are absent from the tool registry, and can never surface in search results, related-tools sections, or category pages.
+Category landing pages are live in both locales for [Calculators](/calculators), [Developer tools](/developer-tools), and [Date & time](/date-time). Converters has a single registered tool, so it stays below the two-tool publication threshold and has no landing page yet; its chip keeps the in-page anchor and its footer entry renders as plain text.
 
 The M10.15 / M10.15.1 public-site release adds a bilingual PC-hardware editorial library: ten source-based guides in English (`/guides/`) and Spanish (`/es/guides/`), plus About, Contact, Privacy Policy, Terms of Use, and Affiliate Disclosure pages in both locales. The legal pages are deployed as visible drafts with review notices and must not be presented as final or compliant until the owner inputs in [PC-BUILDER-M10-15-OWNER-INPUTS.md](./PC-BUILDER-M10-15-OWNER-INPUTS.md) are resolved. The guides are research-based and do not claim hands-on testing, benchmarks, or product ownership. The public contact address is `appkitx@gmail.com`. The PC Builder remains development-only and has no public route, navigation entry, or sitemap entry.
 
@@ -65,7 +67,7 @@ Do not register a language or expose it in the switcher until its translations a
 
 ## Tools
 
-`src/lib/tools.ts` is the single source of truth: only implemented tools are registered, and everything else derives from it — the homepage grid, the search palette, the footer, the 404 quick links, category membership, and the localized catalog (`src/i18n/tool-catalog.ts`). A planned tool is never registered: it may only appear as a non-interactive "Coming soon" card on the homepage and as plain text in the footer, never as a link, a search result, or a category member.
+`src/lib/tools.ts` is the single source of truth: only implemented tools are registered, and everything else derives from it — the homepage grid, the search palette, the footer, the 404 quick links, category membership, and the localized catalog (`src/i18n/tool-catalog.ts`). A planned tool is never registered, so it can never appear as a link, a search result, or a category member. Every registered tool resolves to a working page.
 
 Every tool page renders through `ToolLayout` with a tool-specific component and view under `src/components/` and `src/views/`, plus thin route wrappers in `src/pages/` and `src/pages/[locale]/`. Tool logic lives in pure modules under `src/lib/` covered by Vitest; the Astro `<script>` blocks stay thin UI wrappers.
 

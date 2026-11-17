@@ -1,0 +1,31 @@
+---
+import ToolLayout from "../layouts/ToolLayout.astro";
+import UnitConverter from "../components/UnitConverter.astro";
+import ProseText from "../components/ProseText.astro";
+import { getDictionary, type LocaleCode } from "../i18n/config";
+import { localizedHref } from "../i18n/routing";
+
+interface Props {
+  locale: LocaleCode;
+}
+
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.unitConverter;
+---
+
+<ToolLayout
+  title={tool.title}
+  description={tool.metaDescription}
+  toolName={tool.name}
+  toolDescription={tool.description}
+  locale={locale}
+  breadcrumb={[
+    { label: t.toolLayout.breadcrumbHome, href: localizedHref("/", locale) },
+    { label: tool.name },
+  ]}
+>
+  <UnitConverter slot="tool" locale={locale} />
+
+  <ProseText sections={tool.sections} />
+</ToolLayout>

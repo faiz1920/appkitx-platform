@@ -76,20 +76,6 @@ describe("localizedToolCatalog", () => {
       expect(localized?.description).toBe(tool.description);
     }
   });
-
-  it("keeps placeholder cards out of every catalog", () => {
-    for (const locale of Object.keys(dictionaries) as Array<
-      keyof typeof dictionaries
-    >) {
-      const titles = localizedToolCatalog(locale).map((tool) => tool.title);
-      const placeholders = Object.values(
-        dictionaries[locale].home.placeholderTools,
-      ).map((placeholder) => placeholder.title);
-      for (const title of placeholders) {
-        expect(titles).not.toContain(title);
-      }
-    }
-  });
 });
 
 describe("resolveLocalizedTools", () => {
@@ -106,7 +92,7 @@ describe("resolveLocalizedTools", () => {
   });
 
   it("drops unknown references instead of creating broken links", () => {
-    expect(resolveLocalizedTools("en", ["#", "/unit-converter"])).toEqual([]);
+    expect(resolveLocalizedTools("en", ["#", "/not-a-tool"])).toEqual([]);
     expect(resolveLocalizedTools("es", [])).toEqual([]);
   });
 });

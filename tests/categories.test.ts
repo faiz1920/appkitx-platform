@@ -69,6 +69,10 @@ describe("category membership", () => {
     expect(toolsInCategory("Calculators").map((tool) => tool.href)).toEqual([
       "/percentage-calculator",
       "/discount-calculator",
+      "/loan-calculator",
+    ]);
+    expect(toolsInCategory("Converters").map((tool) => tool.href)).toEqual([
+      "/unit-converter",
     ]);
     expect(toolsInCategory("Developer tools").map((tool) => tool.href)).toEqual(
       ["/base64-encoder", "/json-formatter"],
@@ -82,9 +86,11 @@ describe("category membership", () => {
   it("derives a tool's category from the registry and fails fast otherwise", () => {
     expect(toolCategory("/percentage-calculator")).toBe("Calculators");
     expect(toolCategory("/discount-calculator")).toBe("Calculators");
+    expect(toolCategory("/loan-calculator")).toBe("Calculators");
+    expect(toolCategory("/unit-converter")).toBe("Converters");
     expect(toolCategory("/date-calculator")).toBe("Date & time");
     expect(toolCategory("/age-calculator")).toBe("Date & time");
-    expect(() => toolCategory("/unit-converter")).toThrow(/unregistered tool/i);
+    expect(() => toolCategory("/not-a-tool")).toThrow(/unregistered tool/i);
   });
 });
 

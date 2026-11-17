@@ -21,9 +21,9 @@ export const es: Dictionary = {
   layout: {
     defaultTitle: "AppKitX — Herramientas online gratuitas",
     defaultDescription:
-      "Calculadoras, utilidades para desarrolladores y herramientas de fecha y hora, gratis y en un solo lugar.",
+      "Calculadoras, conversores de unidades, utilidades para desarrolladores y herramientas de fecha y hora, gratis y en un solo lugar.",
     socialImageAlt:
-      "AppKitX — herramientas online gratuitas: calculadoras, utilidades para desarrolladores y herramientas de fecha y hora.",
+      "AppKitX — herramientas online gratuitas: calculadoras, conversores de unidades, utilidades para desarrolladores y herramientas de fecha y hora.",
     skipToContent: "Saltar al contenido",
   },
   nav: {
@@ -88,19 +88,9 @@ export const es: Dictionary = {
   home: {
     heroTitle: "Herramientas gratis para el día a día.",
     heroSubline:
-      "Calculadoras, utilidades para desarrolladores y herramientas de fecha y hora, todo en un solo lugar.",
+      "Calculadoras, conversores de unidades, utilidades para desarrolladores y herramientas de fecha y hora, todo en un solo lugar.",
     browseByCategory: "Explorar por categoría",
     exploreHeading: "Explora el conjunto de herramientas.",
-    placeholderTools: {
-      unitConverter: {
-        title: "Conversor de unidades",
-        description: "Longitud, peso, temperatura y más.",
-      },
-      loanCalculator: {
-        title: "Calculadora de préstamos",
-        description: "Cuotas mensuales, intereses y coste total.",
-      },
-    },
   },
   categories: {
     Calculators: {
@@ -354,6 +344,187 @@ export const es: Dictionary = {
             "Se admiten precios y porcentajes decimales. Los resultados se calculan con precisión completa y solo se redondean para mostrarlos: como máximo dos decimales y sin ceros finales.",
             "Un descuento del 100 % deja el precio final en cero, y un descuento del 0 % deja el precio sin cambios.",
             "Ambos resultados usan las mismas unidades monetarias que el precio introducido; la calculadora es neutral respecto a la moneda y no hace conversión de divisas.",
+          ],
+        },
+      ],
+    },
+    loanCalculator: {
+      title: "Calculadora de préstamos — AppKitX",
+      metaDescription:
+        "Calculadora de préstamos gratis: calcula la cuota mensual, los intereses totales y el total a devolver para cualquier importe, tipo anual y plazo.",
+      name: "Calculadora de préstamos",
+      description:
+        "Calcula la cuota mensual, los intereses totales y el coste total de un préstamo a partir del importe, el tipo anual y el plazo.",
+      cardDescription: "Cuotas mensuales, intereses y coste total.",
+      keywords: [
+        "préstamo",
+        "hipoteca",
+        "cuota",
+        "interés",
+        "amortización",
+        "financiación",
+        "préstamo personal",
+        "préstamo de coche",
+        "capital",
+        "emi",
+      ],
+      amountLabel: "Importe del préstamo",
+      amountHint:
+        "El importe prestado antes de intereses, en cualquier moneda.",
+      rateLabel: "Tipo de interés anual (%)",
+      rateHint:
+        "El tipo anual aplicado al saldo. Escribe 0 si el préstamo no tiene intereses.",
+      termLabel: "Plazo del préstamo",
+      termHint:
+        "El tiempo para devolverlo. El plazo debe estar entre un mes y 100 años.",
+      termUnitLabel: "Unidad del plazo",
+      termUnits: {
+        years: "Años",
+        months: "Meses",
+      },
+      monthlyLabel: "Cuota mensual",
+      interestLabel: "Intereses totales",
+      totalLabel: "Total a devolver",
+      errors: {
+        amount: "Escribe un importe de préstamo mayor que cero.",
+        rate: "Escribe un tipo de interés de 0 o más.",
+        term: "Escribe un plazo de entre 1 y 1.200 meses (100 años).",
+      },
+      caption: "{amount} al {rate} % durante {months} meses.",
+      copyText:
+        "Cuota mensual: {monthly}\nIntereses totales: {interest}\nTotal a devolver: {total}",
+      formulas: {
+        template: "EMI = P × r × (1 + r)ⁿ ÷ ((1 + r)ⁿ − 1)",
+        describe: "{rate} % ÷ 12 = {monthlyRate} % al mes",
+      },
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Introduce el importe prestado, el tipo de interés anual y el plazo de devolución. Indica si el plazo está en años o en meses y pulsa Calcular. La calculadora muestra la cuota mensual fija, los intereses totales durante la vida del préstamo y el importe total devuelto.",
+            "La calculadora es neutral respecto a la moneda: usa la moneda en la que escribas el importe y nunca convierte entre divisas. Todo se ejecuta en tu navegador.",
+          ],
+        },
+        {
+          heading: "La fórmula",
+          paragraphs: [
+            "La cuota mensual sigue la fórmula estándar de anualidad: `EMI = P × r × (1 + r)ⁿ ÷ ((1 + r)ⁿ − 1)`, donde `P` es el capital, `r` es el tipo anual dividido entre 12 y entre 100, y `n` es el número de cuotas mensuales.",
+            "Un tipo cero se trata aparte: la cuota mensual es simplemente `capital ÷ meses` y los intereses totales son cero.",
+          ],
+        },
+        {
+          heading: "Ejemplo resuelto",
+          paragraphs: [
+            "Un préstamo de 100.000 al 6 % anual a 30 años tiene `r = 6 ÷ 12 ÷ 100 = 0,005` y `n = 30 × 12 = 360` cuotas mensuales. La cuota mensual es de unos `599,55`, el total devuelto ronda `215.838` y los intereses totales, `115.838`.",
+          ],
+        },
+        {
+          heading: "Supuestos y casos límite",
+          items: [
+            "El tipo se mantiene fijo durante todo el plazo y los intereses se cobran cada mes sobre el saldo pendiente. No se incluyen préstamos a tipo variable, comisiones, seguros ni impuestos.",
+            "El plazo debe estar entre un mes y 1.200 meses (100 años). Los plazos fuera de ese rango se rechazan con un mensaje en línea en lugar de ajustarse en silencio.",
+            "Los resultados se calculan con precisión completa y solo se redondean a dos decimales para mostrarlos. La última cuota de un préstamo real puede diferir en unos céntimos porque los prestamistas redondean cada plazo.",
+            "La calculadora es neutral respecto a la moneda y no asume nada sobre la divisa, la fecha de pago ni las reglas de redondeo del prestamista.",
+          ],
+        },
+      ],
+    },
+    unitConverter: {
+      title: "Conversor de unidades — AppKitX",
+      metaDescription:
+        "Conversor de unidades gratis para longitud, peso y temperatura: convierte metros a pies, kilos a libras, grados Celsius a Fahrenheit y más.",
+      name: "Conversor de unidades",
+      description:
+        "Convierte longitud, peso y temperatura entre unidades métricas e imperiales.",
+      cardDescription: "Conversiones de longitud, peso y temperatura.",
+      keywords: [
+        "conversor",
+        "unidades",
+        "longitud",
+        "peso",
+        "masa",
+        "temperatura",
+        "métrico",
+        "imperial",
+        "metros",
+        "pies",
+        "kilos",
+        "libras",
+        "celsius",
+        "fahrenheit",
+        "pulgadas",
+        "millas",
+        "onzas",
+        "kelvin",
+      ],
+      categoryLegend: "Conversión",
+      categories: {
+        length: "Longitud",
+        weight: "Peso",
+        temperature: "Temperatura",
+      },
+      units: {
+        length: {
+          mm: "Milímetro",
+          cm: "Centímetro",
+          m: "Metro",
+          km: "Kilómetro",
+          in: "Pulgada",
+          ft: "Pie",
+          yd: "Yarda",
+          mi: "Milla",
+        },
+        weight: {
+          mg: "Miligramo",
+          g: "Gramo",
+          kg: "Kilogramo",
+          t: "Tonelada métrica",
+          oz: "Onza",
+          lb: "Libra",
+          st: "Piedra",
+        },
+        temperature: {
+          c: "Celsius",
+          f: "Fahrenheit",
+          k: "Kelvin",
+        },
+      },
+      valueLabel: "Valor",
+      valueHint: "El número que quieres convertir.",
+      fromLabel: "De",
+      toLabel: "A",
+      errors: {
+        belowAbsoluteZero:
+          "La temperatura debe ser igual o superior al cero absoluto (−273,15 °C, −459,67 °F o 0 K).",
+      },
+      caption: "{value} {from} = {result} {to}",
+      copyText: "{value} {from} = {result} {to}",
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Elige una categoría de conversión, escribe el valor y selecciona las unidades en ambos lados. Pulsa Calcular para ver el valor convertido y la misma conversión escrita completa.",
+            "Todo se ejecuta en tu navegador. Los valores se convierten tal como se escriben, así que los números negativos funcionan como diferencias; en temperatura se comprueba el cero absoluto.",
+          ],
+        },
+        {
+          heading: "Longitud y peso",
+          paragraphs: [
+            "Las conversiones de longitud y peso multiplican por definiciones exactas: `1 in = 2,54 cm`, `1 ft = 0,3048 m`, `1 mi = 1,609344 km`, `1 lb = 0,45359237 kg` y `1 oz = 28,349523125 g`. Las unidades métricas usan los prefijos habituales y `1 st = 14 lb`.",
+          ],
+        },
+        {
+          heading: "Temperatura",
+          paragraphs: [
+            "La temperatura es afín, no una simple proporción: `°F = °C × 9/5 + 32` y `K = °C + 273,15`. Por eso duplicar un valor en grados Celsius no duplica el calor. Los valores por debajo del cero absoluto se rechazan en lugar de producir un resultado imposible.",
+          ],
+        },
+        {
+          heading: "Precisión y supuestos",
+          items: [
+            "Los resultados conservan la precisión completa internamente y se muestran con hasta 10 dígitos significativos, de modo que los valores pequeños siguen siendo legibles y las definiciones exactas no acumulan ruido de redondeo.",
+            "El conversor solo admite longitud, peso y temperatura, no superficie, volumen, velocidad ni divisas, y nunca adivina la unidad a partir del valor.",
+            "Los números mostrados siguen el idioma de la página: coma decimal en español y punto decimal en inglés.",
           ],
         },
       ],

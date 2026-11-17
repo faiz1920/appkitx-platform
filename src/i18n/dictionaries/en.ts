@@ -9,9 +9,9 @@ export const en: Dictionary = {
   layout: {
     defaultTitle: "AppKitX — Free Online Tools",
     defaultDescription:
-      "Free calculators, developer utilities, and date and time tools, all in one place.",
+      "Free calculators, unit converters, developer utilities, and date and time tools, all in one place.",
     socialImageAlt:
-      "AppKitX — free online tools for calculators, developer utilities, and date and time tools.",
+      "AppKitX — free online tools for calculators, unit converters, developer utilities, and date and time tools.",
     skipToContent: "Skip to content",
   },
   nav: {
@@ -76,19 +76,9 @@ export const en: Dictionary = {
   home: {
     heroTitle: "Free tools for everyday work.",
     heroSubline:
-      "Calculators, developer utilities, and date and time tools — all in one place.",
+      "Calculators, unit converters, developer utilities, and date and time tools — all in one place.",
     browseByCategory: "Browse by category",
     exploreHeading: "Explore the toolkit.",
-    placeholderTools: {
-      unitConverter: {
-        title: "Unit Converter",
-        description: "Length, weight, temperature, and more.",
-      },
-      loanCalculator: {
-        title: "Loan Calculator",
-        description: "Monthly payments, interest, and total cost.",
-      },
-    },
   },
   categories: {
     Calculators: {
@@ -337,6 +327,186 @@ export const en: Dictionary = {
             "Decimal prices and percentages are fully supported. Results are calculated at full precision and rounded only for display — capped at two decimal places, with trailing zeros removed.",
             "A 100% discount makes the final price zero, and a 0% discount leaves the price unchanged.",
             "Both outputs use the same currency units as the entered price; the calculator is currency-neutral and does no currency conversion.",
+          ],
+        },
+      ],
+    },
+    loanCalculator: {
+      title: "Loan Calculator — AppKitX",
+      metaDescription:
+        "Free loan calculator: estimate the monthly payment, total interest, and total payable for any loan amount, annual rate, and term.",
+      name: "Loan Calculator",
+      description:
+        "Estimate the monthly payment, total interest, and total cost of a loan from the amount, annual rate, and term.",
+      cardDescription: "Monthly payments, interest, and total cost.",
+      keywords: [
+        "loan",
+        "emi",
+        "mortgage",
+        "repayment",
+        "interest",
+        "monthly payment",
+        "principal",
+        "home loan",
+        "car loan",
+        "personal loan",
+        "amortization",
+      ],
+      amountLabel: "Loan amount",
+      amountHint: "The amount borrowed before interest, in any currency.",
+      rateLabel: "Annual interest rate (%)",
+      rateHint:
+        "The yearly rate charged on the balance. Enter 0 for an interest-free loan.",
+      termLabel: "Loan term",
+      termHint:
+        "How long you have to repay. The term must be between one month and 100 years.",
+      termUnitLabel: "Term unit",
+      termUnits: {
+        years: "Years",
+        months: "Months",
+      },
+      monthlyLabel: "Monthly payment",
+      interestLabel: "Total interest",
+      totalLabel: "Total payable",
+      errors: {
+        amount: "Enter a loan amount greater than zero.",
+        rate: "Enter an interest rate of 0 or more.",
+        term: "Enter a term between 1 month and 1,200 months (100 years).",
+      },
+      caption: "{amount} at {rate}% over {months} months.",
+      copyText:
+        "Monthly payment: {monthly}\nTotal interest: {interest}\nTotal payable: {total}",
+      formulas: {
+        template: "EMI = P × r × (1 + r)ⁿ ÷ ((1 + r)ⁿ − 1)",
+        describe: "{rate}% ÷ 12 = {monthlyRate}% per month",
+      },
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Enter the amount borrowed, the annual interest rate, and the repayment term. Select whether the term is in years or months, then choose Calculate. The calculator shows the fixed monthly payment, the total interest over the life of the loan, and the total amount repaid.",
+            "The calculator is currency-neutral: it uses whatever currency the amount is entered in and never converts between currencies. Everything runs in your browser.",
+          ],
+        },
+        {
+          heading: "The formula",
+          paragraphs: [
+            "The monthly payment is the standard annuity formula: `EMI = P × r × (1 + r)ⁿ ÷ ((1 + r)ⁿ − 1)`, where `P` is the principal, `r` is the annual rate divided by 12 and by 100, and `n` is the number of monthly payments.",
+            "A zero rate is handled separately: the monthly payment is simply `principal ÷ months`, and the total interest is zero.",
+          ],
+        },
+        {
+          heading: "Worked example",
+          paragraphs: [
+            "A loan of 100,000 at 6% a year over 30 years has `r = 6 ÷ 12 ÷ 100 = 0.005` and `n = 30 × 12 = 360` monthly payments. The monthly payment is about `599.55`, the total repaid is about `215,838`, and the total interest is about `115,838`.",
+          ],
+        },
+        {
+          heading: "Assumptions and edge cases",
+          items: [
+            "The rate stays fixed for the whole term and interest is charged monthly on the outstanding balance. Variable-rate loans, fees, insurance, and taxes are not included.",
+            "The term must be between one month and 1,200 months (100 years). Terms outside that range are rejected with an inline message rather than silently adjusted.",
+            "Results are calculated at full precision and rounded to two decimal places only for display. The last payment on a real loan may differ by a few cents because lenders round each instalment.",
+            "The calculator is currency-neutral and makes no assumptions about the currency, the payment date, or the lender's own rounding rules.",
+          ],
+        },
+      ],
+    },
+    unitConverter: {
+      title: "Unit Converter — AppKitX",
+      metaDescription:
+        "Free unit converter for length, weight, and temperature: convert metres to feet, kilograms to pounds, Celsius to Fahrenheit, and more.",
+      name: "Unit Converter",
+      description:
+        "Convert length, weight, and temperature between metric and imperial units.",
+      cardDescription: "Length, weight, and temperature conversions.",
+      keywords: [
+        "unit converter",
+        "length",
+        "weight",
+        "mass",
+        "temperature",
+        "metric",
+        "imperial",
+        "meters",
+        "feet",
+        "kilograms",
+        "pounds",
+        "celsius",
+        "fahrenheit",
+        "inches",
+        "miles",
+        "ounces",
+        "kelvin",
+      ],
+      categoryLegend: "Conversion",
+      categories: {
+        length: "Length",
+        weight: "Weight",
+        temperature: "Temperature",
+      },
+      units: {
+        length: {
+          mm: "Millimeter",
+          cm: "Centimeter",
+          m: "Meter",
+          km: "Kilometer",
+          in: "Inch",
+          ft: "Foot",
+          yd: "Yard",
+          mi: "Mile",
+        },
+        weight: {
+          mg: "Milligram",
+          g: "Gram",
+          kg: "Kilogram",
+          t: "Metric ton",
+          oz: "Ounce",
+          lb: "Pound",
+          st: "Stone",
+        },
+        temperature: {
+          c: "Celsius",
+          f: "Fahrenheit",
+          k: "Kelvin",
+        },
+      },
+      valueLabel: "Value",
+      valueHint: "The number you want to convert.",
+      fromLabel: "From",
+      toLabel: "To",
+      errors: {
+        belowAbsoluteZero:
+          "Temperature must be at or above absolute zero (−273.15 °C, −459.67 °F, or 0 K).",
+      },
+      caption: "{value} {from} = {result} {to}",
+      copyText: "{value} {from} = {result} {to}",
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Choose a conversion category, enter the value, and pick the units on both sides. Select Calculate to see the converted value and the same conversion written out in full.",
+            "Everything runs in your browser. Values are converted as entered, so negative numbers work as expected for differences; for temperature they are checked against absolute zero.",
+          ],
+        },
+        {
+          heading: "Length and weight",
+          paragraphs: [
+            "Length and weight conversions multiply by exact definitions: `1 in = 2.54 cm`, `1 ft = 0.3048 m`, `1 mi = 1.609344 km`, `1 lb = 0.45359237 kg`, and `1 oz = 28.349523125 g`. Metric units use the standard prefixes, and `1 st = 14 lb`.",
+          ],
+        },
+        {
+          heading: "Temperature",
+          paragraphs: [
+            "Temperature is affine, not a simple ratio: `°F = °C × 9/5 + 32` and `K = °C + 273.15`. That is why doubling a Celsius value does not double the heat. Values below absolute zero are rejected instead of producing an impossible result.",
+          ],
+        },
+        {
+          heading: "Precision and assumptions",
+          items: [
+            "Results keep full precision internally and are shown with up to 10 significant digits, so small values stay readable and exact definitions do not collect rounding noise.",
+            "The converter handles length, weight, and temperature only — not area, volume, speed, or currency — and it never guesses a unit from the input.",
+            "Displayed numbers follow the page language: a decimal comma in Spanish and a decimal point in English.",
           ],
         },
       ],

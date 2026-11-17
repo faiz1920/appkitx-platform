@@ -75,7 +75,7 @@ describe("resolveTools", () => {
     expect(resolveTools(["/nope", "/percentage-calculator"])).toEqual([
       tools.find((tool) => tool.href === "/percentage-calculator"),
     ]);
-    expect(resolveTools(["#", "/unit-converter"])).toEqual([]);
+    expect(resolveTools(["#", "/not-a-tool"])).toEqual([]);
   });
 
   it("returns an empty list for an empty request", () => {
@@ -127,7 +127,7 @@ describe("searchTools", () => {
     expect(
       searchTools("developer tools", fixture).map((tool) => tool.title),
     ).toEqual(["Beta Utility"]);
-    expect(searchTools("calculators", tools)).toHaveLength(2);
+    expect(searchTools("calculators", tools)).toHaveLength(3);
   });
 
   it("matches by description", () => {
@@ -170,6 +170,7 @@ describe("searchTools", () => {
     expect(first.map((tool) => tool.href)).toEqual([
       "/percentage-calculator",
       "/discount-calculator",
+      "/loan-calculator",
       "/date-calculator",
       "/age-calculator",
     ]);
@@ -187,10 +188,19 @@ describe("searchTools", () => {
     }
   });
 
-  it("does not match placeholder homepage cards", () => {
-    for (const query of ["unit converter", "loan"]) {
-      expect(searchTools(query, tools)).toEqual([]);
-    }
+  it("finds the loan calculator and unit converter", () => {
+    expect(searchTools("loan", tools).map((tool) => tool.href)).toEqual([
+      "/loan-calculator",
+    ]);
+    expect(searchTools("emi", tools).map((tool) => tool.href)).toEqual([
+      "/loan-calculator",
+    ]);
+    expect(
+      searchTools("unit converter", tools).map((tool) => tool.href),
+    ).toEqual(["/unit-converter"]);
+    expect(searchTools("fahrenheit", tools).map((tool) => tool.href)).toEqual([
+      "/unit-converter",
+    ]);
   });
 
   it("finds the developer tools by name and keyword", () => {
@@ -246,7 +256,11 @@ describe("localized search catalogs", () => {
       searchTools("calculadoras", localizedToolCatalog("es")).map(
         (tool) => tool.href,
       ),
-    ).toEqual(["/percentage-calculator", "/discount-calculator"]);
+    ).toEqual([
+      "/percentage-calculator",
+      "/discount-calculator",
+      "/loan-calculator",
+    ]);
   });
 
   it("matches Spanish accented terms with or without accents", () => {
@@ -262,13 +276,20 @@ describe("localized search catalogs", () => {
     ]);
   });
 
-  it("keeps placeholder cards out of every localized catalog", () => {
-    for (const locale of ["en", "es"] as const) {
-      const catalog = localizedToolCatalog(locale);
-      for (const query of ["unit converter", "loan", "unidades", "préstamo"]) {
-        expect(searchTools(query, catalog)).toEqual([]);
-      }
-    }
+  it("finds the loan calculator and unit converter with localized terms", () => {
+    const catalog = localizedToolCatalog("es");
+    expect(searchTools("préstamo", catalog).map((tool) => tool.href)).toEqual([
+      "/loan-calculator",
+    ]);
+    expect(searchTools("hipoteca", catalog).map((tool) => tool.href)).toEqual([
+      "/loan-calculator",
+    ]);
+    expect(searchTools("unidades", catalog).map((tool) => tool.href)).toEqual([
+      "/unit-converter",
+    ]);
+    expect(searchTools("fahrenheit", catalog).map((tool) => tool.href)).toEqual(
+      ["/unit-converter"],
+    );
   });
 
   it("finds the date and age tools with localized terms", () => {

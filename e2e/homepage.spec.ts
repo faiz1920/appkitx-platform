@@ -37,19 +37,25 @@ test("homepage renders the chrome, hero, and token styles", async ({
   await page.screenshot({ path: "test-results/homepage.png", fullPage: true });
 });
 
-test("homepage copy describes shipped tool families without converter claims", async ({
-  page,
-}) => {
+test("homepage copy describes every shipped tool family", async ({ page }) => {
   const cases = [
     {
       path: "/",
-      families: [/calculators?/i, /developer/i, /date and time/i],
-      converterClaim: /converters?/i,
+      families: [
+        /calculators?/i,
+        /converters?/i,
+        /developer/i,
+        /date and time/i,
+      ],
     },
     {
       path: "/es/",
-      families: [/calculadoras?/i, /desarrollador/i, /fecha y hora/i],
-      converterClaim: /conversores?/i,
+      families: [
+        /calculadoras?/i,
+        /conversores?/i,
+        /desarrollador/i,
+        /fecha y hora/i,
+      ],
     },
   ];
 
@@ -66,41 +72,43 @@ test("homepage copy describes shipped tool families without converter claims", a
     for (const family of item.families) {
       expect(copy, `${item.path} family coverage`).toMatch(family);
     }
-    expect(copy, `${item.path} converter claim`).not.toMatch(
-      item.converterClaim,
-    );
   }
 });
 
-test("planned tools are non-interactive coming-soon cards", async ({
+test("every shipped tool is an interactive card and footer link", async ({
   page,
 }) => {
   await page.goto("/");
 
   const grid = page.locator("#tools");
-  await expect(grid.getByText("Open tool")).toHaveCount(6);
-  await expect(grid.getByText("Coming soon")).toHaveCount(2);
-  for (const name of ["Unit Converter", "Loan Calculator"]) {
-    await expect(grid.getByRole("link", { name })).toHaveCount(0);
-    await expect(grid.getByText(name)).toBeVisible();
-  }
+  await expect(grid.getByText("Open tool")).toHaveCount(8);
+  await expect(grid.getByText("Coming soon")).toHaveCount(0);
 
   const footer = page.getByRole("contentinfo");
-  for (const name of ["Unit Converter", "Loan Calculator"]) {
-    await expect(footer.getByRole("link", { name })).toHaveCount(0);
-    await expect(footer.getByText(name)).toBeVisible();
+  for (const [name, href] of [
+    ["Unit Converter", "/unit-converter/"],
+    ["Loan Calculator", "/loan-calculator/"],
+  ] as const) {
+    await expect(grid.getByRole("link", { name })).toHaveAttribute(
+      "href",
+      href,
+    );
+    await expect(footer.getByRole("link", { name })).toHaveAttribute(
+      "href",
+      href,
+    );
   }
 
   await page.goto("/es/");
   const gridEs = page.locator("#tools");
-  await expect(gridEs.getByText("Abrir herramienta")).toHaveCount(6);
-  await expect(gridEs.getByText("Próximamente")).toHaveCount(2);
+  await expect(gridEs.getByText("Abrir herramienta")).toHaveCount(8);
+  await expect(gridEs.getByText("Próximamente")).toHaveCount(0);
   await expect(
     gridEs.getByRole("link", { name: "Conversor de unidades" }),
-  ).toHaveCount(0);
+  ).toHaveAttribute("href", "/es/unit-converter/");
   await expect(
     gridEs.getByRole("link", { name: "Calculadora de préstamos" }),
-  ).toHaveCount(0);
+  ).toHaveAttribute("href", "/es/loan-calculator/");
 });
 
 test("global nav collapses and icon buttons keep 44px targets", async ({
