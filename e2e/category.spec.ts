@@ -34,13 +34,15 @@ test("the English category page lists the registered calculators", async ({
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Open tool" });
-  await expect(cards).toHaveCount(3);
+  await expect(cards).toHaveCount(4);
   await expect(cards.nth(0)).toContainText("Percentage Calculator");
   await expect(cards.nth(0)).toHaveAttribute("href", "/percentage-calculator/");
   await expect(cards.nth(1)).toContainText("Discount Calculator");
   await expect(cards.nth(1)).toHaveAttribute("href", "/discount-calculator/");
   await expect(cards.nth(2)).toContainText("Loan Calculator");
   await expect(cards.nth(2)).toHaveAttribute("href", "/loan-calculator/");
+  await expect(cards.nth(3)).toContainText("Scientific Calculator");
+  await expect(cards.nth(3)).toHaveAttribute("href", "/scientific-calculator/");
 
   /* The converters belong to another category. */
   await expect(page.getByRole("main").getByText("Unit Converter")).toHaveCount(
@@ -82,7 +84,7 @@ test("the Spanish category page is fully localized", async ({ page }) => {
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Abrir herramienta" });
-  await expect(cards).toHaveCount(3);
+  await expect(cards).toHaveCount(4);
   await expect(cards.nth(0)).toContainText("Calculadora de porcentajes");
   await expect(cards.nth(0)).toHaveAttribute(
     "href",
@@ -95,6 +97,11 @@ test("the Spanish category page is fully localized", async ({ page }) => {
   );
   await expect(cards.nth(2)).toContainText("Calculadora de préstamos");
   await expect(cards.nth(2)).toHaveAttribute("href", "/es/loan-calculator/");
+  await expect(cards.nth(3)).toContainText("Calculadora científica");
+  await expect(cards.nth(3)).toHaveAttribute(
+    "href",
+    "/es/scientific-calculator/",
+  );
 
   await page.screenshot({
     path: "test-results/category-calculators-es.png",

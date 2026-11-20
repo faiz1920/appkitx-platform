@@ -87,9 +87,9 @@ test("all indexable routes keep canonical internal links and working chrome", as
   page,
   request,
 }) => {
-  /* 68 routes with per-page assertions exceed the default 30s on Firefox. */
+  /* 70 routes with per-page assertions exceed the default 30s on Firefox. */
   test.setTimeout(90_000);
-  expect(INDEXABLE_ROUTES).toHaveLength(68);
+  expect(INDEXABLE_ROUTES).toHaveLength(70);
 
   const internalPaths = new Set<string>();
 

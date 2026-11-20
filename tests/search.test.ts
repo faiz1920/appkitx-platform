@@ -127,7 +127,7 @@ describe("searchTools", () => {
     expect(
       searchTools("developer tools", fixture).map((tool) => tool.title),
     ).toEqual(["Beta Utility"]);
-    expect(searchTools("calculators", tools)).toHaveLength(3);
+    expect(searchTools("calculators", tools)).toHaveLength(4);
   });
 
   it("matches by description", () => {
@@ -171,6 +171,7 @@ describe("searchTools", () => {
       "/percentage-calculator",
       "/discount-calculator",
       "/loan-calculator",
+      "/scientific-calculator",
       "/date-calculator",
       "/age-calculator",
     ]);
@@ -212,6 +213,18 @@ describe("searchTools", () => {
     ]);
     expect(searchTools("knots", tools).map((tool) => tool.href)).toEqual([
       "/speed-converter",
+    ]);
+  });
+
+  it("finds the scientific calculator by name and keyword", () => {
+    expect(searchTools("scientific", tools).map((tool) => tool.href)).toEqual([
+      "/scientific-calculator",
+    ]);
+    expect(searchTools("trigonometry", tools).map((tool) => tool.href)).toEqual(
+      ["/scientific-calculator"],
+    );
+    expect(searchTools("radians", tools).map((tool) => tool.href)).toEqual([
+      "/scientific-calculator",
     ]);
   });
 
@@ -291,6 +304,7 @@ describe("localized search catalogs", () => {
       "/percentage-calculator",
       "/discount-calculator",
       "/loan-calculator",
+      "/scientific-calculator",
     ]);
   });
 
@@ -326,6 +340,15 @@ describe("localized search catalogs", () => {
     ]);
     expect(searchTools("nudos", catalog).map((tool) => tool.href)).toEqual([
       "/speed-converter",
+    ]);
+    expect(
+      searchTools("calculadora científica", catalog).map((tool) => tool.href),
+    ).toEqual(["/scientific-calculator"]);
+    expect(
+      searchTools("trigonometría", catalog).map((tool) => tool.href),
+    ).toEqual(["/scientific-calculator"]);
+    expect(searchTools("radianes", catalog).map((tool) => tool.href)).toEqual([
+      "/scientific-calculator",
     ]);
   });
 

@@ -1,0 +1,774 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+import checkIcon from "lucide-static/icons/check.svg?raw";
+import copyIcon from "lucide-static/icons/copy.svg?raw";
+import {
+  defaultLocale,
+  getDictionary,
+  getLocale,
+  type LocaleCode,
+} from "../i18n/config";
+import {
+  SCIENTIFIC_FUNCTION_KEYS,
+  type ScientificFunctionKey,
+} from "../lib/scientific";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.scientificCalculator;
+const localeMeta = getLocale(locale);
+
+const scriptStrings = {
+  calculator: t.calculator,
+  tool,
+  intlLocale: localeMeta.intlLocale,
+};
+
+const functionInserts: Record<ScientificFunctionKey, string> = {
+  sin: "sin(",
+  cos: "cos(",
+  tan: "tan(",
+  asin: "asin(",
+  acos: "acos(",
+  atan: "atan(",
+  sinh: "sinh(",
+  cosh: "cosh(",
+  tanh: "tanh(",
+  ln: "ln(",
+  log: "log(",
+  exp: "exp(",
+  sqrt: "sqrt(",
+  cbrt: "cbrt(",
+  root: "root(",
+  abs: "abs(",
+  reciprocal: "1/(",
+  square: "^2",
+  cube: "^3",
+  power: "^",
+  factorial: "!",
+  percent: "%",
+  pi: "π",
+  e: "e",
+};
+
+const scientificKeyClass =
+  "focus-ring flex h-11 min-w-0 items-center justify-center rounded-md border border-border-subtle bg-surface-muted px-1 font-mono text-small font-medium whitespace-nowrap text-text-primary transition-colors hover:border-border-strong hover:bg-surface-subtle active:bg-surface-muted";
+---
+
+<div data-scientific-calculator data-i18n={JSON.stringify(scriptStrings)}>
+  <form novalidate data-calculator-form>
+    <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)">
+      <fieldset class="min-w-0">
+        <legend class="text-label text-text-primary">
+          {tool.angleModeLegend}
+        </legend>
+        <div class="segmented segmented--large mt-2">
+          <label>
+            <input
+              type="radio"
+              name="scientific-angle"
+              value="degrees"
+              class="sr-only"
+              checked
+            />
+            {tool.angleModes.degrees}
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="scientific-angle"
+              value="radians"
+              class="sr-only"
+            />
+            {tool.angleModes.radians}
+          </label>
+        </div>
+        <p class="mt-1 text-caption text-text-muted">{tool.angleModeHint}</p>
+      </fieldset>
+
+      <div class="mt-6">
+        <label for="scientific-expression" class="text-label text-text-primary">
+          {tool.expressionLabel}
+        </label>
+        <input
+          id="scientific-expression"
+          name="expression"
+          type="text"
+          inputmode="text"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          class="input mt-2 font-mono tabular-nums"
+          placeholder={tool.expressionPlaceholder}
+          aria-describedby="scientific-hint-expression scientific-error-expression"
+          data-expression
+        />
+        <p
+          id="scientific-hint-expression"
+          class="mt-1 text-caption text-text-muted"
+        >
+          {tool.expressionHint} {tool.keyboardHelp}
+        </p>
+        <p
+          id="scientific-error-expression"
+          class="field-error mt-1"
+          role="alert"
+          aria-atomic="true"
+          hidden
+          data-error
+        >
+          <span aria-hidden="true" set:html={alertIcon} />
+          <span data-error-text></span>
+        </p>
+      </div>
+
+      <div class="mt-5" role="group" aria-label={tool.keypadLabel}>
+        <div class="grid grid-cols-4 gap-2 sm:grid-cols-6">
+          {SCIENTIFIC_FUNCTION_KEYS.map((key) => (
+            <button
+              type="button"
+              class={scientificKeyClass}
+              aria-label={tool.functionKeys[key].ariaLabel}
+              data-insert={functionInserts[key]}
+              data-function-key={key}
+            >
+              {tool.functionKeys[key].label}
+            </button>
+          ))}
+        </div>
+
+        <div class="mt-3 grid grid-cols-4 gap-2">
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            data-insert="7"
+          >
+            7
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            data-insert="8"
+          >
+            8
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            data-insert="9"
+          >
+            9
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            aria-label={tool.controlKeys.divide.ariaLabel}
+            data-insert="/"
+          >
+            {tool.controlKeys.divide.label}
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            data-insert="4"
+          >
+            4
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            data-insert="5"
+          >
+            5
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            data-insert="6"
+          >
+            6
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            aria-label={tool.controlKeys.multiply.ariaLabel}
+            data-insert="*"
+          >
+            {tool.controlKeys.multiply.label}
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            data-insert="1"
+          >
+            1
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            data-insert="2"
+          >
+            2
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            data-insert="3"
+          >
+            3
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            aria-label={tool.controlKeys.subtract.ariaLabel}
+            data-insert="-"
+          >
+            {tool.controlKeys.subtract.label}
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            data-insert="0"
+          >
+            0
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            aria-label={tool.controlKeys.decimal.ariaLabel}
+            data-insert="."
+          >
+            {tool.controlKeys.decimal.label}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            aria-label={tool.controlKeys.sign.ariaLabel}
+            data-action="negate"
+          >
+            {tool.controlKeys.sign.label}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            aria-label={tool.controlKeys.add.ariaLabel}
+            data-insert="+"
+          >
+            {tool.controlKeys.add.label}
+          </button>
+        </div>
+
+        <div class="mt-2 grid grid-cols-5 gap-2">
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            aria-label={tool.controlKeys.openParenthesis.ariaLabel}
+            data-insert="("
+          >
+            {tool.controlKeys.openParenthesis.label}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            aria-label={tool.controlKeys.closeParenthesis.ariaLabel}
+            data-insert=")"
+          >
+            {tool.controlKeys.closeParenthesis.label}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            aria-label={tool.controlKeys.comma.ariaLabel}
+            data-insert=","
+          >
+            {tool.controlKeys.comma.label}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            aria-label={tool.controlKeys.backspace.ariaLabel}
+            data-action="backspace"
+          >
+            {tool.controlKeys.backspace.label}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 px-0 font-mono text-base"
+            aria-label={tool.controlKeys.clear.ariaLabel}
+            data-action="clear"
+          >
+            {tool.controlKeys.clear.label}
+          </button>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary mt-3 w-full font-mono text-title"
+          aria-label={tool.controlKeys.equals.ariaLabel}
+          data-equals
+        >
+          {tool.controlKeys.equals.label}
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div
+    class="relative mt-6 rounded-lg bg-accent-subtle p-(--layout-card-padding)"
+    aria-live="polite"
+    data-result-region
+  >
+    <p class="text-overline text-text-secondary uppercase">
+      {t.calculator.resultLabel}
+    </p>
+    <div class="mt-2 flex min-w-0 items-baseline gap-x-2 pr-14">
+      <p
+        class="min-w-0 text-mono-result break-words text-text-disabled [overflow-wrap:anywhere]"
+        data-result
+      >
+        —
+      </p>
+    </div>
+    <p class="mt-3 pr-14 text-caption text-text-muted" data-result-caption>
+      {t.calculator.resultsPlaceholder}
+    </p>
+    <p
+      class="mt-2 flex items-center gap-1.5 text-caption text-success"
+      hidden
+      data-copy-status-success
+    >
+      <span
+        class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+        aria-hidden="true"
+        set:html={checkIcon}
+      />
+      {t.calculator.copied}
+    </p>
+    <p
+      class="mt-2 flex items-center gap-1.5 text-caption text-error"
+      hidden
+      data-copy-status-error
+    >
+      <span
+        class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+        aria-hidden="true"
+        set:html={alertIcon}
+      />
+      {t.calculator.copyFailed}
+    </p>
+    <button
+      type="button"
+      class="btn btn-ghost absolute top-3 right-3 w-11 px-0"
+      aria-label={t.calculator.copyResult}
+      disabled
+      data-copy
+    >
+      <span
+        class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        data-copy-idle
+        set:html={copyIcon}
+      />
+      <span
+        class="h-5 w-5 text-success [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        hidden
+        data-copy-done
+        set:html={checkIcon}
+      />
+    </button>
+  </div>
+
+  <section class="mt-6" aria-labelledby="scientific-history-heading">
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <h2 id="scientific-history-heading" class="text-title text-text-primary">
+        {tool.historyHeading}
+      </h2>
+      <p class="text-caption text-text-muted">{tool.historyHint}</p>
+    </div>
+    <p class="mt-3 text-caption text-text-muted" data-history-empty>
+      {tool.historyEmpty}
+    </p>
+    <ol class="mt-3 space-y-3" data-history></ol>
+  </section>
+</div>
+
+<script>
+  import {
+    evaluateScientific,
+    formatScientificValue,
+    serializeScientificValue,
+    type AngleMode,
+    type ScientificIssue,
+  } from "../lib/scientific";
+  import { interpolate } from "../i18n/interpolate";
+  import type {
+    CalculatorStrings,
+    ScientificCalculatorToolStrings,
+  } from "../i18n/dictionary";
+
+  const HISTORY_LIMIT = 20;
+
+  const root = document.querySelector<HTMLElement>(
+    "[data-scientific-calculator]",
+  );
+
+  if (root) {
+    const i18n: {
+      calculator: CalculatorStrings;
+      tool: ScientificCalculatorToolStrings;
+      intlLocale: string;
+    } = JSON.parse(root.dataset.i18n ?? "{}");
+
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`Scientific calculator: missing ${selector}`);
+      return el;
+    };
+
+    const form = requireEl<HTMLFormElement>("[data-calculator-form]");
+    const expressionInput = requireEl<HTMLInputElement>("[data-expression]");
+    const errorWrap = requireEl<HTMLElement>("[data-error]");
+    const errorText = requireEl<HTMLElement>("[data-error-text]");
+    const resultEl = requireEl<HTMLElement>("[data-result]");
+    const resultCaption = requireEl<HTMLElement>("[data-result-caption]");
+    const copyButton = requireEl<HTMLButtonElement>("[data-copy]");
+    const copyIdle = requireEl<HTMLElement>("[data-copy-idle]");
+    const copyDone = requireEl<HTMLElement>("[data-copy-done]");
+    const copyStatusSuccess = requireEl<HTMLElement>(
+      "[data-copy-status-success]",
+    );
+    const copyStatusError = requireEl<HTMLElement>("[data-copy-status-error]");
+    const historyList = requireEl<HTMLOListElement>("[data-history]");
+    const historyEmpty = requireEl<HTMLElement>("[data-history-empty]");
+    const angleRadios = root.querySelectorAll<HTMLInputElement>(
+      'input[name="scientific-angle"]',
+    );
+
+    let copyTimer: number | undefined;
+    let copyBusy = false;
+    let lastCopyText = "";
+    let resultGeneration = 0;
+    let history: Array<{ expression: string; value: number; display: string }> =
+      [];
+
+    const angleMode = (): AngleMode =>
+      (root.querySelector<HTMLInputElement>(
+        'input[name="scientific-angle"]:checked',
+      )?.value as AngleMode | undefined) ?? "degrees";
+
+    const resetCopyFeedback = () => {
+      window.clearTimeout(copyTimer);
+      copyIdle.hidden = false;
+      copyDone.hidden = true;
+      copyStatusSuccess.hidden = true;
+      copyStatusError.hidden = true;
+    };
+
+    const hideError = () => {
+      if (
+        errorWrap.hidden &&
+        errorText.textContent === "" &&
+        !expressionInput.hasAttribute("aria-invalid")
+      ) {
+        return;
+      }
+      errorWrap.hidden = true;
+      errorText.textContent = "";
+      expressionInput.removeAttribute("aria-invalid");
+    };
+
+    const showError = (issue: ScientificIssue) => {
+      const message = i18n.tool.errors[issue] ?? i18n.tool.errors.invalid;
+      if (expressionInput.getAttribute("aria-invalid") !== "true") {
+        expressionInput.setAttribute("aria-invalid", "true");
+      }
+      if (!errorWrap.hidden && errorText.textContent === message) return;
+      errorText.textContent = message;
+      errorWrap.hidden = false;
+    };
+
+    const showEmptyResult = () => {
+      resultGeneration += 1;
+      lastCopyText = "";
+      resetCopyFeedback();
+      if (resultEl.textContent !== "—") resultEl.textContent = "—";
+      resultEl.classList.replace("text-text-primary", "text-text-disabled");
+      if (resultCaption.textContent !== i18n.calculator.resultsPlaceholder) {
+        resultCaption.textContent = i18n.calculator.resultsPlaceholder;
+      }
+      copyButton.disabled = true;
+    };
+
+    const invalidateResult = () => {
+      hideError();
+      showEmptyResult();
+    };
+
+    const insertText = (rawText: string) => {
+      const start =
+        expressionInput.selectionStart ?? expressionInput.value.length;
+      const end = expressionInput.selectionEnd ?? start;
+      const before = expressionInput.value.slice(0, start);
+      const after = expressionInput.value.slice(end);
+      let text = rawText;
+
+      const previous = before.trimEnd().slice(-1);
+      const startsWithValue =
+        /^[0-9.]/.test(text) ||
+        /^(?:sin|cos|tan|asin|acos|atan|sinh|cosh|tanh|ln|log|log10|exp|sqrt|cbrt|root|abs|1\/|π|e|\()/.test(
+          text,
+        );
+      const endsWithValue = /[0-9)!%πe]$/.test(previous);
+
+      if (startsWithValue && endsWithValue) {
+        const startsWithNumber = /^[0-9.]/.test(text);
+        if (!startsWithNumber || /[)!%πe]$/.test(previous)) {
+          text = `*${text}`;
+        }
+      }
+
+      const nextValue = `${before}${text}${after}`;
+      expressionInput.value = nextValue;
+      const caret = start + text.length;
+      expressionInput.setSelectionRange(caret, caret);
+      invalidateResult();
+      expressionInput.focus({ preventScroll: true });
+    };
+
+    const isOuterNegated = (value: string): boolean => {
+      if (!value.startsWith("-(") || !value.endsWith(")")) return false;
+      let depth = 0;
+      for (let index = 1; index < value.length; index += 1) {
+        if (value[index] === "(") depth += 1;
+        if (value[index] === ")") {
+          depth -= 1;
+          if (depth === 0) return index === value.length - 1;
+        }
+      }
+      return false;
+    };
+
+    const toggleSign = () => {
+      const current = expressionInput.value.trim();
+      if (isOuterNegated(current)) {
+        expressionInput.value = current.slice(2, -1);
+      } else {
+        expressionInput.value = current === "" ? "-" : `-(${current})`;
+      }
+      expressionInput.setSelectionRange(
+        expressionInput.value.length,
+        expressionInput.value.length,
+      );
+      invalidateResult();
+      expressionInput.focus({ preventScroll: true });
+    };
+
+    const clearExpression = () => {
+      expressionInput.value = "";
+      invalidateResult();
+      expressionInput.focus({ preventScroll: true });
+    };
+
+    const backspace = () => {
+      const start = expressionInput.selectionStart ?? 0;
+      const end = expressionInput.selectionEnd ?? start;
+      if (start !== end) {
+        expressionInput.value =
+          expressionInput.value.slice(0, start) +
+          expressionInput.value.slice(end);
+        expressionInput.setSelectionRange(start, start);
+      } else if (start > 0) {
+        expressionInput.value =
+          expressionInput.value.slice(0, start - 1) +
+          expressionInput.value.slice(start);
+        expressionInput.setSelectionRange(start - 1, start - 1);
+      }
+      invalidateResult();
+      expressionInput.focus({ preventScroll: true });
+    };
+
+    const renderHistory = () => {
+      historyList.textContent = "";
+      historyEmpty.hidden = history.length > 0;
+
+      for (const entry of history) {
+        const item = document.createElement("li");
+        item.className =
+          "rounded-md border border-border-subtle bg-surface p-4";
+
+        const body = document.createElement("div");
+        body.className = "flex flex-wrap items-start justify-between gap-3";
+
+        const values = document.createElement("div");
+        values.className = "min-w-0";
+
+        const expression = document.createElement("p");
+        expression.className =
+          "font-mono text-small break-words text-text-secondary [overflow-wrap:anywhere]";
+        expression.textContent = entry.expression;
+
+        const result = document.createElement("p");
+        result.className =
+          "mt-1 font-mono text-title break-words text-text-primary [overflow-wrap:anywhere]";
+        result.textContent = entry.display;
+        result.setAttribute(
+          "aria-label",
+          `${i18n.tool.historyResultLabel}: ${entry.display}`,
+        );
+
+        values.append(expression, result);
+
+        const actions = document.createElement("div");
+        actions.className = "flex flex-wrap gap-2";
+
+        const useExpression = document.createElement("button");
+        useExpression.type = "button";
+        useExpression.className = "btn btn-secondary h-11 px-3 text-small";
+        useExpression.textContent = i18n.tool.useExpression;
+        useExpression.setAttribute(
+          "aria-label",
+          `${i18n.tool.useExpression}: ${entry.expression}`,
+        );
+        useExpression.addEventListener("click", () => {
+          expressionInput.value = entry.expression;
+          expressionInput.setSelectionRange(
+            entry.expression.length,
+            entry.expression.length,
+          );
+          invalidateResult();
+          expressionInput.focus({ preventScroll: true });
+        });
+
+        const useResult = document.createElement("button");
+        useResult.type = "button";
+        useResult.className = "btn btn-ghost h-11 px-3 text-small";
+        useResult.textContent = i18n.tool.useResult;
+        useResult.setAttribute(
+          "aria-label",
+          `${i18n.tool.useResult}: ${entry.display}`,
+        );
+        useResult.addEventListener("click", () => {
+          const value = serializeScientificValue(entry.value);
+          expressionInput.value = value;
+          expressionInput.setSelectionRange(value.length, value.length);
+          invalidateResult();
+          expressionInput.focus({ preventScroll: true });
+        });
+
+        actions.append(useExpression, useResult);
+        body.append(values, actions);
+        item.append(body);
+        historyList.append(item);
+      }
+    };
+
+    const addHistory = (expression: string, value: number, display: string) => {
+      history = [{ expression, value, display }, ...history].slice(
+        0,
+        HISTORY_LIMIT,
+      );
+      renderHistory();
+    };
+
+    const evaluate = () => {
+      const expression = expressionInput.value.trim();
+      const evaluation = evaluateScientific(expression, angleMode());
+
+      if (!evaluation.ok) {
+        showError(evaluation.issue);
+        showEmptyResult();
+        return;
+      }
+
+      const display = formatScientificValue(evaluation.value, i18n.intlLocale);
+      hideError();
+      resultGeneration += 1;
+      resetCopyFeedback();
+
+      resultEl.textContent = display;
+      resultEl.classList.replace("text-text-disabled", "text-text-primary");
+      resultCaption.textContent = interpolate(i18n.tool.resultCaption, {
+        expression,
+        result: display,
+      });
+      lastCopyText = display;
+      copyButton.disabled = false;
+      addHistory(expression, evaluation.value, display);
+    };
+
+    expressionInput.addEventListener("input", invalidateResult);
+    expressionInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        evaluate();
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        clearExpression();
+      }
+    });
+
+    for (const radio of angleRadios) {
+      radio.addEventListener("change", invalidateResult);
+    }
+
+    for (const button of root.querySelectorAll<HTMLButtonElement>(
+      "[data-insert]",
+    )) {
+      button.addEventListener("click", (event) => {
+        insertText(button.dataset.insert ?? "");
+        if (event.detail === 0) {
+          button.focus({ preventScroll: true });
+        }
+      });
+    }
+
+    for (const button of root.querySelectorAll<HTMLButtonElement>(
+      "[data-action]",
+    )) {
+      button.addEventListener("click", () => {
+        if (button.dataset.action === "negate") toggleSign();
+        else if (button.dataset.action === "clear") clearExpression();
+        else if (button.dataset.action === "backspace") backspace();
+      });
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      evaluate();
+    });
+
+    copyButton.addEventListener("click", async () => {
+      if (!lastCopyText || copyBusy) return;
+      copyBusy = true;
+      const generation = resultGeneration;
+      resetCopyFeedback();
+      try {
+        await navigator.clipboard.writeText(lastCopyText);
+        if (generation !== resultGeneration) return;
+        copyIdle.hidden = true;
+        copyDone.hidden = false;
+        copyStatusSuccess.hidden = false;
+        copyTimer = window.setTimeout(() => {
+          copyIdle.hidden = false;
+          copyDone.hidden = true;
+          copyStatusSuccess.hidden = true;
+        }, 2000);
+      } catch {
+        if (generation !== resultGeneration) return;
+        copyStatusError.hidden = false;
+      } finally {
+        copyBusy = false;
+      }
+    });
+
+    renderHistory();
+  }
+</script>

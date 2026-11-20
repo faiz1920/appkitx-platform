@@ -22,7 +22,7 @@ const LOCALE_CODES = Object.keys(dictionaries) as Array<
 
 describe("published catalogue", () => {
   it("publishes every registered tool in exactly one category", () => {
-    expect(tools).toHaveLength(12);
+    expect(tools).toHaveLength(13);
     expect(CATEGORY_IDS).toHaveLength(5);
     expect(publishedCategories()).toEqual(CATEGORY_IDS);
 
@@ -33,7 +33,7 @@ describe("published catalogue", () => {
     expect(new Set(members.map((tool) => tool.href)).size).toBe(tools.length);
   });
 
-  it("derives the confirmed 68 indexable routes", () => {
+  it("derives the confirmed 70 indexable routes", () => {
     const localeLess =
       1 + // homepage
       tools.length +
@@ -45,7 +45,7 @@ describe("published catalogue", () => {
 
     expect(paths).toHaveLength(localeLess);
     expect(new Set(paths).size).toBe(paths.length);
-    expect(localeLess * LOCALE_CODES.length).toBe(68);
+    expect(localeLess * LOCALE_CODES.length).toBe(70);
   });
 });
 
@@ -119,13 +119,18 @@ describe("category metadata", () => {
       );
     });
 
-    it(`describes loan calculations on the Calculators page in ${locale}`, () => {
+    it(`describes loan and scientific calculations on the Calculators page in ${locale}`, () => {
       const page = dictionaries[locale].categories.Calculators.page;
       if (page === undefined) throw new Error("Calculators page copy");
 
       const copy = [page.metaDescription, ...page.intro].join(" ");
       expect(copy).toMatch(locale === "es" ? /préstamos?/i : /loans?/i);
       expect(copy).toMatch(locale === "es" ? /intereses/i : /interest/i);
+      expect(copy).toMatch(
+        locale === "es"
+          ? /científic|grados|radianes/i
+          : /scientific|degrees|radians/i,
+      );
     });
   }
 });

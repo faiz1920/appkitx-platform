@@ -8,13 +8,14 @@ The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKi
 
 ## Status
 
-Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Twelve tools are shipped, each built on the reusable `ToolLayout` template with cross-linked related tools:
+Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Thirteen tools are shipped, each built on the reusable `ToolLayout` template with cross-linked related tools:
 
 | Tool                  | Category        | English route            | Spanish route               |
 | --------------------- | --------------- | ------------------------ | --------------------------- |
 | Percentage Calculator | Calculators     | `/percentage-calculator` | `/es/percentage-calculator` |
 | Discount Calculator   | Calculators     | `/discount-calculator`   | `/es/discount-calculator`   |
 | Loan Calculator       | Calculators     | `/loan-calculator`       | `/es/loan-calculator`       |
+| Scientific Calculator | Calculators     | `/scientific-calculator` | `/es/scientific-calculator` |
 | Unit Converter        | Converters      | `/unit-converter`        | `/es/unit-converter`        |
 | Speed Converter       | Converters      | `/speed-converter`       | `/es/speed-converter`       |
 | Base64 Encoder        | Developer tools | `/base64-encoder`        | `/es/base64-encoder`        |

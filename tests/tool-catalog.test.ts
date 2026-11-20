@@ -78,6 +78,13 @@ describe("localizedToolCatalog", () => {
     expect(caseConverter?.title).toBe("Conversor de mayúsculas y minúsculas");
     expect(caseConverter?.category).toBe("Herramientas de texto");
     expect(caseConverter?.keywords).toContain("mayúsculas");
+
+    const scientific = catalog.find(
+      (tool) => tool.href === "/scientific-calculator",
+    );
+    expect(scientific?.title).toBe("Calculadora científica");
+    expect(scientific?.category).toBe("Calculadoras");
+    expect(scientific?.keywords).toContain("trigonometría");
   });
 
   it("keeps the English card text identical to the registry descriptions", () => {

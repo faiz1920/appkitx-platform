@@ -15,6 +15,12 @@ import type {
 } from "../lib/qr-payload";
 import type { QrEccLevel, QrSizePreset } from "../lib/qr-options";
 import type { CaseMode } from "../lib/case-convert";
+import type {
+  AngleMode,
+  ScientificControlKey,
+  ScientificFunctionKey,
+  ScientificIssue,
+} from "../lib/scientific";
 
 /*
  * Shared dictionary contract for every registered locale (audit M1, extended
@@ -763,6 +769,47 @@ export interface AgeCalculatorToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** Visible and accessible labels for one scientific calculator key. */
+export interface ScientificKeyLabel {
+  label: string;
+  ariaLabel: string;
+}
+
+/** Scientific Calculator page labels and interface strings. */
+export interface ScientificCalculatorToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  angleModeLegend: string;
+  angleModes: Record<AngleMode, string>;
+  angleModeHint: string;
+  expressionLabel: string;
+  expressionHint: string;
+  expressionPlaceholder: string;
+  keypadLabel: string;
+  functionKeys: Record<ScientificFunctionKey, ScientificKeyLabel>;
+  controlKeys: Record<ScientificControlKey, ScientificKeyLabel>;
+  /** Result line template; tokens: {expression}, {result}. */
+  resultCaption: string;
+  historyHeading: string;
+  historyHint: string;
+  historyEmpty: string;
+  historyResultLabel: string;
+  useExpression: string;
+  useResult: string;
+  keyboardHelp: string;
+  errors: Record<ScientificIssue, string>;
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** Per-tool dictionaries, keyed by tool. */
 export interface ToolsStrings {
   percentage: PercentageToolStrings;
@@ -770,6 +817,7 @@ export interface ToolsStrings {
   loanCalculator: LoanCalculatorToolStrings;
   unitConverter: UnitConverterToolStrings;
   speedConverter: SpeedConverterToolStrings;
+  scientificCalculator: ScientificCalculatorToolStrings;
   base64: Base64ToolStrings;
   json: JsonFormatterToolStrings;
   qrCodeGenerator: QrCodeGeneratorToolStrings;
