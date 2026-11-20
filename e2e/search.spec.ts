@@ -100,7 +100,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.goto("/");
   await openWithShortcut(page);
 
-  await expect(page.getByRole("option")).toHaveCount(8);
+  await expect(page.getByRole("option")).toHaveCount(12);
 
   await page.keyboard.press("ArrowDown");
   await expect(searchInput(page)).toHaveAttribute(
@@ -115,7 +115,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.keyboard.press("ArrowUp");
   await expect(searchInput(page)).toHaveAttribute(
     "aria-activedescendant",
-    "search-option-7",
+    "search-option-11",
   );
 
   await page.keyboard.press("ArrowDown");
@@ -146,7 +146,7 @@ test("typing filters results and shows the empty state", async ({ page }) => {
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "false");
 
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(8);
+  await expect(page.getByRole("option")).toHaveCount(12);
   await expect(empty).toBeHidden();
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "true");
 });
@@ -225,16 +225,21 @@ test("only lists registered tools with unique routes", async ({ page }) => {
   expect([...hrefs].sort()).toEqual([
     "/age-calculator/",
     "/base64-encoder/",
+    "/case-converter/",
     "/date-calculator/",
     "/discount-calculator/",
     "/json-formatter/",
     "/loan-calculator/",
     "/percentage-calculator/",
+    "/qr-code-generator/",
+    "/speed-converter/",
     "/unit-converter/",
+    "/word-counter/",
   ]);
   expect(new Set(hrefs).size).toBe(hrefs.length);
 
   await expect(palette(page).getByText("Unit Converter")).toBeVisible();
+  await expect(palette(page).getByText("Speed Converter")).toBeVisible();
   await expect(palette(page).getByText("Loan Calculator")).toBeVisible();
 });
 
@@ -257,6 +262,36 @@ test("finds and opens the developer tools by keyword", async ({ page }) => {
   await searchInput(page).fill("minify");
   await expect(page.getByRole("option")).toHaveCount(1);
   await expect(page.getByRole("option")).toContainText("JSON Formatter");
+
+  await openWithShortcut(page);
+  await searchInput(page).fill("qr code");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("option")).toContainText("QR Code Generator");
+});
+
+test("finds and opens the text tools by keyword", async ({ page }) => {
+  await page.goto("/");
+  await openWithShortcut(page);
+
+  await searchInput(page).fill("character count");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("option")).toContainText("Word Counter");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/word-counter\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Word Counter",
+  );
+
+  await openWithShortcut(page);
+  await searchInput(page).fill("uppercase");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("option")).toContainText("Case Converter");
+
+  await searchInput(page).fill("text tools");
+  await expect(page.getByRole("option")).toHaveCount(2);
+  await expect(page.getByRole("option").nth(0)).toContainText("Word Counter");
+  await expect(page.getByRole("option").nth(1)).toContainText("Case Converter");
 });
 
 test("finds and opens the date tools by keyword", async ({ page }) => {
@@ -280,6 +315,31 @@ test("finds and opens the date tools by keyword", async ({ page }) => {
   await expect(page.getByRole("option")).toContainText("Age Calculator");
 });
 
+test("finds and opens the speed converter by keyword", async ({ page }) => {
+  await page.goto("/");
+  await openWithShortcut(page);
+
+  await searchInput(page).fill("mph");
+  await expect(palette(page).getByRole("option")).toHaveCount(1);
+  await expect(palette(page).getByRole("option")).toContainText(
+    "Speed Converter",
+  );
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+
+  await expect(page).toHaveURL(/\/speed-converter\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Speed Converter",
+  );
+
+  await openWithShortcut(page);
+  await searchInput(page).fill("knots");
+  await expect(palette(page).getByRole("option")).toHaveCount(1);
+  await expect(palette(page).getByRole("option")).toContainText(
+    "Speed Converter",
+  );
+});
+
 test("uses the full-screen sheet at 320px without horizontal overflow", async ({
   page,
 }) => {
@@ -298,7 +358,7 @@ test("uses the full-screen sheet at 320px without horizontal overflow", async ({
   if (!box) throw new Error("palette is not visible");
   expect(box.width).toBeGreaterThanOrEqual(319);
   await expect(searchInput(page)).toBeVisible();
-  await expect(page.getByRole("option")).toHaveCount(8);
+  await expect(page.getByRole("option")).toHaveCount(12);
 });
 
 test("the Spanish palette searches localized tools and stays localized", async ({
@@ -357,6 +417,15 @@ test("the Spanish palette finds the loan calculator and unit converter", async (
   for (const [query, name, href] of [
     ["unidades", "Conversor de unidades", "/es/unit-converter/"],
     ["préstamo", "Calculadora de préstamos", "/es/loan-calculator/"],
+    ["velocidad", "Conversor de velocidad", "/es/speed-converter/"],
+    ["nudos", "Conversor de velocidad", "/es/speed-converter/"],
+    ["código qr", "Generador de códigos QR", "/es/qr-code-generator/"],
+    ["contador de palabras", "Contador de palabras", "/es/word-counter/"],
+    [
+      "mayúsculas",
+      "Conversor de mayúsculas y minúsculas",
+      "/es/case-converter/",
+    ],
   ] as const) {
     await searchInput(page).fill(query);
     await expect(page.getByRole("option"), `${query} must match`).toHaveCount(
@@ -376,5 +445,5 @@ test("the Spanish palette finds the loan calculator and unit converter", async (
   await expect(page.getByRole("option")).toContainText("Calculadora de fechas");
 
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(8);
+  await expect(page.getByRole("option")).toHaveCount(12);
 });

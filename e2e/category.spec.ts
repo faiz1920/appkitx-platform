@@ -42,8 +42,11 @@ test("the English category page lists the registered calculators", async ({
   await expect(cards.nth(2)).toContainText("Loan Calculator");
   await expect(cards.nth(2)).toHaveAttribute("href", "/loan-calculator/");
 
-  /* The only converter belongs to another category. */
+  /* The converters belong to another category. */
   await expect(page.getByRole("main").getByText("Unit Converter")).toHaveCount(
+    0,
+  );
+  await expect(page.getByRole("main").getByText("Speed Converter")).toHaveCount(
     0,
   );
 
@@ -99,7 +102,84 @@ test("the Spanish category page is fully localized", async ({ page }) => {
   });
 });
 
-test("the English developer tools page lists both registered tools", async ({
+test("the English converters page lists the registered converters", async ({
+  page,
+}) => {
+  const response = await page.goto("/converters/");
+  expect(response?.status()).toBe(200);
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Converters",
+  );
+  await expect(
+    page.getByRole("main").getByRole("heading", { level: 2 }),
+  ).toHaveText("Free online converters");
+
+  const breadcrumb = page.getByRole("navigation", { name: "Breadcrumb" });
+  await expect(breadcrumb.getByRole("link", { name: "Home" })).toHaveAttribute(
+    "href",
+    "/",
+  );
+  await expect(breadcrumb.locator('[aria-current="page"]')).toHaveText(
+    "Converters",
+  );
+
+  const cards = page
+    .getByRole("main")
+    .getByRole("link")
+    .filter({ hasText: "Open tool" });
+  await expect(cards).toHaveCount(2);
+  await expect(cards.nth(0)).toContainText("Unit Converter");
+  await expect(cards.nth(0)).toHaveAttribute("href", "/unit-converter/");
+  await expect(cards.nth(1)).toContainText("Speed Converter");
+  await expect(cards.nth(1)).toHaveAttribute("href", "/speed-converter/");
+
+  await page.screenshot({
+    path: "test-results/category-converters-en.png",
+    fullPage: true,
+  });
+});
+
+test("the Spanish converters page is fully localized", async ({ page }) => {
+  const response = await page.goto("/es/converters/");
+  expect(response?.status()).toBe(200);
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Conversores",
+  );
+  await expect(
+    page.getByRole("main").getByRole("heading", { level: 2 }),
+  ).toHaveText("Conversores online gratis");
+
+  const breadcrumb = page.getByRole("navigation", {
+    name: "Ruta de navegación",
+  });
+  await expect(
+    breadcrumb.getByRole("link", { name: "Inicio" }),
+  ).toHaveAttribute("href", "/es/");
+  await expect(breadcrumb.locator('[aria-current="page"]')).toHaveText(
+    "Conversores",
+  );
+
+  const cards = page
+    .getByRole("main")
+    .getByRole("link")
+    .filter({ hasText: "Abrir herramienta" });
+  await expect(cards).toHaveCount(2);
+  await expect(cards.nth(0)).toContainText("Conversor de unidades");
+  await expect(cards.nth(0)).toHaveAttribute("href", "/es/unit-converter/");
+  await expect(cards.nth(1)).toContainText("Conversor de velocidad");
+  await expect(cards.nth(1)).toHaveAttribute("href", "/es/speed-converter/");
+
+  await page.screenshot({
+    path: "test-results/category-converters-es.png",
+    fullPage: true,
+  });
+});
+
+test("the English developer tools page lists the registered tools", async ({
   page,
 }) => {
   const response = await page.goto("/developer-tools/");
@@ -126,11 +206,13 @@ test("the English developer tools page lists both registered tools", async ({
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Open tool" });
-  await expect(cards).toHaveCount(2);
+  await expect(cards).toHaveCount(3);
   await expect(cards.nth(0)).toContainText("Base64 Encoder");
   await expect(cards.nth(0)).toHaveAttribute("href", "/base64-encoder/");
   await expect(cards.nth(1)).toContainText("JSON Formatter");
   await expect(cards.nth(1)).toHaveAttribute("href", "/json-formatter/");
+  await expect(cards.nth(2)).toContainText("QR Code Generator");
+  await expect(cards.nth(2)).toHaveAttribute("href", "/qr-code-generator/");
 
   await page.screenshot({
     path: "test-results/category-developer-tools-en.png",
@@ -166,11 +248,13 @@ test("the Spanish developer tools page is fully localized", async ({
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Abrir herramienta" });
-  await expect(cards).toHaveCount(2);
+  await expect(cards).toHaveCount(3);
   await expect(cards.nth(0)).toContainText("Codificador Base64");
   await expect(cards.nth(0)).toHaveAttribute("href", "/es/base64-encoder/");
   await expect(cards.nth(1)).toContainText("Formateador JSON");
   await expect(cards.nth(1)).toHaveAttribute("href", "/es/json-formatter/");
+  await expect(cards.nth(2)).toContainText("Generador de códigos QR");
+  await expect(cards.nth(2)).toHaveAttribute("href", "/es/qr-code-generator/");
 
   await page.screenshot({
     path: "test-results/category-developer-tools-es.png",
@@ -255,15 +339,89 @@ test("the Spanish date & time page is fully localized", async ({ page }) => {
   });
 });
 
-test("unpublished categories return 404 without redirects", async ({
+test("the English text tools page lists the registered tools", async ({
+  page,
+}) => {
+  const response = await page.goto("/text-tools/");
+  expect(response?.status()).toBe(200);
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Text tools",
+  );
+  await expect(
+    page.getByRole("main").getByRole("heading", { level: 2 }),
+  ).toHaveText("Free text tools");
+
+  const breadcrumb = page.getByRole("navigation", { name: "Breadcrumb" });
+  await expect(breadcrumb.getByRole("link", { name: "Home" })).toHaveAttribute(
+    "href",
+    "/",
+  );
+  await expect(breadcrumb.locator('[aria-current="page"]')).toHaveText(
+    "Text tools",
+  );
+
+  const cards = page
+    .getByRole("main")
+    .getByRole("link")
+    .filter({ hasText: "Open tool" });
+  await expect(cards).toHaveCount(2);
+  await expect(cards.nth(0)).toContainText("Word Counter");
+  await expect(cards.nth(0)).toHaveAttribute("href", "/word-counter/");
+  await expect(cards.nth(1)).toContainText("Case Converter");
+  await expect(cards.nth(1)).toHaveAttribute("href", "/case-converter/");
+
+  await page.screenshot({
+    path: "test-results/category-text-tools-en.png",
+    fullPage: true,
+  });
+});
+
+test("the Spanish text tools page is fully localized", async ({ page }) => {
+  const response = await page.goto("/es/text-tools/");
+  expect(response?.status()).toBe(200);
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Herramientas de texto",
+  );
+  await expect(
+    page.getByRole("main").getByRole("heading", { level: 2 }),
+  ).toHaveText("Herramientas de texto gratis");
+
+  const breadcrumb = page.getByRole("navigation", {
+    name: "Ruta de navegación",
+  });
+  await expect(
+    breadcrumb.getByRole("link", { name: "Inicio" }),
+  ).toHaveAttribute("href", "/es/");
+  await expect(breadcrumb.locator('[aria-current="page"]')).toHaveText(
+    "Herramientas de texto",
+  );
+
+  const cards = page
+    .getByRole("main")
+    .getByRole("link")
+    .filter({ hasText: "Abrir herramienta" });
+  await expect(cards).toHaveCount(2);
+  await expect(cards.nth(0)).toContainText("Contador de palabras");
+  await expect(cards.nth(0)).toHaveAttribute("href", "/es/word-counter/");
+  await expect(cards.nth(1)).toContainText(
+    "Conversor de mayúsculas y minúsculas",
+  );
+  await expect(cards.nth(1)).toHaveAttribute("href", "/es/case-converter/");
+
+  await page.screenshot({
+    path: "test-results/category-text-tools-es.png",
+    fullPage: true,
+  });
+});
+
+test("unregistered category paths return 404 without redirects", async ({
   request,
 }) => {
-  for (const path of [
-    "/converters/",
-    "/text-tools/",
-    "/es/converters/",
-    "/categories/",
-  ]) {
+  for (const path of ["/categories/"]) {
     const response = await request.get(path, { maxRedirects: 0 });
     expect(response.status(), `${path} must 404`).toBe(404);
     expect(
@@ -273,10 +431,10 @@ test("unpublished categories return 404 without redirects", async ({
   }
 });
 
-test("an unpublished category path renders the noindex 404 page", async ({
+test("an unregistered category path renders the noindex 404 page", async ({
   page,
 }) => {
-  const response = await page.goto("/converters/");
+  const response = await page.goto("/categories/");
   expect(response?.status()).toBe(404);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
     "content",
@@ -290,11 +448,15 @@ test("an unpublished category path renders the noindex 404 page", async ({
 test("category intros avoid hardcoded tool counts", async ({ page }) => {
   for (const path of [
     "/calculators/",
+    "/converters/",
     "/developer-tools/",
     "/date-time/",
+    "/text-tools/",
     "/es/calculators/",
+    "/es/converters/",
     "/es/developer-tools/",
     "/es/date-time/",
+    "/es/text-tools/",
   ]) {
     await page.goto(path);
 
@@ -318,8 +480,10 @@ test("the homepage chip and footer link the published categories", async ({
 
   for (const [name, href] of [
     ["Calculators", "/calculators/"],
+    ["Converters", "/converters/"],
     ["Developer tools", "/developer-tools/"],
     ["Date & time", "/date-time/"],
+    ["Text tools", "/text-tools/"],
   ] as const) {
     await expect(
       page.getByRole("main").getByRole("link", { name }),
@@ -329,23 +493,13 @@ test("the homepage chip and footer link the published categories", async ({
     ).toHaveAttribute("href", href);
   }
 
-  /* Unpublished categories keep their in-page anchor on the homepage and
-     render as plain text (never a link) in the footer. */
-  await expect(
-    page.getByRole("main").getByRole("link", { name: "Converters" }),
-  ).toHaveAttribute("href", "#tools");
-  await expect(
-    page.getByRole("contentinfo").getByRole("link", { name: "Converters" }),
-  ).toHaveCount(0);
-  await expect(
-    page.getByRole("contentinfo").getByText("Converters"),
-  ).toBeVisible();
-
   await page.goto("/es/");
   for (const [name, href] of [
     ["Calculadoras", "/es/calculators/"],
+    ["Conversores", "/es/converters/"],
     ["Herramientas de desarrollo", "/es/developer-tools/"],
     ["Fecha y hora", "/es/date-time/"],
+    ["Herramientas de texto", "/es/text-tools/"],
   ] as const) {
     await expect(
       page.getByRole("main").getByRole("link", { name }),
@@ -369,6 +523,21 @@ test("tool pages link to their published category", async ({ page }) => {
       href: "/calculators/",
     },
     {
+      path: "/loan-calculator/",
+      label: "See all",
+      href: "/calculators/",
+    },
+    {
+      path: "/unit-converter/",
+      label: "See all",
+      href: "/converters/",
+    },
+    {
+      path: "/speed-converter/",
+      label: "See all",
+      href: "/converters/",
+    },
+    {
       path: "/base64-encoder/",
       label: "See all",
       href: "/developer-tools/",
@@ -377,6 +546,21 @@ test("tool pages link to their published category", async ({ page }) => {
       path: "/json-formatter/",
       label: "See all",
       href: "/developer-tools/",
+    },
+    {
+      path: "/qr-code-generator/",
+      label: "See all",
+      href: "/developer-tools/",
+    },
+    {
+      path: "/word-counter/",
+      label: "See all",
+      href: "/text-tools/",
+    },
+    {
+      path: "/case-converter/",
+      label: "See all",
+      href: "/text-tools/",
     },
     {
       path: "/es/percentage-calculator/",
@@ -389,6 +573,21 @@ test("tool pages link to their published category", async ({ page }) => {
       href: "/es/calculators/",
     },
     {
+      path: "/es/loan-calculator/",
+      label: "Ver todas",
+      href: "/es/calculators/",
+    },
+    {
+      path: "/es/unit-converter/",
+      label: "Ver todas",
+      href: "/es/converters/",
+    },
+    {
+      path: "/es/speed-converter/",
+      label: "Ver todas",
+      href: "/es/converters/",
+    },
+    {
       path: "/es/base64-encoder/",
       label: "Ver todas",
       href: "/es/developer-tools/",
@@ -397,6 +596,21 @@ test("tool pages link to their published category", async ({ page }) => {
       path: "/es/json-formatter/",
       label: "Ver todas",
       href: "/es/developer-tools/",
+    },
+    {
+      path: "/es/qr-code-generator/",
+      label: "Ver todas",
+      href: "/es/developer-tools/",
+    },
+    {
+      path: "/es/word-counter/",
+      label: "Ver todas",
+      href: "/es/text-tools/",
+    },
+    {
+      path: "/es/case-converter/",
+      label: "Ver todas",
+      href: "/es/text-tools/",
     },
     {
       path: "/date-calculator/",
@@ -428,6 +642,54 @@ test("tool pages link to their published category", async ({ page }) => {
   }
 });
 
+test("the text tools link to each other as related tools", async ({ page }) => {
+  await page.goto("/word-counter/");
+  await expect(
+    page.getByRole("main").getByRole("link", { name: /Case Converter/ }),
+  ).toHaveAttribute("href", "/case-converter/");
+
+  await page.goto("/case-converter/");
+  await expect(
+    page.getByRole("main").getByRole("link", { name: /Word Counter/ }),
+  ).toHaveAttribute("href", "/word-counter/");
+
+  await page.goto("/es/word-counter/");
+  await expect(
+    page
+      .getByRole("main")
+      .getByRole("link", { name: /Conversor de mayúsculas y minúsculas/ }),
+  ).toHaveAttribute("href", "/es/case-converter/");
+
+  await page.goto("/es/case-converter/");
+  await expect(
+    page.getByRole("main").getByRole("link", { name: /Contador de palabras/ }),
+  ).toHaveAttribute("href", "/es/word-counter/");
+});
+
+test("the converters link to each other as related tools", async ({ page }) => {
+  await page.goto("/unit-converter/");
+  await expect(
+    page.getByRole("main").getByRole("link", { name: /Speed Converter/ }),
+  ).toHaveAttribute("href", "/speed-converter/");
+
+  await page.goto("/speed-converter/");
+  await expect(
+    page.getByRole("main").getByRole("link", { name: /Unit Converter/ }),
+  ).toHaveAttribute("href", "/unit-converter/");
+
+  await page.goto("/es/unit-converter/");
+  await expect(
+    page
+      .getByRole("main")
+      .getByRole("link", { name: /Conversor de velocidad/ }),
+  ).toHaveAttribute("href", "/es/speed-converter/");
+
+  await page.goto("/es/speed-converter/");
+  await expect(
+    page.getByRole("main").getByRole("link", { name: /Conversor de unidades/ }),
+  ).toHaveAttribute("href", "/es/unit-converter/");
+});
+
 test("the language switcher preserves the category page", async ({ page }) => {
   await page.goto("/calculators/");
 
@@ -456,6 +718,19 @@ test("the language switcher preserves the developer tools page", async ({
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 });
 
+test("the language switcher preserves the text tools page", async ({
+  page,
+}) => {
+  await page.goto("/text-tools/");
+
+  const switcher = page.locator("[data-language-switcher]:visible");
+  await switcher.locator("summary").click();
+  await switcher.locator('[data-locale-choice="es"]').click();
+
+  await expect(page).toHaveURL(/\/es\/text-tools\/$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+});
+
 test("the language switcher preserves the date & time page", async ({
   page,
 }) => {
@@ -474,11 +749,15 @@ test("category pages keep layout at 320px", async ({ page }) => {
 
   for (const path of [
     "/calculators/",
+    "/converters/",
     "/developer-tools/",
     "/date-time/",
+    "/text-tools/",
     "/es/calculators/",
+    "/es/converters/",
     "/es/developer-tools/",
     "/es/date-time/",
+    "/es/text-tools/",
   ]) {
     await page.goto(path);
     const overflow = await page.evaluate(

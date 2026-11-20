@@ -73,13 +73,18 @@ describe("category membership", () => {
     ]);
     expect(toolsInCategory("Converters").map((tool) => tool.href)).toEqual([
       "/unit-converter",
+      "/speed-converter",
     ]);
     expect(toolsInCategory("Developer tools").map((tool) => tool.href)).toEqual(
-      ["/base64-encoder", "/json-formatter"],
+      ["/base64-encoder", "/json-formatter", "/qr-code-generator"],
     );
     expect(toolsInCategory("Date & time").map((tool) => tool.href)).toEqual([
       "/date-calculator",
       "/age-calculator",
+    ]);
+    expect(toolsInCategory("Text tools").map((tool) => tool.href)).toEqual([
+      "/word-counter",
+      "/case-converter",
     ]);
   });
 
@@ -88,8 +93,12 @@ describe("category membership", () => {
     expect(toolCategory("/discount-calculator")).toBe("Calculators");
     expect(toolCategory("/loan-calculator")).toBe("Calculators");
     expect(toolCategory("/unit-converter")).toBe("Converters");
+    expect(toolCategory("/speed-converter")).toBe("Converters");
+    expect(toolCategory("/qr-code-generator")).toBe("Developer tools");
     expect(toolCategory("/date-calculator")).toBe("Date & time");
     expect(toolCategory("/age-calculator")).toBe("Date & time");
+    expect(toolCategory("/word-counter")).toBe("Text tools");
+    expect(toolCategory("/case-converter")).toBe("Text tools");
     expect(() => toolCategory("/not-a-tool")).toThrow(/unregistered tool/i);
   });
 });
@@ -100,8 +109,8 @@ describe("category page publication", () => {
     expect(isCategoryPublished("Calculators")).toBe(true);
     expect(isCategoryPublished("Developer tools")).toBe(true);
     expect(isCategoryPublished("Date & time")).toBe(true);
-    expect(isCategoryPublished("Converters")).toBe(false);
-    expect(isCategoryPublished("Text tools")).toBe(false);
+    expect(isCategoryPublished("Converters")).toBe(true);
+    expect(isCategoryPublished("Text tools")).toBe(true);
   });
 
   it("derives the published set from the registry", () => {
@@ -114,8 +123,10 @@ describe("category page publication", () => {
     );
     expect(publishedCategories()).toEqual([
       "Calculators",
+      "Converters",
       "Developer tools",
       "Date & time",
+      "Text tools",
     ]);
   });
 });

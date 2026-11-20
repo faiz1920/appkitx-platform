@@ -9,9 +9,9 @@ export const en: Dictionary = {
   layout: {
     defaultTitle: "AppKitX — Free Online Tools",
     defaultDescription:
-      "Free calculators, unit converters, developer utilities, and date and time tools, all in one place.",
+      "Free calculators, unit converters, developer utilities, text tools, and date and time tools, all in one place.",
     socialImageAlt:
-      "AppKitX — free online tools for calculators, unit converters, developer utilities, and date and time tools.",
+      "AppKitX — free online tools for calculators, unit converters, developer utilities, text tools, and date and time tools.",
     skipToContent: "Skip to content",
   },
   nav: {
@@ -76,7 +76,7 @@ export const en: Dictionary = {
   home: {
     heroTitle: "Free tools for everyday work.",
     heroSubline:
-      "Calculators, unit converters, developer utilities, and date and time tools — all in one place.",
+      "Calculators, unit converters, developer utilities, text tools, and date and time tools — all in one place.",
     browseByCategory: "Browse by category",
     exploreHeading: "Explore the toolkit.",
   },
@@ -86,25 +86,37 @@ export const en: Dictionary = {
       page: {
         title: "Free Online Calculators — AppKitX",
         metaDescription:
-          "Free calculators for percentages and discounts: find a percentage of a number, work out percent change, or see the final price after a discount.",
+          "Free calculators for percentages, discounts, and loans: work out percent change, see a discount's final price, and estimate monthly loan payments and interest.",
         toolsHeading: "Free online calculators",
         intro: [
-          "The calculators cover the everyday percentage math: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, and see what a discount saves and its final price.",
-          "They run entirely in your browser, show the formula behind each result, and let you copy it with one click. Amounts are treated exactly as you enter them — the discount calculator is currency-neutral, and results are rounded only for display.",
+          "The calculators cover everyday money math: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, see what a discount saves and its final price, and estimate a loan's monthly payment, total interest, and total cost.",
+          "They run entirely in your browser, show the formula behind each result, and let you copy it with one click. Amounts are treated exactly as you enter them — the discount and loan calculators are currency-neutral, and results are rounded only for display.",
         ],
       },
     },
-    Converters: { name: "Converters" },
+    Converters: {
+      name: "Converters",
+      page: {
+        title: "Free Unit and Speed Converters — AppKitX",
+        metaDescription:
+          "Free online converters for length, weight, temperature, and speed: switch between metric and imperial units, km/h and mph, m/s, ft/s, and knots.",
+        toolsHeading: "Free online converters",
+        intro: [
+          "The converters cover the measurements people switch between most often: length and distance, weight, temperature, and speed. Pick the source and target units, and get the result with the same calculation written out in full.",
+          "Everything runs in your browser, results keep full precision internally and are rounded only for display, and every conversion can be copied with one click. Numbers follow the page language, including the decimal separator.",
+        ],
+      },
+    },
     "Developer tools": {
       name: "Developer tools",
       page: {
         title: "Free Developer Tools — AppKitX",
         metaDescription:
-          "Free browser-based developer tools: encode and decode Base64, and format, minify, or validate JSON. Nothing you paste is uploaded.",
+          "Free browser-based developer tools: encode and decode Base64, format and validate JSON, and generate customizable QR codes. Nothing you enter is uploaded.",
         toolsHeading: "Free developer tools",
         intro: [
-          "Browser-based utilities for everyday developer work: convert text to Base64 and back, and format, minify, or validate JSON.",
-          "They run entirely in your browser — nothing you paste is uploaded anywhere. Each tool documents its behavior and edge cases, and every result can be copied with one click.",
+          "Browser-based utilities for everyday developer work: convert text to Base64 and back, format, minify, or validate JSON, and generate QR codes for links, text, contact details, Wi-Fi, and more.",
+          "They run entirely in your browser — nothing you paste or type is uploaded anywhere. Each tool documents its behavior and edge cases, and every result can be copied or downloaded.",
         ],
       },
     },
@@ -121,7 +133,19 @@ export const en: Dictionary = {
         ],
       },
     },
-    "Text tools": { name: "Text tools" },
+    "Text tools": {
+      name: "Text tools",
+      page: {
+        title: "Free Text Tools — AppKitX",
+        metaDescription:
+          "Free browser-based text tools: count words, characters, sentences, and reading time, and convert text between uppercase, lowercase, title, sentence, and programming cases. Nothing you type is uploaded.",
+        toolsHeading: "Free text tools",
+        intro: [
+          "The text tools cover the writing and editing jobs that come up every day: measure a draft's words, characters, sentences, paragraphs, and estimated reading or speaking time, or switch text between uppercase, lowercase, title, sentence, and programming-style cases.",
+          "They run entirely in your browser — nothing you paste or type is uploaded, stored, or sent to a third-party service. Each tool documents its counting and conversion rules, including what changes for non-Latin scripts, and the converted text can be copied with one click.",
+        ],
+      },
+    },
   },
   toolLayout: {
     breadcrumbLabel: "Breadcrumb",
@@ -511,6 +535,70 @@ export const en: Dictionary = {
         },
       ],
     },
+    speedConverter: {
+      title: "Speed Converter — AppKitX",
+      metaDescription:
+        "Free speed converter for kilometers per hour, miles per hour, meters per second, feet per second, and knots — with exact results in your browser.",
+      name: "Speed Converter",
+      description:
+        "Convert speeds between kilometers per hour, miles per hour, meters per second, feet per second, and knots.",
+      cardDescription: "Convert between km/h, mph, m/s, ft/s, and knots.",
+      keywords: [
+        "speed",
+        "velocity",
+        "speed converter",
+        "km/h",
+        "kph",
+        "mph",
+        "m/s",
+        "ft/s",
+        "knots",
+        "kilometers per hour",
+        "miles per hour",
+        "meters per second",
+        "feet per second",
+        "convert speed",
+      ],
+      units: {
+        kmh: "Kilometer per hour",
+        mph: "Mile per hour",
+        ms: "Meter per second",
+        fts: "Foot per second",
+        kn: "Knot",
+      },
+      valueLabel: "Speed",
+      valueHint: "The speed you want to convert.",
+      fromLabel: "From",
+      toLabel: "To",
+      caption: "{value} {from} = {result} {to}",
+      copyText: "{value} {from} = {result} {to}",
+      resultOverflow:
+        "The converted value is outside the supported numeric range. Try a value closer to zero.",
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Enter the speed, choose the unit it is in and the unit you want, then select Calculate. The result appears with the same conversion written out in full, and you can copy it with one click.",
+            "Everything runs in your browser. The converter keeps full precision internally and rounds only the displayed result.",
+          ],
+        },
+        {
+          heading: "Exact definitions",
+          paragraphs: [
+            "All five units are linear, so each conversion is a single multiplication: `1 m/s = 3.6 km/h`, `1 mph = 1.609344 km/h`, `1 ft/s = 1.09728 km/h`, and `1 kn = 1.852 km/h`.",
+            "A knot is one nautical mile per hour, not a statute mile per hour, which is why `1 kn = 1.150779448 mph`.",
+          ],
+        },
+        {
+          heading: "Precision and assumptions",
+          items: [
+            "Results keep full precision internally and are shown with up to 10 significant digits, so small values stay readable and exact definitions do not collect rounding noise.",
+            "Negative values are treated as signed velocities: they convert normally instead of being rejected.",
+            "Displayed numbers follow the page language: a decimal comma in Spanish and a decimal point in English.",
+          ],
+        },
+      ],
+    },
     base64: {
       title: "Base64 Encoder — AppKitX",
       metaDescription:
@@ -658,6 +746,382 @@ export const en: Dictionary = {
         },
       ],
     },
+    qrCodeGenerator: {
+      title: "QR Code Generator — AppKitX",
+      metaDescription:
+        "Free client-side QR code generator for links, text, email, phone, SMS, Wi-Fi, and vCard contacts. Customize colors and size, then download PNG or SVG.",
+      name: "QR Code Generator",
+      description:
+        "Generate customizable QR codes for links, text, contacts, Wi-Fi, and more — entirely in your browser.",
+      cardDescription:
+        "Generate customizable QR codes for links, text, contacts, and Wi-Fi.",
+      keywords: [
+        "qr",
+        "qr code",
+        "qr code generator",
+        "generate qr",
+        "wifi qr",
+        "vcard",
+        "contact qr",
+        "sms qr",
+        "url qr",
+        "download qr",
+      ],
+      contentTypeLabel: "Content type",
+      contentTypes: {
+        url: "URL / Website",
+        text: "Plain text",
+        email: "Email address",
+        phone: "Phone number",
+        sms: "SMS",
+        wifi: "Wi-Fi network",
+        vcard: "vCard contact",
+      },
+      fields: {
+        url: {
+          label: "Website URL",
+          hint: "Include https://, or we'll add it for you.",
+          placeholder: "https://example.com",
+        },
+        text: {
+          label: "Text",
+          hint: "Any text, including line breaks.",
+          placeholder: "Hello from AppKitX",
+        },
+        email: {
+          label: "Email address",
+          hint: "Encodes a mailto: link that opens the visitor's email app.",
+          placeholder: "name@example.com",
+        },
+        phone: {
+          label: "Phone number",
+          hint: "Digits and an optional leading +. Spaces, dashes, and parentheses are removed.",
+          placeholder: "+1 555 123 4567",
+        },
+        sms: {
+          phone: {
+            label: "Phone number",
+            hint: "Digits and an optional leading +. Spaces, dashes, and parentheses are removed.",
+            placeholder: "+1 555 123 4567",
+          },
+          message: {
+            label: "Message (optional)",
+            hint: "Leave empty to open the messaging app without a draft.",
+            placeholder: "Hello!",
+          },
+        },
+        wifi: {
+          ssid: {
+            label: "Network name (SSID)",
+            hint: "The network name exactly as it appears in your device settings.",
+            placeholder: "Studio Wi-Fi",
+          },
+          password: {
+            label: "Password",
+            hint: "Encoded in the QR code. Leave empty for an open network.",
+            placeholder: "Network password",
+          },
+          passwordShow: "Show Wi-Fi password",
+          passwordHide: "Hide Wi-Fi password",
+          securityLabel: "Security",
+          securityHint: "WPA covers WPA2 and WPA3.",
+          securityOptions: {
+            WPA: "WPA/WPA2/WPA3",
+            WEP: "WEP",
+            nopass: "None (open network)",
+          },
+          hiddenLabel: "Hidden network",
+          hiddenHint: "Turn on if the network does not broadcast its SSID.",
+        },
+        vcard: {
+          name: {
+            label: "Name",
+            hint: "The contact's display name.",
+            placeholder: "Ada Lovelace",
+          },
+          phone: {
+            label: "Phone number (optional)",
+            hint: "Digits and an optional leading +.",
+            placeholder: "+1 555 123 4567",
+          },
+          email: {
+            label: "Email address (optional)",
+            hint: "Adds the contact's email address.",
+            placeholder: "ada@example.com",
+          },
+          organization: {
+            label: "Organization (optional)",
+            hint: "Company or group name.",
+            placeholder: "Analytical Engines",
+          },
+          website: {
+            label: "Website (optional)",
+            hint: "Include https://, or we'll add it for you.",
+            placeholder: "https://example.com",
+          },
+        },
+      },
+      customization: {
+        heading: "Customize",
+        foregroundLabel: "Foreground color",
+        backgroundLabel: "Background color",
+        sizeLabel: "Size",
+        sizeHint: "PNG and SVG export at 256, 512, or 1024 px.",
+        sizeOptions: {
+          small: "Small",
+          medium: "Medium",
+          large: "Large",
+        },
+        eccLabel: "Error correction",
+        eccHint: "Higher levels survive more damage but hold less data.",
+        eccOptions: {
+          L: "L — Low (7%)",
+          M: "M — Medium (15%)",
+          Q: "Q — Quartile (25%)",
+          H: "H — High (30%)",
+        },
+        quietZoneLabel: "Include quiet zone",
+        quietZoneHint: "Adds the standard 4-module margin scanners expect.",
+      },
+      preview: {
+        heading: "Preview",
+        placeholder: "Enter content to generate a QR code.",
+        alt: "QR code for the content entered in the form.",
+        downloadPng: "Download PNG",
+        downloadSvg: "Download SVG",
+        copyImage: "Copy image",
+        copied: "QR code copied to the clipboard.",
+        copyFailed: "Couldn't copy the image. Download the PNG instead.",
+        copyUnsupported:
+          "This browser can't copy images. Download the PNG instead.",
+        capacityError:
+          "This content is too long to fit in a QR code. Shorten it or choose a lower error-correction level.",
+        privacyTitle: "Generated in your browser",
+        privacyBody:
+          "Your content is encoded locally and never uploaded, stored, or sent to a QR service.",
+        warnings: {
+          inverted:
+            "This looks inverted. For reliable scanning, use a dark foreground on a light background.",
+          lowContrast:
+            "Low contrast may make this QR code hard to scan. Choose a darker foreground or a lighter background.",
+        },
+      },
+      validation: {
+        required: "This field is required.",
+        invalidEmail: "Enter a valid email address.",
+        invalidUrl: "Enter a valid website URL.",
+        invalidPhone:
+          "Enter a valid phone number (3–15 digits, optional leading +).",
+        wifiPasswordRequired:
+          "Enter the network password, or choose “None” for an open network.",
+      },
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Choose a content type, fill in the fields, and the preview updates as you type. Pick colors, size, and error correction, then download the PNG or SVG.",
+            "Everything is generated in your browser. Test the code with your phone before printing or publishing it.",
+          ],
+        },
+        {
+          heading: "What each type encodes",
+          paragraphs: [
+            "URLs become a web address (`https://` is added when missing). Email opens a `mailto:` link, phone numbers use `tel:`, and SMS uses an `sms:` link with an optional encoded message.",
+            "Wi-Fi uses the `WIFI:` format with the SSID, security type, and password. vCard contacts use `BEGIN:VCARD` with the name, phone, email, organization, and website you provide.",
+          ],
+        },
+        {
+          heading: "Scanning tips",
+          items: [
+            "Use a dark foreground on a light background. The default slate on white has strong contrast.",
+            "Keep the quiet zone on: scanners expect a margin around the modules.",
+            "Higher error correction survives more damage but fits less data; M is a good default.",
+            "Test the downloaded code with more than one scanner before printing it at scale.",
+          ],
+        },
+        {
+          heading: "Privacy",
+          paragraphs: [
+            "No content is uploaded, stored, or sent to a third-party QR service. The generator runs entirely in this page, and no analytics event includes what you type.",
+          ],
+        },
+      ],
+    },
+    wordCounter: {
+      title: "Word Counter — AppKitX",
+      metaDescription:
+        "Free word counter: count words, characters, sentences, paragraphs, and lines as you type, with estimated reading and speaking time. Nothing is uploaded.",
+      name: "Word Counter",
+      description:
+        "Count words, characters, sentences, paragraphs, and lines as you type, with estimated reading and speaking time — entirely in your browser.",
+      cardDescription:
+        "Count words, characters, sentences, and reading time as you type.",
+      keywords: [
+        "word counter",
+        "word count",
+        "character counter",
+        "character count",
+        "count words",
+        "count characters",
+        "sentence counter",
+        "paragraph counter",
+        "reading time",
+        "speaking time",
+        "text statistics",
+      ],
+      inputLabel: "Your text",
+      inputHint: "Paste or type text; the statistics update as you go.",
+      inputPlaceholder: "Paste or type your text here…",
+      copyText: "Copy text",
+      copySuccess: "Text copied to the clipboard.",
+      copyFailure: "Couldn't copy the text. Select it and copy manually.",
+      statsHeading: "Statistics",
+      statsHint:
+        "Words count Unicode letter, mark, and number runs; characters count user-perceived characters, not bytes.",
+      emptyHint: "Start typing or paste text to see live counts.",
+      stats: {
+        characters: "Characters",
+        charactersNoSpaces: "Characters (no spaces)",
+        words: "Words",
+        sentences: "Sentences",
+        paragraphs: "Paragraphs",
+        lines: "Lines",
+        readingTime: "Reading time",
+        speakingTime: "Speaking time",
+      },
+      duration: {
+        seconds: "{seconds} s",
+        minutes: "{minutes} min",
+        minutesSeconds: "{minutes} min {seconds} s",
+      },
+      privacyTitle: "Counted in your browser",
+      privacyBody:
+        "Your text is analyzed locally and never uploaded, stored, or sent to a third-party service.",
+      sections: [
+        {
+          heading: "How counting works",
+          paragraphs: [
+            "Words are counted as runs of Unicode letters, combining marks, digits, and numbers. Internal apostrophes and decimal separators stay inside a word; hyphens split words; punctuation-only and emoji-only content counts as zero.",
+            "Characters are user-perceived characters, so an emoji or an accented letter counts once even when it uses several code units. The no-spaces count excludes spaces, tabs, and line breaks. Browsers without `Intl.Segmenter` use a built-in fallback for combining marks, variation selectors, emoji modifiers, zero-width joiner sequences, regional-indicator flags, tag sequences, and CRLF pairs; rare sequences such as Hangul jamo composition may still differ from full Unicode segmentation.",
+          ],
+        },
+        {
+          heading: "Sentences, paragraphs, and lines",
+          paragraphs: [
+            "A sentence ends at `.`, `!`, `?`, `…`, `।`, `॥`, or `۔` when followed by whitespace or the end of a paragraph. CJK full stops and exclamation/question marks (`。`, `！`, `？`) also end a sentence even without a following space. Consecutive endings count once, and decimal points or punctuation inside a URL do not split a sentence. Abbreviations such as `Dr.` are treated as sentence ends because they cannot be detected reliably.",
+            "Paragraphs are separated by blank lines; single line breaks stay inside a paragraph. Lines count only non-empty lines.",
+          ],
+        },
+        {
+          heading: "Reading and speaking time",
+          paragraphs: [
+            "Reading time assumes 200 words per minute and speaking time assumes 130 words per minute. Both are rounded to the nearest second, with a one-second minimum for non-empty text. They are estimates for planning, not measurements of a specific reader or speaker.",
+          ],
+        },
+        {
+          heading: "Multilingual notes",
+          paragraphs: [
+            "Spanish accents and inverted punctuation need no special handling. Hindi words separated by spaces are counted individually, and `।` ends a sentence. Scripts that do not separate words with spaces, such as Chinese and Japanese, are counted as runs between spaces and punctuation; exact word boundaries in those scripts are a linguistic judgement, so the count is a consistent approximation rather than a dictionary segmentation.",
+            "Emoji are characters but not words. The tool never treats symbols or punctuation as a word just because they are visible.",
+          ],
+        },
+        {
+          heading: "Privacy",
+          paragraphs: [
+            "Counting happens entirely in this page. Nothing you paste is uploaded, saved in browser storage, or included in an analytics event.",
+          ],
+        },
+      ],
+    },
+    caseConverter: {
+      title: "Case Converter — AppKitX",
+      metaDescription:
+        "Free case converter: switch text between uppercase, lowercase, title case, sentence case, camelCase, PascalCase, snake_case, kebab-case, and more — in your browser.",
+      name: "Case Converter",
+      description:
+        "Convert text to uppercase, lowercase, title case, sentence case, camelCase, PascalCase, snake_case, kebab-case, and more — instantly, in your browser.",
+      cardDescription:
+        "Convert text to uppercase, lowercase, title case, camelCase, and more.",
+      keywords: [
+        "case converter",
+        "uppercase",
+        "lowercase",
+        "title case",
+        "sentence case",
+        "capitalized case",
+        "camelcase",
+        "pascalcase",
+        "snake case",
+        "kebab case",
+        "constant case",
+        "alternating case",
+        "change case",
+        "text case",
+      ],
+      inputLabel: "Your text",
+      inputHint: "Paste or type text; the result updates as you go.",
+      inputPlaceholder: "Paste or type the text you want to convert…",
+      modeLabel: "Conversion",
+      modeHint: "Switching modes never changes your input.",
+      modes: {
+        uppercase: "UPPERCASE",
+        lowercase: "lowercase",
+        title: "Title Case",
+        sentence: "Sentence case",
+        capitalized: "Capitalized Case",
+        camel: "camelCase",
+        pascal: "PascalCase",
+        snake: "snake_case",
+        kebab: "kebab-case",
+        constant: "CONSTANT_CASE",
+        alternating: "Alternating case",
+      },
+      outputLabel: "Converted text",
+      outputHint:
+        "Read-only output. Copy it or switch modes without changing your input.",
+      outputPlaceholder: "Converted text appears here.",
+      copyOutput: "Copy output",
+      copySuccess: "Output copied to the clipboard.",
+      copyFailure: "Couldn't copy the output. Select it and copy manually.",
+      privacyTitle: "Converted in your browser",
+      privacyBody:
+        "Your text is converted locally and never uploaded, stored, or sent to a third-party service.",
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Paste or type into the input pane and choose a conversion. The output updates immediately and stays read-only, so switching modes always starts from your original text. Use Copy output to reuse the result.",
+          ],
+        },
+        {
+          heading: "Text cases",
+          paragraphs: [
+            "Sentence case lowercases the text and capitalizes the first letter of each line and each sentence. Capitalized Case capitalizes every word, including short words such as “of” and “the”. Title Case keeps a short list of English and Spanish articles, conjunctions, and prepositions lowercase unless they are the first or last word of a line or follow a colon or sentence ending.",
+            "Alternating case changes the case of every letter in turn; spaces and punctuation do not count as letters.",
+          ],
+        },
+        {
+          heading: "Programming cases",
+          paragraphs: [
+            "camelCase, PascalCase, snake_case, kebab-case, and CONSTANT_CASE split the text into words, then join them with the chosen convention. Punctuation and line breaks are removed, apostrophes are dropped, and camel/Pascal boundaries such as `helloWorld` or `HTTPServer` are split before converting.",
+          ],
+        },
+        {
+          heading: "Unicode and limitations",
+          paragraphs: [
+            "Casing uses the browser's default Unicode mappings. Accented Spanish letters, Cyrillic, and Greek change case; scripts without case, such as Devanagari, Chinese, and Arabic, are unchanged by the text case modes. Programming modes still remove their spaces when joining words.",
+            "Proper nouns and acronyms are not inferred: title and capitalized modes lowercase the rest of each word, so `AppKitX` becomes `Appkitx`. Turkish dotted and dotless `i` follow the default Unicode mapping rather than Turkish locale rules.",
+            "Sentence case treats abbreviations such as `Dr.` as sentence ends because abbreviations cannot be detected reliably.",
+          ],
+        },
+        {
+          heading: "Privacy",
+          paragraphs: [
+            "Conversion happens entirely in this page. Nothing you paste is uploaded, saved in browser storage, or included in an analytics event.",
+          ],
+        },
+      ],
+    },
     dateCalculator: {
       title: "Date Calculator — AppKitX",
       metaDescription:
@@ -702,7 +1166,12 @@ export const en: Dictionary = {
         emptyStart: "Enter a start date.",
         emptyEnd: "Enter an end date.",
         emptyDate: "Enter a date.",
+        invalidStart: "Enter a valid start date.",
+        invalidEnd: "Enter a valid end date.",
+        invalidDate: "Enter a valid date.",
         amountRange: "Enter a whole number.",
+        resultRange:
+          "The resulting date is outside the supported range. Adjust the date or amount.",
       },
       differenceCaption: "From {from} to {to}.",
       shiftAddCaption: "Result of adding {amount} to {date}.",
@@ -738,6 +1207,7 @@ export const en: Dictionary = {
             "Amounts are whole numbers; negative amounts subtract. Fractional amounts are rejected with an inline message.",
             "The result includes the weekday of the resulting date in the add or subtract mode.",
             "Month-end clamping applies wherever months or years are moved: `August 31 + 1 month` is `September 30`, and `February 29, 2024 + 1 year` is `February 28, 2025`.",
+            "Supported dates run from `0001-01-01` to `275759-12-31`; results outside that range are rejected with an inline message instead of an invalid date.",
             "Nothing is uploaded: the calculation runs entirely in your browser.",
           ],
         },
@@ -769,6 +1239,7 @@ export const en: Dictionary = {
       copyText: "Age: {age}\nTotal days lived: {days}",
       errors: {
         empty: "Enter a date of birth.",
+        invalid: "Enter a valid date of birth.",
         future: "Date of birth can't be in the future.",
       },
       sections: [
@@ -795,6 +1266,7 @@ export const en: Dictionary = {
           heading: "Assumptions and edge cases",
           items: [
             "The date of birth must not be in the future; it is rejected with an inline message.",
+            "Supported dates run from `0001-01-01` to `275759-12-31`; dates outside that range are rejected with an inline message.",
             "Only whole days are counted — no hours, minutes, or timezones are involved, so the result never depends on where you are.",
             "The calculation is done entirely in your browser; the date you enter is never uploaded.",
           ],

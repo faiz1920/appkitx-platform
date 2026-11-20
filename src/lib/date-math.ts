@@ -6,12 +6,23 @@
  * on the browser timezone or DST. Contract, mirroring the other tool modules:
  * invalid input returns null (or false), never NaN or a clamped guess.
  *
+ * Supported years run from 1 through MAX_SUPPORTED_YEAR. The upper bound is
+ * the last full year every supported browser can represent and format with
+ * Intl; shifting past either end returns null instead of an unformattable
+ * Date or a misleading year 0.
+ *
  * Difference breakdown semantics: the canonical greedy decomposition — the
  * largest whole years, then months, then days such that adding them back to
  * the earlier date (with the same month-end clamping as shiftDate) reproaches
  * the later date. Examples: Jan 31 -> Feb 28 is 0y 1m 0d; Feb 29 2024 ->
  * Feb 28 2025 is 1y 0m 0d; the day count itself is exclusive.
  */
+
+/**
+ * Last full calendar year representable by `Date` and formattable by `Intl`
+ * in every supported engine (year 275760 is only partially representable).
+ */
+export const MAX_SUPPORTED_YEAR = 275759;
 
 export interface CivilDate {
   year: number;
@@ -54,6 +65,7 @@ export function daysInMonth(year: number, month: number): number {
 
 export function isValidCivilDate(date: CivilDate): boolean {
   if (!Number.isInteger(date.year) || date.year < 1) return false;
+  if (date.year > MAX_SUPPORTED_YEAR) return false;
   if (!Number.isInteger(date.month) || date.month < 1 || date.month > 12) {
     return false;
   }
@@ -115,10 +127,13 @@ function addMonthsClamped(date: CivilDate, months: number): CivilDate {
 
 /** Parse a native date-input value (YYYY-MM-DD) as a validated civil date. */
 export function parseDateInput(value: string): CivilDate | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+  const match = /^(\d{4,6})-(\d{2})-(\d{2})$/.exec(value.trim());
   if (!match) return null;
+  const yearText = match[1] ?? "";
+  /* Canonical date strings use four digits or a non-zero-padded longer year. */
+  if (yearText.length > 4 && yearText.startsWith("0")) return null;
   const date = {
-    year: Number(match[1]),
+    year: Number(yearText),
     month: Number(match[2]),
     day: Number(match[3]),
   };
@@ -164,7 +179,8 @@ export function difference(a: CivilDate, b: CivilDate): DateDifference | null {
  * the same arithmetic. Month and year steps move calendar months and clamp
  * to the last valid day of the target month (Jan 31 + 1 month is Feb 28 or
  * Feb 29; Mar 31 - 1 month is Feb 28 or Feb 29); day and week steps add
- * exact day counts. Fractional and non-finite amounts return null.
+ * exact day counts. Fractional and non-finite amounts return null, as do
+ * results outside the supported year range.
  */
 export function shiftDate(
   date: CivilDate,
@@ -173,13 +189,15 @@ export function shiftDate(
 ): CivilDate | null {
   if (!isValidCivilDate(date)) return null;
   if (!Number.isInteger(amount)) return null;
-  if (unit === "days") return civilFromDays(daysFromCivil(date) + amount);
-  if (unit === "weeks") {
-    return civilFromDays(daysFromCivil(date) + amount * 7);
-  }
-  if (unit === "months") return addMonthsClamped(date, amount);
-  if (unit === "years") return addMonthsClamped(date, amount * 12);
-  return null;
+
+  let result: CivilDate | null = null;
+  if (unit === "days") result = civilFromDays(daysFromCivil(date) + amount);
+  else if (unit === "weeks") {
+    result = civilFromDays(daysFromCivil(date) + amount * 7);
+  } else if (unit === "months") result = addMonthsClamped(date, amount);
+  else if (unit === "years") result = addMonthsClamped(date, amount * 12);
+
+  return result !== null && isValidCivilDate(result) ? result : null;
 }
 
 /*

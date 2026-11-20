@@ -82,6 +82,9 @@ test("English URLs stay unprefixed and Spanish keeps its prefix", async () => {
       "/percentage-calculator",
       "/discount-calculator",
       "/calculators",
+      "/word-counter",
+      "/case-converter",
+      "/text-tools",
     ]),
   );
 });

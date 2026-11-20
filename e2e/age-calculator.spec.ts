@@ -1,5 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { prepareClipboard } from "./clipboard";
+import { observeLiveRegion, stopObservingLiveRegion } from "./live-region";
 
 /*
  * M7 Phase 2 Age Calculator: age as of the device's local calendar date,
@@ -183,6 +184,80 @@ test("rejects empty and future birth dates with localized errors", async ({
   await expect(ageValue(page)).toHaveText("—");
 });
 
+test("announces birth-date errors once and clears them on correction", async ({
+  page,
+}) => {
+  await page.goto("/age-calculator");
+
+  const birth = birthInput(page);
+  const error = page.locator("[data-error-birth]");
+  const errorText = page.locator("[data-error-text-birth]");
+
+  await expect(error).toHaveAttribute("role", "alert");
+  await expect(error).toHaveAttribute("aria-atomic", "true");
+  await expect(error).toBeHidden();
+  await expect(birth).toHaveAttribute(
+    "aria-describedby",
+    "age-calc-hint-birth age-calc-error-birth",
+  );
+  expect(
+    await error.evaluate((element) => element.closest("[aria-live]") !== null),
+    "the birth error must not live inside the results live region",
+  ).toBe(false);
+  await expect(page.locator("[data-result-region]")).toHaveAttribute(
+    "aria-live",
+    "polite",
+  );
+
+  await page.getByRole("button", { name: "Calculate" }).click();
+  await expect(error).toBeVisible();
+  await expect(errorText).toHaveText("Enter a date of birth.");
+  await expect(birth).toHaveAttribute("aria-invalid", "true");
+
+  await observeLiveRegion(page, "[data-error-birth]");
+  await page.getByRole("button", { name: "Calculate" }).click();
+  await page.waitForTimeout(50);
+  expect(
+    await stopObservingLiveRegion(page),
+    "repeated empty error must not rewrite the alert",
+  ).toBe(0);
+
+  await birth.fill("10000-01-01");
+  await expect(error).toBeHidden();
+  await expect(errorText).toHaveText("");
+  await expect(birth).not.toHaveAttribute("aria-invalid", "true");
+
+  await page.getByRole("button", { name: "Calculate" }).click();
+  await expect(error).toBeVisible();
+  await expect(errorText).toHaveText("Date of birth can't be in the future.");
+
+  await observeLiveRegion(page, "[data-error-birth]");
+  await page.getByRole("button", { name: "Calculate" }).click();
+  await page.waitForTimeout(50);
+  expect(
+    await stopObservingLiveRegion(page),
+    "repeated future error must not rewrite the alert",
+  ).toBe(0);
+
+  await birth.fill("2000-01-01");
+  await expect(error).toBeHidden();
+  await page.getByRole("button", { name: "Calculate" }).click();
+  await expect(ageValue(page)).not.toHaveText("—");
+  await expect(error).toBeHidden();
+  await expect(birth).not.toHaveAttribute("aria-invalid", "true");
+
+  await birth.fill("275760-01-01");
+  await page.getByRole("button", { name: "Calculate" }).click();
+  await expect(error).toBeVisible();
+  await expect(errorText).toHaveText("Enter a valid date of birth.");
+
+  await page.getByRole("button", { name: "Reset" }).click();
+  await expect(error).toBeHidden();
+  await expect(errorText).toHaveText("");
+  await expect(birth).not.toHaveAttribute("aria-invalid", "true");
+  await expect(birth).toBeFocused();
+});
+
 test("handles a Feb 29 birth date", async ({ page }) => {
   await page.goto("/age-calculator");
 
@@ -195,6 +270,27 @@ test("handles a Feb 29 birth date", async ({ page }) => {
   await expect(daysValue(page)).toHaveText(
     formatDays(daysBetween(birth, todayParts())),
   );
+});
+
+test("distinguishes unsupported dates from valid future dates", async ({
+  page,
+}) => {
+  await page.goto("/age-calculator");
+
+  await birthInput(page).fill("275760-01-01");
+  await page.getByRole("button", { name: "Calculate" }).click();
+  await expect(page.locator("[data-error-text-birth]")).toHaveText(
+    "Enter a valid date of birth.",
+  );
+  await expect(ageValue(page)).toHaveText("—");
+
+  /* A five-digit year is a real date; it is rejected as future, not invalid. */
+  await birthInput(page).fill("10000-01-01");
+  await page.getByRole("button", { name: "Calculate" }).click();
+  await expect(page.locator("[data-error-text-birth]")).toHaveText(
+    "Date of birth can't be in the future.",
+  );
+  await expect(ageValue(page)).toHaveText("—");
 });
 
 test("copies the result with accessible success feedback", async ({
@@ -277,6 +373,21 @@ test("the Spanish page is localized and computes", async ({ page }) => {
     formatDays(daysBetween(birth, todayParts()), "es-ES"),
   );
   await expect(caption(page)).toContainText("A fecha de ");
+
+  await page.getByLabel("Fecha de nacimiento").fill("275760-01-01");
+  await page.getByRole("button", { name: "Calcular" }).click();
+  await expect(page.locator("[data-error-text-birth]")).toHaveText(
+    "Introduce una fecha de nacimiento válida.",
+  );
+  await expect(page.locator("[data-error-birth]")).toHaveAttribute(
+    "role",
+    "alert",
+  );
+  await expect(page.locator("[data-error-birth]")).toHaveAttribute(
+    "aria-atomic",
+    "true",
+  );
+  await expect(ageValue(page)).toHaveText("—");
 
   await page.screenshot({
     path: "test-results/age-calculator-es.png",

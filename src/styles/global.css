@@ -226,6 +226,15 @@
     outline-offset: 2px;
   }
 
+  /* QR export-size control: 44px targets with 8px separation
+     (AppKitX-Design.md → Accessibility / segmented controls). */
+  .segmented--large {
+    gap: 8px;
+  }
+  .segmented--large label {
+    height: var(--layout-control-height);
+  }
+
   /* Category chips (AppKitX-Design.md → Category chips) */
   .chip {
     display: inline-flex;

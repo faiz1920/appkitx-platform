@@ -21,9 +21,9 @@ export const es: Dictionary = {
   layout: {
     defaultTitle: "AppKitX — Herramientas online gratuitas",
     defaultDescription:
-      "Calculadoras, conversores de unidades, utilidades para desarrolladores y herramientas de fecha y hora, gratis y en un solo lugar.",
+      "Calculadoras, conversores de unidades, utilidades para desarrolladores, herramientas de texto y herramientas de fecha y hora, gratis y en un solo lugar.",
     socialImageAlt:
-      "AppKitX — herramientas online gratuitas: calculadoras, conversores de unidades, utilidades para desarrolladores y herramientas de fecha y hora.",
+      "AppKitX — herramientas online gratuitas: calculadoras, conversores de unidades, utilidades para desarrolladores, herramientas de texto y herramientas de fecha y hora.",
     skipToContent: "Saltar al contenido",
   },
   nav: {
@@ -88,7 +88,7 @@ export const es: Dictionary = {
   home: {
     heroTitle: "Herramientas gratis para el día a día.",
     heroSubline:
-      "Calculadoras, conversores de unidades, utilidades para desarrolladores y herramientas de fecha y hora, todo en un solo lugar.",
+      "Calculadoras, conversores de unidades, utilidades para desarrolladores, herramientas de texto y herramientas de fecha y hora, todo en un solo lugar.",
     browseByCategory: "Explorar por categoría",
     exploreHeading: "Explora el conjunto de herramientas.",
   },
@@ -98,25 +98,37 @@ export const es: Dictionary = {
       page: {
         title: "Calculadoras online gratis — AppKitX",
         metaDescription:
-          "Calculadoras gratis de porcentajes y descuentos: calcula el X % de un número, la variación porcentual o el precio final tras un descuento.",
+          "Calculadoras gratis de porcentajes, descuentos y préstamos: calcula variaciones, el precio final de un descuento y la cuota e intereses de un préstamo.",
         toolsHeading: "Calculadoras online gratis",
         intro: [
-          "Las calculadoras cubren las cuentas de porcentajes del día a día: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales y comprueba cuánto ahorras con un descuento y el precio final.",
-          "Funcionan por completo en tu navegador, muestran la fórmula de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes: la calculadora de descuentos es neutral respecto a la moneda y los resultados solo se redondean para mostrarlos.",
+          "Las calculadoras cubren las cuentas del día a día: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales, comprueba cuánto ahorras con un descuento y su precio final y estima la cuota mensual, los intereses totales y el coste total de un préstamo.",
+          "Funcionan por completo en tu navegador, muestran la fórmula de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes: las calculadoras de descuentos y préstamos son neutrales respecto a la moneda y los resultados solo se redondean para mostrarlos.",
         ],
       },
     },
-    Converters: { name: "Conversores" },
+    Converters: {
+      name: "Conversores",
+      page: {
+        title: "Conversores de unidades y velocidad gratis — AppKitX",
+        metaDescription:
+          "Conversores online gratis de longitud, peso, temperatura y velocidad: cambia entre unidades métricas e imperiales, km/h y mph, m/s, pies/s y nudos.",
+        toolsHeading: "Conversores online gratis",
+        intro: [
+          "Los conversores cubren las medidas que más se cambian en el día a día: longitud y distancia, peso, temperatura y velocidad. Elige las unidades de origen y destino y obtén el resultado con la misma conversión escrita completa.",
+          "Todo se ejecuta en tu navegador, los resultados conservan la precisión completa internamente y solo se redondean para mostrarlos, y cada conversión se puede copiar con un clic. Los números siguen el idioma de la página, incluido el separador decimal.",
+        ],
+      },
+    },
     "Developer tools": {
       name: "Herramientas de desarrollo",
       page: {
         title: "Herramientas de desarrollo gratis — AppKitX",
         metaDescription:
-          "Herramientas de desarrollo gratis en tu navegador: codifica y descodifica Base64 y formatea, minimiza o valida JSON. Nada de lo que pegas se sube.",
+          "Herramientas de desarrollo gratis en tu navegador: codifica y descodifica Base64, formatea y valida JSON y genera códigos QR personalizables. Nada de lo que escribes se sube.",
         toolsHeading: "Herramientas de desarrollo gratis",
         intro: [
-          "Utilidades en el navegador para el trabajo diario de desarrollo: convierte texto a Base64 y viceversa, y formatea, minimiza o valida JSON.",
-          "Se ejecutan por completo en tu navegador: nada de lo que pegas se sube a ningún sitio. Cada herramienta documenta su comportamiento y sus casos límite, y todos los resultados se pueden copiar con un clic.",
+          "Utilidades en el navegador para el trabajo diario de desarrollo: convierte texto a Base64 y viceversa, formatea, minimiza o valida JSON y genera códigos QR para enlaces, texto, datos de contacto, Wi-Fi y más.",
+          "Se ejecutan por completo en tu navegador: nada de lo que pegas o escribes se sube a ningún sitio. Cada herramienta documenta su comportamiento y sus casos límite, y todos los resultados se pueden copiar o descargar.",
         ],
       },
     },
@@ -133,7 +145,19 @@ export const es: Dictionary = {
         ],
       },
     },
-    "Text tools": { name: "Herramientas de texto" },
+    "Text tools": {
+      name: "Herramientas de texto",
+      page: {
+        title: "Herramientas de texto gratis — AppKitX",
+        metaDescription:
+          "Herramientas de texto gratis en tu navegador: cuenta palabras, caracteres, frases y tiempo de lectura, y convierte texto a mayúsculas, minúsculas, tipo título, tipo oración y casos de programación. Nada de lo que escribes se sube.",
+        toolsHeading: "Herramientas de texto gratis",
+        intro: [
+          "Las herramientas de texto cubren las tareas de escritura y edición del día a día: mide las palabras, caracteres, frases, párrafos y el tiempo estimado de lectura o de habla de un borrador, o cambia el texto entre mayúsculas, minúsculas, tipo título, tipo oración y casos de programación.",
+          "Funcionan por completo en tu navegador: nada de lo que pegas o escribes se sube, se almacena ni se envía a un servicio de terceros. Cada herramienta documenta sus reglas de recuento y conversión, incluido lo que cambia en escrituras no latinas, y el texto convertido se puede copiar con un clic.",
+        ],
+      },
+    },
   },
   toolLayout: {
     breadcrumbLabel: "Ruta de navegación",
@@ -529,6 +553,67 @@ export const es: Dictionary = {
         },
       ],
     },
+    speedConverter: {
+      title: "Conversor de velocidad — AppKitX",
+      metaDescription:
+        "Conversor de velocidad gratis para kilómetros por hora, millas por hora, metros por segundo, pies por segundo y nudos, con resultados exactos en tu navegador.",
+      name: "Conversor de velocidad",
+      description:
+        "Convierte velocidades entre kilómetros por hora, millas por hora, metros por segundo, pies por segundo y nudos.",
+      cardDescription: "Conversiones de km/h, mph, m/s, pies/s y nudos.",
+      keywords: [
+        "velocidad",
+        "conversor de velocidad",
+        "km/h",
+        "kph",
+        "mph",
+        "m/s",
+        "pies por segundo",
+        "nudos",
+        "kilómetros por hora",
+        "millas por hora",
+        "metros por segundo",
+      ],
+      units: {
+        kmh: "Kilómetro por hora",
+        mph: "Milla por hora",
+        ms: "Metro por segundo",
+        fts: "Pie por segundo",
+        kn: "Nudo",
+      },
+      valueLabel: "Velocidad",
+      valueHint: "La velocidad que quieres convertir.",
+      fromLabel: "De",
+      toLabel: "A",
+      caption: "{value} {from} = {result} {to}",
+      copyText: "{value} {from} = {result} {to}",
+      resultOverflow:
+        "El valor convertido está fuera del rango numérico admitido. Prueba con un valor más cercano a cero.",
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Escribe la velocidad, elige la unidad de origen y la de destino, y pulsa Calcular. El resultado aparece con la misma conversión escrita completa y puedes copiarlo con un clic.",
+            "Todo se ejecuta en tu navegador. El conversor conserva la precisión completa internamente y solo redondea el resultado que se muestra.",
+          ],
+        },
+        {
+          heading: "Definiciones exactas",
+          paragraphs: [
+            "Las cinco unidades son lineales, así que cada conversión es una sola multiplicación: `1 m/s = 3,6 km/h`, `1 mph = 1,609344 km/h`, `1 ft/s = 1,09728 km/h` y `1 kn = 1,852 km/h`.",
+            "Un nudo es una milla náutica por hora, no una milla terrestre por hora; por eso `1 kn = 1,150779448 mph`.",
+          ],
+        },
+        {
+          heading: "Precisión y supuestos",
+          items: [
+            "Los resultados conservan la precisión completa internamente y se muestran con hasta 10 dígitos significativos, de modo que los valores pequeños siguen siendo legibles y las definiciones exactas no acumulan ruido de redondeo.",
+            "Los valores negativos se tratan como velocidades con signo: se convierten con normalidad en lugar de rechazarse.",
+            "Los números mostrados siguen el idioma de la página: coma decimal en español y punto decimal en inglés.",
+          ],
+        },
+      ],
+    },
     base64: {
       title: "Codificador Base64 — AppKitX",
       metaDescription:
@@ -677,6 +762,388 @@ export const es: Dictionary = {
         },
       ],
     },
+    qrCodeGenerator: {
+      title: "Generador de códigos QR — AppKitX",
+      metaDescription:
+        "Generador de códigos QR gratis y local para URL, texto, correo, teléfono, SMS, Wi-Fi y contactos vCard. Personaliza colores y tamaño y descarga PNG o SVG.",
+      name: "Generador de códigos QR",
+      description:
+        "Genera códigos QR personalizables para enlaces, texto, contactos, Wi-Fi y más, todo en tu navegador.",
+      cardDescription:
+        "Genera códigos QR personalizables para enlaces, texto, contactos y Wi-Fi.",
+      keywords: [
+        "qr",
+        "código qr",
+        "generador de qr",
+        "generar qr",
+        "wifi qr",
+        "vcard",
+        "contacto qr",
+        "sms qr",
+        "url qr",
+        "descargar qr",
+      ],
+      contentTypeLabel: "Tipo de contenido",
+      contentTypes: {
+        url: "URL / Sitio web",
+        text: "Texto plano",
+        email: "Correo electrónico",
+        phone: "Número de teléfono",
+        sms: "SMS",
+        wifi: "Red Wi-Fi",
+        vcard: "Contacto vCard",
+      },
+      fields: {
+        url: {
+          label: "URL del sitio web",
+          hint: "Incluye https:// o lo añadiremos nosotros.",
+          placeholder: "https://ejemplo.com",
+        },
+        text: {
+          label: "Texto",
+          hint: "Cualquier texto, incluidos los saltos de línea.",
+          placeholder: "Hola desde AppKitX",
+        },
+        email: {
+          label: "Correo electrónico",
+          hint: "Codifica un enlace mailto: que abre la aplicación de correo.",
+          placeholder: "nombre@ejemplo.com",
+        },
+        phone: {
+          label: "Número de teléfono",
+          hint: "Dígitos y un + inicial opcional. Se eliminan espacios, guiones y paréntesis.",
+          placeholder: "+34 600 123 456",
+        },
+        sms: {
+          phone: {
+            label: "Número de teléfono",
+            hint: "Dígitos y un + inicial opcional. Se eliminan espacios, guiones y paréntesis.",
+            placeholder: "+34 600 123 456",
+          },
+          message: {
+            label: "Mensaje (opcional)",
+            hint: "Déjalo vacío para abrir la aplicación de mensajes sin borrador.",
+            placeholder: "Hola",
+          },
+        },
+        wifi: {
+          ssid: {
+            label: "Nombre de la red (SSID)",
+            hint: "El nombre exacto que aparece en los ajustes de tu dispositivo.",
+            placeholder: "Wi-Fi de casa",
+          },
+          password: {
+            label: "Contraseña",
+            hint: "Se codifica en el QR. Déjala vacía para una red abierta.",
+            placeholder: "Contraseña de la red",
+          },
+          passwordShow: "Mostrar contraseña de Wi-Fi",
+          passwordHide: "Ocultar contraseña de Wi-Fi",
+          securityLabel: "Seguridad",
+          securityHint: "WPA incluye WPA2 y WPA3.",
+          securityOptions: {
+            WPA: "WPA/WPA2/WPA3",
+            WEP: "WEP",
+            nopass: "Ninguna (red abierta)",
+          },
+          hiddenLabel: "Red oculta",
+          hiddenHint: "Actívalo si la red no emite su SSID.",
+        },
+        vcard: {
+          name: {
+            label: "Nombre",
+            hint: "El nombre visible del contacto.",
+            placeholder: "Ada Lovelace",
+          },
+          phone: {
+            label: "Teléfono (opcional)",
+            hint: "Dígitos y un + inicial opcional.",
+            placeholder: "+34 600 123 456",
+          },
+          email: {
+            label: "Correo electrónico (opcional)",
+            hint: "Añade el correo del contacto.",
+            placeholder: "ada@ejemplo.com",
+          },
+          organization: {
+            label: "Organización (opcional)",
+            hint: "Nombre de la empresa o del grupo.",
+            placeholder: "Analytical Engines",
+          },
+          website: {
+            label: "Sitio web (opcional)",
+            hint: "Incluye https:// o lo añadiremos nosotros.",
+            placeholder: "https://ejemplo.com",
+          },
+        },
+      },
+      customization: {
+        heading: "Personalizar",
+        foregroundLabel: "Color de primer plano",
+        backgroundLabel: "Color de fondo",
+        sizeLabel: "Tamaño",
+        sizeHint: "El PNG y el SVG se exportan a 256, 512 o 1024 px.",
+        sizeOptions: {
+          small: "Pequeño",
+          medium: "Mediano",
+          large: "Grande",
+        },
+        eccLabel: "Corrección de errores",
+        eccHint:
+          "Los niveles altos resisten más daño pero admiten menos datos.",
+        eccOptions: {
+          L: "L — Baja (7 %)",
+          M: "M — Media (15 %)",
+          Q: "Q — Cuartil (25 %)",
+          H: "H — Alta (30 %)",
+        },
+        quietZoneLabel: "Incluir zona de silencio",
+        quietZoneHint:
+          "Añade el margen estándar de 4 módulos que esperan los escáneres.",
+      },
+      preview: {
+        heading: "Vista previa",
+        placeholder: "Escribe contenido para generar un código QR.",
+        alt: "Código QR del contenido introducido en el formulario.",
+        downloadPng: "Descargar PNG",
+        downloadSvg: "Descargar SVG",
+        copyImage: "Copiar imagen",
+        copied: "Código QR copiado al portapapeles.",
+        copyFailed: "No se pudo copiar la imagen. Descarga el PNG.",
+        copyUnsupported:
+          "Este navegador no puede copiar imágenes. Descarga el PNG.",
+        capacityError:
+          "El contenido es demasiado largo para un código QR. Acórtalo o elige un nivel de corrección más bajo.",
+        privacyTitle: "Generado en tu navegador",
+        privacyBody:
+          "Tu contenido se codifica localmente y nunca se sube, se almacena ni se envía a un servicio de QR.",
+        warnings: {
+          inverted:
+            "Este código parece invertido. Para escanearlo con fiabilidad, usa un primer plano oscuro sobre un fondo claro.",
+          lowContrast:
+            "El contraste es bajo y el código puede costar de escanear. Elige un primer plano más oscuro o un fondo más claro.",
+        },
+      },
+      validation: {
+        required: "Este campo es obligatorio.",
+        invalidEmail: "Introduce un correo electrónico válido.",
+        invalidUrl: "Introduce una URL válida.",
+        invalidPhone:
+          "Introduce un teléfono válido (3–15 dígitos, con + inicial opcional).",
+        wifiPasswordRequired:
+          "Introduce la contraseña de la red o elige «Ninguna» para una red abierta.",
+      },
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Elige un tipo de contenido, rellena los campos y la vista previa se actualiza mientras escribes. Escoge colores, tamaño y corrección de errores, y descarga el PNG o el SVG.",
+            "Todo se genera en tu navegador. Prueba el código con tu teléfono antes de imprimirlo o publicarlo.",
+          ],
+        },
+        {
+          heading: "Qué codifica cada tipo",
+          paragraphs: [
+            "Las URL se convierten en una dirección web (se añade `https://` si falta). El correo abre un enlace `mailto:`, el teléfono usa `tel:` y el SMS usa un enlace `sms:` con un mensaje codificado opcional.",
+            "El Wi-Fi usa el formato `WIFI:` con el SSID, el tipo de seguridad y la contraseña. Los contactos vCard usan `BEGIN:VCARD` con el nombre, teléfono, correo, organización y sitio web que indiques.",
+          ],
+        },
+        {
+          heading: "Consejos de escaneo",
+          items: [
+            "Usa un primer plano oscuro sobre un fondo claro. El azul pizarra predeterminado sobre blanco tiene un contraste alto.",
+            "Mantén la zona de silencio: los escáneres esperan un margen alrededor de los módulos.",
+            "Una corrección de errores alta resiste más daño pero admite menos datos; M es un buen valor predeterminado.",
+            "Prueba el código descargado con más de un escáner antes de imprimirlo a gran escala.",
+          ],
+        },
+        {
+          heading: "Privacidad",
+          paragraphs: [
+            "Ningún contenido se sube, se almacena ni se envía a un servicio de QR de terceros. El generador funciona por completo en esta página y ningún evento de analítica incluye lo que escribes.",
+          ],
+        },
+      ],
+    },
+    wordCounter: {
+      title: "Contador de palabras — AppKitX",
+      metaDescription:
+        "Contador de palabras gratis: cuenta palabras, caracteres, frases, párrafos y líneas mientras escribes, con tiempo estimado de lectura y de habla. Nada se sube.",
+      name: "Contador de palabras",
+      description:
+        "Cuenta palabras, caracteres, frases, párrafos y líneas mientras escribes, con tiempo estimado de lectura y de habla, todo en tu navegador.",
+      cardDescription:
+        "Cuenta palabras, caracteres, frases y tiempo de lectura mientras escribes.",
+      keywords: [
+        "contador de palabras",
+        "contar palabras",
+        "recuento de palabras",
+        "palabras",
+        "contador de caracteres",
+        "contar caracteres",
+        "frases",
+        "párrafos",
+        "tiempo de lectura",
+        "tiempo de habla",
+        "estadísticas de texto",
+      ],
+      inputLabel: "Tu texto",
+      inputHint:
+        "Pega o escribe texto; las estadísticas se actualizan al momento.",
+      inputPlaceholder: "Pega o escribe tu texto aquí…",
+      copyText: "Copiar texto",
+      copySuccess: "Texto copiado al portapapeles.",
+      copyFailure:
+        "No se pudo copiar el texto. Selecciónalo y cópialo manualmente.",
+      statsHeading: "Estadísticas",
+      statsHint:
+        "Las palabras cuentan secuencias Unicode de letras, marcas y números; los caracteres cuentan caracteres percibidos por el usuario, no bytes.",
+      emptyHint:
+        "Empieza a escribir o pega texto para ver los recuentos en vivo.",
+      stats: {
+        characters: "Caracteres",
+        charactersNoSpaces: "Caracteres (sin espacios)",
+        words: "Palabras",
+        sentences: "Frases",
+        paragraphs: "Párrafos",
+        lines: "Líneas",
+        readingTime: "Tiempo de lectura",
+        speakingTime: "Tiempo de habla",
+      },
+      duration: {
+        seconds: "{seconds} s",
+        minutes: "{minutes} min",
+        minutesSeconds: "{minutes} min {seconds} s",
+      },
+      privacyTitle: "Contado en tu navegador",
+      privacyBody:
+        "Tu texto se analiza localmente y nunca se sube, se almacena ni se envía a un servicio de terceros.",
+      sections: [
+        {
+          heading: "Cómo se cuenta",
+          paragraphs: [
+            "Las palabras se cuentan como secuencias Unicode de letras, marcas combinantes, dígitos y números. Los apóstrofos internos y los separadores decimales permanecen dentro de una palabra; los guiones separan palabras; el contenido formado solo por puntuación o emoji cuenta como cero.",
+            "Los caracteres son caracteres percibidos por el usuario, así que un emoji o una letra acentuada cuenta una vez aunque use varias unidades de código. El recuento sin espacios excluye espacios, tabulaciones y saltos de línea. Los navegadores sin `Intl.Segmenter` usan una alternativa integrada para marcas combinantes, selectores de variación, modificadores de emoji, secuencias con zero-width joiner, banderas de indicadores regionales, secuencias de etiquetas y pares CRLF; secuencias poco frecuentes como la composición de jamo hangul aún pueden diferir de la segmentación Unicode completa.",
+          ],
+        },
+        {
+          heading: "Frases, párrafos y líneas",
+          paragraphs: [
+            "Una frase termina en `.`, `!`, `?`, `…`, `।`, `॥` o `۔` cuando va seguido de un espacio o del final de un párrafo. Los puntos y los signos de exclamación e interrogación CJK (`。`, `！`, `？`) también terminan una frase aunque no haya un espacio después. Los signos consecutivos cuentan una vez y los puntos decimales o la puntuación dentro de una URL no dividen la frase. Las abreviaturas como `Dr.` se tratan como final de frase porque no se pueden detectar con fiabilidad.",
+            "Los párrafos se separan con líneas en blanco; los saltos de línea simples permanecen dentro de un párrafo. Las líneas solo cuentan si no están vacías.",
+          ],
+        },
+        {
+          heading: "Tiempo de lectura y de habla",
+          paragraphs: [
+            "El tiempo de lectura supone 200 palabras por minuto y el de habla, 130 palabras por minuto. Ambos se redondean al segundo más cercano, con un mínimo de un segundo para texto no vacío. Son estimaciones para planificar, no mediciones de una persona concreta.",
+          ],
+        },
+        {
+          heading: "Notas multilingües",
+          paragraphs: [
+            "Los acentos y los signos de apertura del español no necesitan un tratamiento especial. Las palabras en hindi separadas por espacios se cuentan individualmente y `।` termina una frase. Las escrituras que no separan palabras con espacios, como el chino y el japonés, se cuentan como secuencias entre espacios y puntuación; los límites exactos de palabra en esas escrituras son una decisión lingüística, así que el recuento es una aproximación coherente y no una segmentación de diccionario.",
+            "Los emoji son caracteres, pero no palabras. La herramienta nunca trata un símbolo o una puntuación como palabra solo porque sea visible.",
+          ],
+        },
+        {
+          heading: "Privacidad",
+          paragraphs: [
+            "El recuento ocurre por completo en esta página. Nada de lo que pegas se sube, se guarda en el almacenamiento del navegador ni se incluye en un evento de analítica.",
+          ],
+        },
+      ],
+    },
+    caseConverter: {
+      title: "Conversor de mayúsculas y minúsculas — AppKitX",
+      metaDescription:
+        "Conversor de mayúsculas y minúsculas gratis: cambia texto a MAYÚSCULAS, minúsculas, tipo título, tipo oración, camelCase, PascalCase, snake_case, kebab-case y más, en tu navegador.",
+      name: "Conversor de mayúsculas y minúsculas",
+      description:
+        "Convierte texto a mayúsculas, minúsculas, tipo título, tipo oración, camelCase, PascalCase, snake_case, kebab-case y más al instante, en tu navegador.",
+      cardDescription:
+        "Convierte texto a mayúsculas, minúsculas, tipo título, camelCase y más.",
+      keywords: [
+        "conversor de mayúsculas",
+        "mayúsculas",
+        "minúsculas",
+        "tipo título",
+        "tipo oración",
+        "tipo capitalizado",
+        "camelcase",
+        "pascalcase",
+        "snake case",
+        "kebab case",
+        "constant case",
+        "alternado",
+        "cambiar mayúsculas",
+        "formato de texto",
+      ],
+      inputLabel: "Tu texto",
+      inputHint: "Pega o escribe texto; el resultado se actualiza al momento.",
+      inputPlaceholder: "Pega o escribe el texto que quieres convertir…",
+      modeLabel: "Conversión",
+      modeHint: "Cambiar de modo nunca modifica tu texto original.",
+      modes: {
+        uppercase: "MAYÚSCULAS",
+        lowercase: "minúsculas",
+        title: "Tipo título",
+        sentence: "Tipo oración",
+        capitalized: "Tipo capitalizado",
+        camel: "camelCase",
+        pascal: "PascalCase",
+        snake: "snake_case",
+        kebab: "kebab-case",
+        constant: "CONSTANT_CASE",
+        alternating: "Alternado",
+      },
+      outputLabel: "Texto convertido",
+      outputHint:
+        "Resultado de solo lectura. Cópialo o cambia de modo sin modificar tu texto.",
+      outputPlaceholder: "El texto convertido aparece aquí.",
+      copyOutput: "Copiar resultado",
+      copySuccess: "Resultado copiado al portapapeles.",
+      copyFailure:
+        "No se pudo copiar el resultado. Selecciónalo y cópialo manualmente.",
+      privacyTitle: "Convertido en tu navegador",
+      privacyBody:
+        "Tu texto se convierte localmente y nunca se sube, se almacena ni se envía a un servicio de terceros.",
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Pega o escribe en el panel de entrada y elige una conversión. El resultado se actualiza al momento y es de solo lectura, así que cambiar de modo siempre parte de tu texto original. Usa Copiar resultado para reutilizarlo.",
+          ],
+        },
+        {
+          heading: "Modos de texto",
+          paragraphs: [
+            "El tipo oración pasa el texto a minúsculas y pone en mayúscula la primera letra de cada línea y de cada frase. El tipo capitalizado pone en mayúscula todas las palabras, incluidas las cortas como «de» y «la». El tipo título mantiene en minúscula una lista breve de artículos, conjunciones y preposiciones del inglés y del español, salvo que sean la primera o la última palabra de una línea o sigan a dos puntos o al final de una frase.",
+            "El modo alternado cambia las mayúsculas y minúsculas de cada letra por turno; los espacios y la puntuación no cuentan como letras.",
+          ],
+        },
+        {
+          heading: "Modos de programación",
+          paragraphs: [
+            "camelCase, PascalCase, snake_case, kebab-case y CONSTANT_CASE dividen el texto en palabras y las unen con la convención elegida. Se eliminan la puntuación y los saltos de línea, se descartan los apóstrofos y los límites de camel/Pascal como `helloWorld` o `HTTPServer` se separan antes de convertir.",
+          ],
+        },
+        {
+          heading: "Unicode y limitaciones",
+          paragraphs: [
+            "Las mayúsculas y minúsculas usan las asignaciones Unicode predeterminadas del navegador. Las letras acentuadas del español, el cirílico y el griego cambian de caja; las escrituras sin mayúsculas, como el devanagari, el chino y el árabe, no cambian con los modos de texto. Los modos de programación siguen eliminando sus espacios al unir palabras.",
+            "Los nombres propios y las siglas no se deducen: los modos título y capitalizado pasan el resto de cada palabra a minúsculas, así que `AppKitX` se convierte en `Appkitx`. La `i` con punto y sin punto del turco siguen la asignación Unicode predeterminada, no las reglas locales del turco.",
+            "El tipo oración trata abreviaturas como `Dr.` como final de frase porque no se pueden detectar con fiabilidad.",
+          ],
+        },
+        {
+          heading: "Privacidad",
+          paragraphs: [
+            "La conversión ocurre por completo en esta página. Nada de lo que pegas se sube, se guarda en el almacenamiento del navegador ni se incluye en un evento de analítica.",
+          ],
+        },
+      ],
+    },
     dateCalculator: {
       title: "Calculadora de fechas — AppKitX",
       metaDescription:
@@ -721,7 +1188,12 @@ export const es: Dictionary = {
         emptyStart: "Introduce una fecha de inicio.",
         emptyEnd: "Introduce una fecha de fin.",
         emptyDate: "Introduce una fecha.",
+        invalidStart: "Introduce una fecha de inicio válida.",
+        invalidEnd: "Introduce una fecha de fin válida.",
+        invalidDate: "Introduce una fecha válida.",
         amountRange: "Introduce un número entero.",
+        resultRange:
+          "La fecha resultante está fuera del rango admitido. Ajusta la fecha o la cantidad.",
       },
       differenceCaption: "De {from} a {to}.",
       shiftAddCaption: "Resultado de sumar {amount} a {date}.",
@@ -757,6 +1229,7 @@ export const es: Dictionary = {
             "Las cantidades son números enteros; las cantidades negativas restan. Las cantidades fraccionarias se rechazan con un mensaje en línea.",
             "El resultado incluye el día de la semana de la fecha resultante en el modo de sumar o restar.",
             "El ajuste de fin de mes se aplica siempre que se mueven meses o años: `31 de agosto + 1 mes` es `30 de septiembre`, y `29 de febrero de 2024 + 1 año` es `28 de febrero de 2025`.",
+            "Las fechas admitidas van del `0001-01-01` al `275759-12-31`; los resultados fuera de ese rango se rechazan con un mensaje en línea en lugar de una fecha no válida.",
             "No se sube nada: el cálculo se ejecuta por completo en tu navegador.",
           ],
         },
@@ -789,6 +1262,7 @@ export const es: Dictionary = {
       copyText: "Edad: {age}\nDías vividos: {days}",
       errors: {
         empty: "Introduce una fecha de nacimiento.",
+        invalid: "Introduce una fecha de nacimiento válida.",
         future: "La fecha de nacimiento no puede ser futura.",
       },
       sections: [
@@ -815,6 +1289,7 @@ export const es: Dictionary = {
           heading: "Supuestos y casos límite",
           items: [
             "La fecha de nacimiento no puede ser futura; se rechaza con un mensaje en línea.",
+            "Las fechas admitidas van del `0001-01-01` al `275759-12-31`; las fechas fuera de ese rango se rechazan con un mensaje en línea.",
             "Solo se cuentan días completos: no intervienen horas, minutos ni zonas horarias, así que el resultado nunca depende de dónde estés.",
             "El cálculo se hace por completo en tu navegador; la fecha que introduces no se sube nunca.",
           ],

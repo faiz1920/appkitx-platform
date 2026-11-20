@@ -83,6 +83,89 @@ test("switches category and repopulates both units", async ({ page }) => {
   await expect(page.getByLabel("To", { exact: true })).toHaveValue("f");
 });
 
+test("invalidates the result when the value, units, or category change", async ({
+  page,
+  browserName,
+}) => {
+  await prepareClipboard(page, browserName);
+  await page.goto("/unit-converter");
+
+  const copy = page.getByRole("button", { name: "Copy result" });
+  const value = page.getByLabel("Value");
+  const from = page.getByLabel("From", { exact: true });
+  const to = page.getByLabel("To", { exact: true });
+  const calculate = page.getByRole("button", { name: "Calculate" });
+
+  await convert(page, "1");
+  await expect(result(page)).toHaveText("3.280839895");
+  await expect(copy).toBeEnabled();
+
+  await value.fill("2");
+  await expect(value).toHaveValue("2");
+  await expect(result(page)).toHaveText("—");
+  await expect(resultUnit(page)).toHaveText("");
+  await expect(caption(page)).toHaveText("Results appear here");
+  await expect(copy).toBeDisabled();
+
+  await calculate.click();
+  await expect(result(page)).toHaveText("6.56167979");
+  await expect(copy).toBeEnabled();
+
+  await from.selectOption("cm");
+  await expect(result(page)).toHaveText("—");
+  await expect(copy).toBeDisabled();
+
+  await calculate.click();
+  await expect(result(page)).toHaveText("0.0656167979");
+  await expect(caption(page)).toContainText("2 cm");
+
+  await to.selectOption("m");
+  await expect(result(page)).toHaveText("—");
+  await expect(copy).toBeDisabled();
+
+  await calculate.click();
+  await expect(result(page)).toHaveText("0.02");
+  await expect(copy).toBeEnabled();
+
+  await selectCategory(page, "Weight");
+  await expect(value).toHaveValue("2");
+  await expect(from).toHaveValue("kg");
+  await expect(to).toHaveValue("lb");
+  await expect(result(page)).toHaveText("—");
+  await expect(copy).toBeDisabled();
+
+  await convert(page, "1");
+  await expect(result(page)).toHaveText("2.204622622");
+  await expect(copy).toBeEnabled();
+
+  await value.fill("");
+  await expect(result(page)).toHaveText("—");
+  await expect(copy).toBeDisabled();
+  await calculate.click();
+  await expect(errorValue(page)).toHaveText("Enter a valid number.");
+  await expect(result(page)).toHaveText("—");
+  await expect(copy).toBeDisabled();
+
+  await value.fill("1");
+  await expect(errorValue(page)).toBeHidden();
+  await expect(result(page)).toHaveText("—");
+  await calculate.click();
+  await expect(result(page)).toHaveText("2.204622622");
+  await copy.click();
+  await expect(page.locator("[data-copy-status-success]")).toBeVisible();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toBe("1 kg = 2.204622622 lb");
+
+  await page.getByRole("button", { name: "Reset" }).click();
+  await expect(value).toHaveValue("");
+  await expect(from).toHaveValue("m");
+  await expect(to).toHaveValue("ft");
+  await expect(result(page)).toHaveText("—");
+  await expect(caption(page)).toHaveText("Results appear here");
+  await expect(copy).toBeDisabled();
+  await expect(page.getByRole("radio", { name: "Length" })).toBeChecked();
+});
+
 test("converts temperature with an offset", async ({ page }) => {
   await page.goto("/unit-converter");
   await selectCategory(page, "Temperature");

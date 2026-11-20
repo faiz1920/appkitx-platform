@@ -203,6 +203,18 @@ describe("searchTools", () => {
     ]);
   });
 
+  it("finds the speed converter by name and keyword", () => {
+    expect(searchTools("speed", tools).map((tool) => tool.href)).toEqual([
+      "/speed-converter",
+    ]);
+    expect(searchTools("mph", tools).map((tool) => tool.href)).toEqual([
+      "/speed-converter",
+    ]);
+    expect(searchTools("knots", tools).map((tool) => tool.href)).toEqual([
+      "/speed-converter",
+    ]);
+  });
+
   it("finds the developer tools by name and keyword", () => {
     expect(searchTools("base64", tools).map((tool) => tool.href)).toEqual([
       "/base64-encoder",
@@ -210,9 +222,28 @@ describe("searchTools", () => {
     expect(searchTools("minify", tools).map((tool) => tool.href)).toEqual([
       "/json-formatter",
     ]);
+    expect(searchTools("qr code", tools).map((tool) => tool.href)).toEqual([
+      "/qr-code-generator",
+    ]);
     expect(
       searchTools("developer tools", tools).map((tool) => tool.href),
-    ).toEqual(["/base64-encoder", "/json-formatter"]);
+    ).toEqual(["/base64-encoder", "/json-formatter", "/qr-code-generator"]);
+  });
+
+  it("finds the text tools by name, keyword, and category", () => {
+    expect(searchTools("word counter", tools).map((tool) => tool.href)).toEqual(
+      ["/word-counter"],
+    );
+    expect(
+      searchTools("character count", tools).map((tool) => tool.href),
+    ).toEqual(["/word-counter"]);
+    expect(searchTools("uppercase", tools).map((tool) => tool.href)).toEqual([
+      "/case-converter",
+    ]);
+    expect(searchTools("text tools", tools).map((tool) => tool.href)).toEqual([
+      "/word-counter",
+      "/case-converter",
+    ]);
   });
 
   it("finds the date and age tools by name and keyword", () => {
@@ -290,6 +321,12 @@ describe("localized search catalogs", () => {
     expect(searchTools("fahrenheit", catalog).map((tool) => tool.href)).toEqual(
       ["/unit-converter"],
     );
+    expect(searchTools("velocidad", catalog).map((tool) => tool.href)).toEqual([
+      "/speed-converter",
+    ]);
+    expect(searchTools("nudos", catalog).map((tool) => tool.href)).toEqual([
+      "/speed-converter",
+    ]);
   });
 
   it("finds the date and age tools with localized terms", () => {
@@ -316,10 +353,26 @@ describe("localized search catalogs", () => {
     expect(searchTools("minimizar", catalog).map((tool) => tool.href)).toEqual([
       "/json-formatter",
     ]);
+    expect(searchTools("código qr", catalog).map((tool) => tool.href)).toEqual([
+      "/qr-code-generator",
+    ]);
     expect(
       searchTools("herramientas de desarrollo", catalog).map(
         (tool) => tool.href,
       ),
-    ).toEqual(["/base64-encoder", "/json-formatter"]);
+    ).toEqual(["/base64-encoder", "/json-formatter", "/qr-code-generator"]);
+  });
+
+  it("finds the text tools with localized terms", () => {
+    const catalog = localizedToolCatalog("es");
+    expect(
+      searchTools("contador de palabras", catalog).map((tool) => tool.href),
+    ).toEqual(["/word-counter"]);
+    expect(searchTools("mayúsculas", catalog).map((tool) => tool.href)).toEqual(
+      ["/case-converter"],
+    );
+    expect(
+      searchTools("herramientas de texto", catalog).map((tool) => tool.href),
+    ).toEqual(["/word-counter", "/case-converter"]);
   });
 });

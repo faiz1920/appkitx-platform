@@ -3,10 +3,11 @@ import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
 import { resolveLocalizedTools } from "../i18n/tool-catalog";
 import { localizedHref } from "../i18n/routing";
 import {
+  CATEGORY_IDS,
   categoryPath,
   isCategoryPublished,
-  type ToolCategory,
 } from "../lib/categories";
+import { tools } from "../lib/tools";
 import {
   guideIndexHref,
   infoPageHref,
@@ -23,29 +24,18 @@ const footer = t.footer.columns;
 
 /*
  * Labels have one canonical source: shipped tool names come from the tool
- * dictionaries (via the localized catalog), shipped category names from the
- * category map, and the placeholder tool titles from the homepage copy.
+ * dictionaries via the registry and localized catalog, and shipped category
+ * names from the category map.
  */
-const shippedTools = resolveLocalizedTools(locale, [
-  "/percentage-calculator",
-  "/discount-calculator",
-  "/loan-calculator",
-  "/unit-converter",
-  "/base64-encoder",
-  "/json-formatter",
-  "/date-calculator",
-  "/age-calculator",
-]).map((tool) => ({
+const shippedTools = resolveLocalizedTools(
+  locale,
+  tools.map((tool) => tool.href),
+).map((tool) => ({
   label: tool.title,
   href: localizedHref(tool.href, locale),
 }));
 
-const footerCategories: ToolCategory[] = [
-  "Calculators",
-  "Converters",
-  "Developer tools",
-  "Date & time",
-];
+const footerCategories = CATEGORY_IDS;
 
 const infoLink = (key: InfoPageKey, label: string) => ({
   label,

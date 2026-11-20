@@ -11,6 +11,7 @@ import {
   toolCategory,
 } from "../lib/categories";
 import bracesIcon from "lucide-static/icons/braces.svg?raw";
+import qrCodeIcon from "lucide-static/icons/qr-code.svg?raw";
 
 interface Props {
   locale: LocaleCode;
@@ -25,15 +26,19 @@ const relatedHref = isCategoryPublished(category)
   ? localizedHref(categoryPath(category), locale)
   : undefined;
 
-const toolIcons: Record<string, string> = { braces: bracesIcon };
-const relatedTools = resolveLocalizedTools(locale, ["/json-formatter"]).map(
-  (related) => ({
-    title: related.title,
-    description: related.description,
-    href: localizedHref(related.href, locale),
-    icon: toolIcons[related.icon] ?? "",
-  }),
-);
+const toolIcons: Record<string, string> = {
+  braces: bracesIcon,
+  "qr-code": qrCodeIcon,
+};
+const relatedTools = resolveLocalizedTools(locale, [
+  "/json-formatter",
+  "/qr-code-generator",
+]).map((related) => ({
+  title: related.title,
+  description: related.description,
+  href: localizedHref(related.href, locale),
+  icon: toolIcons[related.icon] ?? "",
+}));
 ---
 
 <ToolLayout
