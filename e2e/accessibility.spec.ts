@@ -23,6 +23,8 @@ const REPRESENTATIVE_ROUTES = [
   { path: "/es/", lang: "es" },
   { path: "/speed-converter/", lang: "en" },
   { path: "/es/speed-converter/", lang: "es" },
+  { path: "/scientific-calculator/", lang: "en" },
+  { path: "/es/scientific-calculator/", lang: "es" },
   { path: "/qr-code-generator/", lang: "en" },
   { path: "/es/qr-code-generator/", lang: "es" },
   { path: "/word-counter/", lang: "en" },

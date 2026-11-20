@@ -70,6 +70,7 @@ describe("category membership", () => {
       "/percentage-calculator",
       "/discount-calculator",
       "/loan-calculator",
+      "/scientific-calculator",
     ]);
     expect(toolsInCategory("Converters").map((tool) => tool.href)).toEqual([
       "/unit-converter",
@@ -92,6 +93,7 @@ describe("category membership", () => {
     expect(toolCategory("/percentage-calculator")).toBe("Calculators");
     expect(toolCategory("/discount-calculator")).toBe("Calculators");
     expect(toolCategory("/loan-calculator")).toBe("Calculators");
+    expect(toolCategory("/scientific-calculator")).toBe("Calculators");
     expect(toolCategory("/unit-converter")).toBe("Converters");
     expect(toolCategory("/speed-converter")).toBe("Converters");
     expect(toolCategory("/qr-code-generator")).toBe("Developer tools");

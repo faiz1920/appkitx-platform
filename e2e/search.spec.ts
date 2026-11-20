@@ -100,7 +100,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.goto("/");
   await openWithShortcut(page);
 
-  await expect(page.getByRole("option")).toHaveCount(12);
+  await expect(page.getByRole("option")).toHaveCount(13);
 
   await page.keyboard.press("ArrowDown");
   await expect(searchInput(page)).toHaveAttribute(
@@ -115,7 +115,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.keyboard.press("ArrowUp");
   await expect(searchInput(page)).toHaveAttribute(
     "aria-activedescendant",
-    "search-option-11",
+    "search-option-12",
   );
 
   await page.keyboard.press("ArrowDown");
@@ -146,7 +146,7 @@ test("typing filters results and shows the empty state", async ({ page }) => {
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "false");
 
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(12);
+  await expect(page.getByRole("option")).toHaveCount(13);
   await expect(empty).toBeHidden();
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "true");
 });
@@ -232,6 +232,7 @@ test("only lists registered tools with unique routes", async ({ page }) => {
     "/loan-calculator/",
     "/percentage-calculator/",
     "/qr-code-generator/",
+    "/scientific-calculator/",
     "/speed-converter/",
     "/unit-converter/",
     "/word-counter/",
@@ -315,6 +316,29 @@ test("finds and opens the date tools by keyword", async ({ page }) => {
   await expect(page.getByRole("option")).toContainText("Age Calculator");
 });
 
+test("finds and opens the scientific calculator by keyword", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await openWithShortcut(page);
+
+  await searchInput(page).fill("trigonometry");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("option")).toContainText("Scientific Calculator");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+
+  await expect(page).toHaveURL(/\/scientific-calculator\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Scientific Calculator",
+  );
+
+  await openWithShortcut(page);
+  await searchInput(page).fill("radians");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("option")).toContainText("Scientific Calculator");
+});
+
 test("finds and opens the speed converter by keyword", async ({ page }) => {
   await page.goto("/");
   await openWithShortcut(page);
@@ -358,7 +382,7 @@ test("uses the full-screen sheet at 320px without horizontal overflow", async ({
   if (!box) throw new Error("palette is not visible");
   expect(box.width).toBeGreaterThanOrEqual(319);
   await expect(searchInput(page)).toBeVisible();
-  await expect(page.getByRole("option")).toHaveCount(12);
+  await expect(page.getByRole("option")).toHaveCount(13);
 });
 
 test("the Spanish palette searches localized tools and stays localized", async ({
@@ -445,5 +469,5 @@ test("the Spanish palette finds the loan calculator and unit converter", async (
   await expect(page.getByRole("option")).toContainText("Calculadora de fechas");
 
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(12);
+  await expect(page.getByRole("option")).toHaveCount(13);
 });

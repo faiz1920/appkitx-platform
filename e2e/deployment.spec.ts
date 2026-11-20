@@ -135,6 +135,7 @@ test("robots.txt and the sitemap are served with the intended routes", async ({
     "https://appkitx.com/case-converter",
     "https://appkitx.com/text-tools",
     "https://appkitx.com/es/text-tools",
+    "https://appkitx.com/es/scientific-calculator",
   ]) {
     expect(sitemapText).toContain(url);
   }
