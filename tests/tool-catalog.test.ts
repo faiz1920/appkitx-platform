@@ -67,6 +67,17 @@ describe("localizedToolCatalog", () => {
     expect(ageCalculator?.title).toBe("Calculadora de edad");
     expect(ageCalculator?.category).toBe("Fecha y hora");
     expect(ageCalculator?.keywords).toContain("cumpleaños");
+
+    const wordCounter = catalog.find((tool) => tool.href === "/word-counter");
+    const caseConverter = catalog.find(
+      (tool) => tool.href === "/case-converter",
+    );
+    expect(wordCounter?.title).toBe("Contador de palabras");
+    expect(wordCounter?.category).toBe("Herramientas de texto");
+    expect(wordCounter?.keywords).toContain("palabras");
+    expect(caseConverter?.title).toBe("Conversor de mayúsculas y minúsculas");
+    expect(caseConverter?.category).toBe("Herramientas de texto");
+    expect(caseConverter?.keywords).toContain("mayúsculas");
   });
 
   it("keeps the English card text identical to the registry descriptions", () => {

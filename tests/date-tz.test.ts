@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 import {
+  MAX_SUPPORTED_YEAR,
   calculateAge,
   difference,
   shiftDate,
@@ -44,6 +45,9 @@ const PROBE = [
   `    dstMarch: m.difference({year:2026,month:3,day:7},{year:2026,month:3,day:9}),`,
   `    dstAutumn: m.difference({year:2026,month:10,day:31},{year:2026,month:11,day:2}),`,
   `    leapShift: m.shiftDate({year:2024,month:2,day:29}, 1, "years"),`,
+  `    largeShift: m.shiftDate({year:2026,month:1,day:1}, 10000, "days"),`,
+  `    underflow: m.shiftDate({year:1,month:1,day:1}, -1, "days"),`,
+  `    overflow: m.shiftDate({year:m.MAX_SUPPORTED_YEAR,month:12,day:31}, 1, "days"),`,
   `    subtractClamp: m.shiftDate({year:2026,month:3,day:31}, -1, "months"),`,
   `    monthEnd: m.difference({year:2026,month:1,day:31},{year:2026,month:3,day:1}),`,
   `    age: m.calculateAge({year:2000,month:2,day:29},{year:2026,month:2,day:28}),`,
@@ -75,6 +79,13 @@ describe("timezone independence", () => {
         { year: 2026, month: 11, day: 2 },
       ),
       leapShift: shiftDate({ year: 2024, month: 2, day: 29 }, 1, "years"),
+      largeShift: shiftDate({ year: 2026, month: 1, day: 1 }, 10000, "days"),
+      underflow: shiftDate({ year: 1, month: 1, day: 1 }, -1, "days"),
+      overflow: shiftDate(
+        { year: MAX_SUPPORTED_YEAR, month: 12, day: 31 },
+        1,
+        "days",
+      ),
       subtractClamp: shiftDate({ year: 2026, month: 3, day: 31 }, -1, "months"),
       monthEnd: difference(
         { year: 2026, month: 1, day: 31 },

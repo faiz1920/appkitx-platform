@@ -8,6 +8,7 @@ import {
   getLocale,
   type LocaleCode,
 } from "../i18n/config";
+import { MAX_SUPPORTED_YEAR } from "../lib/date-math";
 
 interface Props {
   locale?: LocaleCode;
@@ -17,6 +18,7 @@ const { locale = defaultLocale } = Astro.props;
 const t = getDictionary(locale);
 const tool = t.tools.ageCalculator;
 const localeMeta = getLocale(locale);
+const maxInputDate = `${MAX_SUPPORTED_YEAR}-12-31`;
 
 /*
  * Strings for the client script — JSON-safe slice of the dictionary plus
@@ -40,6 +42,8 @@ const scriptStrings = {
           id="age-calc-input-birth"
           name="birth"
           type="date"
+          min="0001-01-01"
+          max={maxInputDate}
           class="input mt-2 font-mono tabular-nums"
           aria-describedby="age-calc-hint-birth age-calc-error-birth"
           data-input-birth
@@ -50,6 +54,8 @@ const scriptStrings = {
         <p
           id="age-calc-error-birth"
           class="field-error mt-1"
+          role="alert"
+          aria-atomic="true"
           hidden
           data-error-birth
         >
@@ -206,15 +212,25 @@ const scriptStrings = {
     };
 
     const clearError = () => {
+      if (
+        errorBirth.hidden &&
+        errorTextBirth.textContent === "" &&
+        !inputBirth.hasAttribute("aria-invalid")
+      ) {
+        return;
+      }
       errorBirth.hidden = true;
       errorTextBirth.textContent = "";
       inputBirth.removeAttribute("aria-invalid");
     };
 
     const showError = (message: string) => {
-      errorBirth.hidden = false;
+      if (inputBirth.getAttribute("aria-invalid") !== "true") {
+        inputBirth.setAttribute("aria-invalid", "true");
+      }
+      if (!errorBirth.hidden && errorTextBirth.textContent === message) return;
       errorTextBirth.textContent = message;
-      inputBirth.setAttribute("aria-invalid", "true");
+      errorBirth.hidden = false;
     };
 
     const showEmptyResult = () => {
@@ -246,15 +262,20 @@ const scriptStrings = {
       };
     };
 
+    inputBirth.addEventListener("input", clearError);
+
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      clearError();
       resetCopyFeedback();
 
       const birth =
         inputBirth.value === "" ? null : parseDateInput(inputBirth.value);
       if (birth === null) {
-        showError(i18n.tool.errors.empty);
+        showError(
+          inputBirth.value === ""
+            ? i18n.tool.errors.empty
+            : i18n.tool.errors.invalid,
+        );
         showEmptyResult();
         return;
       }
@@ -266,6 +287,8 @@ const scriptStrings = {
         showEmptyResult();
         return;
       }
+
+      clearError();
 
       const ageText = formatBreakdown(age, intlLocale);
       const daysText = formatDayCount(age.totalDays, intlLocale);

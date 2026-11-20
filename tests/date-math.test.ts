@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  MAX_SUPPORTED_YEAR,
   calculateAge,
   civilFromDays,
   daysFromCivil,
@@ -57,6 +58,14 @@ describe("leap years and month lengths", () => {
     expect(isValidCivilDate(date(2026, 1, 32))).toBe(false);
     expect(isValidCivilDate({ year: 2026, month: 1.5, day: 1 })).toBe(false);
     expect(isValidCivilDate({ year: 0, month: 1, day: 1 })).toBe(false);
+    expect(isValidCivilDate(date(MAX_SUPPORTED_YEAR, 12, 31))).toBe(true);
+    expect(isValidCivilDate(date(MAX_SUPPORTED_YEAR + 1, 1, 1))).toBe(false);
+  });
+
+  it("moves across leap-day boundaries in leap and common years", () => {
+    expect(difference(date(2024, 2, 28), date(2024, 2, 29))?.days).toBe(1);
+    expect(difference(date(2024, 2, 29), date(2024, 3, 1))?.days).toBe(1);
+    expect(difference(date(2025, 2, 28), date(2025, 3, 1))?.days).toBe(1);
   });
 });
 
@@ -96,13 +105,20 @@ describe("parseDateInput and formatDateInput", () => {
     expect(parseDateInput("2026-03-01")).toEqual(date(2026, 3, 1));
     expect(parseDateInput("2024-02-29")).toEqual(date(2024, 2, 29));
     expect(parseDateInput(" 2026-01-15 ")).toEqual(date(2026, 1, 15));
+    expect(parseDateInput("10000-01-01")).toEqual(date(10000, 1, 1));
+    expect(parseDateInput("275759-12-31")).toEqual(
+      date(MAX_SUPPORTED_YEAR, 12, 31),
+    );
   });
 
-  it("rejects malformed, impossible, and empty values", () => {
+  it("rejects malformed, impossible, and out-of-range values", () => {
     expect(parseDateInput("")).toBeNull();
     expect(parseDateInput("2026-3-1")).toBeNull();
     expect(parseDateInput("2026-02-30")).toBeNull();
     expect(parseDateInput("2025-02-29")).toBeNull();
+    expect(parseDateInput("10001-02-29")).toBeNull();
+    expect(parseDateInput("00001-01-01")).toBeNull();
+    expect(parseDateInput("275760-01-01")).toBeNull();
     expect(parseDateInput("2026-13-01")).toBeNull();
     expect(parseDateInput("not a date")).toBeNull();
     expect(parseDateInput("2026-01-15T00:00")).toBeNull();
@@ -111,6 +127,7 @@ describe("parseDateInput and formatDateInput", () => {
   it("serializes with zero padding", () => {
     expect(formatDateInput(date(2026, 3, 1))).toBe("2026-03-01");
     expect(formatDateInput(date(2026, 11, 30))).toBe("2026-11-30");
+    expect(formatDateInput(date(10000, 1, 1))).toBe("10000-01-01");
   });
 });
 
@@ -132,6 +149,16 @@ describe("difference", () => {
     expect(difference(date(2026, 3, 7), date(2026, 3, 9))?.days).toBe(2);
     expect(difference(date(2026, 10, 31), date(2026, 11, 2))?.days).toBe(2);
     expect(difference(date(2024, 2, 28), date(2024, 3, 1))?.days).toBe(2);
+  });
+
+  it("supports the full civil range", () => {
+    const result = difference(date(1, 1, 1), date(MAX_SUPPORTED_YEAR, 12, 31));
+    expect(result?.days).toBe(100_718_905);
+    expect(result?.breakdown).toEqual({
+      years: 275758,
+      months: 11,
+      days: 30,
+    });
   });
 
   it("breaks down with clamped month arithmetic", () => {
@@ -196,6 +223,21 @@ describe("shiftDate", () => {
     expect(shiftDate(date(2026, 1, 1), 0, "days")).toEqual(date(2026, 1, 1));
     expect(shiftDate(date(2026, 1, 1), 2, "weeks")).toEqual(date(2026, 1, 15));
     expect(shiftDate(date(2026, 1, 1), 365, "days")).toEqual(date(2027, 1, 1));
+  });
+
+  it("moves across year boundaries and large supported offsets", () => {
+    expect(shiftDate(date(2026, 12, 31), 1, "days")).toEqual(date(2027, 1, 1));
+    expect(shiftDate(date(2026, 1, 1), -1, "days")).toEqual(date(2025, 12, 31));
+    expect(shiftDate(date(2026, 1, 1), 10_000, "days")).toEqual(
+      date(2053, 5, 19),
+    );
+    expect(shiftDate(date(9999, 12, 31), 1, "days")).toEqual(date(10000, 1, 1));
+  });
+
+  it("shifts calendar days across DST transitions", () => {
+    expect(shiftDate(date(2026, 3, 7), 2, "days")).toEqual(date(2026, 3, 9));
+    expect(shiftDate(date(2026, 10, 31), 2, "days")).toEqual(date(2026, 11, 2));
+    expect(shiftDate(date(2026, 3, 7), -2, "days")).toEqual(date(2026, 3, 5));
   });
 
   it("clamps month arithmetic to the last valid day", () => {
@@ -272,6 +314,21 @@ describe("shiftDate", () => {
       shiftDate(date(2026, 1, 1), Number.POSITIVE_INFINITY, "days"),
     ).toBeNull();
     expect(shiftDate(date(2026, 2, 30), 1, "days")).toBeNull();
+  });
+
+  it("rejects results outside the supported year range", () => {
+    expect(shiftDate(date(MAX_SUPPORTED_YEAR, 12, 31), 0, "days")).toEqual(
+      date(MAX_SUPPORTED_YEAR, 12, 31),
+    );
+    expect(shiftDate(date(MAX_SUPPORTED_YEAR, 12, 31), 1, "days")).toBeNull();
+    expect(shiftDate(date(1, 1, 1), -1, "days")).toBeNull();
+    expect(shiftDate(date(1, 1, 31), -1, "months")).toBeNull();
+    expect(shiftDate(date(1, 1, 1), -1, "years")).toBeNull();
+    expect(shiftDate(date(2026, 1, 1), 1e9, "days")).toBeNull();
+    expect(shiftDate(date(2026, 1, 1), 1e9, "weeks")).toBeNull();
+    expect(shiftDate(date(2026, 1, 1), 1e9, "months")).toBeNull();
+    expect(shiftDate(date(2026, 1, 1), 1e9, "years")).toBeNull();
+    expect(shiftDate(date(2026, 1, 1), -1e9, "days")).toBeNull();
   });
 });
 
@@ -376,10 +433,53 @@ describe("calculateAge", () => {
     });
   });
 
+  it("handles month-end and year-boundary birthdays", () => {
+    expect(calculateAge(date(2000, 1, 31), date(2026, 2, 28))).toEqual({
+      years: 26,
+      months: 1,
+      days: 0,
+      totalDays: 9525,
+    });
+    expect(calculateAge(date(2000, 1, 31), date(2026, 3, 1))).toEqual({
+      years: 26,
+      months: 1,
+      days: 1,
+      totalDays: 9526,
+    });
+    expect(calculateAge(date(2000, 12, 31), date(2026, 1, 1))).toEqual({
+      years: 25,
+      months: 0,
+      days: 1,
+      totalDays: 9132,
+    });
+  });
+
+  it("supports historical dates and the upper boundary", () => {
+    expect(calculateAge(date(1, 1, 1), date(2026, 11, 20))).toEqual({
+      years: 2025,
+      months: 10,
+      days: 19,
+      totalDays: 739939,
+    });
+    expect(
+      calculateAge(
+        date(MAX_SUPPORTED_YEAR, 12, 31),
+        date(MAX_SUPPORTED_YEAR, 12, 31),
+      ),
+    ).toEqual({ years: 0, months: 0, days: 0, totalDays: 0 });
+  });
+
   it("rejects future birth dates and invalid input", () => {
     expect(calculateAge(date(2026, 1, 2), date(2026, 1, 1))).toBeNull();
     expect(calculateAge(date(2025, 2, 29), date(2026, 1, 1))).toBeNull();
     expect(calculateAge(date(2026, 1, 1), date(2026, 13, 1))).toBeNull();
+    expect(calculateAge(date(0, 1, 1), date(2026, 1, 1))).toBeNull();
+    expect(
+      calculateAge(date(2026, 1, 1), date(MAX_SUPPORTED_YEAR + 1, 1, 1)),
+    ).toBeNull();
+    expect(
+      difference(date(MAX_SUPPORTED_YEAR + 1, 1, 1), date(2026, 1, 1)),
+    ).toBeNull();
   });
 
   it("agrees with difference on the total day count", () => {

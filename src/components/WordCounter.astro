@@ -1,0 +1,306 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+import checkIcon from "lucide-static/icons/check.svg?raw";
+import copyIcon from "lucide-static/icons/copy.svg?raw";
+import shieldCheckIcon from "lucide-static/icons/shield-check.svg?raw";
+import {
+  defaultLocale,
+  getDictionary,
+  getLocale,
+  type LocaleCode,
+} from "../i18n/config";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.wordCounter;
+const localeMeta = getLocale(locale);
+
+/*
+ * Strings for the client script — copy feedback, duration templates, and the
+ * locale used for number formatting. The labels themselves are server-rendered.
+ */
+const scriptStrings = {
+  duration: tool.duration,
+  intlLocale: localeMeta.intlLocale,
+};
+
+const stats = [
+  { key: "words", label: tool.stats.words },
+  { key: "characters", label: tool.stats.characters },
+  { key: "charactersNoSpaces", label: tool.stats.charactersNoSpaces },
+  { key: "sentences", label: tool.stats.sentences },
+  { key: "paragraphs", label: tool.stats.paragraphs },
+  { key: "lines", label: tool.stats.lines },
+  { key: "readingTime", label: tool.stats.readingTime },
+  { key: "speakingTime", label: tool.stats.speakingTime },
+] as const;
+---
+
+<div data-word-counter data-i18n={JSON.stringify(scriptStrings)}>
+  <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)">
+    <label for="word-counter-text" class="text-label text-text-primary">
+      {tool.inputLabel}
+    </label>
+    <textarea
+      id="word-counter-text"
+      class="textarea mt-2 min-h-60"
+      placeholder={tool.inputPlaceholder}
+      autocomplete="off"
+      aria-describedby="word-counter-hint"
+      data-input
+    ></textarea>
+    <p id="word-counter-hint" class="mt-1 text-caption text-text-muted">
+      {tool.inputHint}
+    </p>
+
+    <div class="mt-4 flex flex-wrap items-center gap-3">
+      <button type="button" class="btn btn-secondary" disabled data-copy>
+        <span
+          class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+          aria-hidden="true"
+          set:html={copyIcon}
+        />
+        {tool.copyText}
+      </button>
+      <button type="button" class="btn btn-ghost" data-reset>
+        {t.calculator.reset}
+      </button>
+    </div>
+
+    <div class="mt-3" role="status" aria-live="polite">
+      <p
+        class="flex items-center gap-1.5 text-caption text-success"
+        hidden
+        data-copy-success
+      >
+        <span
+          class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+          aria-hidden="true"
+          set:html={checkIcon}
+        />
+        {tool.copySuccess}
+      </p>
+      <p
+        class="flex items-center gap-1.5 text-caption text-error"
+        hidden
+        data-copy-error
+      >
+        <span
+          class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+          aria-hidden="true"
+          set:html={alertIcon}
+        />
+        {tool.copyFailure}
+      </p>
+    </div>
+  </div>
+
+  <section class="mt-6" aria-labelledby="word-counter-stats-heading">
+    <h2 id="word-counter-stats-heading" class="text-title text-text-primary">
+      {tool.statsHeading}
+    </h2>
+    <p class="mt-1 text-caption text-text-muted">{tool.statsHint}</p>
+
+    <dl class="mt-4 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
+      {stats.map((stat) => (
+        <div class="flex items-baseline justify-between gap-4 border-b border-border-subtle pb-2">
+          <dt class="text-small text-text-secondary">{stat.label}</dt>
+          <dd
+            class="font-mono text-title tabular-nums text-text-primary"
+            data-stat={stat.key}
+          >
+            0
+          </dd>
+        </div>
+      ))}
+    </dl>
+
+    <p class="mt-4 text-caption text-text-muted" data-empty-hint>
+      {tool.emptyHint}
+    </p>
+  </section>
+
+  <div class="mt-6 flex items-start gap-3 rounded-md border border-accent-subtle-border bg-accent-subtle p-3">
+    <span
+      class="mt-0.5 h-5 w-5 shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-5"
+      aria-hidden="true"
+      set:html={shieldCheckIcon}
+    />
+    <div>
+      <p class="text-label text-text-primary">{tool.privacyTitle}</p>
+      <p class="mt-1 text-caption text-text-secondary">{tool.privacyBody}</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { interpolate } from "../i18n/interpolate";
+  import {
+    countText,
+    durationParts,
+    type TextStatistics,
+  } from "../lib/word-count";
+
+  interface ScriptStrings {
+    duration: {
+      seconds: string;
+      minutes: string;
+      minutesSeconds: string;
+    };
+    intlLocale: string;
+  }
+
+  const root = document.querySelector<HTMLElement>("[data-word-counter]");
+
+  if (root) {
+    const i18n: ScriptStrings = JSON.parse(root.dataset.i18n ?? "{}");
+
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`Word counter: missing ${selector}`);
+      return el;
+    };
+
+    const input = requireEl<HTMLTextAreaElement>("[data-input]");
+    const copyButton = requireEl<HTMLButtonElement>("[data-copy]");
+    const resetButton = requireEl<HTMLButtonElement>("[data-reset]");
+    const copySuccess = requireEl<HTMLElement>("[data-copy-success]");
+    const copyError = requireEl<HTMLElement>("[data-copy-error]");
+    const emptyHint = requireEl<HTMLElement>("[data-empty-hint]");
+    const numberFormat = new Intl.NumberFormat(i18n.intlLocale);
+
+    const statElements: Record<string, HTMLElement> = {};
+    for (const element of root.querySelectorAll<HTMLElement>("[data-stat]")) {
+      const key = element.dataset.stat;
+      if (key) statElements[key] = element;
+    }
+
+    let feedbackTimer: number | undefined;
+    let statsFrame: number | undefined;
+    let copyBusy = false;
+
+    const clearFeedback = (): void => {
+      window.clearTimeout(feedbackTimer);
+      copySuccess.hidden = true;
+      copyError.hidden = true;
+    };
+
+    const showFeedback = (message: HTMLElement): void => {
+      window.clearTimeout(feedbackTimer);
+      copySuccess.hidden = true;
+      copyError.hidden = true;
+      message.hidden = false;
+      feedbackTimer = window.setTimeout(() => {
+        message.hidden = true;
+      }, 3000);
+    };
+
+    const formatDuration = (seconds: number): string => {
+      const parts = durationParts(seconds);
+      if (parts.minutes === 0) {
+        return interpolate(i18n.duration.seconds, {
+          seconds: numberFormat.format(parts.seconds),
+        });
+      }
+      if (parts.seconds === 0) {
+        return interpolate(i18n.duration.minutes, {
+          minutes: numberFormat.format(parts.minutes),
+        });
+      }
+      return interpolate(i18n.duration.minutesSeconds, {
+        minutes: numberFormat.format(parts.minutes),
+        seconds: numberFormat.format(parts.seconds),
+      });
+    };
+
+    const setStats = (stats: TextStatistics): void => {
+      const values: Record<string, number> = {
+        words: stats.words,
+        characters: stats.characters,
+        charactersNoSpaces: stats.charactersNoSpaces,
+        sentences: stats.sentences,
+        paragraphs: stats.paragraphs,
+        lines: stats.lines,
+        readingTime: stats.readingSeconds,
+        speakingTime: stats.speakingSeconds,
+      };
+
+      for (const [key, element] of Object.entries(statElements)) {
+        const value = values[key] ?? 0;
+        const next =
+          key === "readingTime" || key === "speakingTime"
+            ? formatDuration(value)
+            : numberFormat.format(value);
+        if (element.textContent !== next) element.textContent = next;
+      }
+    };
+
+    const updateAvailability = (): void => {
+      const empty = input.value === "";
+      const hasText = input.value.trim() !== "";
+      if (emptyHint.hidden !== hasText) emptyHint.hidden = hasText;
+      if (copyButton.disabled !== empty) copyButton.disabled = empty;
+    };
+
+    const render = (): void => {
+      updateAvailability();
+      setStats(countText(input.value));
+    };
+
+    const cancelScheduledStats = (): void => {
+      if (statsFrame === undefined) return;
+      window.cancelAnimationFrame(statsFrame);
+      statsFrame = undefined;
+    };
+
+    const scheduleStats = (): void => {
+      if (statsFrame !== undefined) return;
+      statsFrame = window.requestAnimationFrame(() => {
+        statsFrame = undefined;
+        render();
+      });
+    };
+
+    input.addEventListener("input", () => {
+      clearFeedback();
+      /*
+       * Keep Copy availability current immediately, but coalesce the more
+       * expensive statistics pass to at most once per animation frame. The
+       * callback reads input.value at execution time, so rapid edits always
+       * settle on the latest text.
+       */
+      updateAvailability();
+      scheduleStats();
+    });
+
+    copyButton.addEventListener("click", async () => {
+      if (input.value === "" || copyBusy) return;
+      copyBusy = true;
+      clearFeedback();
+
+      try {
+        if (!navigator.clipboard) throw new Error("Clipboard unavailable");
+        await navigator.clipboard.writeText(input.value);
+        showFeedback(copySuccess);
+      } catch {
+        showFeedback(copyError);
+      } finally {
+        copyBusy = false;
+      }
+    });
+
+    resetButton.addEventListener("click", () => {
+      cancelScheduledStats();
+      input.value = "";
+      clearFeedback();
+      render();
+      input.focus();
+    });
+
+    render();
+  }
+</script>

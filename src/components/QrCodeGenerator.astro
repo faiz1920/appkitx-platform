@@ -1,0 +1,1138 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+import copyIcon from "lucide-static/icons/copy.svg?raw";
+import downloadIcon from "lucide-static/icons/download.svg?raw";
+import eyeIcon from "lucide-static/icons/eye.svg?raw";
+import eyeOffIcon from "lucide-static/icons/eye-off.svg?raw";
+import fileCodeIcon from "lucide-static/icons/file-code.svg?raw";
+import qrCodeIcon from "lucide-static/icons/qr-code.svg?raw";
+import shieldCheckIcon from "lucide-static/icons/shield-check.svg?raw";
+import FieldError from "./FieldError.astro";
+import ToggleSwitch from "./ToggleSwitch.astro";
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+import { QR_CONTENT_TYPES, QR_WIFI_SECURITIES } from "../lib/qr-payload";
+import {
+  QR_DEFAULT_ECC,
+  QR_DEFAULT_SIZE,
+  QR_ECC_LEVELS,
+  QR_SIZE_PRESET_ORDER,
+} from "../lib/qr-options";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.qrCodeGenerator;
+
+/*
+ * Strings for the client script — only the validation, contrast, capacity,
+ * and copy feedback messages. The rest of the interface is server-rendered.
+ */
+const scriptStrings = {
+  validation: tool.validation,
+  preview: {
+    copied: tool.preview.copied,
+    copyFailed: tool.preview.copyFailed,
+    warnings: tool.preview.warnings,
+  },
+  password: {
+    show: tool.fields.wifi.passwordShow,
+    hide: tool.fields.wifi.passwordHide,
+  },
+};
+---
+
+<div data-qr-generator data-i18n={JSON.stringify(scriptStrings)}>
+  <div class="grid gap-6 md:grid-cols-[minmax(0,1fr)_260px] md:items-start">
+    <form
+      class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+      novalidate
+      data-qr-form
+    >
+      <div>
+        <label for="qr-type" class="text-label text-text-primary">
+          {tool.contentTypeLabel}
+        </label>
+        <select id="qr-type" name="type" class="input mt-2">
+          {QR_CONTENT_TYPES.map((type) => (
+            <option value={type}>{tool.contentTypes[type]}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="mt-5 space-y-5">
+        <div data-panel="url">
+          <label for="qr-url" class="text-label text-text-primary">
+            {tool.fields.url.label}
+          </label>
+          <input
+            id="qr-url"
+            name="url"
+            type="url"
+            class="input mt-2"
+            placeholder={tool.fields.url.placeholder}
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="qr-url-hint qr-url-error"
+          />
+          <p id="qr-url-hint" class="mt-1 text-caption text-text-muted">
+            {tool.fields.url.hint}
+          </p>
+          <FieldError field="url" id="qr-url-error" />
+        </div>
+
+        <div data-panel="text" hidden>
+          <label for="qr-text" class="text-label text-text-primary">
+            {tool.fields.text.label}
+          </label>
+          <textarea
+            id="qr-text"
+            name="text"
+            class="textarea mt-2 min-h-24"
+            placeholder={tool.fields.text.placeholder}
+            autocomplete="off"
+            aria-describedby="qr-text-hint qr-text-error"
+          ></textarea>
+          <p id="qr-text-hint" class="mt-1 text-caption text-text-muted">
+            {tool.fields.text.hint}
+          </p>
+          <FieldError field="text" id="qr-text-error" />
+        </div>
+
+        <div data-panel="email" hidden>
+          <label for="qr-email" class="text-label text-text-primary">
+            {tool.fields.email.label}
+          </label>
+          <input
+            id="qr-email"
+            name="email"
+            type="email"
+            class="input mt-2"
+            placeholder={tool.fields.email.placeholder}
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="qr-email-hint qr-email-error"
+          />
+          <p id="qr-email-hint" class="mt-1 text-caption text-text-muted">
+            {tool.fields.email.hint}
+          </p>
+          <FieldError field="email" id="qr-email-error" />
+        </div>
+
+        <div data-panel="phone" hidden>
+          <label for="qr-phone" class="text-label text-text-primary">
+            {tool.fields.phone.label}
+          </label>
+          <input
+            id="qr-phone"
+            name="phone"
+            type="tel"
+            class="input mt-2"
+            placeholder={tool.fields.phone.placeholder}
+            autocomplete="off"
+            aria-describedby="qr-phone-hint qr-phone-error"
+          />
+          <p id="qr-phone-hint" class="mt-1 text-caption text-text-muted">
+            {tool.fields.phone.hint}
+          </p>
+          <FieldError field="phone" id="qr-phone-error" />
+        </div>
+
+        <div data-panel="sms" hidden>
+          <div>
+            <label for="qr-sms-phone" class="text-label text-text-primary">
+              {tool.fields.sms.phone.label}
+            </label>
+            <input
+              id="qr-sms-phone"
+              name="smsPhone"
+              type="tel"
+              class="input mt-2"
+              placeholder={tool.fields.sms.phone.placeholder}
+              autocomplete="off"
+              aria-describedby="qr-sms-phone-hint qr-sms-phone-error"
+            />
+            <p id="qr-sms-phone-hint" class="mt-1 text-caption text-text-muted">
+              {tool.fields.sms.phone.hint}
+            </p>
+            <FieldError field="smsPhone" id="qr-sms-phone-error" />
+          </div>
+
+          <div class="mt-5">
+            <label for="qr-sms-message" class="text-label text-text-primary">
+              {tool.fields.sms.message.label}
+            </label>
+            <textarea
+              id="qr-sms-message"
+              name="smsMessage"
+              class="textarea mt-2 min-h-20"
+              placeholder={tool.fields.sms.message.placeholder}
+              autocomplete="off"
+              aria-describedby="qr-sms-message-hint"
+            ></textarea>
+            <p
+              id="qr-sms-message-hint"
+              class="mt-1 text-caption text-text-muted"
+            >
+              {tool.fields.sms.message.hint}
+            </p>
+          </div>
+        </div>
+
+        <div data-panel="wifi" hidden>
+          <div>
+            <label for="qr-wifi-ssid" class="text-label text-text-primary">
+              {tool.fields.wifi.ssid.label}
+            </label>
+            <input
+              id="qr-wifi-ssid"
+              name="wifiSsid"
+              type="text"
+              class="input mt-2"
+              placeholder={tool.fields.wifi.ssid.placeholder}
+              autocomplete="off"
+              spellcheck="false"
+              aria-describedby="qr-wifi-ssid-hint qr-wifi-ssid-error"
+            />
+            <p id="qr-wifi-ssid-hint" class="mt-1 text-caption text-text-muted">
+              {tool.fields.wifi.ssid.hint}
+            </p>
+            <FieldError field="wifiSsid" id="qr-wifi-ssid-error" />
+          </div>
+
+          <div class="mt-5">
+            <label for="qr-wifi-password" class="text-label text-text-primary">
+              {tool.fields.wifi.password.label}
+            </label>
+            <div class="mt-2 flex items-start gap-2">
+              <input
+                id="qr-wifi-password"
+                name="wifiPassword"
+                type="password"
+                class="input min-w-0 flex-1 font-mono"
+                placeholder={tool.fields.wifi.password.placeholder}
+                autocomplete="off"
+                spellcheck="false"
+                aria-describedby="qr-wifi-password-hint qr-wifi-password-error"
+              />
+              <button
+                type="button"
+                class="btn btn-secondary w-11 shrink-0 px-0"
+                aria-controls="qr-wifi-password"
+                aria-label={tool.fields.wifi.passwordShow}
+                aria-pressed="false"
+                data-password-toggle
+              >
+                <span
+                  class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+                  aria-hidden="true"
+                  data-password-show-icon
+                  set:html={eyeIcon}
+                />
+                <span
+                  class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+                  aria-hidden="true"
+                  hidden
+                  data-password-hide-icon
+                  set:html={eyeOffIcon}
+                />
+              </button>
+            </div>
+            <p
+              id="qr-wifi-password-hint"
+              class="mt-1 text-caption text-text-muted"
+            >
+              {tool.fields.wifi.password.hint}
+            </p>
+            <FieldError field="wifiPassword" id="qr-wifi-password-error" />
+          </div>
+
+          <div class="mt-5">
+            <label for="qr-wifi-security" class="text-label text-text-primary">
+              {tool.fields.wifi.securityLabel}
+            </label>
+            <select
+              id="qr-wifi-security"
+              name="wifiSecurity"
+              class="input mt-2"
+              aria-describedby="qr-wifi-security-hint"
+            >
+              {QR_WIFI_SECURITIES.map((security) => (
+                <option value={security} selected={security === "WPA"}>
+                  {tool.fields.wifi.securityOptions[security]}
+                </option>
+              ))}
+            </select>
+            <p
+              id="qr-wifi-security-hint"
+              class="mt-1 text-caption text-text-muted"
+            >
+              {tool.fields.wifi.securityHint}
+            </p>
+          </div>
+
+          <div class="mt-5">
+            <ToggleSwitch
+              name="wifiHidden"
+              label={tool.fields.wifi.hiddenLabel}
+              hint={tool.fields.wifi.hiddenHint}
+            />
+          </div>
+        </div>
+
+        <div data-panel="vcard" hidden>
+          <div>
+            <label for="qr-vcard-name" class="text-label text-text-primary">
+              {tool.fields.vcard.name.label}
+            </label>
+            <input
+              id="qr-vcard-name"
+              name="vcardName"
+              type="text"
+              class="input mt-2"
+              placeholder={tool.fields.vcard.name.placeholder}
+              autocomplete="off"
+              aria-describedby="qr-vcard-name-hint qr-vcard-name-error"
+            />
+            <p
+              id="qr-vcard-name-hint"
+              class="mt-1 text-caption text-text-muted"
+            >
+              {tool.fields.vcard.name.hint}
+            </p>
+            <FieldError field="vcardName" id="qr-vcard-name-error" />
+          </div>
+
+          <div class="mt-5">
+            <label for="qr-vcard-phone" class="text-label text-text-primary">
+              {tool.fields.vcard.phone.label}
+            </label>
+            <input
+              id="qr-vcard-phone"
+              name="vcardPhone"
+              type="tel"
+              class="input mt-2"
+              placeholder={tool.fields.vcard.phone.placeholder}
+              autocomplete="off"
+              aria-describedby="qr-vcard-phone-hint qr-vcard-phone-error"
+            />
+            <p
+              id="qr-vcard-phone-hint"
+              class="mt-1 text-caption text-text-muted"
+            >
+              {tool.fields.vcard.phone.hint}
+            </p>
+            <FieldError field="vcardPhone" id="qr-vcard-phone-error" />
+          </div>
+
+          <div class="mt-5">
+            <label for="qr-vcard-email" class="text-label text-text-primary">
+              {tool.fields.vcard.email.label}
+            </label>
+            <input
+              id="qr-vcard-email"
+              name="vcardEmail"
+              type="email"
+              class="input mt-2"
+              placeholder={tool.fields.vcard.email.placeholder}
+              autocomplete="off"
+              spellcheck="false"
+              aria-describedby="qr-vcard-email-hint qr-vcard-email-error"
+            />
+            <p
+              id="qr-vcard-email-hint"
+              class="mt-1 text-caption text-text-muted"
+            >
+              {tool.fields.vcard.email.hint}
+            </p>
+            <FieldError field="vcardEmail" id="qr-vcard-email-error" />
+          </div>
+
+          <div class="mt-5">
+            <label
+              for="qr-vcard-organization"
+              class="text-label text-text-primary"
+            >
+              {tool.fields.vcard.organization.label}
+            </label>
+            <input
+              id="qr-vcard-organization"
+              name="vcardOrganization"
+              type="text"
+              class="input mt-2"
+              placeholder={tool.fields.vcard.organization.placeholder}
+              autocomplete="off"
+              aria-describedby="qr-vcard-organization-hint"
+            />
+            <p
+              id="qr-vcard-organization-hint"
+              class="mt-1 text-caption text-text-muted"
+            >
+              {tool.fields.vcard.organization.hint}
+            </p>
+          </div>
+
+          <div class="mt-5">
+            <label for="qr-vcard-website" class="text-label text-text-primary">
+              {tool.fields.vcard.website.label}
+            </label>
+            <input
+              id="qr-vcard-website"
+              name="vcardWebsite"
+              type="url"
+              class="input mt-2"
+              placeholder={tool.fields.vcard.website.placeholder}
+              autocomplete="off"
+              spellcheck="false"
+              aria-describedby="qr-vcard-website-hint qr-vcard-website-error"
+            />
+            <p
+              id="qr-vcard-website-hint"
+              class="mt-1 text-caption text-text-muted"
+            >
+              {tool.fields.vcard.website.hint}
+            </p>
+            <FieldError field="vcardWebsite" id="qr-vcard-website-error" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 border-t border-border-subtle pt-6">
+        <h2 class="text-title text-text-primary">
+          {tool.customization.heading}
+        </h2>
+
+        <div class="mt-5 space-y-5">
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div>
+              <label for="qr-foreground" class="text-label text-text-primary">
+                {tool.customization.foregroundLabel}
+              </label>
+              <div class="mt-2 flex items-center gap-3">
+                <input
+                  id="qr-foreground"
+                  name="foreground"
+                  type="color"
+                  value="#0f172a"
+                  class="focus-ring h-11 w-14 cursor-pointer rounded-md border border-border-control bg-surface p-1"
+                />
+                <span
+                  class="font-mono text-small text-text-secondary"
+                  data-color-value="foreground"
+                >
+                  #0f172a
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label for="qr-background" class="text-label text-text-primary">
+                {tool.customization.backgroundLabel}
+              </label>
+              <div class="mt-2 flex items-center gap-3">
+                <input
+                  id="qr-background"
+                  name="background"
+                  type="color"
+                  value="#ffffff"
+                  class="focus-ring h-11 w-14 cursor-pointer rounded-md border border-border-control bg-surface p-1"
+                />
+                <span
+                  class="font-mono text-small text-text-secondary"
+                  data-color-value="background"
+                >
+                  #ffffff
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <fieldset class="min-w-0">
+            <legend class="text-label text-text-primary">
+              {tool.customization.sizeLabel}
+            </legend>
+            <div class="segmented segmented--large mt-2">
+              {QR_SIZE_PRESET_ORDER.map((size) => (
+                <label>
+                  <input
+                    type="radio"
+                    name="size"
+                    value={size}
+                    class="sr-only"
+                    checked={size === QR_DEFAULT_SIZE}
+                  />
+                  {tool.customization.sizeOptions[size]}
+                </label>
+              ))}
+            </div>
+            <p class="mt-1 text-caption text-text-muted">
+              {tool.customization.sizeHint}
+            </p>
+          </fieldset>
+
+          <div>
+            <label for="qr-ecc" class="text-label text-text-primary">
+              {tool.customization.eccLabel}
+            </label>
+            <select id="qr-ecc" name="ecc" class="input mt-2">
+              {QR_ECC_LEVELS.map((ecc) => (
+                <option value={ecc} selected={ecc === QR_DEFAULT_ECC}>
+                  {tool.customization.eccOptions[ecc]}
+                </option>
+              ))}
+            </select>
+            <p class="mt-1 text-caption text-text-muted">
+              {tool.customization.eccHint}
+            </p>
+          </div>
+
+          <ToggleSwitch
+            name="quietZone"
+            label={tool.customization.quietZoneLabel}
+            hint={tool.customization.quietZoneHint}
+            checked
+          />
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <button type="button" class="btn btn-secondary w-full" data-qr-reset>
+          {t.calculator.reset}
+        </button>
+      </div>
+    </form>
+
+    <aside
+      class="rounded-lg border border-border-subtle bg-surface-subtle p-(--layout-card-padding) md:sticky md:top-24"
+      aria-labelledby="qr-preview-heading"
+    >
+      <h2 id="qr-preview-heading" class="text-title text-text-primary">
+        {tool.preview.heading}
+      </h2>
+
+      <div class="mt-4 flex justify-center">
+        <div
+          class="flex aspect-square w-full max-w-[240px] items-center justify-center rounded-md border border-dashed border-border-control bg-surface p-6 text-center"
+          data-qr-placeholder
+        >
+          <div>
+            <span
+              class="mx-auto flex h-10 w-10 items-center justify-center rounded-md bg-surface-muted text-text-muted [&_svg]:h-5 [&_svg]:w-5"
+              aria-hidden="true"
+              set:html={qrCodeIcon}
+            />
+            <p class="mt-3 text-caption text-text-muted">
+              {tool.preview.placeholder}
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="[&_svg]:block [&_svg]:h-auto [&_svg]:max-w-full"
+          data-qr-preview
+          role="img"
+          aria-label={tool.preview.alt}
+          hidden
+        ></div>
+      </div>
+
+      <div
+        class="mt-4 flex items-start gap-2 rounded-md bg-warning-subtle p-3 text-caption text-warning"
+        role="status"
+        hidden
+        data-qr-contrast
+      >
+        <span
+          class="mt-0.5 h-4 w-4 shrink-0 [&_svg]:h-4 [&_svg]:w-4"
+          aria-hidden="true"
+          set:html={alertIcon}
+        />
+        <p data-qr-contrast-text></p>
+      </div>
+
+      <p
+        class="mt-4 flex items-start gap-2 rounded-md bg-error-subtle p-3 text-caption text-error"
+        role="alert"
+        hidden
+        data-qr-capacity
+      >
+        <span
+          class="mt-0.5 h-4 w-4 shrink-0 [&_svg]:h-4 [&_svg]:w-4"
+          aria-hidden="true"
+          set:html={alertIcon}
+        />
+        <span>{tool.preview.capacityError}</span>
+      </p>
+
+      <div class="mt-5 grid gap-3">
+        <button
+          type="button"
+          class="btn btn-primary w-full"
+          data-qr-download-png
+        >
+          <span
+            class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+            aria-hidden="true"
+            set:html={downloadIcon}
+          />
+          {tool.preview.downloadPng}
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary w-full"
+          data-qr-download-svg
+        >
+          <span
+            class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+            aria-hidden="true"
+            set:html={fileCodeIcon}
+          />
+          {tool.preview.downloadSvg}
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary w-full"
+          disabled
+          data-qr-copy
+        >
+          <span
+            class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+            aria-hidden="true"
+            set:html={copyIcon}
+          />
+          {tool.preview.copyImage}
+        </button>
+      </div>
+
+      <p
+        id="qr-copy-unsupported"
+        class="mt-2 text-caption text-text-muted"
+        hidden
+        data-qr-copy-unsupported
+      >
+        {tool.preview.copyUnsupported}
+      </p>
+
+      <p
+        class="mt-3 text-caption"
+        role="status"
+        aria-live="polite"
+        hidden
+        data-qr-action-status
+      ></p>
+
+      <div class="mt-6 flex items-start gap-3 rounded-md border border-accent-subtle-border bg-accent-subtle p-3">
+        <span
+          class="mt-0.5 h-5 w-5 shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-5"
+          aria-hidden="true"
+          set:html={shieldCheckIcon}
+        />
+        <div>
+          <p class="text-label text-text-primary">
+            {tool.preview.privacyTitle}
+          </p>
+          <p class="mt-1 text-caption text-text-secondary">
+            {tool.preview.privacyBody}
+          </p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  import { encode } from "uqr";
+  import {
+    buildQrPayload,
+    type QrContentType,
+    type QrField,
+    type QrFormValues,
+    type QrIssueCode,
+    type QrWifiSecurity,
+  } from "../lib/qr-payload";
+  import {
+    QR_DEFAULT_ECC,
+    QR_DEFAULT_SIZE,
+    QR_ECC_LEVELS,
+    QR_QUIET_ZONE_MODULES,
+    QR_SIZE_PRESETS,
+    type QrEccLevel,
+    type QrSizePreset,
+  } from "../lib/qr-options";
+  import { buildQrSvg, qrFilename } from "../lib/qr-render";
+  import { qrContrastWarning } from "../lib/qr-color";
+
+  interface ScriptStrings {
+    validation: Record<QrIssueCode, string>;
+    preview: {
+      copied: string;
+      copyFailed: string;
+      warnings: {
+        inverted: string;
+        lowContrast: string;
+      };
+    };
+    password: {
+      show: string;
+      hide: string;
+    };
+  }
+
+  interface CurrentQr {
+    payload: string;
+    type: QrContentType;
+    sizePreset: QrSizePreset;
+    ecc: QrEccLevel;
+    border: number;
+    foreground: string;
+    background: string;
+    matrix: boolean[][];
+    moduleCount: number;
+  }
+
+  const root = document.querySelector<HTMLElement>("[data-qr-generator]");
+
+  if (root) {
+    const i18n: ScriptStrings = JSON.parse(root.dataset.i18n ?? "{}");
+
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`QR generator: missing ${selector}`);
+      return el;
+    };
+
+    const form = requireEl<HTMLFormElement>("[data-qr-form]");
+    const preview = requireEl<HTMLElement>("[data-qr-preview]");
+    const placeholder = requireEl<HTMLElement>("[data-qr-placeholder]");
+    const contrastWarning = requireEl<HTMLElement>("[data-qr-contrast]");
+    const contrastText = requireEl<HTMLElement>("[data-qr-contrast-text]");
+    const capacity = requireEl<HTMLElement>("[data-qr-capacity]");
+    const actionStatus = requireEl<HTMLElement>("[data-qr-action-status]");
+    const downloadPng = requireEl<HTMLButtonElement>("[data-qr-download-png]");
+    const downloadSvg = requireEl<HTMLButtonElement>("[data-qr-download-svg]");
+    const copyButton = requireEl<HTMLButtonElement>("[data-qr-copy]");
+    const copyUnsupported = requireEl<HTMLElement>(
+      "[data-qr-copy-unsupported]",
+    );
+    const resetButton = requireEl<HTMLButtonElement>("[data-qr-reset]");
+    const passwordInput = requireEl<HTMLInputElement>("#qr-wifi-password");
+    const passwordToggle = requireEl<HTMLButtonElement>(
+      "[data-password-toggle]",
+    );
+    const passwordShowIcon = requireEl<HTMLElement>(
+      "[data-password-show-icon]",
+    );
+    const passwordHideIcon = requireEl<HTMLElement>(
+      "[data-password-hide-icon]",
+    );
+    const typeSelect = requireEl<HTMLSelectElement>("#qr-type");
+    const panels = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-panel]"),
+    );
+
+    const canCopyImage =
+      typeof window.ClipboardItem !== "undefined" &&
+      typeof navigator.clipboard !== "undefined" &&
+      typeof navigator.clipboard.write === "function";
+
+    let current: CurrentQr | null = null;
+    let actionTimer: number | undefined;
+
+    const colorLabel = (name: "foreground" | "background"): HTMLElement =>
+      requireEl<HTMLElement>(`[data-color-value="${name}"]`);
+
+    const foregroundLabel = colorLabel("foreground");
+    const backgroundLabel = colorLabel("background");
+
+    const elementByName = (
+      name: string,
+    ): HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null => {
+      const element = form.elements.namedItem(name);
+      return element instanceof HTMLInputElement ||
+        element instanceof HTMLTextAreaElement ||
+        element instanceof HTMLSelectElement
+        ? element
+        : null;
+    };
+
+    const valueOf = (name: string): string => elementByName(name)?.value ?? "";
+
+    const radioValue = (name: string): string => {
+      const element = form.elements.namedItem(name);
+      if (element instanceof RadioNodeList) return element.value;
+      return element instanceof HTMLInputElement ? element.value : "";
+    };
+
+    const checkedValue = (name: string): boolean => {
+      const element = elementByName(name);
+      return element instanceof HTMLInputElement ? element.checked : false;
+    };
+
+    const readValues = (): QrFormValues => ({
+      type: valueOf("type") as QrContentType,
+      url: valueOf("url"),
+      text: valueOf("text"),
+      email: valueOf("email"),
+      phone: valueOf("phone"),
+      smsPhone: valueOf("smsPhone"),
+      smsMessage: valueOf("smsMessage"),
+      wifiSsid: valueOf("wifiSsid"),
+      wifiPassword: valueOf("wifiPassword"),
+      wifiSecurity: valueOf("wifiSecurity") as QrWifiSecurity,
+      wifiHidden: checkedValue("wifiHidden"),
+      vcardName: valueOf("vcardName"),
+      vcardPhone: valueOf("vcardPhone"),
+      vcardEmail: valueOf("vcardEmail"),
+      vcardOrganization: valueOf("vcardOrganization"),
+      vcardWebsite: valueOf("vcardWebsite"),
+    });
+
+    const readSize = (): QrSizePreset => {
+      const size = radioValue("size") as QrSizePreset;
+      return Object.hasOwn(QR_SIZE_PRESETS, size) ? size : QR_DEFAULT_SIZE;
+    };
+
+    const readEcc = (): QrEccLevel => {
+      const ecc = valueOf("ecc") as QrEccLevel;
+      return (QR_ECC_LEVELS as readonly string[]).includes(ecc)
+        ? ecc
+        : QR_DEFAULT_ECC;
+    };
+
+    const updatePanels = (type: QrContentType): void => {
+      for (const panel of panels) {
+        panel.hidden = panel.dataset.panel !== type;
+      }
+    };
+
+    const setPasswordVisible = (visible: boolean): void => {
+      passwordInput.type = visible ? "text" : "password";
+      passwordToggle.setAttribute("aria-pressed", String(visible));
+      passwordToggle.setAttribute(
+        "aria-label",
+        visible ? i18n.password.hide : i18n.password.show,
+      );
+      passwordShowIcon.hidden = visible;
+      passwordHideIcon.hidden = !visible;
+    };
+
+    passwordToggle.addEventListener("click", () => {
+      setPasswordVisible(passwordInput.type === "password");
+    });
+
+    const updateColorLabels = (): void => {
+      foregroundLabel.textContent = valueOf("foreground") || "#0f172a";
+      backgroundLabel.textContent = valueOf("background") || "#ffffff";
+    };
+
+    const updateContrastWarning = (
+      foreground: string,
+      background: string,
+    ): void => {
+      const warning = qrContrastWarning(foreground, background);
+      contrastWarning.hidden = warning === null;
+      if (warning === null) return;
+
+      contrastText.textContent =
+        warning === "inverted"
+          ? i18n.preview.warnings.inverted
+          : i18n.preview.warnings.lowContrast;
+    };
+
+    const clearIssues = (): void => {
+      for (const error of root.querySelectorAll<HTMLElement>(
+        "[data-error-for]",
+      )) {
+        error.hidden = true;
+        const text = error.querySelector<HTMLElement>("[data-error-text]");
+        if (text) text.textContent = "";
+      }
+      for (const control of form.querySelectorAll<HTMLElement>(
+        "[aria-invalid]",
+      )) {
+        control.removeAttribute("aria-invalid");
+      }
+    };
+
+    const clearIssueFor = (field: string): void => {
+      const error = root.querySelector<HTMLElement>(
+        `[data-error-for="${field}"]`,
+      );
+      if (error) {
+        error.hidden = true;
+        const text = error.querySelector<HTMLElement>("[data-error-text]");
+        if (text) text.textContent = "";
+      }
+      elementByName(field)?.removeAttribute("aria-invalid");
+    };
+
+    const showIssues = (
+      issues: ReadonlyArray<{ field: QrField; code: QrIssueCode }>,
+    ): void => {
+      clearIssues();
+
+      for (const issue of issues) {
+        const error = root.querySelector<HTMLElement>(
+          `[data-error-for="${issue.field}"]`,
+        );
+        if (!error) continue;
+
+        const text = error.querySelector<HTMLElement>("[data-error-text]");
+        if (text) text.textContent = i18n.validation[issue.code];
+        error.hidden = false;
+        elementByName(issue.field)?.setAttribute("aria-invalid", "true");
+      }
+
+      const first = issues[0];
+      if (first) elementByName(first.field)?.focus();
+    };
+
+    const clearActionStatus = (): void => {
+      window.clearTimeout(actionTimer);
+      actionStatus.hidden = true;
+      actionStatus.textContent = "";
+    };
+
+    const showActionStatus = (message: string, isError: boolean): void => {
+      window.clearTimeout(actionTimer);
+      actionStatus.textContent = message;
+      actionStatus.hidden = false;
+      actionStatus.classList.toggle("text-error", isError);
+      actionStatus.classList.toggle("text-success", !isError);
+      actionTimer = window.setTimeout(() => {
+        actionStatus.hidden = true;
+      }, 3000);
+    };
+
+    const setActionsEnabled = (enabled: boolean): void => {
+      copyButton.disabled = !enabled || !canCopyImage;
+    };
+
+    const showPlaceholder = (): void => {
+      current = null;
+      preview.hidden = true;
+      preview.replaceChildren();
+      delete preview.dataset.qrType;
+      delete preview.dataset.qrSize;
+      delete preview.dataset.qrEcc;
+      placeholder.hidden = false;
+      capacity.hidden = true;
+      setActionsEnabled(false);
+    };
+
+    const render = (): void => {
+      const values = readValues();
+      updatePanels(values.type);
+      updateColorLabels();
+
+      const foreground = valueOf("foreground") || "#0f172a";
+      const background = valueOf("background") || "#ffffff";
+      updateContrastWarning(foreground, background);
+
+      const result = buildQrPayload(values);
+      if (!result.ok) {
+        showPlaceholder();
+        return;
+      }
+
+      const sizePreset = readSize();
+      const ecc = readEcc();
+      const border = checkedValue("quietZone") ? QR_QUIET_ZONE_MODULES : 0;
+
+      try {
+        const qr = encode(result.payload, { ecc, border });
+        current = {
+          payload: result.payload,
+          type: values.type,
+          sizePreset,
+          ecc,
+          border,
+          foreground,
+          background,
+          matrix: qr.data,
+          moduleCount: qr.size,
+        };
+
+        preview.innerHTML = buildQrSvg(result.payload, {
+          size: QR_SIZE_PRESETS[sizePreset].preview,
+          ecc,
+          border,
+          foreground,
+          background,
+        });
+        preview.hidden = false;
+        placeholder.hidden = true;
+        preview.dataset.qrType = values.type;
+        preview.dataset.qrSize = sizePreset;
+        preview.dataset.qrEcc = ecc;
+        capacity.hidden = true;
+        clearActionStatus();
+        setActionsEnabled(true);
+      } catch {
+        showPlaceholder();
+        capacity.hidden = false;
+      }
+    };
+
+    const createPngBlob = async (qr: CurrentQr): Promise<Blob | null> => {
+      const dimension = QR_SIZE_PRESETS[qr.sizePreset].export;
+      const moduleScale = dimension / qr.moduleCount;
+      const canvas = document.createElement("canvas");
+      canvas.width = dimension;
+      canvas.height = dimension;
+
+      const context = canvas.getContext("2d");
+      if (!context) return null;
+
+      context.fillStyle = qr.background;
+      context.fillRect(0, 0, dimension, dimension);
+      context.fillStyle = qr.foreground;
+
+      /*
+       * Use rounded module boundaries rather than a downscaled image. This
+       * keeps every module sharp while guaranteeing the exact advertised
+       * canvas dimension, including the quiet zone when enabled.
+       */
+      const boundaries = Array.from(
+        { length: qr.moduleCount + 1 },
+        (_, index) => Math.round(index * moduleScale),
+      );
+
+      for (let row = 0; row < qr.moduleCount; row++) {
+        const line = qr.matrix[row];
+        if (!line) continue;
+        const top = boundaries[row] ?? 0;
+        const bottom = boundaries[row + 1] ?? dimension;
+
+        for (let column = 0; column < qr.moduleCount; column++) {
+          if (line[column]) {
+            const left = boundaries[column] ?? 0;
+            const right = boundaries[column + 1] ?? dimension;
+            context.fillRect(left, top, right - left, bottom - top);
+          }
+        }
+      }
+
+      return await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, "image/png");
+      });
+    };
+
+    const triggerDownload = (blob: Blob, filename: string): void => {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.rel = "noopener";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+
+    const validateForAction = (): boolean => {
+      const result = buildQrPayload(readValues());
+      if (result.ok) return true;
+      showIssues(result.issues);
+      return false;
+    };
+
+    const downloadPngFile = async (): Promise<void> => {
+      if (!validateForAction()) return;
+      if (!current) return;
+
+      const blob = await createPngBlob(current);
+      if (!blob) {
+        showActionStatus(i18n.preview.copyFailed, true);
+        return;
+      }
+      triggerDownload(blob, qrFilename(current.type, "png"));
+    };
+
+    const downloadSvgFile = (): void => {
+      if (!validateForAction()) return;
+      if (!current) return;
+
+      const svg = buildQrSvg(current.payload, {
+        size: QR_SIZE_PRESETS[current.sizePreset].export,
+        ecc: current.ecc,
+        border: current.border,
+        foreground: current.foreground,
+        background: current.background,
+      });
+      triggerDownload(
+        new Blob([svg], { type: "image/svg+xml" }),
+        qrFilename(current.type, "svg"),
+      );
+    };
+
+    const copyImage = async (): Promise<void> => {
+      if (!current || !canCopyImage) return;
+
+      const blob = await createPngBlob(current);
+      if (!blob) {
+        showActionStatus(i18n.preview.copyFailed, true);
+        return;
+      }
+
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({ "image/png": blob }),
+        ]);
+        showActionStatus(i18n.preview.copied, false);
+      } catch {
+        showActionStatus(i18n.preview.copyFailed, true);
+      }
+    };
+
+    form.addEventListener("input", (event) => {
+      const target = event.target;
+      if (target instanceof HTMLElement) {
+        const field = target.getAttribute("name");
+        if (field) clearIssueFor(field);
+      }
+      render();
+    });
+    form.addEventListener("change", (event) => {
+      const target = event.target;
+      if (target instanceof HTMLSelectElement && target.name === "type") {
+        clearIssues();
+      } else if (
+        target instanceof HTMLSelectElement &&
+        target.name === "wifiSecurity"
+      ) {
+        clearIssueFor("wifiPassword");
+      }
+      render();
+    });
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      void downloadPngFile();
+    });
+
+    downloadPng.addEventListener("click", () => {
+      void downloadPngFile();
+    });
+    downloadSvg.addEventListener("click", downloadSvgFile);
+    copyButton.addEventListener("click", () => {
+      void copyImage();
+    });
+    resetButton.addEventListener("click", () => {
+      form.reset();
+      setPasswordVisible(false);
+      clearIssues();
+      clearActionStatus();
+      render();
+      typeSelect.focus();
+    });
+
+    if (!canCopyImage) {
+      copyUnsupported.hidden = false;
+      copyButton.setAttribute("aria-describedby", "qr-copy-unsupported");
+    }
+
+    render();
+  }
+</script>

@@ -8,7 +8,7 @@ The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKi
 
 ## Status
 
-Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Eight tools are shipped, each built on the reusable `ToolLayout` template with cross-linked related tools:
+Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Twelve tools are shipped, each built on the reusable `ToolLayout` template with cross-linked related tools:
 
 | Tool                  | Category        | English route            | Spanish route               |
 | --------------------- | --------------- | ------------------------ | --------------------------- |
@@ -16,12 +16,16 @@ Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (
 | Discount Calculator   | Calculators     | `/discount-calculator`   | `/es/discount-calculator`   |
 | Loan Calculator       | Calculators     | `/loan-calculator`       | `/es/loan-calculator`       |
 | Unit Converter        | Converters      | `/unit-converter`        | `/es/unit-converter`        |
+| Speed Converter       | Converters      | `/speed-converter`       | `/es/speed-converter`       |
 | Base64 Encoder        | Developer tools | `/base64-encoder`        | `/es/base64-encoder`        |
 | JSON Formatter        | Developer tools | `/json-formatter`        | `/es/json-formatter`        |
+| QR Code Generator     | Developer tools | `/qr-code-generator`     | `/es/qr-code-generator`     |
 | Date Calculator       | Date & time     | `/date-calculator`       | `/es/date-calculator`       |
 | Age Calculator        | Date & time     | `/age-calculator`        | `/es/age-calculator`        |
+| Word Counter          | Text tools      | `/word-counter`          | `/es/word-counter`          |
+| Case Converter        | Text tools      | `/case-converter`        | `/es/case-converter`        |
 
-Category landing pages are live in both locales for [Calculators](/calculators), [Developer tools](/developer-tools), and [Date & time](/date-time). Converters has a single registered tool, so it stays below the two-tool publication threshold and has no landing page yet; its chip keeps the in-page anchor and its footer entry renders as plain text.
+Category landing pages are live in both locales for [Calculators](/calculators), [Converters](/converters), [Developer tools](/developer-tools), [Date & time](/date-time), and [Text tools](/text-tools).
 
 The M10.15 / M10.15.1 public-site release adds a bilingual PC-hardware editorial library: ten source-based guides in English (`/guides/`) and Spanish (`/es/guides/`), plus About, Contact, Privacy Policy, Terms of Use, and Affiliate Disclosure pages in both locales. The legal pages are deployed as visible drafts with review notices and must not be presented as final or compliant until the owner inputs in [PC-BUILDER-M10-15-OWNER-INPUTS.md](./PC-BUILDER-M10-15-OWNER-INPUTS.md) are resolved. The guides are research-based and do not claim hands-on testing, benchmarks, or product ownership. The public contact address is `appkitx@gmail.com`. The PC Builder remains development-only and has no public route, navigation entry, or sitemap entry.
 
@@ -143,7 +147,7 @@ These checks prove the repository's output, not Google's behavior or Cloudflare'
 
 **Indexing and URL Inspection**
 
-- Watch the Page indexing report for: "Indexed" growth; "Discovered – currently not indexed" and "Crawled – currently not indexed" on tool or category URLs; "Duplicate without user-selected canonical"; and unexpected 404s. `/converters/` and `/text-tools/` are expected 404s (unpublished categories) and must not be indexed.
+- Watch the Page indexing report for: "Indexed" growth; "Discovered – currently not indexed" and "Crawled – currently not indexed" on tool or category URLs; "Duplicate without user-selected canonical"; and unexpected 404s. All registered categories are published, so unknown category paths must stay 404 and must not be indexed.
 - Use URL Inspection on one representative URL per surface — `/`, one tool page, one category page, and their `/es/` counterparts — and record, with the inspection date: whether the URL is on Google, the Google-selected canonical, the user-declared canonical, and crawl status.
 - "Alternate page with proper canonical tag" on `/es/` pages is the expected correct state, not an issue. Requesting indexing only queues a crawl; it never guarantees indexing, and a URL must not be recorded as indexed without a dated URL Inspection result.
 

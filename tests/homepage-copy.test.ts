@@ -15,6 +15,7 @@ const FAMILY_TERMS: Record<
     converter: RegExp;
     developer: RegExp;
     date: RegExp;
+    text: RegExp;
   }
 > = {
   en: {
@@ -22,18 +23,21 @@ const FAMILY_TERMS: Record<
     converter: /converters?/i,
     developer: /developer/i,
     date: /date and time/i,
+    text: /text tools?/i,
   },
   es: {
     calculator: /calculadoras?/i,
     converter: /conversores?/i,
     developer: /desarrollador/i,
     date: /fecha y hora/i,
+    text: /herramientas de texto/i,
   },
 };
 
 describe("homepage copy", () => {
-  it("claims converters only because a converter is registered", () => {
+  it("claims converters and text tools only because they are registered", () => {
     expect(toolsInCategory("Converters").length).toBeGreaterThan(0);
+    expect(toolsInCategory("Text tools").length).toBeGreaterThan(0);
 
     for (const [code, dictionary] of Object.entries(dictionaries)) {
       const copy = [
@@ -44,6 +48,9 @@ describe("homepage copy", () => {
 
       expect(copy, `${code} homepage copy`).toMatch(
         FAMILY_TERMS[code]?.converter ?? /converters?/i,
+      );
+      expect(copy, `${code} text tools copy`).toMatch(
+        FAMILY_TERMS[code]?.text ?? /text tools?/i,
       );
     }
   });
@@ -64,6 +71,7 @@ describe("homepage copy", () => {
       expect(copy, `${code} converter coverage`).toMatch(terms.converter);
       expect(copy, `${code} developer coverage`).toMatch(terms.developer);
       expect(copy, `${code} date and time coverage`).toMatch(terms.date);
+      expect(copy, `${code} text tool coverage`).toMatch(terms.text);
     }
   });
 

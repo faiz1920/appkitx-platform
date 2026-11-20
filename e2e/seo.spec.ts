@@ -1,4 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
+import { getDictionary, locales } from "../src/i18n/config";
+import { localizedHref } from "../src/i18n/routing";
+import { categoryPath, publishedCategories } from "../src/lib/categories";
+import { siteUrl } from "../src/lib/seo";
+import { tools } from "../src/lib/tools";
 
 const jsonLdScripts = (page: Page) =>
   page.locator('script[type="application/ld+json"]');
@@ -20,48 +25,29 @@ const readJsonLd = async (page: Page): Promise<Record<string, unknown>[]> => {
   return documents;
 };
 
-const TOOLS = [
-  {
-    path: "/percentage-calculator",
-    name: "Percentage Calculator",
-    canonical: "https://appkitx.com/percentage-calculator/",
-  },
-  {
-    path: "/discount-calculator",
-    name: "Discount Calculator",
-    canonical: "https://appkitx.com/discount-calculator/",
-  },
-  {
-    path: "/loan-calculator",
-    name: "Loan Calculator",
-    canonical: "https://appkitx.com/loan-calculator/",
-  },
-  {
-    path: "/unit-converter",
-    name: "Unit Converter",
-    canonical: "https://appkitx.com/unit-converter/",
-  },
-  {
-    path: "/base64-encoder",
-    name: "Base64 Encoder",
-    canonical: "https://appkitx.com/base64-encoder/",
-  },
-  {
-    path: "/json-formatter",
-    name: "JSON Formatter",
-    canonical: "https://appkitx.com/json-formatter/",
-  },
-  {
-    path: "/date-calculator",
-    name: "Date Calculator",
-    canonical: "https://appkitx.com/date-calculator/",
-  },
-  {
-    path: "/age-calculator",
-    name: "Age Calculator",
-    canonical: "https://appkitx.com/age-calculator/",
-  },
-];
+const ORIGIN = "https://appkitx.com";
+const LOCALE_METAS = Object.values(locales);
+
+const TOOL_PAGES = LOCALE_METAS.flatMap((locale) => {
+  const dictionary = getDictionary(locale.code);
+  return tools.map((tool) => {
+    const strings = dictionary.tools[tool.dictionaryKey];
+    const path = localizedHref(tool.href, locale.code);
+    return {
+      path,
+      title: strings.title,
+      name: strings.name,
+      description: strings.description,
+      metaDescription: strings.metaDescription,
+      breadcrumbLabel: dictionary.toolLayout.breadcrumbLabel,
+      homeName: dictionary.toolLayout.breadcrumbHome,
+      homePath: localizedHref("/", locale.code),
+      homeUrl: siteUrl(localizedHref("/", locale.code), ORIGIN),
+      canonical: siteUrl(path, ORIGIN),
+      lang: locale.hreflang,
+    };
+  });
+});
 
 test("homepage exposes Open Graph, Twitter, and WebSite structured data", async ({
   page,
@@ -115,12 +101,20 @@ test("homepage exposes Open Graph, Twitter, and WebSite structured data", async 
   });
 });
 
-for (const tool of TOOLS) {
-  test(`${tool.name} exposes breadcrumb and WebApplication structured data`, async ({
+for (const tool of TOOL_PAGES) {
+  test(`${tool.lang} ${tool.name} exposes breadcrumb and WebApplication structured data`, async ({
     page,
   }) => {
     await page.goto(tool.path);
 
+    await expect(page.locator("html")).toHaveAttribute("lang", tool.lang);
+    await expect(page).toHaveTitle(tool.title);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(tool.name);
+    await expect(page.locator("h1 + p")).toHaveText(tool.description);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      "content",
+      tool.metaDescription,
+    );
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
       tool.canonical,
@@ -140,12 +134,22 @@ for (const tool of TOOLS) {
         {
           "@type": "ListItem",
           position: 1,
-          name: "Home",
-          item: "https://appkitx.com/",
+          name: tool.homeName,
+          item: tool.homeUrl,
         },
         { "@type": "ListItem", position: 2, name: tool.name },
       ],
     });
+
+    const visibleBreadcrumb = page.getByRole("navigation", {
+      name: tool.breadcrumbLabel,
+    });
+    await expect(
+      visibleBreadcrumb.getByRole("link", { name: tool.homeName }),
+    ).toHaveAttribute("href", tool.homePath);
+    await expect(visibleBreadcrumb.locator('[aria-current="page"]')).toHaveText(
+      tool.name,
+    );
 
     const webApplication = documents.find(
       (document) => document["@type"] === "WebApplication",
@@ -153,10 +157,11 @@ for (const tool of TOOLS) {
     expect(webApplication).toMatchObject({
       "@context": "https://schema.org",
       name: tool.name,
+      description: tool.description,
       url: tool.canonical,
       applicationCategory: "UtilitiesApplication",
       isAccessibleForFree: true,
-      inLanguage: "en",
+      inLanguage: tool.lang,
     });
     for (const forbidden of [
       "aggregateRating",
@@ -235,143 +240,48 @@ test("Spanish homepage exposes localized metadata and structured data", async ({
   });
 });
 
-for (const tool of [
-  {
-    path: "/es/percentage-calculator",
-    name: "Calculadora de porcentajes",
-    canonical: "https://appkitx.com/es/percentage-calculator/",
-  },
-  {
-    path: "/es/discount-calculator",
-    name: "Calculadora de descuentos",
-    canonical: "https://appkitx.com/es/discount-calculator/",
-  },
-  {
-    path: "/es/base64-encoder",
-    name: "Codificador Base64",
-    canonical: "https://appkitx.com/es/base64-encoder/",
-  },
-  {
-    path: "/es/json-formatter",
-    name: "Formateador JSON",
-    canonical: "https://appkitx.com/es/json-formatter/",
-  },
-  {
-    path: "/es/date-calculator",
-    name: "Calculadora de fechas",
-    canonical: "https://appkitx.com/es/date-calculator/",
-  },
-  {
-    path: "/es/age-calculator",
-    name: "Calculadora de edad",
-    canonical: "https://appkitx.com/es/age-calculator/",
-  },
-]) {
-  test(`Spanish ${tool.name} exposes localized canonical, breadcrumb, and structured data`, async ({
-    page,
-  }) => {
-    await page.goto(tool.path);
-
-    await expect(page.locator("html")).toHaveAttribute("lang", "es");
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-      "href",
-      tool.canonical,
-    );
-    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
-      "content",
-      tool.canonical,
-    );
-
-    const documents = await readJsonLd(page);
-    expect(documents).toHaveLength(2);
-
-    const breadcrumb = documents.find(
-      (document) => document["@type"] === "BreadcrumbList",
-    );
-    expect(breadcrumb).toMatchObject({
-      "@context": "https://schema.org",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Inicio",
-          item: "https://appkitx.com/es/",
-        },
-        { "@type": "ListItem", position: 2, name: tool.name },
-      ],
-    });
-
-    const webApplication = documents.find(
-      (document) => document["@type"] === "WebApplication",
-    );
-    expect(webApplication).toMatchObject({
-      "@context": "https://schema.org",
-      name: tool.name,
-      url: tool.canonical,
-      applicationCategory: "UtilitiesApplication",
-      isAccessibleForFree: true,
-      inLanguage: "es",
-    });
+const CATEGORY_PAGES = LOCALE_METAS.flatMap((locale) => {
+  const dictionary = getDictionary(locale.code);
+  return publishedCategories().map((category) => {
+    const strings = dictionary.categories[category];
+    const pageCopy = strings.page;
+    if (pageCopy === undefined) {
+      throw new Error(`Missing category page copy: ${category}`);
+    }
+    const path = localizedHref(categoryPath(category), locale.code);
+    return {
+      path,
+      title: pageCopy.title,
+      name: strings.name,
+      metaDescription: pageCopy.metaDescription,
+      breadcrumbLabel: dictionary.categoryLayout.breadcrumbLabel,
+      homeName: dictionary.toolLayout.breadcrumbHome,
+      homePath: localizedHref("/", locale.code),
+      homeUrl: siteUrl(localizedHref("/", locale.code), ORIGIN),
+      canonical: siteUrl(path, ORIGIN),
+      lang: locale.hreflang,
+    };
   });
-}
-
-const CATEGORY_PAGES = [
-  {
-    path: "/calculators",
-    name: "Calculators",
-    homeName: "Home",
-    homeUrl: "https://appkitx.com/",
-    canonical: "https://appkitx.com/calculators/",
-    inLanguage: "en",
-  },
-  {
-    path: "/es/calculators",
-    name: "Calculadoras",
-    homeName: "Inicio",
-    homeUrl: "https://appkitx.com/es/",
-    canonical: "https://appkitx.com/es/calculators/",
-    inLanguage: "es",
-  },
-  {
-    path: "/developer-tools",
-    name: "Developer tools",
-    homeName: "Home",
-    homeUrl: "https://appkitx.com/",
-    canonical: "https://appkitx.com/developer-tools/",
-    inLanguage: "en",
-  },
-  {
-    path: "/es/developer-tools",
-    name: "Herramientas de desarrollo",
-    homeName: "Inicio",
-    homeUrl: "https://appkitx.com/es/",
-    canonical: "https://appkitx.com/es/developer-tools/",
-    inLanguage: "es",
-  },
-  {
-    path: "/date-time",
-    name: "Date & time",
-    homeName: "Home",
-    homeUrl: "https://appkitx.com/",
-    canonical: "https://appkitx.com/date-time/",
-    inLanguage: "en",
-  },
-  {
-    path: "/es/date-time",
-    name: "Fecha y hora",
-    homeName: "Inicio",
-    homeUrl: "https://appkitx.com/es/",
-    canonical: "https://appkitx.com/es/date-time/",
-    inLanguage: "es",
-  },
-];
+});
 
 for (const categoryPage of CATEGORY_PAGES) {
-  test(`the ${categoryPage.path} category page exposes breadcrumb and CollectionPage structured data`, async ({
+  test(`${categoryPage.lang} ${categoryPage.name} category page exposes breadcrumb and CollectionPage structured data`, async ({
     page,
   }) => {
     await page.goto(categoryPage.path);
 
+    await expect(page.locator("html")).toHaveAttribute(
+      "lang",
+      categoryPage.lang,
+    );
+    await expect(page).toHaveTitle(categoryPage.title);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      categoryPage.name,
+    );
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      "content",
+      categoryPage.metaDescription,
+    );
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       "href",
       categoryPage.canonical,
@@ -400,14 +310,25 @@ for (const categoryPage of CATEGORY_PAGES) {
       ],
     });
 
+    const visibleBreadcrumb = page.getByRole("navigation", {
+      name: categoryPage.breadcrumbLabel,
+    });
+    await expect(
+      visibleBreadcrumb.getByRole("link", { name: categoryPage.homeName }),
+    ).toHaveAttribute("href", categoryPage.homePath);
+    await expect(visibleBreadcrumb.locator('[aria-current="page"]')).toHaveText(
+      categoryPage.name,
+    );
+
     const collection = documents.find(
       (document) => document["@type"] === "CollectionPage",
     );
     expect(collection).toMatchObject({
       "@context": "https://schema.org",
       name: categoryPage.name,
+      description: categoryPage.metaDescription,
       url: categoryPage.canonical,
-      inLanguage: categoryPage.inLanguage,
+      inLanguage: categoryPage.lang,
     });
     for (const forbidden of [
       "aggregateRating",

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { MAX_SUPPORTED_YEAR } from "../src/lib/date-math";
 import {
   formatBreakdown,
   formatDayCount,
@@ -30,6 +31,15 @@ describe("formatLongDate", () => {
     expect(formatLongDate({ year: 2026, month: 11, day: 30 }, "es-ES")).toBe(
       "30 de noviembre de 2026",
     );
+  });
+
+  it("formats the last supported year in both locales", () => {
+    expect(
+      formatLongDate({ year: MAX_SUPPORTED_YEAR, month: 12, day: 31 }, "en-US"),
+    ).toBe("December 31, 275759");
+    expect(
+      formatLongDate({ year: MAX_SUPPORTED_YEAR, month: 12, day: 31 }, "es-ES"),
+    ).toBe("31 de diciembre de 275759");
   });
 });
 

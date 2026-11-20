@@ -1,15 +1,17 @@
 import { expect, test } from "@playwright/test";
-import { locales } from "../src/i18n/config";
+import { getDictionary, locales } from "../src/i18n/config";
 import {
   localizedHref,
   stripLocalePrefix,
   translatedPagePaths,
 } from "../src/i18n/routing";
+import { categoryPath, publishedCategories } from "../src/lib/categories";
 import {
   GUIDES_PATH,
   GUIDE_SLUGS,
   INFO_PAGE_PATHS,
 } from "../src/lib/editorial";
+import { tools } from "../src/lib/tools";
 
 const LOCALE_CODES = Object.keys(locales) as Array<keyof typeof locales>;
 const INDEXABLE_ROUTES = LOCALE_CODES.flatMap((locale) =>
@@ -85,7 +87,9 @@ test("all indexable routes keep canonical internal links and working chrome", as
   page,
   request,
 }) => {
-  expect(INDEXABLE_ROUTES).toHaveLength(56);
+  /* 68 routes with per-page assertions exceed the default 30s on Firefox. */
+  test.setTimeout(90_000);
+  expect(INDEXABLE_ROUTES).toHaveLength(68);
 
   const internalPaths = new Set<string>();
 
@@ -192,6 +196,37 @@ test("all indexable routes keep canonical internal links and working chrome", as
     await page.goto(localizedHref("/", locale));
     await expect(page.locator("#tools")).toHaveCount(1);
     await expect(page.locator("#categories")).toHaveCount(1);
+  }
+});
+
+test("footer lists every registered tool and published category", async ({
+  page,
+}) => {
+  for (const locale of LOCALE_CODES) {
+    await page.goto(localizedHref("/", locale));
+
+    const dictionary = getDictionary(locale);
+    const footer = page.getByRole("contentinfo");
+
+    for (const tool of tools) {
+      await expect(
+        footer.getByRole("link", {
+          name: dictionary.tools[tool.dictionaryKey].name,
+          exact: true,
+        }),
+        `${locale} footer must link ${tool.href}`,
+      ).toHaveAttribute("href", localizedHref(tool.href, locale));
+    }
+
+    for (const category of publishedCategories()) {
+      await expect(
+        footer.getByRole("link", {
+          name: dictionary.categories[category].name,
+          exact: true,
+        }),
+        `${locale} footer must link ${category}`,
+      ).toHaveAttribute("href", localizedHref(categoryPath(category), locale));
+    }
   }
 });
 

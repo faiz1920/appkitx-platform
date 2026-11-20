@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { prepareClipboard } from "./clipboard";
 import { pressTab } from "./keyboard";
+import { observeLiveRegion, stopObservingLiveRegion } from "./live-region";
 
 /*
  * M7 Phase 2 Date Calculator: exclusive day counts, the anchored
@@ -222,6 +223,221 @@ test("validates empty dates and invalid amounts inline", async ({ page }) => {
     "Enter a whole number.",
   );
   await expect(dateValue(page)).toHaveText("—");
+
+  /* Changing the date does not correct an invalid amount. */
+  await page.getByLabel("Date", { exact: true }).fill("2026-03-02");
+  await expect(page.locator("[data-error-text-amount]")).toHaveText(
+    "Enter a whole number.",
+  );
+
+  await page.getByLabel("Amount").fill("2");
+  await expect(page.locator("[data-error-amount]")).toBeHidden();
+});
+
+test("announces field errors once and clears them as each field is corrected", async ({
+  page,
+}) => {
+  await page.goto("/date-calculator");
+
+  const start = page.getByLabel("Start date");
+  const end = page.getByLabel("End date");
+  const startError = page.locator("[data-error-start]");
+  const endError = page.locator("[data-error-end]");
+  const startText = page.locator("[data-error-text-start]");
+  const endText = page.locator("[data-error-text-end]");
+
+  for (const region of [startError, endError]) {
+    await expect(region).toHaveAttribute("role", "alert");
+    await expect(region).toHaveAttribute("aria-atomic", "true");
+    await expect(region).toBeHidden();
+    expect(
+      await region.evaluate(
+        (element) => element.closest("[aria-live]") !== null,
+      ),
+      "field errors must not live inside the results live region",
+    ).toBe(false);
+  }
+
+  await expect(start).toHaveAttribute(
+    "aria-describedby",
+    "date-calc-error-start",
+  );
+  await expect(page.locator("[data-result-region]")).toHaveAttribute(
+    "aria-live",
+    "polite",
+  );
+
+  await calculate(page);
+  await expect(startError).toBeVisible();
+  await expect(endError).toBeVisible();
+  await expect(startText).toHaveText("Enter a start date.");
+  await expect(endText).toHaveText("Enter an end date.");
+  await expect(start).toHaveAttribute("aria-invalid", "true");
+  await expect(end).toHaveAttribute("aria-invalid", "true");
+
+  await observeLiveRegion(page, "[data-error-start]");
+  await calculate(page);
+  await page.waitForTimeout(50);
+  expect(
+    await stopObservingLiveRegion(page),
+    "repeated empty start error must not rewrite the alert",
+  ).toBe(0);
+
+  await start.fill("2026-03-01");
+  await expect(startError).toBeHidden();
+  await expect(startText).toHaveText("");
+  await expect(start).not.toHaveAttribute("aria-invalid", "true");
+  await expect(endError).toBeVisible();
+
+  await end.fill("2026-03-15");
+  await expect(endError).toBeHidden();
+  await expect(endText).toHaveText("");
+  await expect(end).not.toHaveAttribute("aria-invalid", "true");
+
+  await calculate(page);
+  await expect(daysValue(page)).toHaveText("14 days");
+  await expect(startError).toBeHidden();
+  await expect(endError).toBeHidden();
+
+  await start.fill("");
+  await calculate(page);
+  await expect(startError).toBeVisible();
+  await page.getByRole("button", { name: "Reset" }).click();
+  await expect(startError).toBeHidden();
+  await expect(startText).toHaveText("");
+  await expect(start).not.toHaveAttribute("aria-invalid", "true");
+});
+
+test("announces invalid, unsupported, and shift-range errors without repeats", async ({
+  page,
+}) => {
+  await page.goto("/date-calculator");
+
+  await page.getByLabel("Start date").fill("275760-01-01");
+  await page.getByLabel("End date").fill("2026-03-01");
+  await calculate(page);
+
+  const startError = page.locator("[data-error-start]");
+  await expect(startError).toBeVisible();
+  await expect(startError).toContainText("Enter a valid start date.");
+  await expect(page.locator("[data-error-end]")).toBeHidden();
+
+  await page.getByLabel("Start date").fill("2026-03-01");
+  await expect(startError).toBeHidden();
+  await calculate(page);
+  await expect(daysValue(page)).toHaveText("0 days");
+
+  await selectMode(page, "Add or subtract");
+  const dateError = page.locator("[data-error-date]");
+  const amountError = page.locator("[data-error-amount]");
+  await expect(dateError).toHaveAttribute("role", "alert");
+  await expect(dateError).toHaveAttribute("aria-atomic", "true");
+  await expect(amountError).toHaveAttribute("role", "alert");
+  await expect(amountError).toHaveAttribute("aria-atomic", "true");
+
+  await page.getByLabel("Date", { exact: true }).fill("275760-01-01");
+  await page.getByLabel("Amount").fill("1");
+  await page.getByLabel("Unit").selectOption("days");
+  await calculate(page);
+  await expect(dateError).toBeVisible();
+  await expect(dateError).toContainText("Enter a valid date.");
+
+  await page.getByLabel("Date", { exact: true }).fill("2026-01-01");
+  await expect(dateError).toBeHidden();
+  await page.getByLabel("Amount").fill("1000000000");
+  await calculate(page);
+
+  await expect(amountError).toBeVisible();
+  await expect(amountError).toContainText(
+    "The resulting date is outside the supported range.",
+  );
+  await expect(dateValue(page)).toHaveText("—");
+
+  await observeLiveRegion(page, "[data-error-amount]");
+  await calculate(page);
+  await page.waitForTimeout(50);
+  expect(
+    await stopObservingLiveRegion(page),
+    "repeated range error must not rewrite the alert",
+  ).toBe(0);
+
+  await page.getByLabel("Amount").fill("30");
+  await expect(amountError).toBeHidden();
+  await page.getByLabel("Date", { exact: true }).fill("2026-03-01");
+  await calculate(page);
+  await expect(dateValue(page)).toHaveText("March 31, 2026");
+  await expect(amountError).toBeHidden();
+
+  await page.getByLabel("Amount").fill("1000000000");
+  await calculate(page);
+  await expect(amountError).toBeVisible();
+  await page.getByLabel("Unit").selectOption("months");
+  await expect(amountError).toBeHidden();
+  await expect(page.getByLabel("Amount")).not.toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+});
+
+test("handles five-digit years and out-of-range shifts without invalid dates", async ({
+  page,
+}) => {
+  const pageErrors: string[] = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+
+  await page.goto("/date-calculator");
+
+  /* The native date input accepts five-digit years; the tool must too. */
+  await page.getByLabel("Start date").fill("10000-01-01");
+  await page.getByLabel("End date").fill("10001-01-01");
+  await calculate(page);
+
+  await expect(daysValue(page)).toHaveText("366 days");
+  await expect(breakdownValue(page)).toHaveText("1 year, 0 months, and 0 days");
+  await expect(caption(page)).toHaveText(
+    "From January 1, 10000 to January 1, 10001.",
+  );
+
+  /* A syntactically valid but unsupported date is invalid, not empty. */
+  await page.getByLabel("Start date").fill("275760-01-01");
+  await calculate(page);
+  await expect(page.locator("[data-error-text-start]")).toHaveText(
+    "Enter a valid start date.",
+  );
+  await expect(daysValue(page)).toHaveText("—");
+
+  await selectMode(page, "Add or subtract");
+  await page.getByLabel("Date", { exact: true }).fill("2026-01-01");
+  await page.getByLabel("Amount").fill("1000000000");
+  await page.getByLabel("Unit").selectOption("days");
+  await calculate(page);
+
+  const rangeError =
+    "The resulting date is outside the supported range. Adjust the date or amount.";
+  await expect(page.locator("[data-error-text-amount]")).toHaveText(rangeError);
+  await expect(page.getByLabel("Amount")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  await expect(dateValue(page)).toHaveText("—");
+  await expect(copy(page)).toBeDisabled();
+
+  /* Underflow must not display a misleading year-zero date. */
+  await page.getByLabel("Date", { exact: true }).fill("0001-01-01");
+  await page.getByLabel("Amount").fill("-1");
+  await calculate(page);
+  await expect(page.locator("[data-error-text-amount]")).toHaveText(rangeError);
+  await expect(dateValue(page)).toHaveText("—");
+
+  /* Editing and submitting a valid amount recovers. */
+  await page.getByLabel("Date", { exact: true }).fill("2026-03-01");
+  await page.getByLabel("Amount").fill("30");
+  await calculate(page);
+  await expect(dateValue(page)).toHaveText("March 31, 2026");
+  await expect(page.locator("[data-error-amount]")).toBeHidden();
+  await expect(copy(page)).toBeEnabled();
+
+  expect(pageErrors, pageErrors.join("\n")).toEqual([]);
 });
 
 test("switching modes swaps the fields and resets the result", async ({
@@ -335,6 +551,24 @@ test("the Spanish page is localized and computes", async ({ page }) => {
   await expect(caption(page)).toHaveText(
     "Resultado de restar 1 mes a 31 de marzo de 2026.",
   );
+
+  await page.getByLabel("Fecha", { exact: true }).fill("2026-01-01");
+  await page.getByLabel("Cantidad").fill("1000000000");
+  await page.getByLabel("Unidad").selectOption("days");
+  await page.getByRole("button", { name: "Calcular" }).click();
+
+  await expect(page.locator("[data-error-text-amount]")).toHaveText(
+    "La fecha resultante está fuera del rango admitido. Ajusta la fecha o la cantidad.",
+  );
+  await expect(page.locator("[data-error-amount]")).toHaveAttribute(
+    "role",
+    "alert",
+  );
+  await expect(page.locator("[data-error-amount]")).toHaveAttribute(
+    "aria-atomic",
+    "true",
+  );
+  await expect(dateValue(page)).toHaveText("—");
 
   await page.screenshot({
     path: "test-results/date-calculator-es.png",

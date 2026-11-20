@@ -24,6 +24,12 @@ ISC requires retaining the copyright notice and license text in copies. The
 bundled LICENSE file in the installed package is retained with the dependency;
 this file records the notice for the project.
 
+## Libraries
+
+| Asset       | Package     | Declared license | Verification                                                                                                                                                                                           | Status   |
+| ----------- | ----------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| QR encoding | `uqr` 0.1.3 | MIT              | Installed package: `license` field and bundled LICENSE file (MIT, Copyright (c) Project Nayuki and Anthony Fu, https://github.com/unjs/uqr); algorithm derived from Project Nayuki's QR Code generator | Verified |
+
 ## Images and illustrations
 
 None. The product uses no stock photography or third-party illustrations.

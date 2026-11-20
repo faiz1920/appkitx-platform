@@ -313,6 +313,7 @@ test("localized pages and the switcher keep layout at 320px", async ({
     "/es/date-calculator/",
     "/es/age-calculator/",
     "/es/date-time/",
+    "/es/text-tools/",
   ]) {
     await page.goto(path);
     const overflow = await page.evaluate(

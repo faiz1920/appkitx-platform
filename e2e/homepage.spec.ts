@@ -46,6 +46,7 @@ test("homepage copy describes every shipped tool family", async ({ page }) => {
         /converters?/i,
         /developer/i,
         /date and time/i,
+        /text tools?/i,
       ],
     },
     {
@@ -55,6 +56,7 @@ test("homepage copy describes every shipped tool family", async ({ page }) => {
         /conversores?/i,
         /desarrollador/i,
         /fecha y hora/i,
+        /herramientas de texto/i,
       ],
     },
   ];
@@ -81,13 +83,17 @@ test("every shipped tool is an interactive card and footer link", async ({
   await page.goto("/");
 
   const grid = page.locator("#tools");
-  await expect(grid.getByText("Open tool")).toHaveCount(8);
+  await expect(grid.getByText("Open tool")).toHaveCount(12);
   await expect(grid.getByText("Coming soon")).toHaveCount(0);
 
   const footer = page.getByRole("contentinfo");
   for (const [name, href] of [
     ["Unit Converter", "/unit-converter/"],
+    ["Speed Converter", "/speed-converter/"],
+    ["QR Code Generator", "/qr-code-generator/"],
     ["Loan Calculator", "/loan-calculator/"],
+    ["Word Counter", "/word-counter/"],
+    ["Case Converter", "/case-converter/"],
   ] as const) {
     await expect(grid.getByRole("link", { name })).toHaveAttribute(
       "href",
@@ -101,7 +107,7 @@ test("every shipped tool is an interactive card and footer link", async ({
 
   await page.goto("/es/");
   const gridEs = page.locator("#tools");
-  await expect(gridEs.getByText("Abrir herramienta")).toHaveCount(8);
+  await expect(gridEs.getByText("Abrir herramienta")).toHaveCount(12);
   await expect(gridEs.getByText("Próximamente")).toHaveCount(0);
   await expect(
     gridEs.getByRole("link", { name: "Conversor de unidades" }),
@@ -109,6 +115,18 @@ test("every shipped tool is an interactive card and footer link", async ({
   await expect(
     gridEs.getByRole("link", { name: "Calculadora de préstamos" }),
   ).toHaveAttribute("href", "/es/loan-calculator/");
+  await expect(
+    gridEs.getByRole("link", { name: "Conversor de velocidad" }),
+  ).toHaveAttribute("href", "/es/speed-converter/");
+  await expect(
+    gridEs.getByRole("link", { name: "Generador de códigos QR" }),
+  ).toHaveAttribute("href", "/es/qr-code-generator/");
+  await expect(
+    gridEs.getByRole("link", { name: "Contador de palabras" }),
+  ).toHaveAttribute("href", "/es/word-counter/");
+  await expect(
+    gridEs.getByRole("link", { name: "Conversor de mayúsculas y minúsculas" }),
+  ).toHaveAttribute("href", "/es/case-converter/");
 });
 
 test("global nav collapses and icon buttons keep 44px targets", async ({

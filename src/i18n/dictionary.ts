@@ -7,6 +7,14 @@ import type {
   WeightUnit,
 } from "../lib/unit-convert";
 import type { TermUnit } from "../lib/loan";
+import type { SpeedUnit } from "../lib/speed";
+import type {
+  QrContentType,
+  QrIssueCode,
+  QrWifiSecurity,
+} from "../lib/qr-payload";
+import type { QrEccLevel, QrSizePreset } from "../lib/qr-options";
+import type { CaseMode } from "../lib/case-convert";
 
 /*
  * Shared dictionary contract for every registered locale (audit M1, extended
@@ -393,6 +401,37 @@ export interface UnitConverterToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** Speed Converter page labels and interface strings. */
+export interface SpeedConverterToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  /**
+   * Localized unit names, keyed by the registry ids in
+   * src/lib/speed.ts. Symbols are appended by the component.
+   */
+  units: Record<SpeedUnit, string>;
+  valueLabel: string;
+  valueHint: string;
+  fromLabel: string;
+  toLabel: string;
+  /** Conversion line template; tokens: {value}, {from}, {result}, {to}. */
+  caption: string;
+  /** Clipboard text template; tokens: {value}, {from}, {result}, {to}. */
+  copyText: string;
+  /** Shown when a finite input converts outside the finite numeric range. */
+  resultOverflow: string;
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** One Base64 Encoder mode: pane labels, hint, and the action button label. */
 export interface Base64ModeStrings {
   optionLabel: string;
@@ -474,6 +513,164 @@ export interface JsonFormatterToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** Shared labels for one QR input field. */
+export interface QrFieldStrings {
+  label: string;
+  hint: string;
+  placeholder: string;
+}
+
+/** QR Code Generator page labels and interface strings. */
+export interface QrCodeGeneratorToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  contentTypeLabel: string;
+  contentTypes: Record<QrContentType, string>;
+  fields: {
+    url: QrFieldStrings;
+    text: QrFieldStrings;
+    email: QrFieldStrings;
+    phone: QrFieldStrings;
+    sms: {
+      phone: QrFieldStrings;
+      message: QrFieldStrings;
+    };
+    wifi: {
+      ssid: QrFieldStrings;
+      password: QrFieldStrings;
+      passwordShow: string;
+      passwordHide: string;
+      securityLabel: string;
+      securityHint: string;
+      securityOptions: Record<QrWifiSecurity, string>;
+      hiddenLabel: string;
+      hiddenHint: string;
+    };
+    vcard: {
+      name: QrFieldStrings;
+      phone: QrFieldStrings;
+      email: QrFieldStrings;
+      organization: QrFieldStrings;
+      website: QrFieldStrings;
+    };
+  };
+  customization: {
+    heading: string;
+    foregroundLabel: string;
+    backgroundLabel: string;
+    sizeLabel: string;
+    sizeHint: string;
+    sizeOptions: Record<QrSizePreset, string>;
+    eccLabel: string;
+    eccHint: string;
+    eccOptions: Record<QrEccLevel, string>;
+    quietZoneLabel: string;
+    quietZoneHint: string;
+  };
+  preview: {
+    heading: string;
+    placeholder: string;
+    alt: string;
+    downloadPng: string;
+    downloadSvg: string;
+    copyImage: string;
+    copied: string;
+    copyFailed: string;
+    copyUnsupported: string;
+    capacityError: string;
+    privacyTitle: string;
+    privacyBody: string;
+    warnings: {
+      inverted: string;
+      lowContrast: string;
+    };
+  };
+  validation: Record<QrIssueCode, string>;
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
+}
+
+/** Word Counter page labels and interface strings. */
+export interface WordCounterToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  inputLabel: string;
+  inputHint: string;
+  inputPlaceholder: string;
+  copyText: string;
+  copySuccess: string;
+  copyFailure: string;
+  statsHeading: string;
+  statsHint: string;
+  emptyHint: string;
+  stats: {
+    characters: string;
+    charactersNoSpaces: string;
+    words: string;
+    sentences: string;
+    paragraphs: string;
+    lines: string;
+    readingTime: string;
+    speakingTime: string;
+  };
+  /** Duration templates; tokens: {seconds}, {minutes}, {minutes}, {seconds}. */
+  duration: {
+    seconds: string;
+    minutes: string;
+    minutesSeconds: string;
+  };
+  privacyTitle: string;
+  privacyBody: string;
+  /** Explanation sections rendered by ProseText below the tool. */
+  sections: readonly ProseSectionStrings[];
+}
+
+/** Case Converter page labels and interface strings. */
+export interface CaseConverterToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  inputLabel: string;
+  inputHint: string;
+  inputPlaceholder: string;
+  modeLabel: string;
+  modeHint: string;
+  modes: Record<CaseMode, string>;
+  outputLabel: string;
+  outputHint: string;
+  outputPlaceholder: string;
+  copyOutput: string;
+  copySuccess: string;
+  copyFailure: string;
+  privacyTitle: string;
+  privacyBody: string;
+  /** Explanation sections rendered by ProseText below the tool. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** One Date Calculator mode: option label only (fields are shared). */
 export interface DateCalculatorModeStrings {
   optionLabel: string;
@@ -517,7 +714,11 @@ export interface DateCalculatorToolStrings {
     emptyStart: string;
     emptyEnd: string;
     emptyDate: string;
+    invalidStart: string;
+    invalidEnd: string;
+    invalidDate: string;
     amountRange: string;
+    resultRange: string;
   };
   /** Difference caption template; tokens: {from}, {to}. */
   differenceCaption: string;
@@ -555,6 +756,7 @@ export interface AgeCalculatorToolStrings {
   copyText: string;
   errors: {
     empty: string;
+    invalid: string;
     future: string;
   };
   /** Explanation sections rendered by ProseText below the tool. */
@@ -567,8 +769,12 @@ export interface ToolsStrings {
   discount: DiscountToolStrings;
   loanCalculator: LoanCalculatorToolStrings;
   unitConverter: UnitConverterToolStrings;
+  speedConverter: SpeedConverterToolStrings;
   base64: Base64ToolStrings;
   json: JsonFormatterToolStrings;
+  qrCodeGenerator: QrCodeGeneratorToolStrings;
+  wordCounter: WordCounterToolStrings;
+  caseConverter: CaseConverterToolStrings;
   dateCalculator: DateCalculatorToolStrings;
   ageCalculator: AgeCalculatorToolStrings;
 }

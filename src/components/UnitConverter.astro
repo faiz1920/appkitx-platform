@@ -292,6 +292,7 @@ const optionLabel = (category: UnitCategory, unit: string): string =>
     let copyTimer: number | undefined;
     let copyBusy = false;
     let lastCopyText = "";
+    let resultGeneration = 0;
 
     const currentCategory = (): UnitCategory => {
       const checked = categoryInputs.find((input) => input.checked);
@@ -344,6 +345,7 @@ const optionLabel = (category: UnitCategory, unit: string): string =>
     };
 
     const showEmptyResult = () => {
+      resultGeneration += 1;
       lastCopyText = "";
       resetCopyFeedback();
       resultEl.textContent = "—";
@@ -353,6 +355,20 @@ const optionLabel = (category: UnitCategory, unit: string): string =>
       resultCaption.textContent = i18n.calculator.resultsPlaceholder;
       copyButton.disabled = true;
     };
+
+    /*
+     * Keep the result, caption, and clipboard payload tied to one calculation.
+     * Any edit to the value, units, or category makes the displayed conversion
+     * stale.
+     */
+    const invalidateResult = () => {
+      clearErrors();
+      showEmptyResult();
+    };
+
+    inputValue.addEventListener("input", invalidateResult);
+    selectFrom.addEventListener("change", invalidateResult);
+    selectTo.addEventListener("change", invalidateResult);
 
     const parseInput = (input: HTMLInputElement) =>
       parseLocaleNumber(input.value, intlLocale);
@@ -392,6 +408,7 @@ const optionLabel = (category: UnitCategory, unit: string): string =>
         return;
       }
 
+      resultGeneration += 1;
       resetCopyFeedback();
 
       const formattedInput = formatUnitValue(parsed.value, intlLocale);
@@ -420,26 +437,26 @@ const optionLabel = (category: UnitCategory, unit: string): string =>
 
     for (const input of categoryInputs) {
       input.addEventListener("change", () => {
-        clearErrors();
         renderUnits();
-        showEmptyResult();
+        invalidateResult();
       });
     }
 
     resetButton.addEventListener("click", () => {
       form.reset();
-      clearErrors();
       renderUnits();
-      showEmptyResult();
+      invalidateResult();
       inputValue.focus();
     });
 
     copyButton.addEventListener("click", async () => {
       if (!lastCopyText || copyBusy) return;
       copyBusy = true;
+      const generation = resultGeneration;
       resetCopyFeedback();
       try {
         await navigator.clipboard.writeText(lastCopyText);
+        if (generation !== resultGeneration) return;
         copyIdle.hidden = true;
         copyDone.hidden = false;
         copyStatusSuccess.hidden = false;
@@ -449,6 +466,7 @@ const optionLabel = (category: UnitCategory, unit: string): string =>
           copyStatusSuccess.hidden = true;
         }, 2000);
       } catch {
+        if (generation !== resultGeneration) return;
         copyStatusError.hidden = false;
       } finally {
         copyBusy = false;

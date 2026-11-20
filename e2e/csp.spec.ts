@@ -125,7 +125,7 @@ test("the generated header matches the fresh build inventory", async ({
   expect(headers["content-security-policy"]).toBeUndefined();
   expect(policy, "the report-only CSP header is missing").toBeTruthy();
   expect(policy!.split("script-src")).toHaveLength(2);
-  expect(expectedHashes).toHaveLength(6);
+  expect(expectedHashes).toHaveLength(7);
   expect(parseCspHashes(policy!).sort()).toEqual(expectedHashes);
   expect(policy).toContain("default-src 'none'");
   expect(policy).toContain("https://static.cloudflareinsights.com");

@@ -3,7 +3,14 @@ import ToolLayout from "../layouts/ToolLayout.astro";
 import UnitConverter from "../components/UnitConverter.astro";
 import ProseText from "../components/ProseText.astro";
 import { getDictionary, type LocaleCode } from "../i18n/config";
+import { resolveLocalizedTools } from "../i18n/tool-catalog";
 import { localizedHref } from "../i18n/routing";
+import {
+  categoryPath,
+  isCategoryPublished,
+  toolCategory,
+} from "../lib/categories";
+import gaugeIcon from "lucide-static/icons/gauge.svg?raw";
 
 interface Props {
   locale: LocaleCode;
@@ -12,6 +19,21 @@ interface Props {
 const { locale } = Astro.props;
 const t = getDictionary(locale);
 const tool = t.tools.unitConverter;
+
+const category = toolCategory("/unit-converter");
+const relatedHref = isCategoryPublished(category)
+  ? localizedHref(categoryPath(category), locale)
+  : undefined;
+
+const toolIcons: Record<string, string> = { gauge: gaugeIcon };
+const relatedTools = resolveLocalizedTools(locale, ["/speed-converter"]).map(
+  (related) => ({
+    title: related.title,
+    description: related.description,
+    href: localizedHref(related.href, locale),
+    icon: toolIcons[related.icon] ?? "",
+  }),
+);
 ---
 
 <ToolLayout
@@ -24,6 +46,8 @@ const tool = t.tools.unitConverter;
     { label: t.toolLayout.breadcrumbHome, href: localizedHref("/", locale) },
     { label: tool.name },
   ]}
+  relatedTools={relatedTools}
+  relatedHref={relatedHref}
 >
   <UnitConverter slot="tool" locale={locale} />
 

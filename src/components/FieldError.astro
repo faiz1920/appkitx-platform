@@ -1,0 +1,15 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+
+interface Props {
+  field: string;
+  id?: string;
+}
+
+const { field, id } = Astro.props;
+---
+
+<p id={id} class="field-error mt-1" hidden data-error-for={field}>
+  <span aria-hidden="true" set:html={alertIcon} />
+  <span data-error-text></span>
+</p>
