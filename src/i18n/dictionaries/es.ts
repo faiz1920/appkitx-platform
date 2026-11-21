@@ -98,11 +98,11 @@ export const es: Dictionary = {
       page: {
         title: "Calculadoras online gratis — AppKitX",
         metaDescription:
-          "Calculadoras gratis de porcentajes, descuentos, préstamos y expresiones científicas: variaciones, intereses y trigonometría en grados o radianes.",
+          "Calculadoras gratis de porcentajes, descuentos, préstamos, EMI y expresiones científicas: variaciones, amortización y trigonometría en grados o radianes.",
         toolsHeading: "Calculadoras online gratis",
         intro: [
-          "Las calculadoras cubren las cuentas del día a día y las expresiones científicas: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales, comprueba cuánto ahorras con un descuento y su precio final, estima la cuota mensual, los intereses totales y el coste total de un préstamo, y evalúa expresiones con paréntesis, potencias, raíces, logaritmos y trigonometría.",
-          "Funcionan por completo en tu navegador, muestran la fórmula o la expresión de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes —las calculadoras de descuentos y préstamos son neutrales respecto a la moneda— y la calculadora científica respeta el modo de grados o radianes seleccionado.",
+          "Las calculadoras cubren las cuentas del día a día y las expresiones científicas: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales, comprueba cuánto ahorras con un descuento y su precio final, estima la cuota mensual, los intereses totales y el coste total de un préstamo, consulta un calendario de amortización año a año con el desglose de principal e intereses, y evalúa expresiones con paréntesis, potencias, raíces, logaritmos y trigonometría.",
+          "Funcionan por completo en tu navegador, muestran la fórmula o la expresión de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes —las calculadoras de descuentos, préstamos y EMI son neutrales respecto a la moneda— y la calculadora científica respeta el modo de grados o radianes seleccionado.",
         ],
       },
     },
@@ -385,12 +385,10 @@ export const es: Dictionary = {
         "hipoteca",
         "cuota",
         "interés",
-        "amortización",
         "financiación",
         "préstamo personal",
         "préstamo de coche",
         "capital",
-        "emi",
       ],
       amountLabel: "Importe del préstamo",
       amountHint:
@@ -449,6 +447,127 @@ export const es: Dictionary = {
             "El plazo debe estar entre un mes y 1.200 meses (100 años). Los plazos fuera de ese rango se rechazan con un mensaje en línea en lugar de ajustarse en silencio.",
             "Los resultados se calculan con precisión completa y solo se redondean a dos decimales para mostrarlos. La última cuota de un préstamo real puede diferir en unos céntimos porque los prestamistas redondean cada plazo.",
             "La calculadora es neutral respecto a la moneda y no asume nada sobre la divisa, la fecha de pago ni las reglas de redondeo del prestamista.",
+          ],
+        },
+      ],
+    },
+    emiCalculator: {
+      title: "Calculadora de EMI — AppKitX",
+      metaDescription:
+        "Calculadora de EMI gratis con calendario de amortización completo: cuota mensual, desglose de principal e intereses, saldo pendiente y totales anuales.",
+      name: "Calculadora de EMI",
+      description:
+        "Calcula la cuota mensual (EMI), el desglose de principal e intereses, el saldo pendiente y un calendario de devolución año a año.",
+      cardDescription:
+        "Cuota mensual, desglose de principal e intereses y calendario de amortización.",
+      keywords: [
+        "emi",
+        "calculadora de emi",
+        "cuota mensual",
+        "calendario de amortización",
+        "tabla de amortización",
+        "principal e intereses",
+        "saldo pendiente",
+        "cuota de préstamo",
+        "devolución de préstamo",
+        "hipoteca",
+        "préstamo personal",
+      ],
+      amountLabel: "Importe del préstamo",
+      amountHint:
+        "El importe prestado, en cualquier moneda. No se aplica conversión de divisas.",
+      rateLabel: "Tipo de interés anual (%)",
+      rateHint:
+        "El tipo nominal anual aplicado al saldo decreciente. Escribe 0 si el préstamo no tiene intereses.",
+      tenureLabel: "Plazo del préstamo",
+      tenureHint:
+        "El periodo de devolución. Debe resolverse en un número entero de meses entre 1 y 1.200.",
+      tenureUnitLabel: "Unidad del plazo",
+      tenureUnits: {
+        years: "Años",
+        months: "Meses",
+      },
+      emiLabel: "Cuota mensual (EMI)",
+      principalLabel: "Principal",
+      interestLabel: "Intereses totales",
+      totalLabel: "Total a devolver",
+      breakdownHeading: "Principal e intereses",
+      principalShare: "{amount} ({percent} % del total)",
+      interestShare: "{amount} ({percent} % del total)",
+      scheduleHeading: "Calendario de amortización",
+      scheduleHint:
+        "Agrupado por año del préstamo. Despliega un año para ver las cuotas mensuales y el saldo pendiente.",
+      scheduleEmpty:
+        "Calcula un préstamo para ver el calendario de devolución año a año.",
+      yearLabel: "Año {year}",
+      openingBalanceLabel: "Saldo inicial",
+      principalPaidLabel: "Principal pagado",
+      interestPaidLabel: "Intereses pagados",
+      totalPaidLabel: "Total pagado",
+      closingBalanceLabel: "Saldo final",
+      monthlyTableCaption: "Cuotas mensuales del año {year}",
+      scheduleScrollLabel:
+        "Tabla desplazable de cuotas mensuales del año {year}",
+      tableHeaders: {
+        paymentNumber: "Cuota",
+        openingBalance: "Saldo inicial",
+        payment: "Cuota / pago",
+        interest: "Intereses",
+        principal: "Principal",
+        closingBalance: "Saldo final",
+      },
+      copySummary: "Copiar resumen",
+      copyText:
+        "Importe del préstamo: {amount}\nCuota mensual (EMI): {emi}\nPrincipal: {principal}\nIntereses totales: {interest}\nTotal a devolver: {total}\nPlazo: {months} meses",
+      caption: "{amount} al {rate} % durante {months} meses.",
+      formulas: {
+        template: "EMI = P × r ÷ (1 − (1 + r)⁻ⁿ)",
+        describe: "{rate} % ÷ 12 = {monthlyRate} % al mes",
+      },
+      errors: {
+        amount: "Escribe un importe de préstamo mayor que cero.",
+        rate: "Escribe un tipo de interés de 0 o más.",
+        tenure: "Escribe un plazo de entre 1 y 1.200 meses enteros.",
+        fractionalTenure:
+          "El plazo debe resolverse en un número entero de meses.",
+        overflow:
+          "El resultado está fuera del rango numérico admitido. Prueba con valores más pequeños.",
+      },
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Introduce el importe prestado, el tipo de interés nominal anual y el plazo de devolución. Indica si el plazo está en años o en meses y pulsa Calcular. El resumen muestra la cuota mensual fija (EMI), el principal, los intereses totales, el total a devolver y el reparto entre principal e intereses.",
+            "El calendario agrupa las cuotas por año del préstamo. Despliega cualquier año para ver cada pago mensual, sus componentes de intereses y principal, y el saldo pendiente después de ese pago. Todo se ejecuta en tu navegador.",
+          ],
+        },
+        {
+          heading: "Fórmula de EMI con saldo decreciente",
+          paragraphs: [
+            "Esta calculadora usa solo EMI de saldo decreciente: `EMI = P × r ÷ (1 − (1 + r)⁻ⁿ)`, donde `P` es el principal, `r` es el tipo nominal anual dividido entre 12 y entre 100, y `n` es el número entero de cuotas mensuales.",
+            "Con tipo cero, la EMI es simplemente `principal ÷ meses` y los intereses totales son cero. No se modelan préstamos de interés plano: los intereses siempre se calculan sobre el saldo pendiente, no sobre el principal original durante todo el plazo.",
+          ],
+        },
+        {
+          heading: "Calendario y redondeo",
+          paragraphs: [
+            "Cada mes se cobran intereses sobre el saldo inicial, se aplica la EMI y el resto reduce el principal. La última cuota se ajusta para que el saldo pendiente cierre exactamente en cero; puede diferir de la EMI habitual en unos céntimos.",
+            "Los cálculos conservan la precisión completa internamente. El resumen, los totales anuales y la tabla mensual solo se redondean a dos decimales para mostrarlos, así que las filas mostradas pueden diferir del total exacto en un pequeño ajuste de redondeo.",
+          ],
+        },
+        {
+          heading: "Supuestos y límites",
+          items: [
+            "El tipo anual es nominal, fijo durante todo el plazo y se divide entre 12. No se incluyen tipos anuales efectivos, tipos variables, convenciones de días, comisiones, seguros ni impuestos.",
+            "El plazo debe resolverse en un número entero de meses entre 1 y 1.200 (100 años). Los totales de meses fraccionarios se rechazan en lugar de redondearse.",
+            "No se modelan pagos anticipados, cuotas impagadas, periodos de carencia ni cambios en la frecuencia de pago.",
+            "Los importes son neutrales respecto a la moneda y nunca se convierten. Los resultados usan los separadores decimales y de miles del idioma de la página.",
+          ],
+        },
+        {
+          heading: "Privacidad",
+          paragraphs: [
+            "Todo se calcula en tu navegador. Los valores del préstamo y el calendario nunca se suben, se guardan en el almacenamiento del navegador ni se envían a un servicio de terceros.",
           ],
         },
       ],

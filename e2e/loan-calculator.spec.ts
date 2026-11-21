@@ -200,6 +200,9 @@ test("links to the other calculators through related tools", async ({
 
   const related = page.locator("section").filter({ hasText: "Related tools" });
   await expect(
+    related.getByRole("link", { name: /EMI Calculator/ }),
+  ).toHaveAttribute("href", "/emi-calculator/");
+  await expect(
     related.getByRole("link", { name: /Percentage Calculator/ }),
   ).toHaveAttribute("href", "/percentage-calculator/");
   await expect(
