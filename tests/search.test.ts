@@ -127,7 +127,7 @@ describe("searchTools", () => {
     expect(
       searchTools("developer tools", fixture).map((tool) => tool.title),
     ).toEqual(["Beta Utility"]);
-    expect(searchTools("calculators", tools)).toHaveLength(5);
+    expect(searchTools("calculators", tools)).toHaveLength(6);
   });
 
   it("matches by description", () => {
@@ -172,6 +172,7 @@ describe("searchTools", () => {
       "/discount-calculator",
       "/loan-calculator",
       "/emi-calculator",
+      "/compound-interest-calculator",
       "/scientific-calculator",
       "/date-calculator",
       "/age-calculator",
@@ -228,6 +229,21 @@ describe("searchTools", () => {
     expect(
       searchTools("outstanding balance", tools).map((tool) => tool.href),
     ).toEqual(["/emi-calculator"]);
+  });
+
+  it("finds the compound interest calculator by name and growth terms", () => {
+    expect(searchTools("compound", tools).map((tool) => tool.href)).toEqual([
+      "/compound-interest-calculator",
+    ]);
+    expect(searchTools("investment", tools).map((tool) => tool.href)).toEqual([
+      "/compound-interest-calculator",
+    ]);
+    expect(searchTools("future value", tools).map((tool) => tool.href)).toEqual(
+      ["/compound-interest-calculator"],
+    );
+    expect(searchTools("compounding", tools).map((tool) => tool.href)).toEqual([
+      "/compound-interest-calculator",
+    ]);
   });
 
   it("finds the scientific calculator by name and keyword", () => {
@@ -319,8 +335,22 @@ describe("localized search catalogs", () => {
       "/discount-calculator",
       "/loan-calculator",
       "/emi-calculator",
+      "/compound-interest-calculator",
       "/scientific-calculator",
     ]);
+  });
+
+  it("finds the compound interest calculator with localized terms", () => {
+    const catalog = localizedToolCatalog("es");
+    expect(
+      searchTools("interés compuesto", catalog).map((tool) => tool.href),
+    ).toEqual(["/compound-interest-calculator"]);
+    expect(searchTools("inversión", catalog).map((tool) => tool.href)).toEqual([
+      "/compound-interest-calculator",
+    ]);
+    expect(
+      searchTools("capitalización", catalog).map((tool) => tool.href),
+    ).toEqual(["/compound-interest-calculator"]);
   });
 
   it("finds the EMI calculator with localized terms", () => {

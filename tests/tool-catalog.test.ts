@@ -90,6 +90,13 @@ describe("localizedToolCatalog", () => {
     expect(emi?.title).toBe("Calculadora de EMI");
     expect(emi?.category).toBe("Calculadoras");
     expect(emi?.keywords).toContain("calendario de amortización");
+
+    const compound = catalog.find(
+      (tool) => tool.href === "/compound-interest-calculator",
+    );
+    expect(compound?.title).toBe("Calculadora de interés compuesto");
+    expect(compound?.category).toBe("Calculadoras");
+    expect(compound?.keywords).toContain("interés compuesto");
   });
 
   it("keeps the English card text identical to the registry descriptions", () => {

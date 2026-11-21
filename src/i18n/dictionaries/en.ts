@@ -86,11 +86,11 @@ export const en: Dictionary = {
       page: {
         title: "Free Online Calculators — AppKitX",
         metaDescription:
-          "Free calculators for percentages, discounts, loans, EMIs, and scientific expressions: percent change, amortization, and trigonometry in degrees or radians.",
+          "Free calculators for percentages, discounts, loans, EMIs, compound interest, and scientific expressions: percent change, amortization, investment growth, and trigonometry in degrees or radians.",
         toolsHeading: "Free online calculators",
         intro: [
-          "The calculators cover everyday money math and scientific expressions: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, see what a discount saves and its final price, estimate a loan's monthly payment, total interest, and total cost, inspect a year-by-year EMI repayment schedule with principal and interest balances, and evaluate expressions with parentheses, powers, roots, logarithms, and trigonometry.",
-          "They run entirely in your browser, show the formula or expression behind each result, and let you copy it with one click. Money amounts are treated exactly as you enter them — the discount, loan, and EMI calculators are currency-neutral — and the scientific calculator respects the selected degrees or radians mode.",
+          "The calculators cover everyday money math and scientific expressions: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, see what a discount saves and its final price, estimate a loan's monthly payment, total interest, and total cost, inspect a year-by-year EMI repayment schedule with principal and interest balances, project investment growth with compound interest and optional monthly contributions, and evaluate expressions with parentheses, powers, roots, logarithms, and trigonometry.",
+          "They run entirely in your browser, show the formula or expression behind each result, and let you copy it with one click. Money amounts are treated exactly as you enter them — the discount, loan, EMI, and compound interest calculators are currency-neutral — and the scientific calculator respects the selected degrees or radians mode.",
         ],
       },
     },
@@ -551,6 +551,166 @@ export const en: Dictionary = {
           heading: "Privacy",
           paragraphs: [
             "Everything is calculated in your browser. The loan values and schedule are never uploaded, stored in browser storage, or sent to a third-party service.",
+          ],
+        },
+      ],
+    },
+    compoundInterest: {
+      title: "Compound Interest Calculator — AppKitX",
+      metaDescription:
+        "Free compound interest calculator: project investment growth with optional monthly contributions, compare compounding frequencies, and see year-by-year interest and balances.",
+      name: "Compound Interest Calculator",
+      description:
+        "Calculate the future value of an investment, total contributions, and interest earned with annual, quarterly, monthly, or daily compounding.",
+      cardDescription:
+        "Investment growth with compounding and monthly contributions.",
+      keywords: [
+        "compound interest",
+        "compound interest calculator",
+        "compound growth",
+        "investment growth",
+        "future value",
+        "savings growth",
+        "monthly contributions",
+        "compounding frequency",
+        "interest earned",
+        "annual growth",
+        "daily compounding",
+        "quarterly compounding",
+      ],
+      principalLabel: "Initial investment",
+      principalHint:
+        "The starting amount, in any currency. No currency conversion is applied.",
+      rateLabel: "Annual interest rate (%)",
+      rateHint: "The nominal annual rate. Enter 0 for no interest.",
+      durationLabel: "Investment duration",
+      durationHint:
+        "The projection period. It must resolve to a whole number of months between 1 and 1,200.",
+      durationUnitLabel: "Duration unit",
+      durationUnits: {
+        years: "Years",
+        months: "Months",
+      },
+      frequencyLabel: "Compounding frequency",
+      frequencyHint:
+        "How often interest is compounded. Daily compounding uses a 365-day year.",
+      frequencies: {
+        annual: "Annually",
+        semiannual: "Semiannually",
+        quarterly: "Quarterly",
+        monthly: "Monthly",
+        daily: "Daily",
+      },
+      contributionLabel: "Monthly contribution",
+      contributionHint:
+        "Optional. Leave blank or enter 0 for no monthly contributions.",
+      timingLabel: "Contribute at the start of each month",
+      timingHint: "Off means contributions are added at the end of each month.",
+      finalValueLabel: "Final value",
+      initialLabel: "Initial investment",
+      contributionsLabel: "Total contributions",
+      investedLabel: "Total invested",
+      interestLabel: "Interest earned",
+      breakdownHeading: "Invested vs interest",
+      investedShare: "Total invested: {amount} ({percent}% of final value)",
+      interestShare: "Interest earned: {amount} ({percent}% of final value)",
+      growthHeading: "Year-by-year growth",
+      growthHint:
+        "Each row covers 12 months; the final row may cover a partial year.",
+      growthEmpty: "Calculate an investment to see the year-by-year growth.",
+      growthScrollLabel: "Scrollable year-by-year growth table",
+      tableCaption: "Year-by-year investment growth",
+      tableHeaders: {
+        year: "Year",
+        openingBalance: "Opening balance",
+        contributions: "Contributions",
+        interest: "Interest earned",
+        closingBalance: "Closing balance",
+      },
+      yearLabel: "Year {year}",
+      partialYearLabel: "Year {year} ({duration})",
+      monthSingular: "month",
+      monthPlural: "months",
+      copySummary: "Copy summary",
+      copyText:
+        "Initial investment: {initial}\nAnnual interest rate: {rate}%\nCompounding: {frequency}\nDuration: {duration}\nFinal value: {final}\nTotal invested: {invested}\nInterest earned: {interest}",
+      copyTextWithContributions:
+        "Initial investment: {initial}\nMonthly contribution: {contribution}\nTotal contributions: {contributions}\nContribution timing: {timing}\nAnnual interest rate: {rate}%\nCompounding: {frequency}\nDuration: {duration}\nFinal value: {final}\nTotal invested: {invested}\nInterest earned: {interest}",
+      caption: "{amount} at {rate}% over {duration}.",
+      captionWithContributions:
+        "{amount} at {rate}% over {duration}, with {contribution} monthly.",
+      formulas: {
+        template: "A = P × (1 + r/m)^(m×t)",
+        describe:
+          "{rate}% nominal = {monthlyRate}% per month after compounding.",
+      },
+      timingValues: {
+        end: "End of month",
+        beginning: "Beginning of month",
+      },
+      errors: {
+        principal: "Enter an initial investment of 0 or more.",
+        noInvestment:
+          "Enter an initial investment or a monthly contribution greater than zero.",
+        rate: "Enter an interest rate of 0 or more.",
+        duration: "Enter a duration between 1 and 1,200 whole months.",
+        fractionalDuration:
+          "The duration must resolve to a whole number of months.",
+        contribution: "Enter a monthly contribution of 0 or more.",
+        frequency: "Choose a supported compounding frequency.",
+        timing: "Choose a supported contribution timing.",
+        overflow:
+          "The result is outside the supported numeric range. Try smaller values.",
+      },
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Enter the initial investment, nominal annual rate, duration, and compounding frequency. Optionally add a monthly contribution and choose whether it is made at the start or end of each month. Select Calculate to see the final value, total invested, interest earned, and a year-by-year growth table.",
+            "Everything runs in your browser. Changing any input clears the previous result so the numbers on screen always match the current inputs.",
+          ],
+        },
+        {
+          heading: "What compound interest means",
+          paragraphs: [
+            "Compound interest is interest earned on both the original amount and the interest already accumulated. Over time, the balance grows faster than with simple interest because each period's interest becomes part of the base for the next period.",
+          ],
+        },
+        {
+          heading: "Compound interest formula",
+          paragraphs: [
+            "The projection uses `A = P × (1 + r/m)^(m×t)`, where `P` is the initial investment, `r` is the nominal annual rate, `m` is the number of compounding periods per year, and `t` is the duration in years.",
+            "The selected compounding frequency defines an equivalent monthly growth factor `g = (1 + r/m)^(m/12)`. Interest is accrued monthly at `i = g − 1`, so monthly contributions and annual rows use the same rate. This is a projection convention, not a bank statement or an exact interest-credit-date model.",
+          ],
+        },
+        {
+          heading: "Contributions and timing",
+          paragraphs: [
+            "Monthly contributions use the future-value formula for an ordinary annuity: `FV = C × ((g^N − 1) ÷ i)`. With beginning-of-month timing, each contribution earns one extra month of growth, so the result is multiplied by `g`.",
+            "End-of-month is the default. If you enter no contribution, the result is a pure lump-sum projection.",
+          ],
+        },
+        {
+          heading: "Compounding frequency",
+          paragraphs: [
+            "Annual, semiannual, quarterly, monthly, and daily compounding use `m = 1, 2, 4, 12, and 365`. For the same nominal rate, a higher frequency produces a slightly higher effective annual yield. Daily compounding uses a fixed 365-day year; leap years are intentionally ignored.",
+            "Partial years are expressed as whole months. The annual table groups 12 months at a time, and the final row may cover fewer than 12 months.",
+          ],
+        },
+        {
+          heading: "Assumptions and limits",
+          items: [
+            "The annual rate is nominal, fixed for the whole duration, and compounded at the selected frequency.",
+            "Contributions are monthly only and are made at the start or end of each month. No withdrawals, step-ups, missed contributions, fees, taxes, insurance, or inflation are modelled.",
+            "The calculator is currency-neutral. It does not convert currencies or add a currency symbol.",
+            "Results use full precision internally and are rounded to two decimal places only for display, so displayed components may differ from the exact total by a small rounding amount.",
+            "The duration must resolve to a whole number of months between 1 and 1,200 (100 years).",
+          ],
+        },
+        {
+          heading: "Privacy",
+          paragraphs: [
+            "Everything is calculated in your browser. Your investment values and growth table are never uploaded, stored in browser storage, or sent to a third-party service.",
           ],
         },
       ],

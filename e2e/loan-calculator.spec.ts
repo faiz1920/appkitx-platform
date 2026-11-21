@@ -206,8 +206,8 @@ test("links to the other calculators through related tools", async ({
     related.getByRole("link", { name: /Percentage Calculator/ }),
   ).toHaveAttribute("href", "/percentage-calculator/");
   await expect(
-    related.getByRole("link", { name: /Discount Calculator/ }),
-  ).toHaveAttribute("href", "/discount-calculator/");
+    related.getByRole("link", { name: /Compound Interest Calculator/ }),
+  ).toHaveAttribute("href", "/compound-interest-calculator/");
   await expect(related.getByRole("link", { name: "See all" })).toHaveAttribute(
     "href",
     "/calculators/",
