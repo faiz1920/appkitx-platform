@@ -11,8 +11,8 @@ import {
   toolCategory,
 } from "../lib/categories";
 import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
-import tagIcon from "lucide-static/icons/tag.svg?raw";
 import landmarkIcon from "lucide-static/icons/landmark.svg?raw";
+import trendingUpIcon from "lucide-static/icons/trending-up.svg?raw";
 
 interface Props {
   locale: LocaleCode;
@@ -29,13 +29,13 @@ const relatedHref = isCategoryPublished(category)
 
 const toolIcons: Record<string, string> = {
   calculator: calculatorIcon,
-  tag: tagIcon,
   landmark: landmarkIcon,
+  "trending-up": trendingUpIcon,
 };
 const relatedTools = resolveLocalizedTools(locale, [
   "/loan-calculator",
   "/percentage-calculator",
-  "/discount-calculator",
+  "/compound-interest-calculator",
 ]).map((related) => ({
   title: related.title,
   description: related.description,

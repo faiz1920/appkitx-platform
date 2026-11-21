@@ -8,6 +8,11 @@ import type {
 } from "../lib/unit-convert";
 import type { TermUnit } from "../lib/loan";
 import type { TenureUnit } from "../lib/emi";
+import type {
+  CompoundingFrequency,
+  ContributionTiming,
+  DurationUnit,
+} from "../lib/compound-interest";
 import type { SpeedUnit } from "../lib/speed";
 import type {
   QrContentType,
@@ -883,12 +888,101 @@ export interface EmiCalculatorToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** Compound Interest Calculator page labels and interface strings. */
+export interface CompoundInterestToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  principalLabel: string;
+  principalHint: string;
+  rateLabel: string;
+  rateHint: string;
+  durationLabel: string;
+  durationHint: string;
+  durationUnitLabel: string;
+  durationUnits: Record<DurationUnit, string>;
+  frequencyLabel: string;
+  frequencyHint: string;
+  frequencies: Record<CompoundingFrequency, string>;
+  contributionLabel: string;
+  contributionHint: string;
+  timingLabel: string;
+  timingHint: string;
+  finalValueLabel: string;
+  initialLabel: string;
+  contributionsLabel: string;
+  investedLabel: string;
+  interestLabel: string;
+  breakdownHeading: string;
+  /** Share line template; tokens: {amount}, {percent}. */
+  investedShare: string;
+  /** Share line template; tokens: {amount}, {percent}. */
+  interestShare: string;
+  growthHeading: string;
+  growthHint: string;
+  growthEmpty: string;
+  growthScrollLabel: string;
+  tableCaption: string;
+  tableHeaders: {
+    year: string;
+    openingBalance: string;
+    contributions: string;
+    interest: string;
+    closingBalance: string;
+  };
+  /** Annual row heading template; token: {year}. */
+  yearLabel: string;
+  /** Partial final-year heading template; tokens: {year}, {duration}. */
+  partialYearLabel: string;
+  /** Singular month word used to build localized durations. */
+  monthSingular: string;
+  /** Plural month word used to build localized durations. */
+  monthPlural: string;
+  copySummary: string;
+  /** Clipboard text template; tokens: {initial}, {rate}, {frequency}, {duration}, {final}, {invested}, {interest}. */
+  copyText: string;
+  /** Clipboard text template with contribution fields. */
+  copyTextWithContributions: string;
+  /** Result caption template; tokens: {amount}, {rate}, {duration}. */
+  caption: string;
+  /** Result caption template with contribution fields. */
+  captionWithContributions: string;
+  formulas: {
+    template: string;
+    /** Tokens: {rate}, {monthlyRate}. */
+    describe: string;
+  };
+  /** Contribution timing words used in captions and copy text. */
+  timingValues: Record<ContributionTiming, string>;
+  errors: {
+    principal: string;
+    noInvestment: string;
+    rate: string;
+    duration: string;
+    fractionalDuration: string;
+    contribution: string;
+    frequency: string;
+    timing: string;
+    overflow: string;
+  };
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** Per-tool dictionaries, keyed by tool. */
 export interface ToolsStrings {
   percentage: PercentageToolStrings;
   discount: DiscountToolStrings;
   loanCalculator: LoanCalculatorToolStrings;
   emiCalculator: EmiCalculatorToolStrings;
+  compoundInterest: CompoundInterestToolStrings;
   unitConverter: UnitConverterToolStrings;
   speedConverter: SpeedConverterToolStrings;
   scientificCalculator: ScientificCalculatorToolStrings;

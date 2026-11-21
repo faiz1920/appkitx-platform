@@ -100,7 +100,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.goto("/");
   await openWithShortcut(page);
 
-  await expect(page.getByRole("option")).toHaveCount(14);
+  await expect(page.getByRole("option")).toHaveCount(15);
 
   await page.keyboard.press("ArrowDown");
   await expect(searchInput(page)).toHaveAttribute(
@@ -115,7 +115,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.keyboard.press("ArrowUp");
   await expect(searchInput(page)).toHaveAttribute(
     "aria-activedescendant",
-    "search-option-13",
+    "search-option-14",
   );
 
   await page.keyboard.press("ArrowDown");
@@ -146,7 +146,7 @@ test("typing filters results and shows the empty state", async ({ page }) => {
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "false");
 
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(14);
+  await expect(page.getByRole("option")).toHaveCount(15);
   await expect(empty).toBeHidden();
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "true");
 });
@@ -226,6 +226,7 @@ test("only lists registered tools with unique routes", async ({ page }) => {
     "/age-calculator/",
     "/base64-encoder/",
     "/case-converter/",
+    "/compound-interest-calculator/",
     "/date-calculator/",
     "/discount-calculator/",
     "/emi-calculator/",
@@ -340,6 +341,33 @@ test("finds and opens the EMI calculator by keyword", async ({ page }) => {
   );
 });
 
+test("finds and opens the compound interest calculator by keyword", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await openWithShortcut(page);
+
+  await searchInput(page).fill("compound interest");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("option")).toContainText(
+    "Compound Interest Calculator",
+  );
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+
+  await expect(page).toHaveURL(/\/compound-interest-calculator\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Compound Interest Calculator",
+  );
+
+  await openWithShortcut(page);
+  await searchInput(page).fill("investment growth");
+  await expect(palette(page).getByRole("option")).toHaveCount(1);
+  await expect(palette(page).getByRole("option")).toContainText(
+    "Compound Interest Calculator",
+  );
+});
+
 test("finds and opens the scientific calculator by keyword", async ({
   page,
 }) => {
@@ -406,7 +434,7 @@ test("uses the full-screen sheet at 320px without horizontal overflow", async ({
   if (!box) throw new Error("palette is not visible");
   expect(box.width).toBeGreaterThanOrEqual(319);
   await expect(searchInput(page)).toBeVisible();
-  await expect(page.getByRole("option")).toHaveCount(14);
+  await expect(page.getByRole("option")).toHaveCount(15);
 });
 
 test("the Spanish palette searches localized tools and stays localized", async ({
@@ -493,5 +521,5 @@ test("the Spanish palette finds the loan calculator and unit converter", async (
   await expect(page.getByRole("option")).toContainText("Calculadora de fechas");
 
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(14);
+  await expect(page.getByRole("option")).toHaveCount(15);
 });

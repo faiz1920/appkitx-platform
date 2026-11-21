@@ -98,11 +98,11 @@ export const es: Dictionary = {
       page: {
         title: "Calculadoras online gratis — AppKitX",
         metaDescription:
-          "Calculadoras gratis de porcentajes, descuentos, préstamos, EMI y expresiones científicas: variaciones, amortización y trigonometría en grados o radianes.",
+          "Calculadoras gratis de porcentajes, descuentos, préstamos, EMI, interés compuesto y expresiones científicas: variaciones, amortización, crecimiento de inversiones y trigonometría en grados o radianes.",
         toolsHeading: "Calculadoras online gratis",
         intro: [
-          "Las calculadoras cubren las cuentas del día a día y las expresiones científicas: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales, comprueba cuánto ahorras con un descuento y su precio final, estima la cuota mensual, los intereses totales y el coste total de un préstamo, consulta un calendario de amortización año a año con el desglose de principal e intereses, y evalúa expresiones con paréntesis, potencias, raíces, logaritmos y trigonometría.",
-          "Funcionan por completo en tu navegador, muestran la fórmula o la expresión de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes —las calculadoras de descuentos, préstamos y EMI son neutrales respecto a la moneda— y la calculadora científica respeta el modo de grados o radianes seleccionado.",
+          "Las calculadoras cubren las cuentas del día a día y las expresiones científicas: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales, comprueba cuánto ahorras con un descuento y su precio final, estima la cuota mensual, los intereses totales y el coste total de un préstamo, consulta un calendario de amortización año a año con el desglose de principal e intereses, proyecta el crecimiento de una inversión con interés compuesto y aportes mensuales opcionales, y evalúa expresiones con paréntesis, potencias, raíces, logaritmos y trigonometría.",
+          "Funcionan por completo en tu navegador, muestran la fórmula o la expresión de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes —las calculadoras de descuentos, préstamos, EMI e interés compuesto son neutrales respecto a la moneda— y la calculadora científica respeta el modo de grados o radianes seleccionado.",
         ],
       },
     },
@@ -568,6 +568,167 @@ export const es: Dictionary = {
           heading: "Privacidad",
           paragraphs: [
             "Todo se calcula en tu navegador. Los valores del préstamo y el calendario nunca se suben, se guardan en el almacenamiento del navegador ni se envían a un servicio de terceros.",
+          ],
+        },
+      ],
+    },
+    compoundInterest: {
+      title: "Calculadora de interés compuesto — AppKitX",
+      metaDescription:
+        "Calculadora de interés compuesto gratis: proyecta el crecimiento de una inversión con aportes mensuales opcionales, compara frecuencias de capitalización y consulta el desglose anual.",
+      name: "Calculadora de interés compuesto",
+      description:
+        "Calcula el valor futuro de una inversión, los aportes totales y los intereses generados con capitalización anual, semestral, trimestral, mensual o diaria.",
+      cardDescription:
+        "Crecimiento de una inversión con capitalización y aportes mensuales.",
+      keywords: [
+        "interés compuesto",
+        "calculadora de interés compuesto",
+        "crecimiento compuesto",
+        "crecimiento de la inversión",
+        "valor futuro",
+        "crecimiento del ahorro",
+        "aportes mensuales",
+        "frecuencia de capitalización",
+        "intereses generados",
+        "crecimiento anual",
+        "capitalización diaria",
+        "capitalización trimestral",
+      ],
+      principalLabel: "Inversión inicial",
+      principalHint:
+        "El importe inicial, en cualquier moneda. No se aplica conversión de divisas.",
+      rateLabel: "Tipo de interés anual (%)",
+      rateHint: "El tipo nominal anual. Escribe 0 si no hay intereses.",
+      durationLabel: "Duración de la inversión",
+      durationHint:
+        "El periodo de proyección. Debe resolverse en un número entero de meses entre 1 y 1.200.",
+      durationUnitLabel: "Unidad de duración",
+      durationUnits: {
+        years: "Años",
+        months: "Meses",
+      },
+      frequencyLabel: "Frecuencia de capitalización",
+      frequencyHint:
+        "Con qué frecuencia se capitalizan los intereses. La capitalización diaria usa un año de 365 días.",
+      frequencies: {
+        annual: "Anual",
+        semiannual: "Semestral",
+        quarterly: "Trimestral",
+        monthly: "Mensual",
+        daily: "Diaria",
+      },
+      contributionLabel: "Aporte mensual",
+      contributionHint:
+        "Opcional. Déjalo vacío o escribe 0 si no hay aportes mensuales.",
+      timingLabel: "Aportar al inicio de cada mes",
+      timingHint: "Desactivado: los aportes se añaden al final de cada mes.",
+      finalValueLabel: "Valor final",
+      initialLabel: "Inversión inicial",
+      contributionsLabel: "Aportes totales",
+      investedLabel: "Total invertido",
+      interestLabel: "Intereses generados",
+      breakdownHeading: "Invertido e intereses",
+      investedShare: "Total invertido: {amount} ({percent} % del valor final)",
+      interestShare:
+        "Intereses generados: {amount} ({percent} % del valor final)",
+      growthHeading: "Crecimiento anual",
+      growthHint:
+        "Cada fila cubre 12 meses; la última fila puede cubrir un año parcial.",
+      growthEmpty: "Calcula una inversión para ver el crecimiento anual.",
+      growthScrollLabel: "Tabla desplazable de crecimiento anual",
+      tableCaption: "Crecimiento anual de la inversión",
+      tableHeaders: {
+        year: "Año",
+        openingBalance: "Saldo inicial",
+        contributions: "Aportes",
+        interest: "Intereses generados",
+        closingBalance: "Saldo final",
+      },
+      yearLabel: "Año {year}",
+      partialYearLabel: "Año {year} ({duration})",
+      monthSingular: "mes",
+      monthPlural: "meses",
+      copySummary: "Copiar resumen",
+      copyText:
+        "Inversión inicial: {initial}\nTipo de interés anual: {rate} %\nCapitalización: {frequency}\nDuración: {duration}\nValor final: {final}\nTotal invertido: {invested}\nIntereses generados: {interest}",
+      copyTextWithContributions:
+        "Inversión inicial: {initial}\nAporte mensual: {contribution}\nAportes totales: {contributions}\nMomento del aporte: {timing}\nTipo de interés anual: {rate} %\nCapitalización: {frequency}\nDuración: {duration}\nValor final: {final}\nTotal invertido: {invested}\nIntereses generados: {interest}",
+      caption: "{amount} al {rate} % durante {duration}.",
+      captionWithContributions:
+        "{amount} al {rate} % durante {duration}, con {contribution} mensuales.",
+      formulas: {
+        template: "A = P × (1 + r/m)^(m×t)",
+        describe:
+          "{rate} % nominal = {monthlyRate} % al mes tras la capitalización.",
+      },
+      timingValues: {
+        end: "Fin de mes",
+        beginning: "Inicio de mes",
+      },
+      errors: {
+        principal: "Escribe una inversión inicial de 0 o más.",
+        noInvestment:
+          "Escribe una inversión inicial o un aporte mensual mayor que cero.",
+        rate: "Escribe un tipo de interés de 0 o más.",
+        duration: "Escribe una duración de entre 1 y 1.200 meses enteros.",
+        fractionalDuration:
+          "La duración debe resolverse en un número entero de meses.",
+        contribution: "Escribe un aporte mensual de 0 o más.",
+        frequency: "Elige una frecuencia de capitalización admitida.",
+        timing: "Elige un momento de aporte admitido.",
+        overflow:
+          "El resultado está fuera del rango numérico admitido. Prueba con valores más pequeños.",
+      },
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Introduce la inversión inicial, el tipo nominal anual, la duración y la frecuencia de capitalización. Si quieres, añade un aporte mensual e indica si se realiza al inicio o al final de cada mes. Pulsa Calcular para ver el valor final, el total invertido, los intereses generados y una tabla de crecimiento anual.",
+            "Todo se ejecuta en tu navegador. Al cambiar cualquier dato se borra el resultado anterior para que las cifras en pantalla siempre correspondan a los valores actuales.",
+          ],
+        },
+        {
+          heading: "Qué es el interés compuesto",
+          paragraphs: [
+            "El interés compuesto es el interés que se gana tanto sobre el importe inicial como sobre los intereses acumulados. Con el tiempo, el saldo crece más rápido que con el interés simple porque los intereses de cada periodo pasan a formar parte de la base del siguiente.",
+          ],
+        },
+        {
+          heading: "Fórmula del interés compuesto",
+          paragraphs: [
+            "La proyección usa `A = P × (1 + r/m)^(m×t)`, donde `P` es la inversión inicial, `r` es el tipo nominal anual, `m` es el número de periodos de capitalización por año y `t` es la duración en años.",
+            "La frecuencia de capitalización elegida define un factor mensual equivalente `g = (1 + r/m)^(m/12)`. Los intereses se acumulan mensualmente a `i = g − 1`, de modo que los aportes mensuales y las filas anuales usan el mismo tipo. Es una convención de proyección, no un extracto bancario ni un modelo exacto de la fecha de abono de intereses.",
+          ],
+        },
+        {
+          heading: "Aportes y momento del aporte",
+          paragraphs: [
+            "Los aportes mensuales usan la fórmula del valor futuro de una anualidad ordinaria: `FV = C × ((g^N − 1) ÷ i)`. Con aportes al inicio de cada mes, cada aporte gana un mes adicional de crecimiento, así que el resultado se multiplica por `g`.",
+            "El valor predeterminado es el final de mes. Si no introduces ningún aporte, el resultado es una proyección de solo capital inicial.",
+          ],
+        },
+        {
+          heading: "Frecuencia de capitalización",
+          paragraphs: [
+            "La capitalización anual, semestral, trimestral, mensual y diaria usa `m = 1, 2, 4, 12 y 365`. Para un mismo tipo nominal, una frecuencia más alta produce un rendimiento anual efectivo ligeramente mayor. La capitalización diaria usa un año fijo de 365 días; los años bisiestos se ignoran intencionadamente.",
+            "Los periodos parciales se expresan en meses enteros. La tabla anual agrupa 12 meses cada vez y la última fila puede cubrir menos de 12 meses.",
+          ],
+        },
+        {
+          heading: "Supuestos y límites",
+          items: [
+            "El tipo anual es nominal, fijo durante toda la duración y se capitaliza con la frecuencia elegida.",
+            "Los aportes son solo mensuales y se realizan al inicio o al final de cada mes. No se modelan retiradas, aumentos de aporte, aportes impagados, comisiones, impuestos, seguros ni inflación.",
+            "La calculadora es neutral respecto a la moneda. No convierte divisas ni añade símbolos de moneda.",
+            "Los resultados usan precisión completa internamente y solo se redondean a dos decimales para mostrarlos, así que los componentes mostrados pueden diferir del total exacto en un pequeño ajuste de redondeo.",
+            "La duración debe resolverse en un número entero de meses entre 1 y 1.200 (100 años).",
+          ],
+        },
+        {
+          heading: "Privacidad",
+          paragraphs: [
+            "Todo se calcula en tu navegador. Los valores de la inversión y la tabla de crecimiento nunca se suben, se guardan en el almacenamiento del navegador ni se envían a un servicio de terceros.",
           ],
         },
       ],

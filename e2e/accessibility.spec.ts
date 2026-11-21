@@ -25,6 +25,8 @@ const REPRESENTATIVE_ROUTES = [
   { path: "/es/speed-converter/", lang: "es" },
   { path: "/emi-calculator/", lang: "en" },
   { path: "/es/emi-calculator/", lang: "es" },
+  { path: "/compound-interest-calculator/", lang: "en" },
+  { path: "/es/compound-interest-calculator/", lang: "es" },
   { path: "/scientific-calculator/", lang: "en" },
   { path: "/es/scientific-calculator/", lang: "es" },
   { path: "/qr-code-generator/", lang: "en" },
@@ -135,6 +137,9 @@ test("article and information layouts expose accessible names and current-langua
 test("visible links, buttons, and form controls have accessible names", async ({
   page,
 }) => {
+  /* 24 representative routes with per-control assertions exceed 30s on Firefox. */
+  test.setTimeout(90_000);
+
   for (const route of REPRESENTATIVE_ROUTES) {
     await page.goto(route.path);
     const controls = page.locator(

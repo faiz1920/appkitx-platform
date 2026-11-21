@@ -34,7 +34,7 @@ test("the English category page lists the registered calculators", async ({
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Open tool" });
-  await expect(cards).toHaveCount(5);
+  await expect(cards).toHaveCount(6);
   await expect(cards.nth(0)).toContainText("Percentage Calculator");
   await expect(cards.nth(0)).toHaveAttribute("href", "/percentage-calculator/");
   await expect(cards.nth(1)).toContainText("Discount Calculator");
@@ -43,8 +43,13 @@ test("the English category page lists the registered calculators", async ({
   await expect(cards.nth(2)).toHaveAttribute("href", "/loan-calculator/");
   await expect(cards.nth(3)).toContainText("EMI Calculator");
   await expect(cards.nth(3)).toHaveAttribute("href", "/emi-calculator/");
-  await expect(cards.nth(4)).toContainText("Scientific Calculator");
-  await expect(cards.nth(4)).toHaveAttribute("href", "/scientific-calculator/");
+  await expect(cards.nth(4)).toContainText("Compound Interest Calculator");
+  await expect(cards.nth(4)).toHaveAttribute(
+    "href",
+    "/compound-interest-calculator/",
+  );
+  await expect(cards.nth(5)).toContainText("Scientific Calculator");
+  await expect(cards.nth(5)).toHaveAttribute("href", "/scientific-calculator/");
 
   /* The converters belong to another category. */
   await expect(page.getByRole("main").getByText("Unit Converter")).toHaveCount(
@@ -86,7 +91,7 @@ test("the Spanish category page is fully localized", async ({ page }) => {
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Abrir herramienta" });
-  await expect(cards).toHaveCount(5);
+  await expect(cards).toHaveCount(6);
   await expect(cards.nth(0)).toContainText("Calculadora de porcentajes");
   await expect(cards.nth(0)).toHaveAttribute(
     "href",
@@ -101,8 +106,13 @@ test("the Spanish category page is fully localized", async ({ page }) => {
   await expect(cards.nth(2)).toHaveAttribute("href", "/es/loan-calculator/");
   await expect(cards.nth(3)).toContainText("Calculadora de EMI");
   await expect(cards.nth(3)).toHaveAttribute("href", "/es/emi-calculator/");
-  await expect(cards.nth(4)).toContainText("Calculadora científica");
+  await expect(cards.nth(4)).toContainText("Calculadora de interés compuesto");
   await expect(cards.nth(4)).toHaveAttribute(
+    "href",
+    "/es/compound-interest-calculator/",
+  );
+  await expect(cards.nth(5)).toContainText("Calculadora científica");
+  await expect(cards.nth(5)).toHaveAttribute(
     "href",
     "/es/scientific-calculator/",
   );
