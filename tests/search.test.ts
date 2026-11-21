@@ -127,7 +127,7 @@ describe("searchTools", () => {
     expect(
       searchTools("developer tools", fixture).map((tool) => tool.title),
     ).toEqual(["Beta Utility"]);
-    expect(searchTools("calculators", tools)).toHaveLength(4);
+    expect(searchTools("calculators", tools)).toHaveLength(5);
   });
 
   it("matches by description", () => {
@@ -171,6 +171,7 @@ describe("searchTools", () => {
       "/percentage-calculator",
       "/discount-calculator",
       "/loan-calculator",
+      "/emi-calculator",
       "/scientific-calculator",
       "/date-calculator",
       "/age-calculator",
@@ -192,8 +193,9 @@ describe("searchTools", () => {
   it("finds the loan calculator and unit converter", () => {
     expect(searchTools("loan", tools).map((tool) => tool.href)).toEqual([
       "/loan-calculator",
+      "/emi-calculator",
     ]);
-    expect(searchTools("emi", tools).map((tool) => tool.href)).toEqual([
+    expect(searchTools("mortgage", tools).map((tool) => tool.href)).toEqual([
       "/loan-calculator",
     ]);
     expect(
@@ -214,6 +216,18 @@ describe("searchTools", () => {
     expect(searchTools("knots", tools).map((tool) => tool.href)).toEqual([
       "/speed-converter",
     ]);
+  });
+
+  it("finds the EMI calculator by name, keyword, and schedule terms", () => {
+    expect(searchTools("emi", tools).map((tool) => tool.href)).toEqual([
+      "/emi-calculator",
+    ]);
+    expect(searchTools("amortization", tools).map((tool) => tool.href)).toEqual(
+      ["/emi-calculator"],
+    );
+    expect(
+      searchTools("outstanding balance", tools).map((tool) => tool.href),
+    ).toEqual(["/emi-calculator"]);
   });
 
   it("finds the scientific calculator by name and keyword", () => {
@@ -304,8 +318,22 @@ describe("localized search catalogs", () => {
       "/percentage-calculator",
       "/discount-calculator",
       "/loan-calculator",
+      "/emi-calculator",
       "/scientific-calculator",
     ]);
+  });
+
+  it("finds the EMI calculator with localized terms", () => {
+    const catalog = localizedToolCatalog("es");
+    expect(searchTools("emi", catalog).map((tool) => tool.href)).toEqual([
+      "/emi-calculator",
+    ]);
+    expect(
+      searchTools("amortización", catalog).map((tool) => tool.href),
+    ).toEqual(["/emi-calculator"]);
+    expect(
+      searchTools("saldo pendiente", catalog).map((tool) => tool.href),
+    ).toEqual(["/emi-calculator"]);
   });
 
   it("matches Spanish accented terms with or without accents", () => {
@@ -325,9 +353,11 @@ describe("localized search catalogs", () => {
     const catalog = localizedToolCatalog("es");
     expect(searchTools("préstamo", catalog).map((tool) => tool.href)).toEqual([
       "/loan-calculator",
+      "/emi-calculator",
     ]);
     expect(searchTools("hipoteca", catalog).map((tool) => tool.href)).toEqual([
       "/loan-calculator",
+      "/emi-calculator",
     ]);
     expect(searchTools("unidades", catalog).map((tool) => tool.href)).toEqual([
       "/unit-converter",

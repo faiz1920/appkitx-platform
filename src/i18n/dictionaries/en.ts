@@ -86,11 +86,11 @@ export const en: Dictionary = {
       page: {
         title: "Free Online Calculators — AppKitX",
         metaDescription:
-          "Free calculators for percentages, discounts, loans, and scientific expressions: percent change, interest, and trigonometry in degrees or radians.",
+          "Free calculators for percentages, discounts, loans, EMIs, and scientific expressions: percent change, amortization, and trigonometry in degrees or radians.",
         toolsHeading: "Free online calculators",
         intro: [
-          "The calculators cover everyday money math and scientific expressions: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, see what a discount saves and its final price, estimate a loan's monthly payment, total interest, and total cost, and evaluate expressions with parentheses, powers, roots, logarithms, and trigonometry.",
-          "They run entirely in your browser, show the formula or expression behind each result, and let you copy it with one click. Money amounts are treated exactly as you enter them — the discount and loan calculators are currency-neutral — and the scientific calculator respects the selected degrees or radians mode.",
+          "The calculators cover everyday money math and scientific expressions: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, see what a discount saves and its final price, estimate a loan's monthly payment, total interest, and total cost, inspect a year-by-year EMI repayment schedule with principal and interest balances, and evaluate expressions with parentheses, powers, roots, logarithms, and trigonometry.",
+          "They run entirely in your browser, show the formula or expression behind each result, and let you copy it with one click. Money amounts are treated exactly as you enter them — the discount, loan, and EMI calculators are currency-neutral — and the scientific calculator respects the selected degrees or radians mode.",
         ],
       },
     },
@@ -365,7 +365,6 @@ export const en: Dictionary = {
       cardDescription: "Monthly payments, interest, and total cost.",
       keywords: [
         "loan",
-        "emi",
         "mortgage",
         "repayment",
         "interest",
@@ -374,7 +373,6 @@ export const en: Dictionary = {
         "home loan",
         "car loan",
         "personal loan",
-        "amortization",
       ],
       amountLabel: "Loan amount",
       amountHint: "The amount borrowed before interest, in any currency.",
@@ -432,6 +430,127 @@ export const en: Dictionary = {
             "The term must be between one month and 1,200 months (100 years). Terms outside that range are rejected with an inline message rather than silently adjusted.",
             "Results are calculated at full precision and rounded to two decimal places only for display. The last payment on a real loan may differ by a few cents because lenders round each instalment.",
             "The calculator is currency-neutral and makes no assumptions about the currency, the payment date, or the lender's own rounding rules.",
+          ],
+        },
+      ],
+    },
+    emiCalculator: {
+      title: "EMI Calculator — AppKitX",
+      metaDescription:
+        "Free EMI calculator with a full amortization schedule: monthly payment, principal and interest breakdown, outstanding balance, and annual repayment totals.",
+      name: "EMI Calculator",
+      description:
+        "Calculate the monthly EMI, principal and interest split, outstanding balance, and a year-by-year repayment schedule.",
+      cardDescription:
+        "Monthly EMI, principal/interest split, and amortization schedule.",
+      keywords: [
+        "emi",
+        "emi calculator",
+        "loan emi",
+        "amortization schedule",
+        "repayment schedule",
+        "principal and interest",
+        "outstanding balance",
+        "monthly installment",
+        "loan repayment",
+        "home loan",
+        "car loan",
+      ],
+      amountLabel: "Loan amount",
+      amountHint:
+        "The amount borrowed, in any currency. No currency conversion is applied.",
+      rateLabel: "Annual interest rate (%)",
+      rateHint:
+        "The nominal annual rate charged on the reducing balance. Enter 0 for an interest-free loan.",
+      tenureLabel: "Loan tenure",
+      tenureHint:
+        "The repayment period. It must resolve to a whole number of months between 1 and 1,200.",
+      tenureUnitLabel: "Tenure unit",
+      tenureUnits: {
+        years: "Years",
+        months: "Months",
+      },
+      emiLabel: "Monthly EMI",
+      principalLabel: "Principal",
+      interestLabel: "Total interest",
+      totalLabel: "Total repayment",
+      breakdownHeading: "Principal vs interest",
+      principalShare: "{amount} ({percent}% of total)",
+      interestShare: "{amount} ({percent}% of total)",
+      scheduleHeading: "Repayment schedule",
+      scheduleHint:
+        "Grouped by loan year. Expand a year to see monthly installments and the outstanding balance.",
+      scheduleEmpty:
+        "Calculate a loan to see the year-by-year repayment schedule.",
+      yearLabel: "Year {year}",
+      openingBalanceLabel: "Opening balance",
+      principalPaidLabel: "Principal paid",
+      interestPaidLabel: "Interest paid",
+      totalPaidLabel: "Total paid",
+      closingBalanceLabel: "Closing balance",
+      monthlyTableCaption: "Monthly installments for year {year}",
+      scheduleScrollLabel:
+        "Scrollable monthly installment table for year {year}",
+      tableHeaders: {
+        paymentNumber: "Payment",
+        openingBalance: "Opening balance",
+        payment: "EMI / payment",
+        interest: "Interest",
+        principal: "Principal",
+        closingBalance: "Closing balance",
+      },
+      copySummary: "Copy summary",
+      copyText:
+        "Loan amount: {amount}\nMonthly EMI: {emi}\nPrincipal: {principal}\nTotal interest: {interest}\nTotal repayment: {total}\nTenure: {months} months",
+      caption: "{amount} at {rate}% over {months} months.",
+      formulas: {
+        template: "EMI = P × r ÷ (1 − (1 + r)⁻ⁿ)",
+        describe: "{rate}% ÷ 12 = {monthlyRate}% per month",
+      },
+      errors: {
+        amount: "Enter a loan amount greater than zero.",
+        rate: "Enter an interest rate of 0 or more.",
+        tenure: "Enter a tenure between 1 and 1,200 whole months.",
+        fractionalTenure:
+          "The tenure must resolve to a whole number of months.",
+        overflow:
+          "The result is outside the supported numeric range. Try smaller values.",
+      },
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Enter the amount borrowed, the nominal annual interest rate, and the repayment tenure. Choose whether the tenure is in years or months, then select Calculate. The summary shows the fixed monthly EMI, the principal, total interest, total repayment, and the principal-versus-interest split.",
+            "The repayment schedule groups installments by loan year. Expand any year to see each monthly payment, its interest and principal components, and the outstanding balance after that payment. Everything runs in your browser.",
+          ],
+        },
+        {
+          heading: "Reducing-balance EMI formula",
+          paragraphs: [
+            "This calculator uses reducing-balance EMI only: `EMI = P × r ÷ (1 − (1 + r)⁻ⁿ)`, where `P` is the principal, `r` is the nominal annual rate divided by 12 and by 100, and `n` is the whole number of monthly installments.",
+            "For a zero rate, the EMI is simply `principal ÷ months` and the total interest is zero. Flat-interest loans are not modelled: interest is always charged on the outstanding balance, not on the original principal for the whole term.",
+          ],
+        },
+        {
+          heading: "Schedule and rounding",
+          paragraphs: [
+            "Each month, interest is charged on the opening balance, the EMI is applied, and the remainder reduces the principal. The final installment is adjusted so the outstanding balance closes at exactly zero; it can differ from the regular EMI by a few cents.",
+            "Calculations keep full precision internally. The summary, annual totals, and monthly table are rounded to two decimal places only for display, so the displayed rows can differ from the exact total by a small rounding amount.",
+          ],
+        },
+        {
+          heading: "Assumptions and limits",
+          items: [
+            "The annual rate is nominal, fixed for the whole term, and divided by 12. Effective annual rates, variable rates, day-count conventions, fees, insurance, and taxes are not included.",
+            "The tenure must resolve to a whole number of months between 1 and 1,200 (100 years). Fractional month totals are rejected rather than rounded.",
+            "No prepayments, missed payments, moratoriums, or payment-frequency changes are modelled.",
+            "Amounts are currency-neutral and are never converted. Results use the page locale's decimal and thousands separators.",
+          ],
+        },
+        {
+          heading: "Privacy",
+          paragraphs: [
+            "Everything is calculated in your browser. The loan values and schedule are never uploaded, stored in browser storage, or sent to a third-party service.",
           ],
         },
       ],

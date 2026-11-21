@@ -85,6 +85,11 @@ describe("localizedToolCatalog", () => {
     expect(scientific?.title).toBe("Calculadora científica");
     expect(scientific?.category).toBe("Calculadoras");
     expect(scientific?.keywords).toContain("trigonometría");
+
+    const emi = catalog.find((tool) => tool.href === "/emi-calculator");
+    expect(emi?.title).toBe("Calculadora de EMI");
+    expect(emi?.category).toBe("Calculadoras");
+    expect(emi?.keywords).toContain("calendario de amortización");
   });
 
   it("keeps the English card text identical to the registry descriptions", () => {

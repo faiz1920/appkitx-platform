@@ -225,7 +225,7 @@ describe("buildCollectionPageJsonLd", () => {
   const input = {
     name: "Calculators",
     description:
-      "Free calculators for percentages, discounts, loans, and scientific expressions: percent change, interest, and trigonometry in degrees or radians.",
+      "Free calculators for percentages, discounts, loans, EMIs, and scientific expressions: percent change, amortization, and trigonometry in degrees or radians.",
     url: "https://appkitx.com/calculators/",
     inLanguage: "en",
   };

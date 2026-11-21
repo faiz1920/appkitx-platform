@@ -7,6 +7,7 @@ import type {
   WeightUnit,
 } from "../lib/unit-convert";
 import type { TermUnit } from "../lib/loan";
+import type { TenureUnit } from "../lib/emi";
 import type { SpeedUnit } from "../lib/speed";
 import type {
   QrContentType,
@@ -810,11 +811,84 @@ export interface ScientificCalculatorToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** EMI Calculator page labels and interface strings. */
+export interface EmiCalculatorToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  amountLabel: string;
+  amountHint: string;
+  rateLabel: string;
+  rateHint: string;
+  tenureLabel: string;
+  tenureHint: string;
+  tenureUnitLabel: string;
+  tenureUnits: Record<TenureUnit, string>;
+  emiLabel: string;
+  principalLabel: string;
+  interestLabel: string;
+  totalLabel: string;
+  breakdownHeading: string;
+  /** Share line template; tokens: {amount}, {percent}. */
+  principalShare: string;
+  /** Share line template; tokens: {amount}, {percent}. */
+  interestShare: string;
+  scheduleHeading: string;
+  scheduleHint: string;
+  scheduleEmpty: string;
+  /** Annual group heading template; token: {year}. */
+  yearLabel: string;
+  openingBalanceLabel: string;
+  principalPaidLabel: string;
+  interestPaidLabel: string;
+  totalPaidLabel: string;
+  closingBalanceLabel: string;
+  /** Table caption template; token: {year}. */
+  monthlyTableCaption: string;
+  /** Scroll-region label template; token: {year}. */
+  scheduleScrollLabel: string;
+  tableHeaders: {
+    paymentNumber: string;
+    openingBalance: string;
+    payment: string;
+    interest: string;
+    principal: string;
+    closingBalance: string;
+  };
+  copySummary: string;
+  /** Clipboard text template; tokens: {amount}, {emi}, {principal}, {interest}, {total}, {months}. */
+  copyText: string;
+  /** Result caption template; tokens: {amount}, {rate}, {months}. */
+  caption: string;
+  formulas: {
+    template: string;
+    /** Tokens: {rate}, {monthlyRate}. */
+    describe: string;
+  };
+  errors: {
+    amount: string;
+    rate: string;
+    tenure: string;
+    fractionalTenure: string;
+    overflow: string;
+  };
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** Per-tool dictionaries, keyed by tool. */
 export interface ToolsStrings {
   percentage: PercentageToolStrings;
   discount: DiscountToolStrings;
   loanCalculator: LoanCalculatorToolStrings;
+  emiCalculator: EmiCalculatorToolStrings;
   unitConverter: UnitConverterToolStrings;
   speedConverter: SpeedConverterToolStrings;
   scientificCalculator: ScientificCalculatorToolStrings;

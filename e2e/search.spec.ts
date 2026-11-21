@@ -100,7 +100,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.goto("/");
   await openWithShortcut(page);
 
-  await expect(page.getByRole("option")).toHaveCount(13);
+  await expect(page.getByRole("option")).toHaveCount(14);
 
   await page.keyboard.press("ArrowDown");
   await expect(searchInput(page)).toHaveAttribute(
@@ -115,7 +115,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.keyboard.press("ArrowUp");
   await expect(searchInput(page)).toHaveAttribute(
     "aria-activedescendant",
-    "search-option-12",
+    "search-option-13",
   );
 
   await page.keyboard.press("ArrowDown");
@@ -146,7 +146,7 @@ test("typing filters results and shows the empty state", async ({ page }) => {
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "false");
 
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(13);
+  await expect(page.getByRole("option")).toHaveCount(14);
   await expect(empty).toBeHidden();
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "true");
 });
@@ -228,6 +228,7 @@ test("only lists registered tools with unique routes", async ({ page }) => {
     "/case-converter/",
     "/date-calculator/",
     "/discount-calculator/",
+    "/emi-calculator/",
     "/json-formatter/",
     "/loan-calculator/",
     "/percentage-calculator/",
@@ -316,6 +317,29 @@ test("finds and opens the date tools by keyword", async ({ page }) => {
   await expect(page.getByRole("option")).toContainText("Age Calculator");
 });
 
+test("finds and opens the EMI calculator by keyword", async ({ page }) => {
+  await page.goto("/");
+  await openWithShortcut(page);
+
+  await searchInput(page).fill("amortization");
+  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("option")).toContainText("EMI Calculator");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+
+  await expect(page).toHaveURL(/\/emi-calculator\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "EMI Calculator",
+  );
+
+  await openWithShortcut(page);
+  await searchInput(page).fill("emi");
+  await expect(palette(page).getByRole("option")).toHaveCount(1);
+  await expect(palette(page).getByRole("option")).toContainText(
+    "EMI Calculator",
+  );
+});
+
 test("finds and opens the scientific calculator by keyword", async ({
   page,
 }) => {
@@ -382,7 +406,7 @@ test("uses the full-screen sheet at 320px without horizontal overflow", async ({
   if (!box) throw new Error("palette is not visible");
   expect(box.width).toBeGreaterThanOrEqual(319);
   await expect(searchInput(page)).toBeVisible();
-  await expect(page.getByRole("option")).toHaveCount(13);
+  await expect(page.getByRole("option")).toHaveCount(14);
 });
 
 test("the Spanish palette searches localized tools and stays localized", async ({
@@ -440,7 +464,7 @@ test("the Spanish palette finds the loan calculator and unit converter", async (
 
   for (const [query, name, href] of [
     ["unidades", "Conversor de unidades", "/es/unit-converter/"],
-    ["préstamo", "Calculadora de préstamos", "/es/loan-calculator/"],
+    ["préstamo de coche", "Calculadora de préstamos", "/es/loan-calculator/"],
     ["velocidad", "Conversor de velocidad", "/es/speed-converter/"],
     ["nudos", "Conversor de velocidad", "/es/speed-converter/"],
     ["código qr", "Generador de códigos QR", "/es/qr-code-generator/"],
@@ -469,5 +493,5 @@ test("the Spanish palette finds the loan calculator and unit converter", async (
   await expect(page.getByRole("option")).toContainText("Calculadora de fechas");
 
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(13);
+  await expect(page.getByRole("option")).toHaveCount(14);
 });
