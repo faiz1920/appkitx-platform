@@ -15,6 +15,7 @@ import type {
 } from "../lib/compound-interest";
 import type { SpeedUnit } from "../lib/speed";
 import type { RetirementMode } from "../lib/retirement";
+import type { CuratedTimeZone } from "../lib/time-zone";
 import type {
   QrContentType,
   QrIssueCode,
@@ -1161,6 +1162,97 @@ export interface RetirementToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** Time Zone Converter page labels and interface strings. */
+export interface TimeZoneConverterToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  dateLabel: string;
+  dateHint: string;
+  timeLabel: string;
+  timeHint: string;
+  sourceZoneLabel: string;
+  sourceZoneHint: string;
+  targetZoneLabel: string;
+  targetZoneHint: string;
+  useCurrentTime: string;
+  convertedTimeLabel: string;
+  convertedDateLabel: string;
+  weekdayLabel: string;
+  sourceOffsetLabel: string;
+  targetOffsetLabel: string;
+  differenceLabel: string;
+  dayChangeLabel: string;
+  sourceSummaryLabel: string;
+  targetSummaryLabel: string;
+  /** One-line summary template; tokens: {time}, {date}, {label}, {zone}. */
+  summaryLine: string;
+  /** Suffix for the device zone when it is not in the curated list. */
+  deviceZoneSuffix: string;
+  /** Localized labels for every curated IANA zone. */
+  zoneLabels: Record<CuratedTimeZone, string>;
+  sameDay: string;
+  nextDay: string;
+  previousDay: string;
+  /** Plural template for two or more days later; token: {count}. */
+  daysAhead: string;
+  /** Plural template for two or more days earlier; token: {count}. */
+  daysBehind: string;
+  sameTime: string;
+  /** Template for a positive offset difference; token: {duration}. */
+  differenceAhead: string;
+  /** Template for a negative offset difference; token: {duration}. */
+  differenceBehind: string;
+  /** Duration template; token: {hours}. */
+  durationHours: string;
+  /** Duration template; token: {minutes}. */
+  durationMinutes: string;
+  /** Duration template; tokens: {hours}, {minutes}. */
+  durationHoursMinutes: string;
+  /** DST gap explanation; tokens: {zone}, {duration}. */
+  dstGap: string;
+  /** DST overlap disclosure; tokens: {zone}, {offset}. */
+  dstAmbiguous: string;
+  /** Runtime time-zone data and supported date range note. */
+  dataNote: string;
+  comparisonHeading: string;
+  comparisonHint: string;
+  comparisonEmpty: string;
+  comparisonScrollLabel: string;
+  comparisonCaption: string;
+  comparisonHeaders: {
+    zone: string;
+    date: string;
+    time: string;
+    offset: string;
+    day: string;
+  };
+  copySummary: string;
+  /** Clipboard summary template; tokens: {sourceTime}, {sourceDate}, {sourceLabel}, {sourceZone}, {targetTime}, {targetDate}, {targetLabel}, {targetZone}, {sourceOffset}, {targetOffset}, {difference}. */
+  copyText: string;
+  /** Optional clipboard line for an ambiguous local time; token: {offset}. */
+  copyAmbiguousLine: string;
+  /** Result caption template; tokens: {sourceTime}, {sourceDate}, {sourceLabel}. */
+  caption: string;
+  errors: {
+    date: string;
+    dateRange: string;
+    time: string;
+    sourceZone: string;
+    targetZone: string;
+    unexpected: string;
+  };
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** Per-tool dictionaries, keyed by tool. */
 export interface ToolsStrings {
   percentage: PercentageToolStrings;
@@ -1179,6 +1271,7 @@ export interface ToolsStrings {
   wordCounter: WordCounterToolStrings;
   caseConverter: CaseConverterToolStrings;
   dateCalculator: DateCalculatorToolStrings;
+  timeZoneConverter: TimeZoneConverterToolStrings;
   ageCalculator: AgeCalculatorToolStrings;
 }
 

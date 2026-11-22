@@ -138,6 +138,8 @@ test("a locale-prefixed URL outside the supported set renders the noindex 404 pa
 test("every indexable page advertises reciprocal alternates and x-default", async ({
   page,
 }) => {
+  /* 160 locale-page visits exceed the default 30s under parallel browsers. */
+  test.setTimeout(120_000);
   for (const [path, links] of Object.entries(ALTERNATE_EXPECTATIONS)) {
     await page.goto(path);
     await expect(

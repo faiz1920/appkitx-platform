@@ -300,7 +300,7 @@ test("the Spanish developer tools page is fully localized", async ({
   });
 });
 
-test("the English date & time page lists both registered tools", async ({
+test("the English date & time page lists the registered tools", async ({
   page,
 }) => {
   const response = await page.goto("/date-time/");
@@ -327,11 +327,13 @@ test("the English date & time page lists both registered tools", async ({
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Open tool" });
-  await expect(cards).toHaveCount(2);
+  await expect(cards).toHaveCount(3);
   await expect(cards.nth(0)).toContainText("Date Calculator");
   await expect(cards.nth(0)).toHaveAttribute("href", "/date-calculator/");
-  await expect(cards.nth(1)).toContainText("Age Calculator");
-  await expect(cards.nth(1)).toHaveAttribute("href", "/age-calculator/");
+  await expect(cards.nth(1)).toContainText("Time Zone Converter");
+  await expect(cards.nth(1)).toHaveAttribute("href", "/time-zone-converter/");
+  await expect(cards.nth(2)).toContainText("Age Calculator");
+  await expect(cards.nth(2)).toHaveAttribute("href", "/age-calculator/");
 
   await page.screenshot({
     path: "test-results/category-date-time-en.png",
@@ -365,11 +367,16 @@ test("the Spanish date & time page is fully localized", async ({ page }) => {
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Abrir herramienta" });
-  await expect(cards).toHaveCount(2);
+  await expect(cards).toHaveCount(3);
   await expect(cards.nth(0)).toContainText("Calculadora de fechas");
   await expect(cards.nth(0)).toHaveAttribute("href", "/es/date-calculator/");
-  await expect(cards.nth(1)).toContainText("Calculadora de edad");
-  await expect(cards.nth(1)).toHaveAttribute("href", "/es/age-calculator/");
+  await expect(cards.nth(1)).toContainText("Conversor de zonas horarias");
+  await expect(cards.nth(1)).toHaveAttribute(
+    "href",
+    "/es/time-zone-converter/",
+  );
+  await expect(cards.nth(2)).toContainText("Calculadora de edad");
+  await expect(cards.nth(2)).toHaveAttribute("href", "/es/age-calculator/");
 
   await page.screenshot({
     path: "test-results/category-date-time-es.png",
@@ -524,7 +531,7 @@ test("the homepage chip and footer link the published categories", async ({
     ["Text tools", "/text-tools/"],
   ] as const) {
     await expect(
-      page.getByRole("main").getByRole("link", { name }),
+      page.getByRole("main").getByRole("link", { name, exact: true }),
     ).toHaveAttribute("href", href);
     await expect(
       page.getByRole("contentinfo").getByRole("link", { name }),
@@ -540,7 +547,7 @@ test("the homepage chip and footer link the published categories", async ({
     ["Herramientas de texto", "/es/text-tools/"],
   ] as const) {
     await expect(
-      page.getByRole("main").getByRole("link", { name }),
+      page.getByRole("main").getByRole("link", { name, exact: true }),
     ).toHaveAttribute("href", href);
     await expect(
       page.getByRole("contentinfo").getByRole("link", { name }),

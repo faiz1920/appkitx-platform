@@ -175,6 +175,7 @@ describe("locale path helpers", () => {
         "/json-formatter",
         "/developer-tools",
         "/date-calculator",
+        "/time-zone-converter",
         "/age-calculator",
         "/date-time",
         "/word-counter",

@@ -111,6 +111,13 @@ describe("localizedToolCatalog", () => {
     expect(retirement?.title).toBe("Calculadora de jubilación");
     expect(retirement?.category).toBe("Calculadoras");
     expect(retirement?.keywords).toContain("retiro");
+
+    const timeZone = catalog.find(
+      (tool) => tool.href === "/time-zone-converter",
+    );
+    expect(timeZone?.title).toBe("Conversor de zonas horarias");
+    expect(timeZone?.category).toBe("Fecha y hora");
+    expect(timeZone?.keywords).toContain("conversor de zonas horarias");
   });
 
   it("keeps the English card text identical to the registry descriptions", () => {

@@ -8,7 +8,7 @@ The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKi
 
 ## Status
 
-Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Seventeen tools are shipped, each built on the reusable `ToolLayout` template with cross-linked related tools:
+Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Eighteen tools are shipped, each built on the reusable `ToolLayout` template with cross-linked related tools:
 
 | Tool                         | Category        | English route                   | Spanish route                      |
 | ---------------------------- | --------------- | ------------------------------- | ---------------------------------- |
@@ -26,6 +26,7 @@ Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (
 | JSON Formatter               | Developer tools | `/json-formatter`               | `/es/json-formatter`               |
 | QR Code Generator            | Developer tools | `/qr-code-generator`            | `/es/qr-code-generator`            |
 | Date Calculator              | Date & time     | `/date-calculator`              | `/es/date-calculator`              |
+| Time Zone Converter          | Date & time     | `/time-zone-converter`          | `/es/time-zone-converter`          |
 | Age Calculator               | Date & time     | `/age-calculator`               | `/es/age-calculator`               |
 | Word Counter                 | Text tools      | `/word-counter`                 | `/es/word-counter`                 |
 | Case Converter               | Text tools      | `/case-converter`               | `/es/case-converter`               |
@@ -35,6 +36,12 @@ Category landing pages are live in both locales for [Calculators](/calculators),
 The M10.15 / M10.15.1 public-site release adds a bilingual PC-hardware editorial library: ten source-based guides in English (`/guides/`) and Spanish (`/es/guides/`), plus About, Contact, Privacy Policy, Terms of Use, and Affiliate Disclosure pages in both locales. The legal pages are deployed as visible drafts with review notices and must not be presented as final or compliant until the owner inputs in [PC-BUILDER-M10-15-OWNER-INPUTS.md](./PC-BUILDER-M10-15-OWNER-INPUTS.md) are resolved. The guides are research-based and do not claim hands-on testing, benchmarks, or product ownership. The public contact address is `appkitx@gmail.com`. The PC Builder remains development-only and has no public route, navigation entry, or sitemap entry.
 
 Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches the typed tool registry, localized per page. English is the source locale and Spanish (`/es/…`) is shipped as a provisional translation (see [Translation status](#translation-status)).
+
+### Time Zone Converter
+
+The Time Zone Converter (`/time-zone-converter`, `/es/time-zone-converter`) converts a date and time between a curated list of major IANA time zones plus the device zone. It resolves the entered value as a wall-clock time in the source zone, then shows the converted time, both UTC offsets, the source-to-target difference, the weekday, and any change of calendar date across a fixed comparison table.
+
+The resolver samples the zone offsets around the entered time and verifies every candidate by formatting it back into the zone. A local time inside a spring-forward gap is rejected with an explanation. A local time that occurs twice during fall-back selects the earlier instant and discloses the ambiguity. Supported dates run from 1900 to 2100. Offsets and DST rules come from the browser's IANA data; there is no time zone API, external service, or new dependency. The tool does not plan meetings, create calendar events, or convert recurring schedules.
 
 ### Retirement Calculator
 

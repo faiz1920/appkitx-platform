@@ -178,6 +178,7 @@ describe("searchTools", () => {
       "/scientific-calculator",
       "/date-calculator",
       "/age-calculator",
+      "/time-zone-converter",
     ]);
     expect(second.map((tool) => tool.href)).toEqual(
       first.map((tool) => tool.href),
@@ -274,6 +275,20 @@ describe("searchTools", () => {
     ).toEqual(["/retirement-calculator"]);
   });
 
+  it("finds the time zone converter by zone and DST terms", () => {
+    expect(searchTools("time zone", tools).map((tool) => tool.href)).toEqual([
+      "/time-zone-converter",
+    ]);
+    expect(
+      searchTools("time difference between cities", tools).map(
+        (tool) => tool.href,
+      ),
+    ).toEqual(["/time-zone-converter"]);
+    expect(
+      searchTools("daylight saving", tools).map((tool) => tool.href),
+    ).toEqual(["/time-zone-converter"]);
+  });
+
   it("finds the scientific calculator by name and keyword", () => {
     expect(searchTools("scientific", tools).map((tool) => tool.href)).toEqual([
       "/scientific-calculator",
@@ -332,6 +347,7 @@ describe("searchTools", () => {
     ]);
     expect(searchTools("date & time", tools).map((tool) => tool.href)).toEqual([
       "/date-calculator",
+      "/time-zone-converter",
       "/age-calculator",
     ]);
   });
@@ -468,6 +484,19 @@ describe("localized search catalogs", () => {
     ]);
   });
 
+  it("finds the time zone converter with localized terms", () => {
+    const catalog = localizedToolCatalog("es");
+    expect(
+      searchTools("zonas horarias", catalog).map((tool) => tool.href),
+    ).toEqual(["/time-zone-converter"]);
+    expect(
+      searchTools("diferencia horaria", catalog).map((tool) => tool.href),
+    ).toEqual(["/time-zone-converter"]);
+    expect(
+      searchTools("horario de verano", catalog).map((tool) => tool.href),
+    ).toEqual(["/time-zone-converter"]);
+  });
+
   it("finds the date and age tools with localized terms", () => {
     const catalog = localizedToolCatalog("es");
     expect(
@@ -482,7 +511,7 @@ describe("localized search catalogs", () => {
     ]);
     expect(
       searchTools("fecha y hora", catalog).map((tool) => tool.href),
-    ).toEqual(["/date-calculator", "/age-calculator"]);
+    ).toEqual(["/date-calculator", "/time-zone-converter", "/age-calculator"]);
   });
 
   it("finds the developer tools with localized terms", () => {

@@ -85,6 +85,7 @@ describe("category membership", () => {
     );
     expect(toolsInCategory("Date & time").map((tool) => tool.href)).toEqual([
       "/date-calculator",
+      "/time-zone-converter",
       "/age-calculator",
     ]);
     expect(toolsInCategory("Text tools").map((tool) => tool.href)).toEqual([
@@ -106,6 +107,7 @@ describe("category membership", () => {
     expect(toolCategory("/speed-converter")).toBe("Converters");
     expect(toolCategory("/qr-code-generator")).toBe("Developer tools");
     expect(toolCategory("/date-calculator")).toBe("Date & time");
+    expect(toolCategory("/time-zone-converter")).toBe("Date & time");
     expect(toolCategory("/age-calculator")).toBe("Date & time");
     expect(toolCategory("/word-counter")).toBe("Text tools");
     expect(toolCategory("/case-converter")).toBe("Text tools");

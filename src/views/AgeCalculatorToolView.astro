@@ -11,6 +11,7 @@ import {
   toolCategory,
 } from "../lib/categories";
 import calendarIcon from "lucide-static/icons/calendar-days.svg?raw";
+import globeIcon from "lucide-static/icons/globe.svg?raw";
 
 interface Props {
   locale: LocaleCode;
@@ -25,15 +26,19 @@ const relatedHref = isCategoryPublished(category)
   ? localizedHref(categoryPath(category), locale)
   : undefined;
 
-const toolIcons: Record<string, string> = { "calendar-days": calendarIcon };
-const relatedTools = resolveLocalizedTools(locale, ["/date-calculator"]).map(
-  (related) => ({
-    title: related.title,
-    description: related.description,
-    href: localizedHref(related.href, locale),
-    icon: toolIcons[related.icon] ?? "",
-  }),
-);
+const toolIcons: Record<string, string> = {
+  "calendar-days": calendarIcon,
+  globe: globeIcon,
+};
+const relatedTools = resolveLocalizedTools(locale, [
+  "/date-calculator",
+  "/time-zone-converter",
+]).map((related) => ({
+  title: related.title,
+  description: related.description,
+  href: localizedHref(related.href, locale),
+  icon: toolIcons[related.icon] ?? "",
+}));
 ---
 
 <ToolLayout

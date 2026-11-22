@@ -11,6 +11,7 @@ import {
   toolCategory,
 } from "../lib/categories";
 import cakeIcon from "lucide-static/icons/cake.svg?raw";
+import globeIcon from "lucide-static/icons/globe.svg?raw";
 
 interface Props {
   locale: LocaleCode;
@@ -25,15 +26,19 @@ const relatedHref = isCategoryPublished(category)
   ? localizedHref(categoryPath(category), locale)
   : undefined;
 
-const toolIcons: Record<string, string> = { cake: cakeIcon };
-const relatedTools = resolveLocalizedTools(locale, ["/age-calculator"]).map(
-  (related) => ({
-    title: related.title,
-    description: related.description,
-    href: localizedHref(related.href, locale),
-    icon: toolIcons[related.icon] ?? "",
-  }),
-);
+const toolIcons: Record<string, string> = {
+  cake: cakeIcon,
+  globe: globeIcon,
+};
+const relatedTools = resolveLocalizedTools(locale, [
+  "/time-zone-converter",
+  "/age-calculator",
+]).map((related) => ({
+  title: related.title,
+  description: related.description,
+  href: localizedHref(related.href, locale),
+  icon: toolIcons[related.icon] ?? "",
+}));
 ---
 
 <ToolLayout

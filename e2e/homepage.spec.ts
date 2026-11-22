@@ -83,7 +83,7 @@ test("every shipped tool is an interactive card and footer link", async ({
   await page.goto("/");
 
   const grid = page.locator("#tools");
-  await expect(grid.getByText("Open tool")).toHaveCount(17);
+  await expect(grid.getByText("Open tool")).toHaveCount(18);
   await expect(grid.getByText("Coming soon")).toHaveCount(0);
 
   const footer = page.getByRole("contentinfo");
@@ -96,6 +96,7 @@ test("every shipped tool is an interactive card and footer link", async ({
     ["Compound Interest Calculator", "/compound-interest-calculator/"],
     ["Savings Goal Calculator", "/savings-goal-calculator/"],
     ["Retirement Calculator", "/retirement-calculator/"],
+    ["Time Zone Converter", "/time-zone-converter/"],
     ["Scientific Calculator", "/scientific-calculator/"],
     ["Word Counter", "/word-counter/"],
     ["Case Converter", "/case-converter/"],
@@ -112,7 +113,7 @@ test("every shipped tool is an interactive card and footer link", async ({
 
   await page.goto("/es/");
   const gridEs = page.locator("#tools");
-  await expect(gridEs.getByText("Abrir herramienta")).toHaveCount(17);
+  await expect(gridEs.getByText("Abrir herramienta")).toHaveCount(18);
   await expect(gridEs.getByText("Próximamente")).toHaveCount(0);
   await expect(
     gridEs.getByRole("link", { name: "Conversor de unidades" }),

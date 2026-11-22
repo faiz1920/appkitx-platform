@@ -142,6 +142,8 @@ test("robots.txt and the sitemap are served with the intended routes", async ({
     "https://appkitx.com/es/savings-goal-calculator",
     "https://appkitx.com/retirement-calculator",
     "https://appkitx.com/es/retirement-calculator",
+    "https://appkitx.com/time-zone-converter",
+    "https://appkitx.com/es/time-zone-converter",
   ]) {
     expect(sitemapText).toContain(url);
   }
