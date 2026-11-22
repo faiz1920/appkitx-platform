@@ -1,0 +1,1652 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+import checkIcon from "lucide-static/icons/check.svg?raw";
+import copyIcon from "lucide-static/icons/copy.svg?raw";
+import ToggleSwitch from "./ToggleSwitch.astro";
+import {
+  defaultLocale,
+  getDictionary,
+  getLocale,
+  type LocaleCode,
+} from "../i18n/config";
+import { COMPOUNDING_FREQUENCIES } from "../lib/compound-interest";
+import { RETIREMENT_MODES } from "../lib/retirement";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.retirementCalculator;
+const localeMeta = getLocale(locale);
+
+const scriptStrings = {
+  calculator: t.calculator,
+  tool,
+  intlLocale: localeMeta.intlLocale,
+};
+---
+
+<div data-retirement-calculator data-i18n={JSON.stringify(scriptStrings)}>
+  <form novalidate data-calculator-form>
+    <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)">
+      <div class="space-y-5">
+        <fieldset class="min-w-0" aria-describedby="retirement-mode-hint">
+          <legend class="text-label text-text-primary">
+            {tool.modeLegend}
+          </legend>
+          <div class="segmented mt-2">
+            {RETIREMENT_MODES.map((mode) => (
+              <label>
+                <input
+                  type="radio"
+                  name="retirementMode"
+                  value={mode}
+                  class="sr-only"
+                  checked={mode === "projection"}
+                />
+                {tool.modes[mode].optionLabel}
+              </label>
+            ))}
+          </div>
+          <p
+            id="retirement-mode-hint"
+            class="mt-1 text-caption text-text-muted"
+            data-mode-hint
+          >
+            {tool.modes.projection.hint}
+          </p>
+        </fieldset>
+
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <div>
+            <label
+              for="retirement-input-current-age"
+              class="text-label text-text-primary"
+            >
+              {tool.currentAgeLabel}
+            </label>
+            <input
+              id="retirement-input-current-age"
+              name="currentAge"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              spellcheck="false"
+              class="input mt-2 font-mono tabular-nums"
+              aria-describedby="retirement-hint-current-age retirement-error-current-age"
+              data-input-current-age
+            />
+            <p
+              id="retirement-hint-current-age"
+              class="mt-1 text-caption text-text-muted"
+            >
+              {tool.currentAgeHint}
+            </p>
+            <p
+              id="retirement-error-current-age"
+              class="field-error mt-1"
+              role="alert"
+              aria-atomic="true"
+              hidden
+              data-error-current-age
+            >
+              <span aria-hidden="true" set:html={alertIcon} />
+              <span data-error-text-current-age></span>
+            </p>
+          </div>
+
+          <div>
+            <label
+              for="retirement-input-retirement-age"
+              class="text-label text-text-primary"
+            >
+              {tool.retirementAgeLabel}
+            </label>
+            <input
+              id="retirement-input-retirement-age"
+              name="retirementAge"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              spellcheck="false"
+              class="input mt-2 font-mono tabular-nums"
+              aria-describedby="retirement-hint-retirement-age retirement-error-retirement-age"
+              data-input-retirement-age
+            />
+            <p
+              id="retirement-hint-retirement-age"
+              class="mt-1 text-caption text-text-muted"
+            >
+              {tool.retirementAgeHint}
+            </p>
+            <p
+              id="retirement-error-retirement-age"
+              class="field-error mt-1"
+              role="alert"
+              aria-atomic="true"
+              hidden
+              data-error-retirement-age
+            >
+              <span aria-hidden="true" set:html={alertIcon} />
+              <span data-error-text-retirement-age></span>
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <label
+            for="retirement-input-current-savings"
+            class="text-label text-text-primary"
+          >
+            {tool.currentSavingsLabel}
+          </label>
+          <input
+            id="retirement-input-current-savings"
+            name="currentSavings"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            spellcheck="false"
+            class="input mt-2 font-mono tabular-nums"
+            aria-describedby="retirement-hint-current-savings retirement-error-current-savings"
+            data-input-current-savings
+          />
+          <p
+            id="retirement-hint-current-savings"
+            class="mt-1 text-caption text-text-muted"
+          >
+            {tool.currentSavingsHint}
+          </p>
+          <p
+            id="retirement-error-current-savings"
+            class="field-error mt-1"
+            role="alert"
+            aria-atomic="true"
+            hidden
+            data-error-current-savings
+          >
+            <span aria-hidden="true" set:html={alertIcon} />
+            <span data-error-text-current-savings></span>
+          </p>
+        </div>
+
+        <div data-fields-projection>
+          <label
+            for="retirement-input-contribution"
+            class="text-label text-text-primary"
+          >
+            {tool.contributionLabel}
+          </label>
+          <input
+            id="retirement-input-contribution"
+            name="monthlyContribution"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            spellcheck="false"
+            class="input mt-2 font-mono tabular-nums"
+            aria-describedby="retirement-hint-contribution retirement-error-contribution"
+            data-input-contribution
+          />
+          <p
+            id="retirement-hint-contribution"
+            class="mt-1 text-caption text-text-muted"
+          >
+            {tool.contributionHint}
+          </p>
+          <p
+            id="retirement-error-contribution"
+            class="field-error mt-1"
+            role="alert"
+            aria-atomic="true"
+            hidden
+            data-error-contribution
+          >
+            <span aria-hidden="true" set:html={alertIcon} />
+            <span data-error-text-contribution></span>
+          </p>
+        </div>
+
+        <div data-fields-required hidden>
+          <label
+            for="retirement-input-target"
+            class="text-label text-text-primary"
+          >
+            {tool.targetLabel}
+          </label>
+          <input
+            id="retirement-input-target"
+            name="targetCorpus"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            spellcheck="false"
+            class="input mt-2 font-mono tabular-nums"
+            aria-describedby="retirement-hint-target retirement-error-target"
+            data-input-target
+          />
+          <p
+            id="retirement-hint-target"
+            class="mt-1 text-caption text-text-muted"
+          >
+            {tool.targetHint}
+          </p>
+          <p
+            id="retirement-error-target"
+            class="field-error mt-1"
+            role="alert"
+            aria-atomic="true"
+            hidden
+            data-error-target
+          >
+            <span aria-hidden="true" set:html={alertIcon} />
+            <span data-error-text-target></span>
+          </p>
+        </div>
+
+        <div class="border-t border-border-subtle pt-5">
+          <h2 class="text-label text-text-primary">
+            {tool.assumptionsHeading}
+          </h2>
+          <div class="mt-4 space-y-5">
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <div>
+                <label
+                  for="retirement-input-rate"
+                  class="text-label text-text-primary"
+                >
+                  {tool.rateLabel}
+                </label>
+                <input
+                  id="retirement-input-rate"
+                  name="rate"
+                  type="text"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  spellcheck="false"
+                  class="input mt-2 font-mono tabular-nums"
+                  aria-describedby="retirement-hint-rate retirement-error-rate"
+                  data-input-rate
+                />
+                <p
+                  id="retirement-hint-rate"
+                  class="mt-1 text-caption text-text-muted"
+                >
+                  {tool.rateHint}
+                </p>
+                <p
+                  id="retirement-error-rate"
+                  class="field-error mt-1"
+                  role="alert"
+                  aria-atomic="true"
+                  hidden
+                  data-error-rate
+                >
+                  <span aria-hidden="true" set:html={alertIcon} />
+                  <span data-error-text-rate></span>
+                </p>
+              </div>
+
+              <div>
+                <label
+                  for="retirement-input-inflation"
+                  class="text-label text-text-primary"
+                >
+                  {tool.inflationLabel}
+                </label>
+                <input
+                  id="retirement-input-inflation"
+                  name="inflation"
+                  type="text"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  spellcheck="false"
+                  class="input mt-2 font-mono tabular-nums"
+                  aria-describedby="retirement-hint-inflation retirement-error-inflation"
+                  data-input-inflation
+                />
+                <p
+                  id="retirement-hint-inflation"
+                  class="mt-1 text-caption text-text-muted"
+                >
+                  {tool.inflationHint}
+                </p>
+                <p
+                  id="retirement-error-inflation"
+                  class="field-error mt-1"
+                  role="alert"
+                  aria-atomic="true"
+                  hidden
+                  data-error-inflation
+                >
+                  <span aria-hidden="true" set:html={alertIcon} />
+                  <span data-error-text-inflation></span>
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="retirement-input-frequency"
+                class="text-label text-text-primary"
+              >
+                {tool.frequencyLabel}
+              </label>
+              <select
+                id="retirement-input-frequency"
+                name="frequency"
+                class="input mt-2"
+                aria-describedby="retirement-hint-frequency"
+                data-input-frequency
+              >
+                {COMPOUNDING_FREQUENCIES.map((frequency) => (
+                  <option value={frequency} selected={frequency === "monthly"}>
+                    {tool.frequencies[frequency]}
+                  </option>
+                ))}
+              </select>
+              <p
+                id="retirement-hint-frequency"
+                class="mt-1 text-caption text-text-muted"
+              >
+                {tool.frequencyHint}
+              </p>
+            </div>
+
+            <ToggleSwitch
+              name="retirementContributionTiming"
+              label={tool.timingLabel}
+              hint={tool.timingHint}
+            />
+          </div>
+        </div>
+
+        <p
+          class="field-error"
+          role="alert"
+          aria-atomic="true"
+          hidden
+          data-error-general
+        >
+          <span aria-hidden="true" set:html={alertIcon} />
+          <span data-error-text-general></span>
+        </p>
+      </div>
+
+      <div class="mt-6">
+        <button type="submit" class="btn btn-primary w-full">
+          {t.calculator.calculate}
+        </button>
+        <button type="button" class="btn btn-secondary mt-3 w-full" data-reset>
+          {t.calculator.reset}
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div
+    class="relative mt-6 rounded-lg bg-accent-subtle p-(--layout-card-padding)"
+    aria-live="polite"
+    data-result-region
+  >
+    <p class="text-overline text-text-secondary uppercase">
+      {t.calculator.resultLabel}
+    </p>
+    <div class="mt-2 pr-14">
+      <p class="text-caption text-text-secondary" data-primary-label>
+        {tool.projectedCorpusLabel}
+      </p>
+      <p class="mt-1 text-mono-result text-text-disabled" data-primary-value>
+        —
+      </p>
+    </div>
+
+    <div
+      class="mt-4 grid grid-cols-1 gap-4 pr-14 sm:grid-cols-2"
+      data-result-projection
+    >
+      <div>
+        <p class="text-caption text-text-secondary">{tool.investedLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-invested
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">{tool.interestLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-interest
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">{tool.yearsLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-years-projection
+        >
+          —
+        </p>
+      </div>
+      <div data-real-corpus-wrap hidden>
+        <p class="text-caption text-text-secondary">{tool.realValueLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-real-corpus
+        >
+          —
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="mt-4 grid grid-cols-1 gap-4 pr-14 sm:grid-cols-2"
+      data-result-required
+      hidden
+    >
+      <div>
+        <p class="text-caption text-text-secondary">{tool.targetResultLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-target
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">
+          {tool.currentResultLabel}
+        </p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-current
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">
+          {tool.contributionsLabel}
+        </p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-contributions
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">{tool.investedLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-invested-required
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">{tool.interestLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-interest-required
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">
+          {tool.projectedResultLabel}
+        </p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-projected-required
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">{tool.yearsLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-years-required
+        >
+          —
+        </p>
+      </div>
+      <div data-real-target-wrap hidden>
+        <p class="text-caption text-text-secondary">{tool.realTargetLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-real-target
+        >
+          —
+        </p>
+      </div>
+      <div data-real-projected-wrap hidden>
+        <p class="text-caption text-text-secondary">{tool.realValueLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-real-projected
+        >
+          —
+        </p>
+      </div>
+    </div>
+
+    <p
+      class="mt-3 flex items-start gap-1.5 text-small text-success"
+      hidden
+      data-success-message
+    >
+      <span
+        class="mt-0.5 h-4 w-4 shrink-0 [&_svg]:h-4 [&_svg]:w-4"
+        aria-hidden="true"
+        set:html={checkIcon}
+      />
+      <span data-success-text></span>
+    </p>
+
+    <p class="mt-3 pr-14 text-caption text-text-muted" data-result-caption>
+      {t.calculator.resultsPlaceholder}
+    </p>
+    <p
+      class="mt-2 flex items-center gap-1.5 text-caption text-success"
+      hidden
+      data-copy-status-success
+    >
+      <span
+        class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+        aria-hidden="true"
+        set:html={checkIcon}
+      />
+      {t.calculator.copied}
+    </p>
+    <p
+      class="mt-2 flex items-center gap-1.5 text-caption text-error"
+      hidden
+      data-copy-status-error
+    >
+      <span
+        class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+        aria-hidden="true"
+        set:html={alertIcon}
+      />
+      {t.calculator.copyFailed}
+    </p>
+    <button
+      type="button"
+      class="btn btn-ghost absolute top-3 right-3 w-11 px-0"
+      aria-label={tool.copySummary}
+      disabled
+      data-copy
+    >
+      <span
+        class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        data-copy-idle
+        set:html={copyIcon}
+      />
+      <span
+        class="h-5 w-5 text-success [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        hidden
+        data-copy-done
+        set:html={checkIcon}
+      />
+    </button>
+  </div>
+
+  <p class="mt-4 text-small text-text-secondary">
+    {t.calculator.formulaLabel}{" "}
+    <code class="inline-code" data-formula>
+      {tool.formulas.projection.template}
+    </code>
+  </p>
+
+  <section class="mt-8" aria-labelledby="retirement-projection-heading">
+    <h2 id="retirement-projection-heading" class="text-title text-text-primary">
+      {tool.growthHeading}
+    </h2>
+    <p class="mt-1 text-small text-text-secondary">{tool.growthHint}</p>
+    <p class="mt-3 text-small text-text-muted" data-growth-empty>
+      {tool.growthEmpty}
+    </p>
+    <div
+      class="mt-4 overflow-x-auto focus-ring"
+      role="region"
+      tabindex="0"
+      aria-label={tool.growthScrollLabel}
+      data-growth
+      hidden
+    ></div>
+  </section>
+</div>
+
+<script>
+  import {
+    MAX_CURRENT_AGE,
+    MAX_RETIREMENT_AGE,
+    MIN_CURRENT_AGE,
+    MIN_RETIREMENT_AGE,
+    calculateRequiredRetirementSavings,
+    calculateRetirementProjection,
+    formatRetirementDecimal,
+    formatRetirementMoney,
+    isCompoundingFrequency,
+    isContributionTiming,
+    type ContributionTiming,
+    type RetirementIssue,
+    type RetirementMode,
+    type RetirementYear,
+  } from "../lib/retirement";
+  import { parseLocaleNumber } from "../lib/number-input";
+  import { interpolate } from "../i18n/interpolate";
+  import type {
+    CalculatorStrings,
+    RetirementToolStrings,
+  } from "../i18n/dictionary";
+
+  const root = document.querySelector<HTMLElement>(
+    "[data-retirement-calculator]",
+  );
+
+  if (root) {
+    const i18n: {
+      calculator: CalculatorStrings;
+      tool: RetirementToolStrings;
+      intlLocale: string;
+    } = JSON.parse(root.dataset.i18n ?? "{}");
+
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`Retirement calculator: missing ${selector}`);
+      return el;
+    };
+
+    const form = requireEl<HTMLFormElement>("[data-calculator-form]");
+    const modeRadios = Array.from(
+      root.querySelectorAll<HTMLInputElement>('input[name="retirementMode"]'),
+    );
+    if (modeRadios.length === 0) {
+      throw new Error("Retirement calculator: missing mode radios");
+    }
+    const modeHint = requireEl<HTMLElement>("[data-mode-hint]");
+    const fieldsProjection = requireEl<HTMLElement>("[data-fields-projection]");
+    const fieldsRequired = requireEl<HTMLElement>("[data-fields-required]");
+    const inputCurrentAge = requireEl<HTMLInputElement>(
+      "[data-input-current-age]",
+    );
+    const inputRetirementAge = requireEl<HTMLInputElement>(
+      "[data-input-retirement-age]",
+    );
+    const inputCurrentSavings = requireEl<HTMLInputElement>(
+      "[data-input-current-savings]",
+    );
+    const inputContribution = requireEl<HTMLInputElement>(
+      "[data-input-contribution]",
+    );
+    const inputTarget = requireEl<HTMLInputElement>("[data-input-target]");
+    const inputRate = requireEl<HTMLInputElement>("[data-input-rate]");
+    const inputInflation = requireEl<HTMLInputElement>(
+      "[data-input-inflation]",
+    );
+    const inputFrequency = requireEl<HTMLSelectElement>(
+      "[data-input-frequency]",
+    );
+    const inputTiming = requireEl<HTMLInputElement>(
+      "#retirementContributionTiming",
+    );
+
+    const errorCurrentAge = requireEl<HTMLElement>("[data-error-current-age]");
+    const errorTextCurrentAge = requireEl<HTMLElement>(
+      "[data-error-text-current-age]",
+    );
+    const errorRetirementAge = requireEl<HTMLElement>(
+      "[data-error-retirement-age]",
+    );
+    const errorTextRetirementAge = requireEl<HTMLElement>(
+      "[data-error-text-retirement-age]",
+    );
+    const errorCurrentSavings = requireEl<HTMLElement>(
+      "[data-error-current-savings]",
+    );
+    const errorTextCurrentSavings = requireEl<HTMLElement>(
+      "[data-error-text-current-savings]",
+    );
+    const errorContribution = requireEl<HTMLElement>(
+      "[data-error-contribution]",
+    );
+    const errorTextContribution = requireEl<HTMLElement>(
+      "[data-error-text-contribution]",
+    );
+    const errorTarget = requireEl<HTMLElement>("[data-error-target]");
+    const errorTextTarget = requireEl<HTMLElement>("[data-error-text-target]");
+    const errorRate = requireEl<HTMLElement>("[data-error-rate]");
+    const errorTextRate = requireEl<HTMLElement>("[data-error-text-rate]");
+    const errorInflation = requireEl<HTMLElement>("[data-error-inflation]");
+    const errorTextInflation = requireEl<HTMLElement>(
+      "[data-error-text-inflation]",
+    );
+    const errorGeneral = requireEl<HTMLElement>("[data-error-general]");
+    const errorTextGeneral = requireEl<HTMLElement>(
+      "[data-error-text-general]",
+    );
+
+    const primaryLabel = requireEl<HTMLElement>("[data-primary-label]");
+    const primaryValue = requireEl<HTMLElement>("[data-primary-value]");
+    const resultProjection = requireEl<HTMLElement>("[data-result-projection]");
+    const resultRequired = requireEl<HTMLElement>("[data-result-required]");
+    const investedEl = requireEl<HTMLElement>("[data-invested]");
+    const interestEl = requireEl<HTMLElement>("[data-interest]");
+    const yearsProjectionEl = requireEl<HTMLElement>("[data-years-projection]");
+    const realCorpusWrap = requireEl<HTMLElement>("[data-real-corpus-wrap]");
+    const realCorpusEl = requireEl<HTMLElement>("[data-real-corpus]");
+    const targetEl = requireEl<HTMLElement>("[data-target]");
+    const currentEl = requireEl<HTMLElement>("[data-current]");
+    const contributionsEl = requireEl<HTMLElement>("[data-contributions]");
+    const investedRequiredEl = requireEl<HTMLElement>(
+      "[data-invested-required]",
+    );
+    const interestRequiredEl = requireEl<HTMLElement>(
+      "[data-interest-required]",
+    );
+    const projectedRequiredEl = requireEl<HTMLElement>(
+      "[data-projected-required]",
+    );
+    const yearsRequiredEl = requireEl<HTMLElement>("[data-years-required]");
+    const realTargetWrap = requireEl<HTMLElement>("[data-real-target-wrap]");
+    const realTargetEl = requireEl<HTMLElement>("[data-real-target]");
+    const realProjectedWrap = requireEl<HTMLElement>(
+      "[data-real-projected-wrap]",
+    );
+    const realProjectedEl = requireEl<HTMLElement>("[data-real-projected]");
+
+    const successMessage = requireEl<HTMLElement>("[data-success-message]");
+    const successText = requireEl<HTMLElement>("[data-success-text]");
+    const resultCaption = requireEl<HTMLElement>("[data-result-caption]");
+    const formulaEl = requireEl<HTMLElement>("[data-formula]");
+    const copyButton = requireEl<HTMLButtonElement>("[data-copy]");
+    const copyIdle = requireEl<HTMLElement>("[data-copy-idle]");
+    const copyDone = requireEl<HTMLElement>("[data-copy-done]");
+    const copyStatusSuccess = requireEl<HTMLElement>(
+      "[data-copy-status-success]",
+    );
+    const copyStatusError = requireEl<HTMLElement>("[data-copy-status-error]");
+    const resetButton = requireEl<HTMLButtonElement>("[data-reset]");
+    const growth = requireEl<HTMLElement>("[data-growth]");
+    const growthEmpty = requireEl<HTMLElement>("[data-growth-empty]");
+
+    const intlLocale = i18n.intlLocale;
+    const tool = i18n.tool;
+
+    const ALL_RESULT_VALUES = [
+      investedEl,
+      interestEl,
+      yearsProjectionEl,
+      realCorpusEl,
+      targetEl,
+      currentEl,
+      contributionsEl,
+      investedRequiredEl,
+      interestRequiredEl,
+      projectedRequiredEl,
+      yearsRequiredEl,
+      realTargetEl,
+      realProjectedEl,
+    ] as const;
+
+    let copyTimer: number | undefined;
+    let copyBusy = false;
+    let lastCopyText = "";
+    let resultGeneration = 0;
+
+    const currentMode = (): RetirementMode => {
+      const checked = modeRadios.find((radio) => radio.checked);
+      return checked?.value === "required" ? "required" : "projection";
+    };
+
+    const setText = (element: HTMLElement, value: string) => {
+      if (element.textContent !== value) element.textContent = value;
+    };
+
+    const formatMoney = (value: number) =>
+      formatRetirementMoney(value, intlLocale);
+
+    const formatDecimal = (value: number) =>
+      formatRetirementDecimal(value, intlLocale);
+
+    const formatYears = (years: number) =>
+      interpolate(years === 1 ? tool.yearValue : tool.yearsValue, {
+        count: formatDecimal(years),
+      });
+
+    const resetCopyFeedback = () => {
+      window.clearTimeout(copyTimer);
+      copyIdle.hidden = false;
+      copyDone.hidden = true;
+      copyStatusSuccess.hidden = true;
+      copyStatusError.hidden = true;
+    };
+
+    const hideError = (
+      input: HTMLInputElement,
+      wrap: HTMLElement,
+      text: HTMLElement,
+    ) => {
+      if (
+        wrap.hidden &&
+        text.textContent === "" &&
+        !input.hasAttribute("aria-invalid")
+      ) {
+        return;
+      }
+      wrap.hidden = true;
+      text.textContent = "";
+      input.removeAttribute("aria-invalid");
+    };
+
+    const showError = (
+      input: HTMLInputElement,
+      wrap: HTMLElement,
+      text: HTMLElement,
+      message: string,
+    ) => {
+      if (input.getAttribute("aria-invalid") !== "true") {
+        input.setAttribute("aria-invalid", "true");
+      }
+      if (!wrap.hidden && text.textContent === message) return;
+      text.textContent = message;
+      wrap.hidden = false;
+    };
+
+    const hideGeneralError = () => {
+      if (errorGeneral.hidden && errorTextGeneral.textContent === "") return;
+      errorGeneral.hidden = true;
+      errorTextGeneral.textContent = "";
+    };
+
+    const showGeneralError = (message: string) => {
+      if (!errorGeneral.hidden && errorTextGeneral.textContent === message) {
+        return;
+      }
+      errorTextGeneral.textContent = message;
+      errorGeneral.hidden = false;
+    };
+
+    const clearErrors = () => {
+      hideError(inputCurrentAge, errorCurrentAge, errorTextCurrentAge);
+      hideError(inputRetirementAge, errorRetirementAge, errorTextRetirementAge);
+      hideError(
+        inputCurrentSavings,
+        errorCurrentSavings,
+        errorTextCurrentSavings,
+      );
+      hideError(inputContribution, errorContribution, errorTextContribution);
+      hideError(inputTarget, errorTarget, errorTextTarget);
+      hideError(inputRate, errorRate, errorTextRate);
+      hideError(inputInflation, errorInflation, errorTextInflation);
+      hideGeneralError();
+    };
+
+    const modeResultVisibility = () => {
+      const mode = currentMode();
+      resultProjection.hidden = mode !== "projection";
+      resultRequired.hidden = mode !== "required";
+    };
+
+    const showEmptyResult = () => {
+      resultGeneration += 1;
+      lastCopyText = "";
+      resetCopyFeedback();
+      for (const element of ALL_RESULT_VALUES) {
+        setText(element, "—");
+        element.classList.replace("text-text-primary", "text-text-disabled");
+      }
+      setText(primaryValue, "—");
+      primaryValue.classList.replace("text-text-primary", "text-text-disabled");
+      successMessage.hidden = true;
+      successText.textContent = "";
+      realCorpusWrap.hidden = true;
+      realTargetWrap.hidden = true;
+      realProjectedWrap.hidden = true;
+      setText(resultCaption, i18n.calculator.resultsPlaceholder);
+      setText(formulaEl, tool.formulas[currentMode()].template);
+      copyButton.disabled = true;
+      growth.textContent = "";
+      growth.hidden = true;
+      growthEmpty.hidden = false;
+      modeResultVisibility();
+    };
+
+    const invalidateResult = () => {
+      clearErrors();
+      showEmptyResult();
+    };
+
+    const applyMode = () => {
+      const mode = currentMode();
+      fieldsProjection.hidden = mode !== "projection";
+      fieldsRequired.hidden = mode !== "required";
+      setText(modeHint, tool.modes[mode].hint);
+      setText(
+        primaryLabel,
+        mode === "projection"
+          ? tool.projectedCorpusLabel
+          : tool.requiredMonthlyLabel,
+      );
+      setText(formulaEl, tool.formulas[mode].template);
+    };
+
+    const errorMessage = (issue: "invalid" | "ambiguous") =>
+      issue === "ambiguous"
+        ? i18n.calculator.ambiguousNumber
+        : i18n.calculator.invalidNumber;
+
+    const issueField = (
+      issue: RetirementIssue,
+    ):
+      | "currentAge"
+      | "retirementAge"
+      | "currentSavings"
+      | "contribution"
+      | "target"
+      | "rate"
+      | "inflation"
+      | null => {
+      if (issue === "invalid-current-age") return "currentAge";
+      if (
+        issue === "invalid-retirement-age" ||
+        issue === "retirement-before-current"
+      ) {
+        return "retirementAge";
+      }
+      if (issue === "invalid-savings") return "currentSavings";
+      if (issue === "invalid-contribution") return "contribution";
+      if (issue === "invalid-target") return "target";
+      if (issue === "invalid-rate") return "rate";
+      if (issue === "invalid-inflation") return "inflation";
+      return null;
+    };
+
+    const renderIssue = (issue: RetirementIssue) => {
+      const field = issueField(issue);
+      if (field === "currentAge") {
+        showError(
+          inputCurrentAge,
+          errorCurrentAge,
+          errorTextCurrentAge,
+          tool.errors.currentAge,
+        );
+      } else if (field === "retirementAge") {
+        showError(
+          inputRetirementAge,
+          errorRetirementAge,
+          errorTextRetirementAge,
+          issue === "retirement-before-current"
+            ? tool.errors.retirementOrder
+            : tool.errors.retirementAge,
+        );
+      } else if (field === "currentSavings") {
+        showError(
+          inputCurrentSavings,
+          errorCurrentSavings,
+          errorTextCurrentSavings,
+          tool.errors.savings,
+        );
+      } else if (field === "contribution") {
+        showError(
+          inputContribution,
+          errorContribution,
+          errorTextContribution,
+          tool.errors.contribution,
+        );
+      } else if (field === "target") {
+        showError(
+          inputTarget,
+          errorTarget,
+          errorTextTarget,
+          tool.errors.target,
+        );
+      } else if (field === "rate") {
+        showError(inputRate, errorRate, errorTextRate, tool.errors.rate);
+      } else if (field === "inflation") {
+        showError(
+          inputInflation,
+          errorInflation,
+          errorTextInflation,
+          tool.errors.inflation,
+        );
+      } else if (issue === "invalid-frequency") {
+        showGeneralError(tool.errors.frequency);
+      } else if (issue === "invalid-timing") {
+        showGeneralError(tool.errors.timing);
+      } else if (issue === "no-investment") {
+        showGeneralError(tool.errors.noInvestment);
+      } else {
+        showGeneralError(tool.errors.overflow);
+      }
+    };
+
+    const revealCell = (element: HTMLElement, value: string) => {
+      setText(element, value);
+      element.classList.replace("text-text-disabled", "text-text-primary");
+    };
+
+    const renderAnnualRows = (rows: readonly RetirementYear[]) => {
+      growth.textContent = "";
+      growthEmpty.hidden = true;
+      growth.hidden = false;
+
+      const table = document.createElement("table");
+      table.className = "w-full min-w-[720px] text-small";
+
+      const caption = document.createElement("caption");
+      caption.className = "sr-only";
+      caption.textContent = tool.tableCaption;
+      table.append(caption);
+
+      const thead = document.createElement("thead");
+      const headerRow = document.createElement("tr");
+      const headers = [
+        { label: tool.tableHeaders.age, align: "left" },
+        { label: tool.tableHeaders.year, align: "left" },
+        { label: tool.tableHeaders.openingBalance, align: "right" },
+        { label: tool.tableHeaders.contributions, align: "right" },
+        { label: tool.tableHeaders.interest, align: "right" },
+        { label: tool.tableHeaders.closingBalance, align: "right" },
+      ] as const;
+      for (const header of headers) {
+        const th = document.createElement("th");
+        th.scope = "col";
+        th.className = `border-b border-border-subtle px-2 py-2 ${
+          header.align === "right" ? "text-right" : "text-left"
+        } font-medium text-text-secondary`;
+        th.textContent = header.label;
+        headerRow.append(th);
+      }
+      thead.append(headerRow);
+      table.append(thead);
+
+      const tbody = document.createElement("tbody");
+      for (const row of rows) {
+        const tr = document.createElement("tr");
+        tr.className = "border-b border-border-subtle last:border-0";
+        tr.dataset.year = String(row.year);
+        tr.dataset.age = String(row.age);
+
+        const ageCell = document.createElement("th");
+        ageCell.scope = "row";
+        ageCell.className =
+          "px-2 py-2 text-left font-mono text-small text-text-secondary";
+        ageCell.textContent = interpolate(tool.ageLabel, {
+          age: formatDecimal(row.age),
+        });
+        tr.append(ageCell);
+
+        const yearCell = document.createElement("td");
+        yearCell.className =
+          "px-2 py-2 text-left font-mono text-small tabular-nums text-text-secondary";
+        yearCell.textContent = formatDecimal(row.year);
+        tr.append(yearCell);
+
+        for (const value of [
+          row.openingBalance,
+          row.contributions,
+          row.interest,
+          row.closingBalance,
+        ]) {
+          const cell = document.createElement("td");
+          cell.className =
+            "px-2 py-2 text-right font-mono text-small tabular-nums text-text-primary";
+          cell.textContent = formatMoney(value);
+          tr.append(cell);
+        }
+
+        tbody.append(tr);
+      }
+      table.append(tbody);
+      growth.append(table);
+    };
+
+    const renderProjection = (
+      result: Extract<
+        ReturnType<typeof calculateRetirementProjection>,
+        { ok: true }
+      >["value"],
+    ) => {
+      clearErrors();
+      resultGeneration += 1;
+      resetCopyFeedback();
+      modeResultVisibility();
+
+      const corpus = formatMoney(result.projectedCorpus);
+      const invested = formatMoney(result.totalInvested);
+      const growthValue = formatMoney(result.investmentGrowth);
+      const years = formatYears(result.years);
+      const rate = formatDecimal(result.annualRatePercent);
+
+      revealCell(primaryValue, corpus);
+      revealCell(investedEl, invested);
+      revealCell(interestEl, growthValue);
+      revealCell(yearsProjectionEl, years);
+
+      const realCorpus =
+        result.inflationAdjustedCorpus === null
+          ? null
+          : formatMoney(result.inflationAdjustedCorpus);
+      realCorpusWrap.hidden = realCorpus === null;
+      if (realCorpus !== null) revealCell(realCorpusEl, realCorpus);
+
+      successMessage.hidden = true;
+      successText.textContent = "";
+
+      setText(
+        resultCaption,
+        interpolate(tool.captionProjection, {
+          corpus,
+          age: formatDecimal(result.retirementAge),
+        }),
+      );
+      setText(
+        formulaEl,
+        interpolate(tool.formulas.projection.describe, {
+          rate,
+          monthlyRate: formatDecimal(result.monthlyRate * 100),
+        }),
+      );
+
+      let copyText = interpolate(tool.copyTextProjection, {
+        currentAge: formatDecimal(result.currentAge),
+        retirementAge: formatDecimal(result.retirementAge),
+        current: formatMoney(result.currentSavings),
+        contribution: formatMoney(result.monthlyContribution),
+        rate,
+        frequency: tool.frequencies[result.frequency],
+        duration: years,
+        timing: tool.timingValues[result.timing],
+        corpus,
+        invested,
+        growth: growthValue,
+      });
+      if (realCorpus !== null) {
+        copyText += `\n${interpolate(tool.copyRealLine, { value: realCorpus })}`;
+      }
+      lastCopyText = copyText;
+      copyButton.disabled = false;
+      renderAnnualRows(result.annualRows);
+    };
+
+    const renderRequired = (
+      result: Extract<
+        ReturnType<typeof calculateRequiredRetirementSavings>,
+        { ok: true }
+      >["value"],
+    ) => {
+      clearErrors();
+      resultGeneration += 1;
+      resetCopyFeedback();
+      modeResultVisibility();
+
+      const required = formatMoney(result.requiredMonthlySavings);
+      const target = formatMoney(result.targetCorpus);
+      const current = formatMoney(result.currentSavings);
+      const contributions = formatMoney(result.totalContributions);
+      const invested = formatMoney(result.totalInvested);
+      const growthValue = formatMoney(result.investmentGrowth);
+      const projected = formatMoney(result.projectedCorpus);
+      const years = formatYears(result.years);
+      const rate = formatDecimal(result.annualRatePercent);
+
+      revealCell(primaryValue, required);
+      revealCell(targetEl, target);
+      revealCell(currentEl, current);
+      revealCell(contributionsEl, contributions);
+      revealCell(investedRequiredEl, invested);
+      revealCell(interestRequiredEl, growthValue);
+      revealCell(projectedRequiredEl, projected);
+      revealCell(yearsRequiredEl, years);
+
+      const realTarget =
+        result.inflationAdjustedTarget === null
+          ? null
+          : formatMoney(result.inflationAdjustedTarget);
+      const realProjected =
+        result.inflationAdjustedCorpus === null
+          ? null
+          : formatMoney(result.inflationAdjustedCorpus);
+      realTargetWrap.hidden = realTarget === null;
+      realProjectedWrap.hidden = realProjected === null;
+      if (realTarget !== null) revealCell(realTargetEl, realTarget);
+      if (realProjected !== null) {
+        revealCell(realProjectedEl, realProjected);
+      }
+
+      if (result.alreadyCovered) {
+        setText(successText, tool.successAlreadyCovered);
+        successMessage.hidden = false;
+      } else if (result.noContributionRequired) {
+        setText(successText, tool.successInterestOnly);
+        successMessage.hidden = false;
+      } else {
+        successMessage.hidden = true;
+        successText.textContent = "";
+      }
+
+      setText(
+        resultCaption,
+        interpolate(tool.captionRequired, {
+          required,
+          target,
+          age: formatDecimal(result.retirementAge),
+        }),
+      );
+      setText(
+        formulaEl,
+        interpolate(tool.formulas.required.describe, {
+          rate,
+          monthlyRate: formatDecimal(result.monthlyRate * 100),
+        }),
+      );
+
+      let copyText = interpolate(tool.copyTextRequired, {
+        currentAge: formatDecimal(result.currentAge),
+        retirementAge: formatDecimal(result.retirementAge),
+        current,
+        target,
+        rate,
+        frequency: tool.frequencies[result.frequency],
+        duration: years,
+        timing: tool.timingValues[result.timing],
+        required,
+        contributions,
+        invested,
+        growth: growthValue,
+        corpus: projected,
+      });
+      if (realTarget !== null) {
+        copyText += `\n${interpolate(tool.copyRealTargetLine, {
+          value: realTarget,
+        })}`;
+      }
+      if (realProjected !== null) {
+        copyText += `\n${interpolate(tool.copyRealLine, {
+          value: realProjected,
+        })}`;
+      }
+      lastCopyText = copyText;
+      copyButton.disabled = false;
+      renderAnnualRows(result.annualRows);
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      resetCopyFeedback();
+
+      const mode = currentMode();
+      const currentAgeText = inputCurrentAge.value.trim();
+      const retirementAgeText = inputRetirementAge.value.trim();
+      const savingsText = inputCurrentSavings.value.trim();
+      const contributionText = inputContribution.value.trim();
+      const targetText = inputTarget.value.trim();
+      const rateText = inputRate.value.trim();
+      const inflationText = inputInflation.value.trim();
+      const frequency = inputFrequency.value;
+      const timing: ContributionTiming = inputTiming.checked
+        ? "beginning"
+        : "end";
+
+      let hasError = false;
+      let currentAge: number | null = null;
+      let retirementAge: number | null = null;
+      let currentSavings = 0;
+      let monthlyContribution = 0;
+      let targetCorpus = 0;
+      let annualRatePercent = 0;
+      let annualInflation: number | null = null;
+
+      const currentAgeParsed =
+        currentAgeText === ""
+          ? null
+          : parseLocaleNumber(currentAgeText, intlLocale);
+      if (currentAgeParsed === null) {
+        showError(
+          inputCurrentAge,
+          errorCurrentAge,
+          errorTextCurrentAge,
+          tool.errors.currentAge,
+        );
+        hasError = true;
+      } else if (!currentAgeParsed.ok) {
+        showError(
+          inputCurrentAge,
+          errorCurrentAge,
+          errorTextCurrentAge,
+          errorMessage(currentAgeParsed.issue),
+        );
+        hasError = true;
+      } else if (
+        !Number.isInteger(currentAgeParsed.value) ||
+        currentAgeParsed.value < MIN_CURRENT_AGE ||
+        currentAgeParsed.value > MAX_CURRENT_AGE
+      ) {
+        showError(
+          inputCurrentAge,
+          errorCurrentAge,
+          errorTextCurrentAge,
+          tool.errors.currentAge,
+        );
+        hasError = true;
+      } else {
+        currentAge = currentAgeParsed.value;
+        hideError(inputCurrentAge, errorCurrentAge, errorTextCurrentAge);
+      }
+
+      const retirementAgeParsed =
+        retirementAgeText === ""
+          ? null
+          : parseLocaleNumber(retirementAgeText, intlLocale);
+      if (retirementAgeParsed === null) {
+        showError(
+          inputRetirementAge,
+          errorRetirementAge,
+          errorTextRetirementAge,
+          tool.errors.retirementAge,
+        );
+        hasError = true;
+      } else if (!retirementAgeParsed.ok) {
+        showError(
+          inputRetirementAge,
+          errorRetirementAge,
+          errorTextRetirementAge,
+          errorMessage(retirementAgeParsed.issue),
+        );
+        hasError = true;
+      } else if (
+        !Number.isInteger(retirementAgeParsed.value) ||
+        retirementAgeParsed.value < MIN_RETIREMENT_AGE ||
+        retirementAgeParsed.value > MAX_RETIREMENT_AGE
+      ) {
+        showError(
+          inputRetirementAge,
+          errorRetirementAge,
+          errorTextRetirementAge,
+          tool.errors.retirementAge,
+        );
+        hasError = true;
+      } else {
+        retirementAge = retirementAgeParsed.value;
+        hideError(
+          inputRetirementAge,
+          errorRetirementAge,
+          errorTextRetirementAge,
+        );
+      }
+
+      if (
+        currentAge !== null &&
+        retirementAge !== null &&
+        retirementAge <= currentAge
+      ) {
+        showError(
+          inputRetirementAge,
+          errorRetirementAge,
+          errorTextRetirementAge,
+          tool.errors.retirementOrder,
+        );
+        hasError = true;
+      }
+
+      const savingsParsed =
+        savingsText === ""
+          ? ({ ok: true, value: 0 } as const)
+          : parseLocaleNumber(savingsText, intlLocale);
+      if (!savingsParsed.ok) {
+        showError(
+          inputCurrentSavings,
+          errorCurrentSavings,
+          errorTextCurrentSavings,
+          errorMessage(savingsParsed.issue),
+        );
+        hasError = true;
+      } else if (savingsParsed.value < 0) {
+        showError(
+          inputCurrentSavings,
+          errorCurrentSavings,
+          errorTextCurrentSavings,
+          tool.errors.savings,
+        );
+        hasError = true;
+      } else {
+        currentSavings = savingsParsed.value;
+        hideError(
+          inputCurrentSavings,
+          errorCurrentSavings,
+          errorTextCurrentSavings,
+        );
+      }
+
+      if (mode === "projection") {
+        const contributionParsed =
+          contributionText === ""
+            ? ({ ok: true, value: 0 } as const)
+            : parseLocaleNumber(contributionText, intlLocale);
+        if (!contributionParsed.ok) {
+          showError(
+            inputContribution,
+            errorContribution,
+            errorTextContribution,
+            errorMessage(contributionParsed.issue),
+          );
+          hasError = true;
+        } else if (contributionParsed.value < 0) {
+          showError(
+            inputContribution,
+            errorContribution,
+            errorTextContribution,
+            tool.errors.contribution,
+          );
+          hasError = true;
+        } else {
+          monthlyContribution = contributionParsed.value;
+          hideError(
+            inputContribution,
+            errorContribution,
+            errorTextContribution,
+          );
+        }
+      }
+
+      if (mode === "required") {
+        const targetParsed =
+          targetText === "" ? null : parseLocaleNumber(targetText, intlLocale);
+        if (targetParsed === null) {
+          showError(
+            inputTarget,
+            errorTarget,
+            errorTextTarget,
+            tool.errors.target,
+          );
+          hasError = true;
+        } else if (!targetParsed.ok) {
+          showError(
+            inputTarget,
+            errorTarget,
+            errorTextTarget,
+            errorMessage(targetParsed.issue),
+          );
+          hasError = true;
+        } else if (targetParsed.value <= 0) {
+          showError(
+            inputTarget,
+            errorTarget,
+            errorTextTarget,
+            tool.errors.target,
+          );
+          hasError = true;
+        } else {
+          targetCorpus = targetParsed.value;
+          hideError(inputTarget, errorTarget, errorTextTarget);
+        }
+      }
+
+      const rateParsed =
+        rateText === ""
+          ? ({ ok: true, value: 0 } as const)
+          : parseLocaleNumber(rateText, intlLocale);
+      if (!rateParsed.ok) {
+        showError(
+          inputRate,
+          errorRate,
+          errorTextRate,
+          errorMessage(rateParsed.issue),
+        );
+        hasError = true;
+      } else if (rateParsed.value < 0) {
+        showError(inputRate, errorRate, errorTextRate, tool.errors.rate);
+        hasError = true;
+      } else {
+        annualRatePercent = rateParsed.value;
+        hideError(inputRate, errorRate, errorTextRate);
+      }
+
+      const inflationParsed =
+        inflationText === ""
+          ? null
+          : parseLocaleNumber(inflationText, intlLocale);
+      if (inflationParsed !== null && !inflationParsed.ok) {
+        showError(
+          inputInflation,
+          errorInflation,
+          errorTextInflation,
+          errorMessage(inflationParsed.issue),
+        );
+        hasError = true;
+      } else if (inflationParsed !== null && inflationParsed.value < 0) {
+        showError(
+          inputInflation,
+          errorInflation,
+          errorTextInflation,
+          tool.errors.inflation,
+        );
+        hasError = true;
+      } else {
+        annualInflation = inflationParsed?.value ?? null;
+        hideError(inputInflation, errorInflation, errorTextInflation);
+      }
+
+      hideGeneralError();
+
+      if (hasError || currentAge === null || retirementAge === null) {
+        showEmptyResult();
+        return;
+      }
+
+      if (!isCompoundingFrequency(frequency)) {
+        showGeneralError(tool.errors.frequency);
+        showEmptyResult();
+        return;
+      }
+      if (!isContributionTiming(timing)) {
+        showGeneralError(tool.errors.timing);
+        showEmptyResult();
+        return;
+      }
+
+      const base = {
+        currentAge,
+        retirementAge,
+        currentSavings,
+        annualRatePercent,
+        frequency,
+        timing,
+        annualInflationPercent: annualInflation,
+      };
+
+      if (mode === "projection") {
+        const calculation = calculateRetirementProjection({
+          ...base,
+          monthlyContribution,
+        });
+        if (!calculation.ok) {
+          renderIssue(calculation.issue);
+          showEmptyResult();
+          return;
+        }
+        renderProjection(calculation.value);
+        return;
+      }
+
+      const calculation = calculateRequiredRetirementSavings({
+        ...base,
+        targetCorpus,
+      });
+      if (!calculation.ok) {
+        renderIssue(calculation.issue);
+        showEmptyResult();
+        return;
+      }
+      renderRequired(calculation.value);
+    });
+
+    for (const input of [
+      inputCurrentAge,
+      inputRetirementAge,
+      inputCurrentSavings,
+      inputContribution,
+      inputTarget,
+      inputRate,
+      inputInflation,
+    ]) {
+      input.addEventListener("input", invalidateResult);
+    }
+    inputFrequency.addEventListener("change", invalidateResult);
+    inputTiming.addEventListener("change", invalidateResult);
+    for (const radio of modeRadios) {
+      radio.addEventListener("change", () => {
+        applyMode();
+        invalidateResult();
+      });
+    }
+
+    resetButton.addEventListener("click", () => {
+      form.reset();
+      applyMode();
+      clearErrors();
+      showEmptyResult();
+      inputCurrentAge.focus();
+    });
+
+    copyButton.addEventListener("click", async () => {
+      if (!lastCopyText || copyBusy) return;
+      copyBusy = true;
+      const generation = resultGeneration;
+      resetCopyFeedback();
+      try {
+        await navigator.clipboard.writeText(lastCopyText);
+        if (generation !== resultGeneration) return;
+        copyIdle.hidden = true;
+        copyDone.hidden = false;
+        copyStatusSuccess.hidden = false;
+        copyTimer = window.setTimeout(() => {
+          copyIdle.hidden = false;
+          copyDone.hidden = true;
+          copyStatusSuccess.hidden = true;
+        }, 2000);
+      } catch {
+        if (generation !== resultGeneration) return;
+        copyStatusError.hidden = false;
+      } finally {
+        copyBusy = false;
+      }
+    });
+
+    applyMode();
+    showEmptyResult();
+  }
+</script>

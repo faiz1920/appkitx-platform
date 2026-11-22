@@ -318,6 +318,7 @@ test("localized pages and the switcher keep layout at 320px", async ({
     "/es/emi-calculator/",
     "/es/compound-interest-calculator/",
     "/es/savings-goal-calculator/",
+    "/es/retirement-calculator/",
   ]) {
     await page.goto(path);
     const overflow = await page.evaluate(

@@ -89,6 +89,7 @@ test("English URLs stay unprefixed and Spanish keeps its prefix", async () => {
       "/emi-calculator",
       "/compound-interest-calculator",
       "/savings-goal-calculator",
+      "/retirement-calculator",
     ]),
   );
 });

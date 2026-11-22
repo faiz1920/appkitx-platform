@@ -14,6 +14,7 @@ import type {
   DurationUnit,
 } from "../lib/compound-interest";
 import type { SpeedUnit } from "../lib/speed";
+import type { RetirementMode } from "../lib/retirement";
 import type {
   QrContentType,
   QrIssueCode,
@@ -1060,6 +1061,106 @@ export interface SavingsGoalToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** Retirement Calculator page labels and interface strings. */
+export interface RetirementToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  modeLegend: string;
+  modes: Record<RetirementMode, { optionLabel: string; hint: string }>;
+  currentAgeLabel: string;
+  currentAgeHint: string;
+  retirementAgeLabel: string;
+  retirementAgeHint: string;
+  currentSavingsLabel: string;
+  currentSavingsHint: string;
+  contributionLabel: string;
+  contributionHint: string;
+  targetLabel: string;
+  targetHint: string;
+  rateLabel: string;
+  rateHint: string;
+  inflationLabel: string;
+  inflationHint: string;
+  assumptionsHeading: string;
+  frequencyLabel: string;
+  frequencyHint: string;
+  frequencies: Record<CompoundingFrequency, string>;
+  timingLabel: string;
+  timingHint: string;
+  projectedCorpusLabel: string;
+  requiredMonthlyLabel: string;
+  targetResultLabel: string;
+  currentResultLabel: string;
+  contributionsLabel: string;
+  investedLabel: string;
+  interestLabel: string;
+  projectedResultLabel: string;
+  realValueLabel: string;
+  realTargetLabel: string;
+  yearsLabel: string;
+  /** Result value template; tokens: {count}. */
+  yearsValue: string;
+  /** Singular result value template; token: {count}. */
+  yearValue: string;
+  successAlreadyCovered: string;
+  successInterestOnly: string;
+  growthHeading: string;
+  growthHint: string;
+  growthEmpty: string;
+  growthScrollLabel: string;
+  tableCaption: string;
+  tableHeaders: {
+    age: string;
+    year: string;
+    openingBalance: string;
+    contributions: string;
+    interest: string;
+    closingBalance: string;
+  };
+  /** Annual row heading template; token: {age}. */
+  ageLabel: string;
+  copySummary: string;
+  /** Clipboard text template; tokens: {currentAge}, {retirementAge}, {current}, {contribution}, {rate}, {frequency}, {duration}, {timing}, {corpus}, {invested}, {growth}. */
+  copyTextProjection: string;
+  /** Clipboard text template; tokens: {currentAge}, {retirementAge}, {current}, {target}, {rate}, {frequency}, {duration}, {timing}, {required}, {contributions}, {invested}, {growth}, {corpus}. */
+  copyTextRequired: string;
+  /** Optional clipboard line; token: {value}. */
+  copyRealLine: string;
+  /** Optional clipboard line for the nominal target; token: {value}. */
+  copyRealTargetLine: string;
+  /** Result caption template; tokens: {corpus}, {age}. */
+  captionProjection: string;
+  /** Result caption template; tokens: {required}, {target}, {age}. */
+  captionRequired: string;
+  formulas: Record<RetirementMode, FormulaStrings>;
+  /** Contribution timing words used in captions and copy text. */
+  timingValues: Record<ContributionTiming, string>;
+  errors: {
+    currentAge: string;
+    retirementAge: string;
+    retirementOrder: string;
+    savings: string;
+    contribution: string;
+    target: string;
+    rate: string;
+    inflation: string;
+    frequency: string;
+    timing: string;
+    noInvestment: string;
+    overflow: string;
+  };
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** Per-tool dictionaries, keyed by tool. */
 export interface ToolsStrings {
   percentage: PercentageToolStrings;
@@ -1068,6 +1169,7 @@ export interface ToolsStrings {
   emiCalculator: EmiCalculatorToolStrings;
   compoundInterest: CompoundInterestToolStrings;
   savingsGoal: SavingsGoalToolStrings;
+  retirementCalculator: RetirementToolStrings;
   unitConverter: UnitConverterToolStrings;
   speedConverter: SpeedConverterToolStrings;
   scientificCalculator: ScientificCalculatorToolStrings;

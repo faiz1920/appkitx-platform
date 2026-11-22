@@ -11,6 +11,7 @@ import {
   toolCategory,
 } from "../lib/categories";
 import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
+import sunsetIcon from "lucide-static/icons/sunset.svg?raw";
 import table2Icon from "lucide-static/icons/table-2.svg?raw";
 
 interface Props {
@@ -28,10 +29,12 @@ const relatedHref = isCategoryPublished(category)
 
 const toolIcons: Record<string, string> = {
   calculator: calculatorIcon,
+  sunset: sunsetIcon,
   "table-2": table2Icon,
 };
 const relatedTools = resolveLocalizedTools(locale, [
   "/compound-interest-calculator",
+  "/retirement-calculator",
   "/percentage-calculator",
 ]).map((related) => ({
   title: related.title,
