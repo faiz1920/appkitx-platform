@@ -1,0 +1,1054 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+import checkIcon from "lucide-static/icons/check.svg?raw";
+import copyIcon from "lucide-static/icons/copy.svg?raw";
+import ToggleSwitch from "./ToggleSwitch.astro";
+import {
+  defaultLocale,
+  getDictionary,
+  getLocale,
+  type LocaleCode,
+} from "../i18n/config";
+import { COMPOUNDING_FREQUENCIES, DURATION_UNITS } from "../lib/savings-goal";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.savingsGoal;
+const localeMeta = getLocale(locale);
+
+const scriptStrings = {
+  calculator: t.calculator,
+  tool,
+  intlLocale: localeMeta.intlLocale,
+};
+---
+
+<div data-savings-goal-calculator data-i18n={JSON.stringify(scriptStrings)}>
+  <form novalidate data-calculator-form>
+    <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)">
+      <div class="space-y-5">
+        <div>
+          <label
+            for="savings-input-target"
+            class="text-label text-text-primary"
+          >
+            {tool.targetLabel}
+          </label>
+          <input
+            id="savings-input-target"
+            name="target"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            spellcheck="false"
+            class="input mt-2 font-mono tabular-nums"
+            aria-describedby="savings-hint-target savings-error-target"
+            data-input-target
+          />
+          <p id="savings-hint-target" class="mt-1 text-caption text-text-muted">
+            {tool.targetHint}
+          </p>
+          <p
+            id="savings-error-target"
+            class="field-error mt-1"
+            role="alert"
+            aria-atomic="true"
+            hidden
+            data-error-target
+          >
+            <span aria-hidden="true" set:html={alertIcon} />
+            <span data-error-text-target></span>
+          </p>
+        </div>
+
+        <div>
+          <label
+            for="savings-input-current"
+            class="text-label text-text-primary"
+          >
+            {tool.currentLabel}
+          </label>
+          <input
+            id="savings-input-current"
+            name="current"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            spellcheck="false"
+            class="input mt-2 font-mono tabular-nums"
+            aria-describedby="savings-hint-current savings-error-current"
+            data-input-current
+          />
+          <p
+            id="savings-hint-current"
+            class="mt-1 text-caption text-text-muted"
+          >
+            {tool.currentHint}
+          </p>
+          <p
+            id="savings-error-current"
+            class="field-error mt-1"
+            role="alert"
+            aria-atomic="true"
+            hidden
+            data-error-current
+          >
+            <span aria-hidden="true" set:html={alertIcon} />
+            <span data-error-text-current></span>
+          </p>
+        </div>
+
+        <div>
+          <label for="savings-input-rate" class="text-label text-text-primary">
+            {tool.rateLabel}
+          </label>
+          <input
+            id="savings-input-rate"
+            name="rate"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            spellcheck="false"
+            class="input mt-2 font-mono tabular-nums"
+            aria-describedby="savings-hint-rate savings-error-rate"
+            data-input-rate
+          />
+          <p id="savings-hint-rate" class="mt-1 text-caption text-text-muted">
+            {tool.rateHint}
+          </p>
+          <p
+            id="savings-error-rate"
+            class="field-error mt-1"
+            role="alert"
+            aria-atomic="true"
+            hidden
+            data-error-rate
+          >
+            <span aria-hidden="true" set:html={alertIcon} />
+            <span data-error-text-rate></span>
+          </p>
+        </div>
+
+        <div>
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div>
+              <label
+                for="savings-input-duration"
+                class="text-label text-text-primary"
+              >
+                {tool.durationLabel}
+              </label>
+              <input
+                id="savings-input-duration"
+                name="duration"
+                type="text"
+                inputmode="decimal"
+                autocomplete="off"
+                spellcheck="false"
+                class="input mt-2 font-mono tabular-nums"
+                aria-describedby="savings-hint-duration savings-error-duration"
+                data-input-duration
+              />
+              <p
+                id="savings-error-duration"
+                class="field-error mt-1"
+                role="alert"
+                aria-atomic="true"
+                hidden
+                data-error-duration
+              >
+                <span aria-hidden="true" set:html={alertIcon} />
+                <span data-error-text-duration></span>
+              </p>
+            </div>
+
+            <div>
+              <label
+                for="savings-input-duration-unit"
+                class="text-label text-text-primary"
+              >
+                {tool.durationUnitLabel}
+              </label>
+              <select
+                id="savings-input-duration-unit"
+                name="durationUnit"
+                class="input mt-2"
+                aria-describedby="savings-hint-duration"
+                data-input-duration-unit
+              >
+                {DURATION_UNITS.map((unit) => (
+                  <option value={unit} selected={unit === "years"}>
+                    {tool.durationUnits[unit]}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <p
+            id="savings-hint-duration"
+            class="mt-1 text-caption text-text-muted"
+          >
+            {tool.durationHint}
+          </p>
+        </div>
+
+        <div>
+          <label
+            for="savings-input-frequency"
+            class="text-label text-text-primary"
+          >
+            {tool.frequencyLabel}
+          </label>
+          <select
+            id="savings-input-frequency"
+            name="frequency"
+            class="input mt-2"
+            aria-describedby="savings-hint-frequency"
+            data-input-frequency
+          >
+            {COMPOUNDING_FREQUENCIES.map((frequency) => (
+              <option value={frequency} selected={frequency === "monthly"}>
+                {tool.frequencies[frequency]}
+              </option>
+            ))}
+          </select>
+          <p
+            id="savings-hint-frequency"
+            class="mt-1 text-caption text-text-muted"
+          >
+            {tool.frequencyHint}
+          </p>
+        </div>
+
+        <div class="border-t border-border-subtle pt-5">
+          <ToggleSwitch
+            name="savingsContributionTiming"
+            label={tool.timingLabel}
+            hint={tool.timingHint}
+          />
+        </div>
+
+        <p
+          class="field-error"
+          role="alert"
+          aria-atomic="true"
+          hidden
+          data-error-general
+        >
+          <span aria-hidden="true" set:html={alertIcon} />
+          <span data-error-text-general></span>
+        </p>
+      </div>
+
+      <div class="mt-6">
+        <button type="submit" class="btn btn-primary w-full">
+          {t.calculator.calculate}
+        </button>
+        <button type="button" class="btn btn-secondary mt-3 w-full" data-reset>
+          {t.calculator.reset}
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div
+    class="relative mt-6 rounded-lg bg-accent-subtle p-(--layout-card-padding)"
+    aria-live="polite"
+    data-result-region
+  >
+    <p class="text-overline text-text-secondary uppercase">
+      {t.calculator.resultLabel}
+    </p>
+    <div class="mt-2 pr-14">
+      <p class="text-caption text-text-secondary">
+        {tool.requiredMonthlyLabel}
+      </p>
+      <p class="mt-1 text-mono-result text-text-disabled" data-required-monthly>
+        —
+      </p>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 gap-4 pr-14 sm:grid-cols-2">
+      <div>
+        <p class="text-caption text-text-secondary">{tool.targetResultLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-target
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">
+          {tool.currentResultLabel}
+        </p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-current
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">
+          {tool.contributionsLabel}
+        </p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-contributions
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">{tool.interestLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-interest
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">{tool.finalLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-final
+        >
+          —
+        </p>
+      </div>
+      <div>
+        <p class="text-caption text-text-secondary">{tool.remainingLabel}</p>
+        <p
+          class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+          data-remaining
+        >
+          —
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-4 border-t border-accent-subtle-border pt-3">
+      <p class="text-caption text-text-secondary">{tool.progressLabel}</p>
+      <p
+        class="mt-1 font-mono text-body font-medium tabular-nums text-text-disabled"
+        data-progress
+      >
+        —
+      </p>
+    </div>
+
+    <p
+      class="mt-3 flex items-start gap-1.5 text-small text-success"
+      hidden
+      data-success-message
+    >
+      <span
+        class="mt-0.5 h-4 w-4 shrink-0 [&_svg]:h-4 [&_svg]:w-4"
+        aria-hidden="true"
+        set:html={checkIcon}
+      />
+      <span data-success-text></span>
+    </p>
+
+    <p class="mt-3 pr-14 text-caption text-text-muted" data-result-caption>
+      {t.calculator.resultsPlaceholder}
+    </p>
+    <p
+      class="mt-2 flex items-center gap-1.5 text-caption text-success"
+      hidden
+      data-copy-status-success
+    >
+      <span
+        class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+        aria-hidden="true"
+        set:html={checkIcon}
+      />
+      {t.calculator.copied}
+    </p>
+    <p
+      class="mt-2 flex items-center gap-1.5 text-caption text-error"
+      hidden
+      data-copy-status-error
+    >
+      <span
+        class="h-3.5 w-3.5 [&_svg]:h-3.5 [&_svg]:w-3.5"
+        aria-hidden="true"
+        set:html={alertIcon}
+      />
+      {t.calculator.copyFailed}
+    </p>
+    <button
+      type="button"
+      class="btn btn-ghost absolute top-3 right-3 w-11 px-0"
+      aria-label={tool.copySummary}
+      disabled
+      data-copy
+    >
+      <span
+        class="h-5 w-5 [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        data-copy-idle
+        set:html={copyIcon}
+      />
+      <span
+        class="h-5 w-5 text-success [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        hidden
+        data-copy-done
+        set:html={checkIcon}
+      />
+    </button>
+  </div>
+
+  <p class="mt-4 text-small text-text-secondary">
+    {t.calculator.formulaLabel}{" "}
+    <code class="inline-code" data-formula>
+      {tool.formulas.template}
+    </code>
+  </p>
+
+  <section class="mt-8" aria-labelledby="savings-growth-heading">
+    <h2 id="savings-growth-heading" class="text-title text-text-primary">
+      {tool.growthHeading}
+    </h2>
+    <p class="mt-1 text-small text-text-secondary">{tool.growthHint}</p>
+    <p class="mt-3 text-small text-text-muted" data-growth-empty>
+      {tool.growthEmpty}
+    </p>
+    <div
+      class="mt-4 overflow-x-auto focus-ring"
+      role="region"
+      tabindex="0"
+      aria-label={tool.growthScrollLabel}
+      data-growth
+      hidden
+    ></div>
+  </section>
+</div>
+
+<script>
+  import {
+    MAX_SAVINGS_MONTHS,
+    calculateSavingsGoal,
+    durationToMonths,
+    formatSavingsDecimal,
+    formatSavingsMoney,
+    formatSavingsPercent,
+    isCompoundingFrequency,
+    isContributionTiming,
+    type SavingsGoalIssue,
+    type SavingsGoalYear,
+    type ContributionTiming,
+    type DurationUnit,
+  } from "../lib/savings-goal";
+  import { parseLocaleNumber } from "../lib/number-input";
+  import { interpolate } from "../i18n/interpolate";
+  import type {
+    CalculatorStrings,
+    SavingsGoalToolStrings,
+  } from "../i18n/dictionary";
+
+  const root = document.querySelector<HTMLElement>(
+    "[data-savings-goal-calculator]",
+  );
+
+  if (root) {
+    const i18n: {
+      calculator: CalculatorStrings;
+      tool: SavingsGoalToolStrings;
+      intlLocale: string;
+    } = JSON.parse(root.dataset.i18n ?? "{}");
+
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`Savings goal calculator: missing ${selector}`);
+      return el;
+    };
+
+    const form = requireEl<HTMLFormElement>("[data-calculator-form]");
+    const inputTarget = requireEl<HTMLInputElement>("[data-input-target]");
+    const inputCurrent = requireEl<HTMLInputElement>("[data-input-current]");
+    const inputRate = requireEl<HTMLInputElement>("[data-input-rate]");
+    const inputDuration = requireEl<HTMLInputElement>("[data-input-duration]");
+    const inputDurationUnit = requireEl<HTMLSelectElement>(
+      "[data-input-duration-unit]",
+    );
+    const inputFrequency = requireEl<HTMLSelectElement>(
+      "[data-input-frequency]",
+    );
+    const inputTiming = requireEl<HTMLInputElement>(
+      "#savingsContributionTiming",
+    );
+    const errorTarget = requireEl<HTMLElement>("[data-error-target]");
+    const errorTextTarget = requireEl<HTMLElement>("[data-error-text-target]");
+    const errorCurrent = requireEl<HTMLElement>("[data-error-current]");
+    const errorTextCurrent = requireEl<HTMLElement>(
+      "[data-error-text-current]",
+    );
+    const errorRate = requireEl<HTMLElement>("[data-error-rate]");
+    const errorTextRate = requireEl<HTMLElement>("[data-error-text-rate]");
+    const errorDuration = requireEl<HTMLElement>("[data-error-duration]");
+    const errorTextDuration = requireEl<HTMLElement>(
+      "[data-error-text-duration]",
+    );
+    const errorGeneral = requireEl<HTMLElement>("[data-error-general]");
+    const errorTextGeneral = requireEl<HTMLElement>(
+      "[data-error-text-general]",
+    );
+    const requiredMonthlyEl = requireEl<HTMLElement>("[data-required-monthly]");
+    const targetEl = requireEl<HTMLElement>("[data-target]");
+    const currentEl = requireEl<HTMLElement>("[data-current]");
+    const contributionsEl = requireEl<HTMLElement>("[data-contributions]");
+    const interestEl = requireEl<HTMLElement>("[data-interest]");
+    const finalEl = requireEl<HTMLElement>("[data-final]");
+    const remainingEl = requireEl<HTMLElement>("[data-remaining]");
+    const progressEl = requireEl<HTMLElement>("[data-progress]");
+    const successMessage = requireEl<HTMLElement>("[data-success-message]");
+    const successText = requireEl<HTMLElement>("[data-success-text]");
+    const resultCaption = requireEl<HTMLElement>("[data-result-caption]");
+    const formulaEl = requireEl<HTMLElement>("[data-formula]");
+    const copyButton = requireEl<HTMLButtonElement>("[data-copy]");
+    const copyIdle = requireEl<HTMLElement>("[data-copy-idle]");
+    const copyDone = requireEl<HTMLElement>("[data-copy-done]");
+    const copyStatusSuccess = requireEl<HTMLElement>(
+      "[data-copy-status-success]",
+    );
+    const copyStatusError = requireEl<HTMLElement>("[data-copy-status-error]");
+    const resetButton = requireEl<HTMLButtonElement>("[data-reset]");
+    const growth = requireEl<HTMLElement>("[data-growth]");
+    const growthEmpty = requireEl<HTMLElement>("[data-growth-empty]");
+
+    const intlLocale = i18n.intlLocale;
+    const FORMULA_TEMPLATE = i18n.tool.formulas.template;
+
+    let copyTimer: number | undefined;
+    let copyBusy = false;
+    let lastCopyText = "";
+    let resultGeneration = 0;
+
+    const setText = (element: HTMLElement, value: string) => {
+      if (element.textContent !== value) element.textContent = value;
+    };
+
+    const resetCopyFeedback = () => {
+      window.clearTimeout(copyTimer);
+      copyIdle.hidden = false;
+      copyDone.hidden = true;
+      copyStatusSuccess.hidden = true;
+      copyStatusError.hidden = true;
+    };
+
+    const hideError = (
+      input: HTMLInputElement | HTMLSelectElement,
+      wrap: HTMLElement,
+      text: HTMLElement,
+    ) => {
+      if (
+        wrap.hidden &&
+        text.textContent === "" &&
+        !input.hasAttribute("aria-invalid")
+      ) {
+        return;
+      }
+      wrap.hidden = true;
+      text.textContent = "";
+      input.removeAttribute("aria-invalid");
+    };
+
+    const showError = (
+      input: HTMLInputElement | HTMLSelectElement,
+      wrap: HTMLElement,
+      text: HTMLElement,
+      message: string,
+    ) => {
+      if (input.getAttribute("aria-invalid") !== "true") {
+        input.setAttribute("aria-invalid", "true");
+      }
+      if (!wrap.hidden && text.textContent === message) return;
+      text.textContent = message;
+      wrap.hidden = false;
+    };
+
+    const hideGeneralError = () => {
+      if (errorGeneral.hidden && errorTextGeneral.textContent === "") {
+        return;
+      }
+      errorGeneral.hidden = true;
+      errorTextGeneral.textContent = "";
+    };
+
+    const showGeneralError = (message: string) => {
+      if (!errorGeneral.hidden && errorTextGeneral.textContent === message) {
+        return;
+      }
+      errorTextGeneral.textContent = message;
+      errorGeneral.hidden = false;
+    };
+
+    const clearErrors = () => {
+      hideError(inputTarget, errorTarget, errorTextTarget);
+      hideError(inputCurrent, errorCurrent, errorTextCurrent);
+      hideError(inputRate, errorRate, errorTextRate);
+      hideError(inputDuration, errorDuration, errorTextDuration);
+      hideGeneralError();
+    };
+
+    const showEmptyResult = () => {
+      resultGeneration += 1;
+      lastCopyText = "";
+      resetCopyFeedback();
+      for (const element of [
+        requiredMonthlyEl,
+        targetEl,
+        currentEl,
+        contributionsEl,
+        interestEl,
+        finalEl,
+        remainingEl,
+        progressEl,
+      ]) {
+        setText(element, "—");
+        element.classList.replace("text-text-primary", "text-text-disabled");
+      }
+      successMessage.hidden = true;
+      successText.textContent = "";
+      setText(resultCaption, i18n.calculator.resultsPlaceholder);
+      setText(formulaEl, FORMULA_TEMPLATE);
+      copyButton.disabled = true;
+      growth.textContent = "";
+      growth.hidden = true;
+      growthEmpty.hidden = false;
+    };
+
+    const invalidateResult = () => {
+      clearErrors();
+      showEmptyResult();
+    };
+
+    const errorMessage = (issue: "invalid" | "ambiguous") =>
+      issue === "ambiguous"
+        ? i18n.calculator.ambiguousNumber
+        : i18n.calculator.invalidNumber;
+
+    const formatDuration = (months: number): string =>
+      `${formatSavingsDecimal(months, intlLocale)} ${
+        months === 1 ? i18n.tool.monthSingular : i18n.tool.monthPlural
+      }`;
+
+    const issueField = (
+      issue: SavingsGoalIssue,
+    ): "target" | "current" | "rate" | "duration" | null => {
+      if (issue === "invalid-target") return "target";
+      if (issue === "invalid-current") return "current";
+      if (issue === "invalid-rate") return "rate";
+      if (issue === "invalid-months") return "duration";
+      return null;
+    };
+
+    const renderGrowth = (years: readonly SavingsGoalYear[]) => {
+      growth.textContent = "";
+      growthEmpty.hidden = true;
+      growth.hidden = false;
+
+      const table = document.createElement("table");
+      table.className = "w-full min-w-[640px] text-small";
+
+      const caption = document.createElement("caption");
+      caption.className = "sr-only";
+      caption.textContent = i18n.tool.tableCaption;
+      table.append(caption);
+
+      const thead = document.createElement("thead");
+      const headerRow = document.createElement("tr");
+      const headers = [
+        { label: i18n.tool.tableHeaders.year, align: "left" },
+        { label: i18n.tool.tableHeaders.openingBalance, align: "right" },
+        { label: i18n.tool.tableHeaders.contributions, align: "right" },
+        { label: i18n.tool.tableHeaders.interest, align: "right" },
+        { label: i18n.tool.tableHeaders.closingBalance, align: "right" },
+        { label: i18n.tool.tableHeaders.progress, align: "right" },
+      ] as const;
+      for (const header of headers) {
+        const th = document.createElement("th");
+        th.scope = "col";
+        th.className = `border-b border-border-subtle px-2 py-2 ${
+          header.align === "right" ? "text-right" : "text-left"
+        } font-medium text-text-secondary`;
+        th.textContent = header.label;
+        headerRow.append(th);
+      }
+      thead.append(headerRow);
+      table.append(thead);
+
+      const tbody = document.createElement("tbody");
+      for (const year of years) {
+        const row = document.createElement("tr");
+        row.className = "border-b border-border-subtle last:border-0";
+        row.dataset.year = String(year.year);
+        row.dataset.months = String(year.months);
+
+        const yearCell = document.createElement("th");
+        yearCell.scope = "row";
+        yearCell.className =
+          "px-2 py-2 text-left font-mono text-small text-text-secondary";
+        yearCell.textContent =
+          year.months < 12
+            ? interpolate(i18n.tool.partialYearLabel, {
+                year: formatSavingsDecimal(year.year, intlLocale),
+                duration: formatDuration(year.months),
+              })
+            : interpolate(i18n.tool.yearLabel, {
+                year: formatSavingsDecimal(year.year, intlLocale),
+              });
+        row.append(yearCell);
+
+        for (const value of [
+          year.openingBalance,
+          year.contributions,
+          year.interest,
+          year.closingBalance,
+        ]) {
+          const cell = document.createElement("td");
+          cell.className =
+            "px-2 py-2 text-right font-mono text-small tabular-nums text-text-primary";
+          cell.textContent = formatSavingsMoney(value, intlLocale);
+          row.append(cell);
+        }
+
+        const progressCell = document.createElement("td");
+        progressCell.className =
+          "px-2 py-2 text-right font-mono text-small tabular-nums text-text-primary";
+        progressCell.textContent = formatSavingsPercent(
+          year.progressPercent,
+          intlLocale,
+        );
+        row.append(progressCell);
+        tbody.append(row);
+      }
+      table.append(tbody);
+      growth.append(table);
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      resetCopyFeedback();
+
+      const targetText = inputTarget.value.trim();
+      const currentText = inputCurrent.value.trim();
+      const rateText = inputRate.value.trim();
+      const durationText = inputDuration.value.trim();
+
+      const target =
+        targetText === ""
+          ? ({ ok: false, issue: "invalid" } as const)
+          : parseLocaleNumber(targetText, intlLocale);
+      const current =
+        currentText === ""
+          ? ({ ok: true, value: 0 } as const)
+          : parseLocaleNumber(currentText, intlLocale);
+      const rate =
+        rateText === ""
+          ? ({ ok: true, value: 0 } as const)
+          : parseLocaleNumber(rateText, intlLocale);
+      const duration =
+        durationText === ""
+          ? ({ ok: false, issue: "invalid" } as const)
+          : parseLocaleNumber(durationText, intlLocale);
+      const durationUnit = inputDurationUnit.value as DurationUnit;
+      const frequency = inputFrequency.value;
+      const timing: ContributionTiming = inputTiming.checked
+        ? "beginning"
+        : "end";
+
+      let hasError = false;
+      let months: number | null = null;
+
+      if (!target.ok) {
+        showError(
+          inputTarget,
+          errorTarget,
+          errorTextTarget,
+          targetText === ""
+            ? i18n.tool.errors.target
+            : errorMessage(target.issue),
+        );
+        hasError = true;
+      } else if (target.value <= 0) {
+        showError(
+          inputTarget,
+          errorTarget,
+          errorTextTarget,
+          i18n.tool.errors.target,
+        );
+        hasError = true;
+      } else {
+        hideError(inputTarget, errorTarget, errorTextTarget);
+      }
+
+      if (!current.ok) {
+        showError(
+          inputCurrent,
+          errorCurrent,
+          errorTextCurrent,
+          errorMessage(current.issue),
+        );
+        hasError = true;
+      } else if (current.value < 0) {
+        showError(
+          inputCurrent,
+          errorCurrent,
+          errorTextCurrent,
+          i18n.tool.errors.current,
+        );
+        hasError = true;
+      } else {
+        hideError(inputCurrent, errorCurrent, errorTextCurrent);
+      }
+
+      if (!rate.ok) {
+        showError(
+          inputRate,
+          errorRate,
+          errorTextRate,
+          errorMessage(rate.issue),
+        );
+        hasError = true;
+      } else if (rate.value < 0) {
+        showError(inputRate, errorRate, errorTextRate, i18n.tool.errors.rate);
+        hasError = true;
+      } else {
+        hideError(inputRate, errorRate, errorTextRate);
+      }
+
+      if (!duration.ok) {
+        showError(
+          inputDuration,
+          errorDuration,
+          errorTextDuration,
+          durationText === ""
+            ? i18n.tool.errors.duration
+            : errorMessage(duration.issue),
+        );
+        hasError = true;
+      } else {
+        months = durationToMonths(duration.value, durationUnit);
+        if (months === null || months < 1 || months > MAX_SAVINGS_MONTHS) {
+          showError(
+            inputDuration,
+            errorDuration,
+            errorTextDuration,
+            i18n.tool.errors.duration,
+          );
+          hasError = true;
+        } else if (!Number.isInteger(months)) {
+          showError(
+            inputDuration,
+            errorDuration,
+            errorTextDuration,
+            i18n.tool.errors.fractionalDuration,
+          );
+          hasError = true;
+        } else {
+          hideError(inputDuration, errorDuration, errorTextDuration);
+        }
+      }
+
+      hideGeneralError();
+
+      if (
+        hasError ||
+        !target.ok ||
+        !current.ok ||
+        !rate.ok ||
+        !duration.ok ||
+        months === null
+      ) {
+        showEmptyResult();
+        return;
+      }
+
+      if (!isCompoundingFrequency(frequency)) {
+        showGeneralError(i18n.tool.errors.frequency);
+        showEmptyResult();
+        return;
+      }
+      if (!isContributionTiming(timing)) {
+        showGeneralError(i18n.tool.errors.timing);
+        showEmptyResult();
+        return;
+      }
+
+      const calculation = calculateSavingsGoal(
+        target.value,
+        current.value,
+        rate.value,
+        months,
+        frequency,
+        timing,
+      );
+
+      if (!calculation.ok) {
+        const field = issueField(calculation.issue);
+        if (field === "target") {
+          showError(
+            inputTarget,
+            errorTarget,
+            errorTextTarget,
+            i18n.tool.errors.target,
+          );
+        } else if (field === "current") {
+          showError(
+            inputCurrent,
+            errorCurrent,
+            errorTextCurrent,
+            i18n.tool.errors.current,
+          );
+        } else if (field === "rate") {
+          showError(inputRate, errorRate, errorTextRate, i18n.tool.errors.rate);
+        } else if (field === "duration") {
+          showError(
+            inputDuration,
+            errorDuration,
+            errorTextDuration,
+            i18n.tool.errors.duration,
+          );
+        } else {
+          showGeneralError(i18n.tool.errors.overflow);
+        }
+        showEmptyResult();
+        return;
+      }
+
+      const result = calculation.value;
+      clearErrors();
+      resultGeneration += 1;
+      resetCopyFeedback();
+
+      const required = formatSavingsMoney(
+        result.requiredMonthlySavings,
+        intlLocale,
+      );
+      const targetValue = formatSavingsMoney(result.target, intlLocale);
+      const currentValue = formatSavingsMoney(
+        result.currentSavings,
+        intlLocale,
+      );
+      const contributions = formatSavingsMoney(
+        result.totalContributions,
+        intlLocale,
+      );
+      const interest = formatSavingsMoney(result.interestEarned, intlLocale);
+      const finalValue = formatSavingsMoney(
+        result.projectedFinalSavings,
+        intlLocale,
+      );
+      const remaining = formatSavingsMoney(result.remainingAmount, intlLocale);
+      const progress = formatSavingsPercent(result.progressPercent, intlLocale);
+
+      for (const [element, value] of [
+        [requiredMonthlyEl, required],
+        [targetEl, targetValue],
+        [currentEl, currentValue],
+        [contributionsEl, contributions],
+        [interestEl, interest],
+        [finalEl, finalValue],
+        [remainingEl, remaining],
+        [progressEl, progress],
+      ] as const) {
+        element.textContent = value;
+        element.classList.replace("text-text-disabled", "text-text-primary");
+      }
+
+      if (result.alreadyReached) {
+        setText(successText, i18n.tool.successAlreadyReached);
+        successMessage.hidden = false;
+      } else if (result.noContributionRequired) {
+        setText(successText, i18n.tool.successInterestOnly);
+        successMessage.hidden = false;
+      } else {
+        successMessage.hidden = true;
+        successText.textContent = "";
+      }
+
+      setText(
+        resultCaption,
+        interpolate(i18n.tool.caption, {
+          amount: targetValue,
+          duration: formatDuration(result.months),
+        }),
+      );
+      setText(
+        formulaEl,
+        interpolate(i18n.tool.formulas.describe, {
+          rate: formatSavingsDecimal(result.annualRatePercent, intlLocale),
+          monthlyRate: formatSavingsDecimal(
+            result.monthlyRate * 100,
+            intlLocale,
+          ),
+        }),
+      );
+      lastCopyText = interpolate(i18n.tool.copyText, {
+        target: targetValue,
+        current: currentValue,
+        rate: formatSavingsDecimal(result.annualRatePercent, intlLocale),
+        frequency: i18n.tool.frequencies[result.frequency],
+        duration: formatDuration(result.months),
+        timing: i18n.tool.timingValues[result.timing],
+        required,
+        contributions,
+        interest,
+        final: finalValue,
+      });
+      copyButton.disabled = false;
+      renderGrowth(result.years);
+    });
+
+    inputTarget.addEventListener("input", invalidateResult);
+    inputCurrent.addEventListener("input", invalidateResult);
+    inputRate.addEventListener("input", invalidateResult);
+    inputDuration.addEventListener("input", invalidateResult);
+    inputDurationUnit.addEventListener("change", invalidateResult);
+    inputFrequency.addEventListener("change", invalidateResult);
+    inputTiming.addEventListener("change", invalidateResult);
+
+    resetButton.addEventListener("click", () => {
+      form.reset();
+      clearErrors();
+      showEmptyResult();
+      inputTarget.focus();
+    });
+
+    copyButton.addEventListener("click", async () => {
+      if (!lastCopyText || copyBusy) return;
+      copyBusy = true;
+      const generation = resultGeneration;
+      resetCopyFeedback();
+      try {
+        await navigator.clipboard.writeText(lastCopyText);
+        if (generation !== resultGeneration) return;
+        copyIdle.hidden = true;
+        copyDone.hidden = false;
+        copyStatusSuccess.hidden = false;
+        copyTimer = window.setTimeout(() => {
+          copyIdle.hidden = false;
+          copyDone.hidden = true;
+          copyStatusSuccess.hidden = true;
+        }, 2000);
+      } catch {
+        if (generation !== resultGeneration) return;
+        copyStatusError.hidden = false;
+      } finally {
+        copyBusy = false;
+      }
+    });
+
+    showEmptyResult();
+  }
+</script>

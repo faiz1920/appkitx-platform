@@ -22,7 +22,7 @@ const LOCALE_CODES = Object.keys(dictionaries) as Array<
 
 describe("published catalogue", () => {
   it("publishes every registered tool in exactly one category", () => {
-    expect(tools).toHaveLength(15);
+    expect(tools).toHaveLength(16);
     expect(CATEGORY_IDS).toHaveLength(5);
     expect(publishedCategories()).toEqual(CATEGORY_IDS);
 
@@ -33,7 +33,7 @@ describe("published catalogue", () => {
     expect(new Set(members.map((tool) => tool.href)).size).toBe(tools.length);
   });
 
-  it("derives the confirmed 74 indexable routes", () => {
+  it("derives the confirmed 76 indexable routes", () => {
     const localeLess =
       1 + // homepage
       tools.length +
@@ -45,7 +45,7 @@ describe("published catalogue", () => {
 
     expect(paths).toHaveLength(localeLess);
     expect(new Set(paths).size).toBe(paths.length);
-    expect(localeLess * LOCALE_CODES.length).toBe(74);
+    expect(localeLess * LOCALE_CODES.length).toBe(76);
   });
 });
 
@@ -119,7 +119,7 @@ describe("category metadata", () => {
       );
     });
 
-    it(`describes loan, EMI, compound interest, and scientific calculations on the Calculators page in ${locale}`, () => {
+    it(`describes loan, EMI, compound interest, savings goals, and scientific calculations on the Calculators page in ${locale}`, () => {
       const page = dictionaries[locale].categories.Calculators.page;
       if (page === undefined) throw new Error("Calculators page copy");
 
@@ -130,6 +130,11 @@ describe("category metadata", () => {
         locale === "es"
           ? /interés compuesto|crecimiento de una inversión/i
           : /compound interest|investment growth/i,
+      );
+      expect(copy).toMatch(
+        locale === "es"
+          ? /objetivos? de ahorro|ahorro mensual/i
+          : /savings goals?|monthly savings/i,
       );
       expect(copy).toMatch(
         locale === "es"

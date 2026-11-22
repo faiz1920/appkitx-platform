@@ -976,6 +976,90 @@ export interface CompoundInterestToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** Savings Goal Calculator page labels and interface strings. */
+export interface SavingsGoalToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  targetLabel: string;
+  targetHint: string;
+  currentLabel: string;
+  currentHint: string;
+  rateLabel: string;
+  rateHint: string;
+  durationLabel: string;
+  durationHint: string;
+  durationUnitLabel: string;
+  durationUnits: Record<DurationUnit, string>;
+  frequencyLabel: string;
+  frequencyHint: string;
+  frequencies: Record<CompoundingFrequency, string>;
+  timingLabel: string;
+  timingHint: string;
+  requiredMonthlyLabel: string;
+  targetResultLabel: string;
+  currentResultLabel: string;
+  contributionsLabel: string;
+  interestLabel: string;
+  finalLabel: string;
+  remainingLabel: string;
+  progressLabel: string;
+  successAlreadyReached: string;
+  successInterestOnly: string;
+  growthHeading: string;
+  growthHint: string;
+  growthEmpty: string;
+  growthScrollLabel: string;
+  tableCaption: string;
+  tableHeaders: {
+    year: string;
+    openingBalance: string;
+    contributions: string;
+    interest: string;
+    closingBalance: string;
+    progress: string;
+  };
+  /** Annual row heading template; token: {year}. */
+  yearLabel: string;
+  /** Partial final-year heading template; tokens: {year}, {duration}. */
+  partialYearLabel: string;
+  /** Singular month word used to build localized durations. */
+  monthSingular: string;
+  /** Plural month word used to build localized durations. */
+  monthPlural: string;
+  copySummary: string;
+  /** Clipboard text template; tokens: {target}, {current}, {rate}, {frequency}, {duration}, {timing}, {required}, {contributions}, {interest}, {final}. */
+  copyText: string;
+  /** Result caption template; tokens: {amount}, {duration}. */
+  caption: string;
+  formulas: {
+    template: string;
+    /** Tokens: {rate}, {monthlyRate}. */
+    describe: string;
+  };
+  /** Contribution timing words used in captions and copy text. */
+  timingValues: Record<ContributionTiming, string>;
+  errors: {
+    target: string;
+    current: string;
+    rate: string;
+    duration: string;
+    fractionalDuration: string;
+    frequency: string;
+    timing: string;
+    overflow: string;
+  };
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** Per-tool dictionaries, keyed by tool. */
 export interface ToolsStrings {
   percentage: PercentageToolStrings;
@@ -983,6 +1067,7 @@ export interface ToolsStrings {
   loanCalculator: LoanCalculatorToolStrings;
   emiCalculator: EmiCalculatorToolStrings;
   compoundInterest: CompoundInterestToolStrings;
+  savingsGoal: SavingsGoalToolStrings;
   unitConverter: UnitConverterToolStrings;
   speedConverter: SpeedConverterToolStrings;
   scientificCalculator: ScientificCalculatorToolStrings;

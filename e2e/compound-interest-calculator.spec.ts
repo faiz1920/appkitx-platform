@@ -525,8 +525,8 @@ test("links to related calculators and exposes SEO metadata", async ({
     related.getByRole("link", { name: /EMI Calculator/ }),
   ).toHaveAttribute("href", "/emi-calculator/");
   await expect(
-    related.getByRole("link", { name: /Percentage Calculator/ }),
-  ).toHaveAttribute("href", "/percentage-calculator/");
+    related.getByRole("link", { name: /Savings Goal Calculator/ }),
+  ).toHaveAttribute("href", "/savings-goal-calculator/");
   await expect(related.getByRole("link", { name: "See all" })).toHaveAttribute(
     "href",
     "/calculators/",

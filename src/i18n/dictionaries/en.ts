@@ -86,11 +86,11 @@ export const en: Dictionary = {
       page: {
         title: "Free Online Calculators — AppKitX",
         metaDescription:
-          "Free calculators for percentages, discounts, loans, EMIs, compound interest, and scientific expressions: percent change, amortization, investment growth, and trigonometry in degrees or radians.",
+          "Free calculators for percentages, discounts, loans, EMIs, compound interest, savings goals, and scientific expressions: percent change, amortization, investment growth, and trigonometry in degrees or radians.",
         toolsHeading: "Free online calculators",
         intro: [
-          "The calculators cover everyday money math and scientific expressions: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, see what a discount saves and its final price, estimate a loan's monthly payment, total interest, and total cost, inspect a year-by-year EMI repayment schedule with principal and interest balances, project investment growth with compound interest and optional monthly contributions, and evaluate expressions with parentheses, powers, roots, logarithms, and trigonometry.",
-          "They run entirely in your browser, show the formula or expression behind each result, and let you copy it with one click. Money amounts are treated exactly as you enter them — the discount, loan, EMI, and compound interest calculators are currency-neutral — and the scientific calculator respects the selected degrees or radians mode.",
+          "The calculators cover everyday money math and scientific expressions: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, see what a discount saves and its final price, estimate a loan's monthly payment, total interest, and total cost, inspect a year-by-year EMI repayment schedule with principal and interest balances, project investment growth with compound interest and optional monthly contributions, work out the monthly savings needed to reach a goal, and evaluate expressions with parentheses, powers, roots, logarithms, and trigonometry.",
+          "They run entirely in your browser, show the formula or expression behind each result, and let you copy it with one click. Money amounts are treated exactly as you enter them — the discount, loan, EMI, compound interest, and savings goal calculators are currency-neutral — and the scientific calculator respects the selected degrees or radians mode.",
         ],
       },
     },
@@ -711,6 +711,158 @@ export const en: Dictionary = {
           heading: "Privacy",
           paragraphs: [
             "Everything is calculated in your browser. Your investment values and growth table are never uploaded, stored in browser storage, or sent to a third-party service.",
+          ],
+        },
+      ],
+    },
+    savingsGoal: {
+      title: "Savings Goal Calculator — AppKitX",
+      metaDescription:
+        "Free savings goal calculator: find the monthly amount you need to save to reach a target, with optional interest and a year-by-year savings plan.",
+      name: "Savings Goal Calculator",
+      description:
+        "Calculate the monthly savings required to reach a financial goal, with optional interest and a year-by-year plan.",
+      cardDescription: "Monthly savings needed to reach a target.",
+      keywords: [
+        "savings goal calculator",
+        "savings target calculator",
+        "monthly savings calculator",
+        "how much to save monthly",
+        "savings plan calculator",
+        "reach savings goal",
+        "calculate savings target",
+        "savings goal",
+        "monthly savings",
+        "target savings",
+        "required monthly savings",
+      ],
+      targetLabel: "Savings goal",
+      targetHint:
+        "The amount you want to reach, in any currency. No currency conversion is applied.",
+      currentLabel: "Current savings",
+      currentHint:
+        "What you have already set aside. Leave blank if you are starting from zero.",
+      rateLabel: "Annual interest rate (%)",
+      rateHint:
+        "The nominal annual rate. Leave blank or enter 0 if your savings do not earn interest.",
+      durationLabel: "Target duration",
+      durationHint:
+        "How long you have to reach the goal. It must resolve to a whole number of months between 1 and 1,200.",
+      durationUnitLabel: "Duration unit",
+      durationUnits: {
+        years: "Years",
+        months: "Months",
+      },
+      frequencyLabel: "Compounding frequency",
+      frequencyHint:
+        "How often interest is compounded. Daily compounding uses a 365-day year.",
+      frequencies: {
+        annual: "Annually",
+        semiannual: "Semiannually",
+        quarterly: "Quarterly",
+        monthly: "Monthly",
+        daily: "Daily",
+      },
+      timingLabel: "Contribute at the start of each month",
+      timingHint: "Off means contributions are added at the end of each month.",
+      requiredMonthlyLabel: "Required monthly savings",
+      targetResultLabel: "Target amount",
+      currentResultLabel: "Current savings",
+      contributionsLabel: "Total contributions",
+      interestLabel: "Interest earned",
+      finalLabel: "Projected final savings",
+      remainingLabel: "Remaining amount",
+      progressLabel: "Savings progress",
+      successAlreadyReached: "Your current savings already meet this goal.",
+      successInterestOnly:
+        "No monthly savings required — your current savings are projected to reach the goal through interest alone.",
+      growthHeading: "Annual savings plan",
+      growthHint:
+        "Each row covers 12 months; the final row may cover a partial year.",
+      growthEmpty: "Calculate a savings plan to see the annual breakdown.",
+      growthScrollLabel: "Scrollable annual savings plan table",
+      tableCaption: "Annual savings plan",
+      tableHeaders: {
+        year: "Year",
+        openingBalance: "Opening balance",
+        contributions: "Contributions",
+        interest: "Interest earned",
+        closingBalance: "Closing balance",
+        progress: "Progress",
+      },
+      yearLabel: "Year {year}",
+      partialYearLabel: "Year {year} ({duration})",
+      monthSingular: "month",
+      monthPlural: "months",
+      copySummary: "Copy summary",
+      copyText:
+        "Savings goal: {target}\nCurrent savings: {current}\nAnnual interest rate: {rate}%\nCompounding: {frequency}\nDuration: {duration}\nContribution timing: {timing}\nRequired monthly savings: {required}\nTotal contributions: {contributions}\nInterest earned: {interest}\nProjected final savings: {final}",
+      caption: "{amount} goal over {duration}.",
+      formulas: {
+        template: "C = (FV − P × g^N) × i ÷ (g^N − 1)",
+        describe:
+          "{rate}% nominal = {monthlyRate}% per month after compounding.",
+      },
+      timingValues: {
+        end: "End of month",
+        beginning: "Beginning of month",
+      },
+      errors: {
+        target: "Enter a savings goal greater than zero.",
+        current: "Enter current savings of 0 or more.",
+        rate: "Enter an interest rate of 0 or more.",
+        duration: "Enter a target duration between 1 and 1,200 whole months.",
+        fractionalDuration:
+          "The duration must resolve to a whole number of months.",
+        frequency: "Choose a supported compounding frequency.",
+        timing: "Choose a supported contribution timing.",
+        overflow:
+          "The result is outside the supported numeric range. Try smaller values.",
+      },
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Enter your savings goal, current savings, nominal annual rate, target duration, and compounding frequency. Choose whether monthly savings are added at the start or end of each month, then select Calculate. The calculator shows the required monthly savings, the projected final balance, and a year-by-year plan.",
+            "Everything runs in your browser. Changing any input clears the previous result so the figures on screen always match the current inputs.",
+          ],
+        },
+        {
+          heading: "How required monthly savings are calculated",
+          paragraphs: [
+            "The target is reduced by the future value of your current savings, `FV_initial = P × g^N`. The remainder is divided by the future-value factor of a monthly annuity. End-of-month savings use `((g^N − 1) ÷ i)`; beginning-of-month savings use the same factor multiplied by `g`.",
+            "When the interest rate is zero, the required amount is simply `(FV − P) ÷ N`.",
+            "If your current savings already meet the goal, the required monthly amount is zero. If they are projected to reach the goal through interest alone, no monthly savings are required and the annual projection is still shown.",
+          ],
+        },
+        {
+          heading: "Interest, compounding, and timing",
+          paragraphs: [
+            "The selected compounding frequency defines an equivalent monthly growth factor `g = (1 + r/m)^(m/12)`. Interest is accrued monthly at `i = g − 1`, matching the Compound Interest Calculator. Daily compounding uses a fixed 365-day year; leap years are ignored.",
+            "Beginning-of-month savings earn interest in the month they are added. End-of-month savings begin earning in the following month.",
+          ],
+        },
+        {
+          heading: "Rounding and reaching the target",
+          paragraphs: [
+            "The required monthly amount is rounded up to the next cent. The annual plan is then rebuilt with that rounded amount, so the projected final balance reaches or slightly exceeds the target. It never falls short because of rounding.",
+            "A projected balance above the target is a small surplus from rounding up, not an error.",
+          ],
+        },
+        {
+          heading: "Assumptions and limits",
+          items: [
+            "The annual rate is nominal, fixed for the whole duration, and compounded at the selected frequency.",
+            "Savings are monthly only and are made at the start or end of each month. No withdrawals, missed savings, step-ups, fees, taxes, insurance, or inflation are modelled.",
+            "The calculator is currency-neutral. It does not convert currencies or add a currency symbol.",
+            "Results use full precision internally. Money is shown with two decimal places, so the annual rows can differ from the exact totals by a small rounding amount.",
+            "The duration must resolve to a whole number of months between 1 and 1,200 (100 years).",
+          ],
+        },
+        {
+          heading: "Privacy",
+          paragraphs: [
+            "Everything is calculated in your browser. Your savings goal, current savings, and annual plan are never uploaded, stored in browser storage, or sent to a third-party service.",
           ],
         },
       ],

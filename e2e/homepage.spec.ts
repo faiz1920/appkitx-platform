@@ -83,7 +83,7 @@ test("every shipped tool is an interactive card and footer link", async ({
   await page.goto("/");
 
   const grid = page.locator("#tools");
-  await expect(grid.getByText("Open tool")).toHaveCount(15);
+  await expect(grid.getByText("Open tool")).toHaveCount(16);
   await expect(grid.getByText("Coming soon")).toHaveCount(0);
 
   const footer = page.getByRole("contentinfo");
@@ -94,6 +94,7 @@ test("every shipped tool is an interactive card and footer link", async ({
     ["Loan Calculator", "/loan-calculator/"],
     ["EMI Calculator", "/emi-calculator/"],
     ["Compound Interest Calculator", "/compound-interest-calculator/"],
+    ["Savings Goal Calculator", "/savings-goal-calculator/"],
     ["Scientific Calculator", "/scientific-calculator/"],
     ["Word Counter", "/word-counter/"],
     ["Case Converter", "/case-converter/"],
@@ -110,7 +111,7 @@ test("every shipped tool is an interactive card and footer link", async ({
 
   await page.goto("/es/");
   const gridEs = page.locator("#tools");
-  await expect(gridEs.getByText("Abrir herramienta")).toHaveCount(15);
+  await expect(gridEs.getByText("Abrir herramienta")).toHaveCount(16);
   await expect(gridEs.getByText("Próximamente")).toHaveCount(0);
   await expect(
     gridEs.getByRole("link", { name: "Conversor de unidades" }),
@@ -124,6 +125,9 @@ test("every shipped tool is an interactive card and footer link", async ({
   await expect(
     gridEs.getByRole("link", { name: "Calculadora de interés compuesto" }),
   ).toHaveAttribute("href", "/es/compound-interest-calculator/");
+  await expect(
+    gridEs.getByRole("link", { name: "Calculadora de objetivo de ahorro" }),
+  ).toHaveAttribute("href", "/es/savings-goal-calculator/");
   await expect(
     gridEs.getByRole("link", { name: "Calculadora científica" }),
   ).toHaveAttribute("href", "/es/scientific-calculator/");

@@ -10,7 +10,7 @@ import {
   isCategoryPublished,
   toolCategory,
 } from "../lib/categories";
-import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
+import piggyBankIcon from "lucide-static/icons/piggy-bank.svg?raw";
 import landmarkIcon from "lucide-static/icons/landmark.svg?raw";
 import table2Icon from "lucide-static/icons/table-2.svg?raw";
 
@@ -28,14 +28,14 @@ const relatedHref = isCategoryPublished(category)
   : undefined;
 
 const toolIcons: Record<string, string> = {
-  calculator: calculatorIcon,
+  "piggy-bank": piggyBankIcon,
   landmark: landmarkIcon,
   "table-2": table2Icon,
 };
 const relatedTools = resolveLocalizedTools(locale, [
+  "/savings-goal-calculator",
   "/loan-calculator",
   "/emi-calculator",
-  "/percentage-calculator",
 ]).map((related) => ({
   title: related.title,
   description: related.description,

@@ -27,6 +27,8 @@ const REPRESENTATIVE_ROUTES = [
   { path: "/es/emi-calculator/", lang: "es" },
   { path: "/compound-interest-calculator/", lang: "en" },
   { path: "/es/compound-interest-calculator/", lang: "es" },
+  { path: "/savings-goal-calculator/", lang: "en" },
+  { path: "/es/savings-goal-calculator/", lang: "es" },
   { path: "/scientific-calculator/", lang: "en" },
   { path: "/es/scientific-calculator/", lang: "es" },
   { path: "/qr-code-generator/", lang: "en" },

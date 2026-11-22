@@ -98,11 +98,11 @@ export const es: Dictionary = {
       page: {
         title: "Calculadoras online gratis — AppKitX",
         metaDescription:
-          "Calculadoras gratis de porcentajes, descuentos, préstamos, EMI, interés compuesto y expresiones científicas: variaciones, amortización, crecimiento de inversiones y trigonometría en grados o radianes.",
+          "Calculadoras gratis de porcentajes, descuentos, préstamos, EMI, interés compuesto, objetivos de ahorro y expresiones científicas: variaciones, amortización, crecimiento de inversiones y trigonometría en grados o radianes.",
         toolsHeading: "Calculadoras online gratis",
         intro: [
-          "Las calculadoras cubren las cuentas del día a día y las expresiones científicas: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales, comprueba cuánto ahorras con un descuento y su precio final, estima la cuota mensual, los intereses totales y el coste total de un préstamo, consulta un calendario de amortización año a año con el desglose de principal e intereses, proyecta el crecimiento de una inversión con interés compuesto y aportes mensuales opcionales, y evalúa expresiones con paréntesis, potencias, raíces, logaritmos y trigonometría.",
-          "Funcionan por completo en tu navegador, muestran la fórmula o la expresión de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes —las calculadoras de descuentos, préstamos, EMI e interés compuesto son neutrales respecto a la moneda— y la calculadora científica respeta el modo de grados o radianes seleccionado.",
+          "Las calculadoras cubren las cuentas del día a día y las expresiones científicas: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales, comprueba cuánto ahorras con un descuento y su precio final, estima la cuota mensual, los intereses totales y el coste total de un préstamo, consulta un calendario de amortización año a año con el desglose de principal e intereses, proyecta el crecimiento de una inversión con interés compuesto y aportes mensuales opcionales, calcula el ahorro mensual necesario para alcanzar un objetivo, y evalúa expresiones con paréntesis, potencias, raíces, logaritmos y trigonometría.",
+          "Funcionan por completo en tu navegador, muestran la fórmula o la expresión de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes —las calculadoras de descuentos, préstamos, EMI, interés compuesto y objetivos de ahorro son neutrales respecto a la moneda— y la calculadora científica respeta el modo de grados o radianes seleccionado.",
         ],
       },
     },
@@ -729,6 +729,157 @@ export const es: Dictionary = {
           heading: "Privacidad",
           paragraphs: [
             "Todo se calcula en tu navegador. Los valores de la inversión y la tabla de crecimiento nunca se suben, se guardan en el almacenamiento del navegador ni se envían a un servicio de terceros.",
+          ],
+        },
+      ],
+    },
+    savingsGoal: {
+      title: "Calculadora de objetivo de ahorro — AppKitX",
+      metaDescription:
+        "Calculadora de objetivo de ahorro gratis: calcula cuánto necesitas ahorrar cada mes para alcanzar una meta, con intereses opcionales y un plan anual.",
+      name: "Calculadora de objetivo de ahorro",
+      description:
+        "Calcula el ahorro mensual necesario para alcanzar un objetivo financiero, con intereses opcionales y un plan anual.",
+      cardDescription: "Ahorro mensual necesario para alcanzar un objetivo.",
+      keywords: [
+        "calculadora de objetivo de ahorro",
+        "meta de ahorro",
+        "calculadora de ahorro mensual",
+        "cuánto ahorrar al mes",
+        "plan de ahorro",
+        "alcanzar meta de ahorro",
+        "objetivo de ahorro",
+        "ahorro mensual",
+        "ahorro objetivo",
+        "ahorro mensual necesario",
+      ],
+      targetLabel: "Objetivo de ahorro",
+      targetHint:
+        "El importe que quieres alcanzar, en cualquier moneda. No se aplica conversión de divisas.",
+      currentLabel: "Ahorros actuales",
+      currentHint:
+        "Lo que ya tienes reservado. Déjalo vacío si empiezas desde cero.",
+      rateLabel: "Tipo de interés anual (%)",
+      rateHint:
+        "El tipo nominal anual. Déjalo vacío o escribe 0 si tus ahorros no generan intereses.",
+      durationLabel: "Plazo del objetivo",
+      durationHint:
+        "Cuánto tiempo tienes para alcanzar el objetivo. Debe resolverse en un número entero de meses entre 1 y 1.200.",
+      durationUnitLabel: "Unidad del plazo",
+      durationUnits: {
+        years: "Años",
+        months: "Meses",
+      },
+      frequencyLabel: "Frecuencia de capitalización",
+      frequencyHint:
+        "Con qué frecuencia se capitalizan los intereses. La capitalización diaria usa un año de 365 días.",
+      frequencies: {
+        annual: "Anual",
+        semiannual: "Semestral",
+        quarterly: "Trimestral",
+        monthly: "Mensual",
+        daily: "Diaria",
+      },
+      timingLabel: "Aportar al inicio de cada mes",
+      timingHint: "Desactivado: los aportes se añaden al final de cada mes.",
+      requiredMonthlyLabel: "Ahorro mensual necesario",
+      targetResultLabel: "Importe objetivo",
+      currentResultLabel: "Ahorros actuales",
+      contributionsLabel: "Aportes totales",
+      interestLabel: "Intereses generados",
+      finalLabel: "Ahorro final proyectado",
+      remainingLabel: "Importe restante",
+      progressLabel: "Progreso del ahorro",
+      successAlreadyReached: "Tus ahorros actuales ya alcanzan este objetivo.",
+      successInterestOnly:
+        "No se requiere ahorro mensual: tus ahorros actuales alcanzarán el objetivo solo con los intereses.",
+      growthHeading: "Plan de ahorro anual",
+      growthHint:
+        "Cada fila cubre 12 meses; la última fila puede cubrir un año parcial.",
+      growthEmpty: "Calcula un plan de ahorro para ver el desglose anual.",
+      growthScrollLabel: "Tabla desplazable del plan de ahorro anual",
+      tableCaption: "Plan de ahorro anual",
+      tableHeaders: {
+        year: "Año",
+        openingBalance: "Saldo inicial",
+        contributions: "Aportes",
+        interest: "Intereses generados",
+        closingBalance: "Saldo final",
+        progress: "Progreso",
+      },
+      yearLabel: "Año {year}",
+      partialYearLabel: "Año {year} ({duration})",
+      monthSingular: "mes",
+      monthPlural: "meses",
+      copySummary: "Copiar resumen",
+      copyText:
+        "Objetivo de ahorro: {target}\nAhorros actuales: {current}\nTipo de interés anual: {rate} %\nCapitalización: {frequency}\nDuración: {duration}\nMomento del aporte: {timing}\nAhorro mensual necesario: {required}\nAportes totales: {contributions}\nIntereses generados: {interest}\nAhorro final proyectado: {final}",
+      caption: "{amount} de objetivo en {duration}.",
+      formulas: {
+        template: "C = (FV − P × g^N) × i ÷ (g^N − 1)",
+        describe:
+          "{rate} % nominal = {monthlyRate} % al mes tras la capitalización.",
+      },
+      timingValues: {
+        end: "Final de mes",
+        beginning: "Inicio de mes",
+      },
+      errors: {
+        target: "Escribe un objetivo de ahorro mayor que cero.",
+        current: "Escribe ahorros actuales de 0 o más.",
+        rate: "Escribe un tipo de interés de 0 o más.",
+        duration: "Escribe un plazo de entre 1 y 1.200 meses enteros.",
+        fractionalDuration:
+          "El plazo debe resolverse en un número entero de meses.",
+        frequency: "Elige una frecuencia de capitalización admitida.",
+        timing: "Elige un momento de aporte admitido.",
+        overflow:
+          "El resultado está fuera del rango numérico admitido. Prueba con valores más pequeños.",
+      },
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Introduce tu objetivo de ahorro, los ahorros actuales, el tipo nominal anual, el plazo del objetivo y la frecuencia de capitalización. Indica si los ahorros mensuales se añaden al inicio o al final de cada mes y pulsa Calcular. La calculadora muestra el ahorro mensual necesario, el saldo final proyectado y un plan año a año.",
+            "Todo se ejecuta en tu navegador. Al cambiar cualquier dato se borra el resultado anterior para que las cifras en pantalla siempre correspondan a los valores actuales.",
+          ],
+        },
+        {
+          heading: "Cómo se calcula el ahorro mensual necesario",
+          paragraphs: [
+            "El objetivo se reduce con el valor futuro de tus ahorros actuales, `FV_initial = P × g^N`. El resto se divide entre el factor de valor futuro de una anualidad mensual. Los aportes al final del mes usan `((g^N − 1) ÷ i)`; los aportes al inicio del mes usan el mismo factor multiplicado por `g`.",
+            "Cuando el tipo de interés es cero, el importe necesario es simplemente `(FV − P) ÷ N`.",
+            "Si tus ahorros actuales ya alcanzan el objetivo, el ahorro mensual necesario es cero. Si se prevé que lo alcancen solo con intereses, no se requiere ahorro mensual y el plan anual se sigue mostrando.",
+          ],
+        },
+        {
+          heading: "Intereses, capitalización y momento del aporte",
+          paragraphs: [
+            "La frecuencia de capitalización elegida define un factor mensual equivalente `g = (1 + r/m)^(m/12)`. Los intereses se acumulan mensualmente a `i = g − 1`, igual que en la Calculadora de interés compuesto. La capitalización diaria usa un año fijo de 365 días; los años bisiestos se ignoran.",
+            "Los aportes al inicio del mes generan intereses en el mismo mes. Los aportes al final del mes empiezan a generar intereses en el mes siguiente.",
+          ],
+        },
+        {
+          heading: "Redondeo y alcance del objetivo",
+          paragraphs: [
+            "El ahorro mensual necesario se redondea hacia arriba al siguiente céntimo. Después se reconstruye el plan anual con ese importe redondeado, de modo que el saldo final proyectado alcanza o supera ligeramente el objetivo. Nunca se queda corto por el redondeo.",
+            "Un saldo proyectado por encima del objetivo es un pequeño excedente del redondeo, no un error.",
+          ],
+        },
+        {
+          heading: "Supuestos y límites",
+          items: [
+            "El tipo anual es nominal, fijo durante todo el plazo y se capitaliza con la frecuencia elegida.",
+            "Los ahorros son solo mensuales y se realizan al inicio o al final de cada mes. No se modelan retiradas, ahorros impagados, aumentos de aporte, comisiones, impuestos, seguros ni inflación.",
+            "La calculadora es neutral respecto a la moneda. No convierte divisas ni añade símbolos de moneda.",
+            "Los resultados usan precisión completa internamente. El dinero se muestra con dos decimales, así que las filas anuales pueden diferir de los totales exactos en un pequeño ajuste de redondeo.",
+            "El plazo debe resolverse en un número entero de meses entre 1 y 1.200 (100 años).",
+          ],
+        },
+        {
+          heading: "Privacidad",
+          paragraphs: [
+            "Todo se calcula en tu navegador. Tu objetivo de ahorro, tus ahorros actuales y el plan anual nunca se suben, se guardan en el almacenamiento del navegador ni se envían a un servicio de terceros.",
           ],
         },
       ],

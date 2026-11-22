@@ -169,6 +169,7 @@ describe("locale path helpers", () => {
         "/percentage-calculator",
         "/discount-calculator",
         "/calculators",
+        "/savings-goal-calculator",
         "/base64-encoder",
         "/json-formatter",
         "/developer-tools",

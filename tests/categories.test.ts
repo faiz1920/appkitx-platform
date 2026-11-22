@@ -72,6 +72,7 @@ describe("category membership", () => {
       "/loan-calculator",
       "/emi-calculator",
       "/compound-interest-calculator",
+      "/savings-goal-calculator",
       "/scientific-calculator",
     ]);
     expect(toolsInCategory("Converters").map((tool) => tool.href)).toEqual([
@@ -97,6 +98,7 @@ describe("category membership", () => {
     expect(toolCategory("/loan-calculator")).toBe("Calculators");
     expect(toolCategory("/emi-calculator")).toBe("Calculators");
     expect(toolCategory("/compound-interest-calculator")).toBe("Calculators");
+    expect(toolCategory("/savings-goal-calculator")).toBe("Calculators");
     expect(toolCategory("/scientific-calculator")).toBe("Calculators");
     expect(toolCategory("/unit-converter")).toBe("Converters");
     expect(toolCategory("/speed-converter")).toBe("Converters");
