@@ -104,6 +104,13 @@ describe("localizedToolCatalog", () => {
     expect(savings?.title).toBe("Calculadora de objetivo de ahorro");
     expect(savings?.category).toBe("Calculadoras");
     expect(savings?.keywords).toContain("objetivo de ahorro");
+
+    const retirement = catalog.find(
+      (tool) => tool.href === "/retirement-calculator",
+    );
+    expect(retirement?.title).toBe("Calculadora de jubilación");
+    expect(retirement?.category).toBe("Calculadoras");
+    expect(retirement?.keywords).toContain("retiro");
   });
 
   it("keeps the English card text identical to the registry descriptions", () => {

@@ -86,11 +86,11 @@ export const en: Dictionary = {
       page: {
         title: "Free Online Calculators — AppKitX",
         metaDescription:
-          "Free calculators for percentages, discounts, loans, EMIs, compound interest, savings goals, and scientific expressions: percent change, amortization, investment growth, and trigonometry in degrees or radians.",
+          "Free calculators for percentages, discounts, loans, EMIs, compound interest, savings goals, retirement projections, and scientific expressions: percent change, amortization, investment growth, and trigonometry in degrees or radians.",
         toolsHeading: "Free online calculators",
         intro: [
-          "The calculators cover everyday money math and scientific expressions: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, see what a discount saves and its final price, estimate a loan's monthly payment, total interest, and total cost, inspect a year-by-year EMI repayment schedule with principal and interest balances, project investment growth with compound interest and optional monthly contributions, work out the monthly savings needed to reach a goal, and evaluate expressions with parentheses, powers, roots, logarithms, and trigonometry.",
-          "They run entirely in your browser, show the formula or expression behind each result, and let you copy it with one click. Money amounts are treated exactly as you enter them — the discount, loan, EMI, compound interest, and savings goal calculators are currency-neutral — and the scientific calculator respects the selected degrees or radians mode.",
+          "The calculators cover everyday money math and scientific expressions: find X% of a number, work out what percent one value is of another, measure a percentage increase or decrease, see what a discount saves and its final price, estimate a loan's monthly payment, total interest, and total cost, inspect a year-by-year EMI repayment schedule with principal and interest balances, project investment growth with compound interest and optional monthly contributions, work out the monthly savings needed to reach a goal, project a retirement corpus by age or the monthly savings needed to reach one, and evaluate expressions with parentheses, powers, roots, logarithms, and trigonometry.",
+          "They run entirely in your browser, show the formula or expression behind each result, and let you copy it with one click. Money amounts are treated exactly as you enter them — the discount, loan, EMI, compound interest, savings goal, and retirement calculators are currency-neutral — and the scientific calculator respects the selected degrees or radians mode.",
         ],
       },
     },
@@ -863,6 +863,196 @@ export const en: Dictionary = {
           heading: "Privacy",
           paragraphs: [
             "Everything is calculated in your browser. Your savings goal, current savings, and annual plan are never uploaded, stored in browser storage, or sent to a third-party service.",
+          ],
+        },
+      ],
+    },
+    retirementCalculator: {
+      title: "Retirement Calculator — AppKitX",
+      metaDescription:
+        "Free retirement calculator: project your retirement corpus from current savings and monthly contributions, or find the monthly savings needed to reach a target.",
+      name: "Retirement Calculator",
+      description:
+        "Project your retirement corpus from current savings and monthly contributions, or calculate the monthly savings needed to reach a target.",
+      cardDescription:
+        "Projected retirement corpus and required monthly savings.",
+      keywords: [
+        "retirement calculator",
+        "retirement corpus calculator",
+        "retirement savings calculator",
+        "how much to save for retirement",
+        "retirement projection",
+        "retirement corpus",
+        "monthly retirement savings",
+        "required retirement savings",
+        "retirement planning calculator",
+        "projected retirement savings",
+        "savings needed for retirement",
+        "retirement calculator by age",
+      ],
+      modeLegend: "Calculation mode",
+      modes: {
+        projection: {
+          optionLabel: "Projected corpus",
+          hint: "Estimate the corpus you could accumulate by retirement.",
+        },
+        required: {
+          optionLabel: "Required monthly savings",
+          hint: "Find the monthly amount needed to reach a target corpus.",
+        },
+      },
+      currentAgeLabel: "Current age",
+      currentAgeHint: "Your age today in whole years, between 18 and 99.",
+      retirementAgeLabel: "Retirement age",
+      retirementAgeHint:
+        "The age you plan to stop saving for retirement, in whole years. It must be later than your current age.",
+      currentSavingsLabel: "Current retirement savings",
+      currentSavingsHint:
+        "What you have already set aside for retirement, in any currency. Leave blank if you are starting from zero.",
+      contributionLabel: "Monthly contribution",
+      contributionHint:
+        "The amount you add each month, in any currency. Leave blank if you do not contribute monthly.",
+      targetLabel: "Target retirement corpus",
+      targetHint:
+        "The nominal amount you want to reach by retirement, in any currency. No currency conversion is applied.",
+      rateLabel: "Expected annual return (%)",
+      rateHint:
+        "A nominal annual return you assume, not a guaranteed rate. Leave blank or enter 0 to assume no growth.",
+      inflationLabel: "Expected annual inflation (%)",
+      inflationHint:
+        "Optional. Adds an inflation-adjusted estimate in today's money; the nominal projection does not change. Leave blank to skip it.",
+      assumptionsHeading: "Assumptions",
+      frequencyLabel: "Compounding frequency",
+      frequencyHint:
+        "How often the return is compounded. Daily compounding uses a 365-day year.",
+      frequencies: {
+        annual: "Annually",
+        semiannual: "Semiannually",
+        quarterly: "Quarterly",
+        monthly: "Monthly",
+        daily: "Daily",
+      },
+      timingLabel: "Contribute at the start of each month",
+      timingHint: "Off means contributions are added at the end of each month.",
+      projectedCorpusLabel: "Projected retirement corpus",
+      requiredMonthlyLabel: "Required monthly savings",
+      targetResultLabel: "Nominal target corpus",
+      currentResultLabel: "Current retirement savings",
+      contributionsLabel: "Total future contributions",
+      investedLabel: "Total invested",
+      interestLabel: "Projected investment growth",
+      projectedResultLabel: "Projected corpus at retirement",
+      realValueLabel: "Inflation-adjusted value",
+      realTargetLabel: "Inflation-adjusted target",
+      yearsLabel: "Years to retirement",
+      yearsValue: "{count} years",
+      yearValue: "{count} year",
+      successAlreadyCovered:
+        "Your current retirement savings already meet the target. No monthly contribution is required under these assumptions.",
+      successInterestOnly:
+        "No monthly contribution required — your current savings are projected to reach the target through growth alone.",
+      growthHeading: "Annual retirement projection",
+      growthHint:
+        "Each row covers 12 months and shows the age reached at the end of that year. Values are nominal.",
+      growthEmpty: "Calculate a projection to see the annual breakdown.",
+      growthScrollLabel: "Scrollable annual retirement projection table",
+      tableCaption: "Annual retirement projection",
+      tableHeaders: {
+        age: "Age",
+        year: "Year",
+        openingBalance: "Opening balance",
+        contributions: "Contributions",
+        interest: "Investment growth",
+        closingBalance: "Closing balance",
+      },
+      ageLabel: "Age {age}",
+      copySummary: "Copy summary",
+      copyTextProjection:
+        "Retirement projection\nCurrent age: {currentAge}\nRetirement age: {retirementAge}\nCurrent retirement savings: {current}\nMonthly contribution: {contribution}\nExpected annual return: {rate}%\nCompounding: {frequency}\nContribution timing: {timing}\nYears to retirement: {duration}\nProjected retirement corpus: {corpus}\nTotal invested: {invested}\nProjected investment growth: {growth}",
+      copyTextRequired:
+        "Retirement savings plan\nCurrent age: {currentAge}\nRetirement age: {retirementAge}\nCurrent retirement savings: {current}\nNominal target corpus: {target}\nExpected annual return: {rate}%\nCompounding: {frequency}\nContribution timing: {timing}\nYears to retirement: {duration}\nRequired monthly savings: {required}\nTotal future contributions: {contributions}\nTotal invested: {invested}\nProjected investment growth: {growth}\nProjected corpus at retirement: {corpus}",
+      copyRealLine: "Inflation-adjusted value: {value}",
+      copyRealTargetLine: "Inflation-adjusted target: {value}",
+      captionProjection: "Projected corpus of {corpus} at age {age}.",
+      captionRequired: "{required} per month to reach {target} by age {age}.",
+      formulas: {
+        projection: {
+          template: "FV = P × g^N + C × ((g^N − 1) ÷ i) × k",
+          describe:
+            "{rate}% nominal = {monthlyRate}% per month after compounding.",
+        },
+        required: {
+          template: "C = (T − P × g^N) × i ÷ ((g^N − 1) × k)",
+          describe:
+            "{rate}% nominal = {monthlyRate}% per month after compounding.",
+        },
+      },
+      timingValues: {
+        end: "End of month",
+        beginning: "Beginning of month",
+      },
+      errors: {
+        currentAge: "Enter a current age between 18 and 99.",
+        retirementAge: "Enter a retirement age between 19 and 100.",
+        retirementOrder: "Retirement age must be later than current age.",
+        savings: "Enter current retirement savings of 0 or more.",
+        contribution: "Enter a monthly contribution of 0 or more.",
+        target: "Enter a target retirement corpus greater than zero.",
+        rate: "Enter an expected annual return of 0 or more.",
+        inflation: "Enter an expected annual inflation rate of 0 or more.",
+        frequency: "Choose a supported compounding frequency.",
+        timing: "Choose a supported contribution timing.",
+        noInvestment:
+          "Enter current retirement savings or a monthly contribution greater than zero.",
+        overflow:
+          "The result is outside the supported numeric range. Try smaller values.",
+      },
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Enter your current age, retirement age, and current retirement savings. In projected corpus mode, add a monthly contribution and see what you could accumulate by retirement. In required monthly savings mode, enter a nominal target corpus and see the monthly amount needed to reach it.",
+            "Everything runs in your browser. Changing any input clears the previous result so the figures on screen always match the current inputs.",
+          ],
+        },
+        {
+          heading: "Projected corpus and required monthly savings",
+          paragraphs: [
+            "The horizon is the whole number of years between your current age and retirement age, converted to months: `N = (retirementAge − currentAge) × 12`. Current savings grow for the full horizon: `FV_existing = P × g^N`.",
+            "In projected corpus mode, the corpus is `FV = P × g^N + C × ((g^N − 1) ÷ i) × k`, where `C` is the monthly contribution and `k` is 1 for end-of-month contributions or `g` for beginning-of-month contributions.",
+            "In required monthly savings mode, the target is reduced by the future value of current savings and divided by the same annuity factor: `C = (T − P × g^N) × i ÷ ((g^N − 1) × k)`. When the return is zero, the required amount is simply `(T − P) ÷ N`.",
+          ],
+        },
+        {
+          heading: "Return, compounding, and timing",
+          paragraphs: [
+            "The selected compounding frequency defines an equivalent monthly growth factor `g = (1 + r/m)^(m/12)`. Interest is accrued monthly at `i = g − 1`, matching the Compound Interest Calculator. Daily compounding uses a fixed 365-day year; leap years are ignored.",
+            "Beginning-of-month contributions earn growth in the month they are added. End-of-month contributions begin earning in the following month.",
+          ],
+        },
+        {
+          heading: "Inflation-adjusted values",
+          paragraphs: [
+            "Inflation-adjusted values are estimates of today's purchasing power. The nominal projection is calculated separately.",
+            "Entering an inflation rate does not change the nominal return, the nominal projection, or the target. It only adds `nominal ÷ (1 + inflation)^years` as a second view. The annual table stays nominal.",
+            "The target corpus is always nominal. The inflation-adjusted target shows what that nominal amount is worth in today's money, not a target that changes automatically.",
+          ],
+        },
+        {
+          heading: "Assumptions and limits",
+          items: [
+            "The expected annual return is a nominal assumption you enter. It is not a guarantee, a forecast, or personalized investment advice.",
+            "Contributions are monthly only and constant for the whole horizon. No annual contribution increases, withdrawals, missed contributions, fees, taxes, insurance, pensions, government benefits, or healthcare costs are modelled.",
+            "Ages are whole years. The projection horizon is 1 to 82 years (12 to 984 months).",
+            "The required monthly amount is rounded up to the next cent and the projection is rebuilt with that amount, so the final balance reaches or slightly exceeds the target.",
+            "The calculator is currency-neutral. It does not convert currencies or add a currency symbol.",
+            "Results use full precision internally. Money is shown with two decimal places, so annual rows can differ from exact totals by a small rounding amount.",
+          ],
+        },
+        {
+          heading: "Privacy",
+          paragraphs: [
+            "Everything is calculated in your browser. Your ages, savings, contributions, and annual projection are never uploaded, stored in browser storage, or sent to a third-party service.",
           ],
         },
       ],

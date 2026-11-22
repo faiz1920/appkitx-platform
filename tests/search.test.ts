@@ -127,7 +127,7 @@ describe("searchTools", () => {
     expect(
       searchTools("developer tools", fixture).map((tool) => tool.title),
     ).toEqual(["Beta Utility"]);
-    expect(searchTools("calculators", tools)).toHaveLength(7);
+    expect(searchTools("calculators", tools)).toHaveLength(8);
   });
 
   it("matches by description", () => {
@@ -174,6 +174,7 @@ describe("searchTools", () => {
       "/emi-calculator",
       "/compound-interest-calculator",
       "/savings-goal-calculator",
+      "/retirement-calculator",
       "/scientific-calculator",
       "/date-calculator",
       "/age-calculator",
@@ -256,7 +257,21 @@ describe("searchTools", () => {
     ).toEqual(["/savings-goal-calculator"]);
     expect(
       searchTools("monthly savings", tools).map((tool) => tool.href),
-    ).toEqual(["/savings-goal-calculator"]);
+    ).toEqual(["/savings-goal-calculator", "/retirement-calculator"]);
+  });
+
+  it("finds the retirement calculator by corpus and age terms", () => {
+    expect(searchTools("retirement", tools).map((tool) => tool.href)).toEqual([
+      "/retirement-calculator",
+    ]);
+    expect(
+      searchTools("retirement corpus", tools).map((tool) => tool.href),
+    ).toEqual(["/retirement-calculator"]);
+    expect(
+      searchTools("how much to save for retirement", tools).map(
+        (tool) => tool.href,
+      ),
+    ).toEqual(["/retirement-calculator"]);
   });
 
   it("finds the scientific calculator by name and keyword", () => {
@@ -350,6 +365,7 @@ describe("localized search catalogs", () => {
       "/emi-calculator",
       "/compound-interest-calculator",
       "/savings-goal-calculator",
+      "/retirement-calculator",
       "/scientific-calculator",
     ]);
   });
@@ -361,10 +377,23 @@ describe("localized search catalogs", () => {
     ).toEqual(["/savings-goal-calculator"]);
     expect(
       searchTools("ahorro mensual", catalog).map((tool) => tool.href),
-    ).toEqual(["/savings-goal-calculator"]);
+    ).toEqual(["/savings-goal-calculator", "/retirement-calculator"]);
     expect(
       searchTools("meta de ahorro", catalog).map((tool) => tool.href),
     ).toEqual(["/savings-goal-calculator"]);
+  });
+
+  it("finds the retirement calculator with localized terms", () => {
+    const catalog = localizedToolCatalog("es");
+    expect(searchTools("jubilación", catalog).map((tool) => tool.href)).toEqual(
+      ["/retirement-calculator"],
+    );
+    expect(searchTools("retiro", catalog).map((tool) => tool.href)).toEqual([
+      "/retirement-calculator",
+    ]);
+    expect(
+      searchTools("capital objetivo", catalog).map((tool) => tool.href),
+    ).toEqual(["/retirement-calculator"]);
   });
 
   it("finds the compound interest calculator with localized terms", () => {
@@ -449,6 +478,7 @@ describe("localized search catalogs", () => {
     );
     expect(searchTools("edad", catalog).map((tool) => tool.href)).toEqual([
       "/age-calculator",
+      "/retirement-calculator",
     ]);
     expect(
       searchTools("fecha y hora", catalog).map((tool) => tool.href),

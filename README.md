@@ -8,7 +8,7 @@ The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKi
 
 ## Status
 
-Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Sixteen tools are shipped, each built on the reusable `ToolLayout` template with cross-linked related tools:
+Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (teal "Precision" theme). Seventeen tools are shipped, each built on the reusable `ToolLayout` template with cross-linked related tools:
 
 | Tool                         | Category        | English route                   | Spanish route                      |
 | ---------------------------- | --------------- | ------------------------------- | ---------------------------------- |
@@ -18,6 +18,7 @@ Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (
 | EMI Calculator               | Calculators     | `/emi-calculator`               | `/es/emi-calculator`               |
 | Compound Interest Calculator | Calculators     | `/compound-interest-calculator` | `/es/compound-interest-calculator` |
 | Savings Goal Calculator      | Calculators     | `/savings-goal-calculator`      | `/es/savings-goal-calculator`      |
+| Retirement Calculator        | Calculators     | `/retirement-calculator`        | `/es/retirement-calculator`        |
 | Scientific Calculator        | Calculators     | `/scientific-calculator`        | `/es/scientific-calculator`        |
 | Unit Converter               | Converters      | `/unit-converter`               | `/es/unit-converter`               |
 | Speed Converter              | Converters      | `/speed-converter`              | `/es/speed-converter`              |
@@ -34,6 +35,12 @@ Category landing pages are live in both locales for [Calculators](/calculators),
 The M10.15 / M10.15.1 public-site release adds a bilingual PC-hardware editorial library: ten source-based guides in English (`/guides/`) and Spanish (`/es/guides/`), plus About, Contact, Privacy Policy, Terms of Use, and Affiliate Disclosure pages in both locales. The legal pages are deployed as visible drafts with review notices and must not be presented as final or compliant until the owner inputs in [PC-BUILDER-M10-15-OWNER-INPUTS.md](./PC-BUILDER-M10-15-OWNER-INPUTS.md) are resolved. The guides are research-based and do not claim hands-on testing, benchmarks, or product ownership. The public contact address is `appkitx@gmail.com`. The PC Builder remains development-only and has no public route, navigation entry, or sitemap entry.
 
 Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches the typed tool registry, localized per page. English is the source locale and Spanish (`/es/…`) is shipped as a provisional translation (see [Translation status](#translation-status)).
+
+### Retirement Calculator
+
+The Retirement Calculator (`/retirement-calculator`, `/es/retirement-calculator`) has two modes. **Projected corpus** estimates the retirement corpus from current savings, a constant monthly contribution, and an expected nominal annual return. **Required monthly savings** solves the monthly contribution needed to reach a nominal target corpus. Both modes take whole-year ages (18–99 current, 19–100 retirement, retirement later than current), support the same five compounding frequencies as the Compound Interest Calculator, and default to end-of-month contributions with an optional beginning-of-month toggle.
+
+Returns use the shared monthly-equivalent convention `g = (1 + r/m)^(m/12)`, `i = g − 1`. Inflation is optional and only adds an estimate in today's purchasing power (`nominal ÷ (1 + inflation)^years`); it never changes the nominal projection or the target, and the annual table stays nominal. Required monthly savings are rounded up to the next cent and verified against the target with a rebuilt ledger. The calculator projects accumulation only: it does not model withdrawals, retirement income, annual contribution increases, pensions, government benefits, taxes, fees, insurance, or healthcare, and it is currency-neutral. All projections are estimates based on user-entered assumptions, not guaranteed investment outcomes or personalized financial advice.
 
 ## Languages
 

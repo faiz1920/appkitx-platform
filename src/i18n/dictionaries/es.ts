@@ -98,11 +98,11 @@ export const es: Dictionary = {
       page: {
         title: "Calculadoras online gratis — AppKitX",
         metaDescription:
-          "Calculadoras gratis de porcentajes, descuentos, préstamos, EMI, interés compuesto, objetivos de ahorro y expresiones científicas: variaciones, amortización, crecimiento de inversiones y trigonometría en grados o radianes.",
+          "Calculadoras gratis de porcentajes, descuentos, préstamos, EMI, interés compuesto, objetivos de ahorro, jubilación y expresiones científicas: variaciones, amortización, crecimiento de inversiones y trigonometría en grados o radianes.",
         toolsHeading: "Calculadoras online gratis",
         intro: [
-          "Las calculadoras cubren las cuentas del día a día y las expresiones científicas: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales, comprueba cuánto ahorras con un descuento y su precio final, estima la cuota mensual, los intereses totales y el coste total de un préstamo, consulta un calendario de amortización año a año con el desglose de principal e intereses, proyecta el crecimiento de una inversión con interés compuesto y aportes mensuales opcionales, calcula el ahorro mensual necesario para alcanzar un objetivo, y evalúa expresiones con paréntesis, potencias, raíces, logaritmos y trigonometría.",
-          "Funcionan por completo en tu navegador, muestran la fórmula o la expresión de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes —las calculadoras de descuentos, préstamos, EMI, interés compuesto y objetivos de ahorro son neutrales respecto a la moneda— y la calculadora científica respeta el modo de grados o radianes seleccionado.",
+          "Las calculadoras cubren las cuentas del día a día y las expresiones científicas: calcula el X % de un número, averigua qué porcentaje representa un valor de otro, mide aumentos y disminuciones porcentuales, comprueba cuánto ahorras con un descuento y su precio final, estima la cuota mensual, los intereses totales y el coste total de un préstamo, consulta un calendario de amortización año a año con el desglose de principal e intereses, proyecta el crecimiento de una inversión con interés compuesto y aportes mensuales opcionales, calcula el ahorro mensual necesario para alcanzar un objetivo, proyecta un capital para la jubilación según tu edad o el ahorro mensual necesario para alcanzarlo, y evalúa expresiones con paréntesis, potencias, raíces, logaritmos y trigonometría.",
+          "Funcionan por completo en tu navegador, muestran la fórmula o la expresión de cada resultado y permiten copiarlo con un clic. Los importes se tratan tal como los escribes —las calculadoras de descuentos, préstamos, EMI, interés compuesto, objetivos de ahorro y jubilación son neutrales respecto a la moneda— y la calculadora científica respeta el modo de grados o radianes seleccionado.",
         ],
       },
     },
@@ -880,6 +880,200 @@ export const es: Dictionary = {
           heading: "Privacidad",
           paragraphs: [
             "Todo se calcula en tu navegador. Tu objetivo de ahorro, tus ahorros actuales y el plan anual nunca se suben, se guardan en el almacenamiento del navegador ni se envían a un servicio de terceros.",
+          ],
+        },
+      ],
+    },
+    retirementCalculator: {
+      title: "Calculadora de jubilación — AppKitX",
+      metaDescription:
+        "Calculadora de jubilación gratis: proyecta tu capital para la jubilación a partir de tus ahorros y aportes mensuales, o calcula el ahorro mensual necesario para alcanzar un objetivo.",
+      name: "Calculadora de jubilación",
+      description:
+        "Proyecta tu capital para la jubilación con tus ahorros actuales y aportes mensuales, o calcula el ahorro mensual necesario para alcanzar un objetivo.",
+      cardDescription:
+        "Capital proyectado para la jubilación y ahorro mensual necesario.",
+      keywords: [
+        "calculadora de jubilación",
+        "calculadora de retiro",
+        "retiro",
+        "capital para la jubilación",
+        "ahorro para la jubilación",
+        "cuánto ahorrar para la jubilación",
+        "proyección de jubilación",
+        "ahorro mensual para la jubilación",
+        "capital objetivo",
+        "planificación de la jubilación",
+        "ahorro necesario para la jubilación",
+        "calculadora de jubilación por edad",
+      ],
+      modeLegend: "Modo de cálculo",
+      modes: {
+        projection: {
+          optionLabel: "Capital proyectado",
+          hint: "Estima el capital que podrías acumular hasta la jubilación.",
+        },
+        required: {
+          optionLabel: "Ahorro mensual necesario",
+          hint: "Calcula el importe mensual necesario para alcanzar un capital objetivo.",
+        },
+      },
+      currentAgeLabel: "Edad actual",
+      currentAgeHint: "Tu edad hoy en años enteros, entre 18 y 99.",
+      retirementAgeLabel: "Edad de jubilación",
+      retirementAgeHint:
+        "La edad a la que prevés dejar de ahorrar para la jubilación, en años enteros. Debe ser posterior a tu edad actual.",
+      currentSavingsLabel: "Ahorros actuales para la jubilación",
+      currentSavingsHint:
+        "Lo que ya tienes reservado para la jubilación, en cualquier moneda. Déjalo vacío si empiezas desde cero.",
+      contributionLabel: "Aporte mensual",
+      contributionHint:
+        "El importe que añades cada mes, en cualquier moneda. Déjalo vacío si no aportas cada mes.",
+      targetLabel: "Capital objetivo para la jubilación",
+      targetHint:
+        "El importe nominal que quieres alcanzar al jubilarte, en cualquier moneda. No se aplica conversión de divisas.",
+      rateLabel: "Rentabilidad anual esperada (%)",
+      rateHint:
+        "Una rentabilidad nominal anual que asumes, no un tipo garantizado. Déjalo vacío o escribe 0 para no suponer crecimiento.",
+      inflationLabel: "Inflación anual esperada (%)",
+      inflationHint:
+        "Opcional. Añade una estimación ajustada por inflación en dinero de hoy; la proyección nominal no cambia. Déjalo vacío para omitirla.",
+      assumptionsHeading: "Supuestos",
+      frequencyLabel: "Frecuencia de capitalización",
+      frequencyHint:
+        "Con qué frecuencia se capitaliza la rentabilidad. La capitalización diaria usa un año de 365 días.",
+      frequencies: {
+        annual: "Anual",
+        semiannual: "Semestral",
+        quarterly: "Trimestral",
+        monthly: "Mensual",
+        daily: "Diaria",
+      },
+      timingLabel: "Aportar al inicio de cada mes",
+      timingHint: "Desactivado: los aportes se añaden al final de cada mes.",
+      projectedCorpusLabel: "Capital proyectado para la jubilación",
+      requiredMonthlyLabel: "Ahorro mensual necesario",
+      targetResultLabel: "Capital objetivo nominal",
+      currentResultLabel: "Ahorros actuales para la jubilación",
+      contributionsLabel: "Aportes futuros totales",
+      investedLabel: "Total invertido",
+      interestLabel: "Crecimiento proyectado de la inversión",
+      projectedResultLabel: "Capital proyectado al jubilarte",
+      realValueLabel: "Valor ajustado por inflación",
+      realTargetLabel: "Objetivo ajustado por inflación",
+      yearsLabel: "Años hasta la jubilación",
+      yearsValue: "{count} años",
+      yearValue: "{count} año",
+      successAlreadyCovered:
+        "Tus ahorros actuales para la jubilación ya alcanzan el objetivo. No se requiere aporte mensual con estos supuestos.",
+      successInterestOnly:
+        "No se requiere aporte mensual: tus ahorros actuales alcanzarán el objetivo solo con el crecimiento.",
+      growthHeading: "Proyección anual de la jubilación",
+      growthHint:
+        "Cada fila cubre 12 meses y muestra la edad alcanzada al final de ese año. Los valores son nominales.",
+      growthEmpty: "Calcula una proyección para ver el desglose anual.",
+      growthScrollLabel:
+        "Tabla desplazable de la proyección anual de la jubilación",
+      tableCaption: "Proyección anual de la jubilación",
+      tableHeaders: {
+        age: "Edad",
+        year: "Año",
+        openingBalance: "Saldo inicial",
+        contributions: "Aportes",
+        interest: "Crecimiento de la inversión",
+        closingBalance: "Saldo final",
+      },
+      ageLabel: "Edad {age}",
+      copySummary: "Copiar resumen",
+      copyTextProjection:
+        "Proyección de jubilación\nEdad actual: {currentAge}\nEdad de jubilación: {retirementAge}\nAhorros actuales para la jubilación: {current}\nAporte mensual: {contribution}\nRentabilidad anual esperada: {rate} %\nCapitalización: {frequency}\nMomento del aporte: {timing}\nAños hasta la jubilación: {duration}\nCapital proyectado para la jubilación: {corpus}\nTotal invertido: {invested}\nCrecimiento proyectado de la inversión: {growth}",
+      copyTextRequired:
+        "Plan de ahorro para la jubilación\nEdad actual: {currentAge}\nEdad de jubilación: {retirementAge}\nAhorros actuales para la jubilación: {current}\nCapital objetivo nominal: {target}\nRentabilidad anual esperada: {rate} %\nCapitalización: {frequency}\nMomento del aporte: {timing}\nAños hasta la jubilación: {duration}\nAhorro mensual necesario: {required}\nAportes futuros totales: {contributions}\nTotal invertido: {invested}\nCrecimiento proyectado de la inversión: {growth}\nCapital proyectado al jubilarte: {corpus}",
+      copyRealLine: "Valor ajustado por inflación: {value}",
+      copyRealTargetLine: "Objetivo ajustado por inflación: {value}",
+      captionProjection: "Capital proyectado de {corpus} a los {age} años.",
+      captionRequired:
+        "{required} al mes para alcanzar {target} a los {age} años.",
+      formulas: {
+        projection: {
+          template: "FV = P × g^N + C × ((g^N − 1) ÷ i) × k",
+          describe:
+            "{rate} % nominal = {monthlyRate} % al mes tras la capitalización.",
+        },
+        required: {
+          template: "C = (T − P × g^N) × i ÷ ((g^N − 1) × k)",
+          describe:
+            "{rate} % nominal = {monthlyRate} % al mes tras la capitalización.",
+        },
+      },
+      timingValues: {
+        end: "Final de mes",
+        beginning: "Inicio de mes",
+      },
+      errors: {
+        currentAge: "Escribe una edad actual entre 18 y 99.",
+        retirementAge: "Escribe una edad de jubilación entre 19 y 100.",
+        retirementOrder:
+          "La edad de jubilación debe ser posterior a la edad actual.",
+        savings: "Escribe ahorros actuales para la jubilación de 0 o más.",
+        contribution: "Escribe un aporte mensual de 0 o más.",
+        target:
+          "Escribe un capital objetivo para la jubilación mayor que cero.",
+        rate: "Escribe una rentabilidad anual esperada de 0 o más.",
+        inflation: "Escribe una inflación anual esperada de 0 o más.",
+        frequency: "Elige una frecuencia de capitalización admitida.",
+        timing: "Elige un momento de aporte admitido.",
+        noInvestment:
+          "Escribe ahorros actuales para la jubilación o un aporte mensual mayor que cero.",
+        overflow:
+          "El resultado está fuera del rango numérico admitido. Prueba con valores más pequeños.",
+      },
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Introduce tu edad actual, la edad de jubilación y tus ahorros actuales para la jubilación. En el modo de capital proyectado, añade un aporte mensual y observa cuánto podrías acumular hasta la jubilación. En el modo de ahorro mensual necesario, escribe un capital objetivo nominal y observa el importe mensual necesario para alcanzarlo.",
+            "Todo se ejecuta en tu navegador. Al cambiar cualquier dato se borra el resultado anterior para que las cifras en pantalla siempre correspondan a los valores actuales.",
+          ],
+        },
+        {
+          heading: "Capital proyectado y ahorro mensual necesario",
+          paragraphs: [
+            "El horizonte es el número entero de años entre tu edad actual y la edad de jubilación, convertido a meses: `N = (retirementAge − currentAge) × 12`. Tus ahorros actuales crecen durante todo el horizonte: `FV_existing = P × g^N`.",
+            "En el modo de capital proyectado, el capital es `FV = P × g^N + C × ((g^N − 1) ÷ i) × k`, donde `C` es el aporte mensual y `k` vale 1 para aportes al final del mes o `g` para aportes al inicio del mes.",
+            "En el modo de ahorro mensual necesario, el objetivo se reduce con el valor futuro de los ahorros actuales y se divide entre el mismo factor de anualidad: `C = (T − P × g^N) × i ÷ ((g^N − 1) × k)`. Cuando la rentabilidad es cero, el importe necesario es simplemente `(T − P) ÷ N`.",
+          ],
+        },
+        {
+          heading: "Rentabilidad, capitalización y momento del aporte",
+          paragraphs: [
+            "La frecuencia de capitalización elegida define un factor mensual equivalente `g = (1 + r/m)^(m/12)`. Los intereses se acumulan mensualmente a `i = g − 1`, igual que en la Calculadora de interés compuesto. La capitalización diaria usa un año fijo de 365 días; los años bisiestos se ignoran.",
+            "Los aportes al inicio del mes generan crecimiento en el mismo mes. Los aportes al final del mes empiezan a generarlo en el mes siguiente.",
+          ],
+        },
+        {
+          heading: "Valores ajustados por inflación",
+          paragraphs: [
+            "Los valores ajustados por inflación son estimaciones del poder de compra de hoy. La proyección nominal se calcula por separado.",
+            "Introducir una inflación no cambia la rentabilidad nominal, la proyección nominal ni el objetivo. Solo añade `nominal ÷ (1 + inflación)^años` como segunda vista. La tabla anual sigue siendo nominal.",
+            "El capital objetivo es siempre nominal. El objetivo ajustado por inflación muestra cuánto vale ese importe nominal en dinero de hoy, no un objetivo que cambie automáticamente.",
+          ],
+        },
+        {
+          heading: "Supuestos y límites",
+          items: [
+            "La rentabilidad anual esperada es un supuesto nominal que introduces. No es una garantía, una previsión ni asesoramiento financiero personalizado.",
+            "Los aportes son solo mensuales y constantes durante todo el horizonte. No se modelan aumentos anuales del aporte, retiradas, aportes impagados, comisiones, impuestos, seguros, pensiones, prestaciones públicas ni gastos sanitarios.",
+            "Las edades son años enteros. El horizonte de proyección va de 1 a 82 años (12 a 984 meses).",
+            "El ahorro mensual necesario se redondea hacia arriba al siguiente céntimo y la proyección se reconstruye con ese importe, de modo que el saldo final alcanza o supera ligeramente el objetivo.",
+            "La calculadora es neutral respecto a la moneda. No convierte divisas ni añade símbolos de moneda.",
+            "Los resultados usan precisión completa internamente. El dinero se muestra con dos decimales, así que las filas anuales pueden diferir de los totales exactos en un pequeño ajuste de redondeo.",
+          ],
+        },
+        {
+          heading: "Privacidad",
+          paragraphs: [
+            "Todo se calcula en tu navegador. Tus edades, ahorros, aportes y proyección anual nunca se suben, se guardan en el almacenamiento del navegador ni se envían a un servicio de terceros.",
           ],
         },
       ],
