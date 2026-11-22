@@ -127,7 +127,7 @@ describe("searchTools", () => {
     expect(
       searchTools("developer tools", fixture).map((tool) => tool.title),
     ).toEqual(["Beta Utility"]);
-    expect(searchTools("calculators", tools)).toHaveLength(6);
+    expect(searchTools("calculators", tools)).toHaveLength(7);
   });
 
   it("matches by description", () => {
@@ -173,6 +173,7 @@ describe("searchTools", () => {
       "/loan-calculator",
       "/emi-calculator",
       "/compound-interest-calculator",
+      "/savings-goal-calculator",
       "/scientific-calculator",
       "/date-calculator",
       "/age-calculator",
@@ -244,6 +245,18 @@ describe("searchTools", () => {
     expect(searchTools("compounding", tools).map((tool) => tool.href)).toEqual([
       "/compound-interest-calculator",
     ]);
+  });
+
+  it("finds the savings goal calculator by target and monthly-savings terms", () => {
+    expect(searchTools("savings goal", tools).map((tool) => tool.href)).toEqual(
+      ["/savings-goal-calculator"],
+    );
+    expect(
+      searchTools("how much to save monthly", tools).map((tool) => tool.href),
+    ).toEqual(["/savings-goal-calculator"]);
+    expect(
+      searchTools("monthly savings", tools).map((tool) => tool.href),
+    ).toEqual(["/savings-goal-calculator"]);
   });
 
   it("finds the scientific calculator by name and keyword", () => {
@@ -336,8 +349,22 @@ describe("localized search catalogs", () => {
       "/loan-calculator",
       "/emi-calculator",
       "/compound-interest-calculator",
+      "/savings-goal-calculator",
       "/scientific-calculator",
     ]);
+  });
+
+  it("finds the savings goal calculator with localized terms", () => {
+    const catalog = localizedToolCatalog("es");
+    expect(
+      searchTools("objetivo de ahorro", catalog).map((tool) => tool.href),
+    ).toEqual(["/savings-goal-calculator"]);
+    expect(
+      searchTools("ahorro mensual", catalog).map((tool) => tool.href),
+    ).toEqual(["/savings-goal-calculator"]);
+    expect(
+      searchTools("meta de ahorro", catalog).map((tool) => tool.href),
+    ).toEqual(["/savings-goal-calculator"]);
   });
 
   it("finds the compound interest calculator with localized terms", () => {

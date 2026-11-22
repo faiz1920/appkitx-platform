@@ -97,6 +97,13 @@ describe("localizedToolCatalog", () => {
     expect(compound?.title).toBe("Calculadora de interés compuesto");
     expect(compound?.category).toBe("Calculadoras");
     expect(compound?.keywords).toContain("interés compuesto");
+
+    const savings = catalog.find(
+      (tool) => tool.href === "/savings-goal-calculator",
+    );
+    expect(savings?.title).toBe("Calculadora de objetivo de ahorro");
+    expect(savings?.category).toBe("Calculadoras");
+    expect(savings?.keywords).toContain("objetivo de ahorro");
   });
 
   it("keeps the English card text identical to the registry descriptions", () => {
