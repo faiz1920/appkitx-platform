@@ -311,6 +311,7 @@ test("localized pages and the switcher keep layout at 320px", async ({
     "/es/base64-encoder/",
     "/es/developer-tools/",
     "/es/date-calculator/",
+    "/es/time-zone-converter/",
     "/es/age-calculator/",
     "/es/date-time/",
     "/es/text-tools/",

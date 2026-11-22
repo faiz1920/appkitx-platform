@@ -31,6 +31,8 @@ const REPRESENTATIVE_ROUTES = [
   { path: "/es/savings-goal-calculator/", lang: "es" },
   { path: "/retirement-calculator/", lang: "en" },
   { path: "/es/retirement-calculator/", lang: "es" },
+  { path: "/time-zone-converter/", lang: "en" },
+  { path: "/es/time-zone-converter/", lang: "es" },
   { path: "/scientific-calculator/", lang: "en" },
   { path: "/es/scientific-calculator/", lang: "es" },
   { path: "/qr-code-generator/", lang: "en" },

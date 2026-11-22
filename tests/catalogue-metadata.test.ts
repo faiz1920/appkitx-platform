@@ -22,7 +22,7 @@ const LOCALE_CODES = Object.keys(dictionaries) as Array<
 
 describe("published catalogue", () => {
   it("publishes every registered tool in exactly one category", () => {
-    expect(tools).toHaveLength(17);
+    expect(tools).toHaveLength(18);
     expect(CATEGORY_IDS).toHaveLength(5);
     expect(publishedCategories()).toEqual(CATEGORY_IDS);
 
@@ -33,7 +33,7 @@ describe("published catalogue", () => {
     expect(new Set(members.map((tool) => tool.href)).size).toBe(tools.length);
   });
 
-  it("derives the confirmed 78 indexable routes", () => {
+  it("derives the confirmed 80 indexable routes", () => {
     const localeLess =
       1 + // homepage
       tools.length +
@@ -45,7 +45,7 @@ describe("published catalogue", () => {
 
     expect(paths).toHaveLength(localeLess);
     expect(new Set(paths).size).toBe(paths.length);
-    expect(localeLess * LOCALE_CODES.length).toBe(78);
+    expect(localeLess * LOCALE_CODES.length).toBe(80);
   });
 });
 
@@ -144,6 +144,20 @@ describe("category metadata", () => {
           ? /científic|grados|radianes/i
           : /scientific|degrees|radians/i,
       );
+    });
+
+    it(`describes the time zone converter on the Date & time page in ${locale}`, () => {
+      const page = dictionaries[locale].categories["Date & time"].page;
+      if (page === undefined) throw new Error("Date & time page copy");
+
+      const copy = [page.metaDescription, ...page.intro].join(" ");
+      expect(copy).toMatch(
+        locale === "es"
+          ? /zonas? horarias?|desfases? UTC/i
+          : /time zones?|UTC offsets?/i,
+      );
+      expect(copy).toMatch(locale === "es" ? /edad/i : /age/i);
+      expect(copy).toMatch(locale === "es" ? /fechas?/i : /dates?/i);
     });
   }
 });

@@ -137,11 +137,11 @@ export const es: Dictionary = {
       page: {
         title: "Herramientas de fecha y hora gratis — AppKitX",
         metaDescription:
-          "Calculadoras de fechas y de edad gratis: cuenta los días entre dos fechas, suma o resta días, semanas, meses y años y calcula la edad en años, meses y días.",
+          "Herramientas gratis de fecha y hora: cuenta días entre dos fechas, suma o resta días, semanas, meses y años, calcula tu edad y convierte una fecha y hora entre zonas horarias.",
         toolsHeading: "Herramientas de fecha y hora gratis",
         intro: [
           "Herramientas en el navegador para cuentas con el calendario: cuenta los días entre dos fechas con un desglose en años, meses y días, o suma y resta días, semanas, meses y años con ajuste de fin de mes.",
-          "La calculadora de edad convierte una fecha de nacimiento en años, meses y días, además de los días vividos totales, contados a fecha del calendario local de tu dispositivo. Las herramientas trabajan con fechas de calendario simples: sin zonas horarias, sin subir nada y con todos los resultados copiables con un clic.",
+          "La calculadora de edad convierte una fecha de nacimiento en años, meses y días, además de los días vividos totales, contados a fecha del calendario local de tu dispositivo. Las herramientas de fecha y edad usan fechas de calendario simples, mientras que el conversor de zonas horarias trabaja con instantes reales, desfases UTC y cambios de horario de verano. Nada se sube y todos los resultados se pueden copiar con un clic.",
         ],
       },
     },
@@ -1989,6 +1989,160 @@ export const es: Dictionary = {
             "El ajuste de fin de mes se aplica siempre que se mueven meses o años: `31 de agosto + 1 mes` es `30 de septiembre`, y `29 de febrero de 2024 + 1 año` es `28 de febrero de 2025`.",
             "Las fechas admitidas van del `0001-01-01` al `275759-12-31`; los resultados fuera de ese rango se rechazan con un mensaje en línea en lugar de una fecha no válida.",
             "No se sube nada: el cálculo se ejecuta por completo en tu navegador.",
+          ],
+        },
+      ],
+    },
+    timeZoneConverter: {
+      title: "Conversor de zonas horarias — AppKitX",
+      metaDescription:
+        "Conversor de zonas horarias gratis: convierte una fecha y hora entre las principales zonas horarias IANA, con desfases UTC, cambios de fecha y avisos de horario de verano.",
+      name: "Conversor de zonas horarias",
+      description:
+        "Convierte una fecha y hora entre zonas horarias, con desfases UTC precisos, cambios de fecha y avisos de horario de verano.",
+      cardDescription:
+        "Convierte una fecha y hora entre zonas horarias con desfases UTC y avisos de horario de verano.",
+      keywords: [
+        "conversor de zonas horarias",
+        "calculadora de zonas horarias",
+        "diferencia horaria entre ciudades",
+        "convertir hora entre países",
+        "horario de verano",
+        "cambio de hora",
+        "hora UTC",
+        "conversor horario",
+        "reunión entre zonas horarias",
+        "hora en nueva york",
+        "hora en tokio",
+      ],
+      dateLabel: "Fecha",
+      dateHint:
+        "La fecha en la zona horaria de origen. Por defecto, la de hoy en este dispositivo.",
+      timeLabel: "Hora",
+      timeHint:
+        "La hora local en la zona horaria de origen. Por defecto, la hora actual de este dispositivo.",
+      sourceZoneLabel: "Zona horaria de origen",
+      sourceZoneHint:
+        "La zona horaria en la que se introducen la fecha y la hora.",
+      targetZoneLabel: "Zona horaria de destino",
+      targetZoneHint: "La zona horaria a la que quieres convertir.",
+      useCurrentTime: "Usar la hora actual",
+      convertedTimeLabel: "Hora convertida",
+      convertedDateLabel: "Fecha convertida",
+      weekdayLabel: "Día de la semana",
+      sourceOffsetLabel: "Desfase UTC de origen",
+      targetOffsetLabel: "Desfase UTC de destino",
+      differenceLabel: "Diferencia horaria",
+      dayChangeLabel: "Cambio de día",
+      sourceSummaryLabel: "Origen",
+      targetSummaryLabel: "Destino",
+      summaryLine: "{time}, {date} — {label} ({zone})",
+      deviceZoneSuffix: "dispositivo",
+      zoneLabels: {
+        UTC: "UTC",
+        "America/New_York": "Nueva York",
+        "America/Los_Angeles": "Los Ángeles",
+        "America/Chicago": "Chicago",
+        "America/Toronto": "Toronto",
+        "Europe/London": "Londres",
+        "Europe/Madrid": "Madrid",
+        "Europe/Paris": "París",
+        "Europe/Berlin": "Berlín",
+        "Asia/Kolkata": "Calcuta",
+        "Asia/Kathmandu": "Katmandú",
+        "Asia/Dubai": "Dubái",
+        "Asia/Singapore": "Singapur",
+        "Asia/Tokyo": "Tokio",
+        "Asia/Shanghai": "Shanghái",
+        "Australia/Sydney": "Sídney",
+        "Pacific/Auckland": "Auckland",
+        "Pacific/Chatham": "Chatham",
+        "Africa/Johannesburg": "Johannesburgo",
+        "America/Sao_Paulo": "São Paulo",
+      },
+      sameDay: "Mismo día",
+      nextDay: "Día siguiente",
+      previousDay: "Día anterior",
+      daysAhead: "{count} días después",
+      daysBehind: "{count} días antes",
+      sameTime: "Misma hora",
+      differenceAhead: "{duration} por delante",
+      differenceBehind: "{duration} por detrás",
+      durationHours: "{hours} h",
+      durationMinutes: "{minutes} min",
+      durationHoursMinutes: "{hours} h {minutes} min",
+      dstGap:
+        "Esa hora local no existe en {zone} porque los relojes se adelantan {duration} por el horario de verano. Elige una hora local válida.",
+      dstAmbiguous:
+        "Esa hora local ocurre dos veces en {zone} porque los relojes se atrasan por el horario de verano. Se seleccionó la primera ocurrencia ({offset}).",
+      dataNote:
+        "Los desfases y las reglas de horario de verano provienen de los datos de zonas horarias de tu navegador. Las fechas admitidas van de 1900 a 2100.",
+      comparisonHeading: "Principales zonas horarias",
+      comparisonHint:
+        "El mismo instante en zonas de referencia fijas. Las horas son locales y pueden caer en otra fecha.",
+      comparisonEmpty:
+        "Introduce una fecha y hora válidas para ver la comparación.",
+      comparisonScrollLabel:
+        "Tabla desplazable de comparación de zonas horarias",
+      comparisonCaption: "Comparación de zonas horarias",
+      comparisonHeaders: {
+        zone: "Zona horaria",
+        date: "Fecha",
+        time: "Hora",
+        offset: "Desfase UTC",
+        day: "Día",
+      },
+      copySummary: "Copiar resumen",
+      copyText:
+        "Conversión de zona horaria\n{sourceTime}, {sourceDate} — {sourceLabel} ({sourceZone})\n→ {targetTime}, {targetDate} — {targetLabel} ({targetZone})\nDesfase de origen: {sourceOffset}\nDesfase de destino: {targetOffset}\nDiferencia horaria: {difference}",
+      copyAmbiguousLine:
+        "Horario de verano: esta hora local ocurre dos veces; se seleccionó la primera ocurrencia ({offset}).",
+      caption:
+        "Convertido desde las {sourceTime} del {sourceDate} en {sourceLabel}.",
+      errors: {
+        date: "Escribe una fecha válida.",
+        dateRange: "Escribe una fecha entre 1900 y 2100.",
+        time: "Escribe una hora válida.",
+        sourceZone: "Elige una zona horaria de origen admitida.",
+        targetZone: "Elige una zona horaria de destino admitida.",
+        unexpected:
+          "No se pudo completar la conversión. Revisa la fecha, la hora y las zonas horarias.",
+      },
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Elige la fecha, la hora y la zona horaria de origen, y después la zona de destino. El conversor interpreta la fecha y la hora como una hora local en la zona de origen y encuentra el instante UTC correspondiente. Luego muestra ese instante en la zona de destino, con ambos desfases UTC.",
+            "Al cambiar cualquier dato se borra el resultado anterior para que las cifras en pantalla siempre correspondan a los valores actuales. Todo se ejecuta en tu navegador.",
+          ],
+        },
+        {
+          heading: "Horario de verano: huecos y repeticiones",
+          paragraphs: [
+            "Cuando los relojes se adelantan, algunas horas locales nunca ocurren. Por ejemplo, las 02:30 del 8 de marzo de 2026 no existen en Nueva York. El conversor rechaza una hora dentro de ese hueco y te pide que elijas una hora local válida; nunca desplaza el resultado en silencio.",
+            "Cuando los relojes se atrasan, algunas horas locales ocurren dos veces. Por ejemplo, las 01:30 del 1 de noviembre de 2026 ocurren dos veces en Nueva York. El conversor selecciona la primera ocurrencia, muestra qué desfase UTC se usó y te avisa de que la hora local era ambigua.",
+          ],
+        },
+        {
+          heading: "Desfases y tabla de comparación",
+          paragraphs: [
+            "Los desfases se calculan para el instante convertido, no para hoy, así que las fechas de verano e invierno pueden mostrar desfases distintos. Se admiten desfases de media hora y de cuarto de hora como UTC+05:30, UTC+05:45 y UTC+12:45.",
+            "La tabla de comparación muestra el mismo instante en zonas de referencia fijas. Una fila puede caer en el día anterior o siguiente respecto a tu fecha de origen.",
+          ],
+        },
+        {
+          heading: "Supuestos y límites",
+          items: [
+            "Las reglas y los desfases de las zonas horarias provienen de los datos IANA del navegador. El conversor no incluye su propia base de datos de zonas horarias.",
+            "Las fechas admitidas van de 1900 a 2100. No se puede garantizar la exactitud histórica anterior a los datos disponibles en el navegador.",
+            "La herramienta convierte un instante cada vez. No planifica reuniones, no resalta horas laborables, no crea eventos de calendario ni convierte horarios recurrentes.",
+            "La lista seleccionada cubre zonas principales y la zona de tu dispositivo. Los identificadores IANA se usan internamente; abreviaturas como EST o IST no se tratan como nombres únicos de zona.",
+          ],
+        },
+        {
+          heading: "Privacidad",
+          paragraphs: [
+            "Todo se calcula en tu navegador. Tus fechas, horas y zonas horarias seleccionadas nunca se suben, se guardan en el almacenamiento del navegador ni se envían a un servicio de terceros.",
           ],
         },
       ],

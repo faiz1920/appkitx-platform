@@ -308,6 +308,28 @@ export const tools: readonly Tool[] = [
     dictionaryKey: "dateCalculator",
   },
   {
+    title: "Time Zone Converter",
+    href: "/time-zone-converter",
+    description:
+      "Convert a date and time between time zones with UTC offsets and DST warnings.",
+    category: "Date & time",
+    keywords: [
+      "time zone converter",
+      "timezone converter",
+      "time difference between cities",
+      "convert time zones",
+      "world clock converter",
+      "time zone calculator",
+      "daylight saving time converter",
+      "utc time converter",
+      "meeting time across time zones",
+      "new york to london time",
+      "est to ist",
+    ],
+    icon: "globe",
+    dictionaryKey: "timeZoneConverter",
+  },
+  {
     title: "Age Calculator",
     href: "/age-calculator",
     description: "Age in years, months, and days from a birth date.",
