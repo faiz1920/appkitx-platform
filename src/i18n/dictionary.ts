@@ -1283,10 +1283,25 @@ export interface ToolsStrings {
 export type ToolStringsKey = keyof ToolsStrings;
 
 /** The complete dictionary contract every registered locale must satisfy. */
+/** Analytics consent banner and footer settings control. */
+export interface ConsentStrings {
+  title: string;
+  description: string;
+  /** Grants analytics storage. */
+  accept: string;
+  /** Keeps analytics storage denied. */
+  reject: string;
+  /** Visible text of the privacy-policy link inside the banner. */
+  privacyLink: string;
+  /** Footer button that reopens the banner. */
+  settings: string;
+}
+
 export interface Dictionary {
   layout: LayoutStrings;
   nav: NavStrings;
   language: LanguageStrings;
+  consent: ConsentStrings;
   footer: FooterStrings;
   search: SearchStrings;
   notFound: NotFoundStrings;

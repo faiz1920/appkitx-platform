@@ -12,6 +12,21 @@ export default defineConfig({
   },
   use: {
     baseURL: previewUrl,
+    /*
+     * The analytics consent banner is first-visit UI; most specs assert page
+     * content and should not have a fixed overlay in the way. Preselect the
+     * "denied" choice, which also matches the default GA4 consent state. The
+     * consent spec overrides this with an empty storage state.
+     */
+    storageState: {
+      cookies: [],
+      origins: [
+        {
+          origin: previewUrl,
+          localStorage: [{ name: "appkitx.consent", value: "denied" }],
+        },
+      ],
+    },
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },

@@ -31,7 +31,7 @@ export const CONTACT_EMAIL = "appkitx@gmail.com";
 export const LEGAL_LAST_UPDATED = "2026-11-01";
 
 /** Date shown on the privacy draft after factual corrections. */
-export const PRIVACY_LAST_UPDATED = "2026-11-02";
+export const PRIVACY_LAST_UPDATED = "2026-11-23";
 
 /** Date shown on company pages. */
 export const COMPANY_LAST_UPDATED = "2026-11-01";

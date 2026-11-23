@@ -57,6 +57,10 @@ The Retirement Calculator (`/retirement-calculator`, `/es/retirement-calculator`
 
 Returns use the shared monthly-equivalent convention `g = (1 + r/m)^(m/12)`, `i = g − 1`. Inflation is optional and only adds an estimate in today's purchasing power (`nominal ÷ (1 + inflation)^years`); it never changes the nominal projection or the target, and the annual table stays nominal. Required monthly savings are rounded up to the next cent and verified against the target with a rebuilt ledger. The calculator projects accumulation only: it does not model withdrawals, retirement income, annual contribution increases, pensions, government benefits, taxes, fees, insurance, or healthcare, and it is currency-neutral. All projections are estimates based on user-entered assumptions, not guaranteed investment outcomes or personalized financial advice.
 
+## Analytics and consent
+
+Production pages load Google Analytics 4 (measurement ID `G-YF9V8GSC89`) with Google Consent Mode v2. Analytics, advertising, and personalization storage all start denied. The consent banner grants analytics storage only when a visitor accepts, and "Cookie settings" in the footer reopens it. Rejecting keeps storage denied and clears any GA cookies. The tag is host-gated to `appkitx.com` and `www.appkitx.com`, so local previews and the Playwright suite never contact Google. The privacy policy documents the cookies, retention, and processing terms.
+
 ## Languages
 
 Locale support is registry-driven: `src/i18n/config.ts` is the single source of truth, and the Astro i18n routing, the sitemap `i18n` option, the hreflang alternates, and the language switcher all derive from it. English is the default locale and stays unprefixed; every other locale is served under its prefix (for example `/es/`).

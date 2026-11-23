@@ -1,0 +1,137 @@
+---
+import { getDictionary, type LocaleCode } from "../i18n/config";
+import { infoPageHref } from "../lib/editorial";
+
+interface Props {
+  locale: LocaleCode;
+}
+
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const consent = t.consent;
+const privacyHref = infoPageHref("privacy", locale);
+---
+
+<section
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-border-strong bg-surface shadow-lg print:hidden"
+  role="region"
+  aria-labelledby="consent-title"
+  tabindex="-1"
+  hidden
+  data-consent-banner
+>
+  <div class="mx-auto flex max-w-(--layout-container) flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <div class="min-w-0">
+      <h2 id="consent-title" class="text-label text-text-primary">
+        {consent.title}
+      </h2>
+      <p class="mt-1 text-small text-text-secondary">
+        {consent.description}{" "}
+        <a
+          href={privacyHref}
+          class="focus-ring rounded-sm text-accent underline underline-offset-2 hover:text-accent-hover"
+        >
+          {consent.privacyLink}
+        </a>
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-col gap-2 sm:flex-row">
+      <button type="button" class="btn btn-secondary" data-consent-reject>
+        {consent.reject}
+      </button>
+      <button type="button" class="btn btn-primary" data-consent-accept>
+        {consent.accept}
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { CONSENT_STORAGE_KEY, parseConsent } from "../lib/analytics";
+  import type { ConsentChoice } from "../lib/analytics";
+
+  const banner = document.querySelector<HTMLElement>("[data-consent-banner]");
+  const acceptButton = document.querySelector<HTMLButtonElement>(
+    "[data-consent-accept]",
+  );
+  const rejectButton = document.querySelector<HTMLButtonElement>(
+    "[data-consent-reject]",
+  );
+
+  type Gtag = (...args: unknown[]) => void;
+
+  const readChoice = (): ConsentChoice | null => {
+    try {
+      return parseConsent(window.localStorage.getItem(CONSENT_STORAGE_KEY));
+    } catch {
+      return null;
+    }
+  };
+
+  const storeChoice = (choice: ConsentChoice) => {
+    try {
+      window.localStorage.setItem(CONSENT_STORAGE_KEY, choice);
+    } catch {
+      // Storage can be unavailable; the in-page choice still applies.
+    }
+  };
+
+  const updateConsent = (choice: ConsentChoice) => {
+    const gtag = (window as unknown as { gtag?: Gtag }).gtag;
+    if (typeof gtag !== "function") return;
+
+    gtag("consent", "update", {
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      analytics_storage: choice,
+    });
+  };
+
+  /*
+   * Rejecting must undo cookies set while consent was granted. GA4 uses the
+   * first-party `_ga` cookie plus one `_ga_<container>` cookie per stream.
+   */
+  const clearAnalyticsCookies = () => {
+    const names = document.cookie
+      .split(";")
+      .map((entry) => entry.split("=")[0]?.trim())
+      .filter((name): name is string => Boolean(name))
+      .filter((name) => name === "_ga" || name.startsWith("_ga_"));
+
+    for (const name of names) {
+      document.cookie = `${name}=; Max-Age=0; path=/; SameSite=Lax`;
+      document.cookie = `${name}=; Max-Age=0; path=/; domain=.appkitx.com; SameSite=Lax`;
+    }
+  };
+
+  const hideBanner = () => {
+    if (banner) banner.hidden = true;
+  };
+
+  const showBanner = (focus = false) => {
+    if (!banner) return;
+    banner.hidden = false;
+    if (focus) banner.focus();
+  };
+
+  const choose = (choice: ConsentChoice) => {
+    storeChoice(choice);
+    updateConsent(choice);
+    if (choice === "denied") clearAnalyticsCookies();
+    hideBanner();
+  };
+
+  if (banner && acceptButton && rejectButton) {
+    acceptButton.addEventListener("click", () => choose("granted"));
+    rejectButton.addEventListener("click", () => choose("denied"));
+
+    for (const opener of document.querySelectorAll<HTMLElement>(
+      "[data-consent-open]",
+    )) {
+      opener.addEventListener("click", () => showBanner(true));
+    }
+
+    if (readChoice() === null) showBanner();
+  }
+</script>

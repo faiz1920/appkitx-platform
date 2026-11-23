@@ -26,6 +26,15 @@ export const es: Dictionary = {
       "AppKitX — herramientas online gratuitas: calculadoras, conversores de unidades, utilidades para desarrolladores, herramientas de texto y herramientas de fecha y hora.",
     skipToContent: "Saltar al contenido",
   },
+  consent: {
+    title: "Cookies y analítica",
+    description:
+      "AppKitX usa cookies de Google Analytics para entender cómo se usan las herramientas. El almacenamiento analítico permanece desactivado hasta que lo aceptes, y puedes cambiar tu elección cuando quieras.",
+    accept: "Aceptar analítica",
+    reject: "Rechazar analítica",
+    privacyLink: "Leer la política de privacidad",
+    settings: "Configuración de cookies",
+  },
   nav: {
     ariaLabel: "Global",
     tools: "Herramientas",

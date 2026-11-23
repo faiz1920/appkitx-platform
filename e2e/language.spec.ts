@@ -278,7 +278,14 @@ test.describe("with a French browser and no stored choice", () => {
 });
 
 test.describe("without JavaScript", () => {
-  test.use({ javaScriptEnabled: false });
+  /*
+   * Restoring localStorage into a JavaScript-disabled Firefox context stalls
+   * context creation, and the consent banner cannot run without scripts anyway.
+   */
+  test.use({
+    javaScriptEnabled: false,
+    storageState: { cookies: [], origins: [] },
+  });
 
   test("localized pages render and the switcher still navigates", async ({
     page,

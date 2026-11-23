@@ -14,6 +14,15 @@ export const en: Dictionary = {
       "AppKitX — free online tools for calculators, unit converters, developer utilities, text tools, and date and time tools.",
     skipToContent: "Skip to content",
   },
+  consent: {
+    title: "Cookies and analytics",
+    description:
+      "AppKitX uses Google Analytics cookies to understand how the tools are used. Analytics storage stays off until you accept, and you can change your choice at any time.",
+    accept: "Accept analytics",
+    reject: "Reject analytics",
+    privacyLink: "Read the privacy policy",
+    settings: "Cookie settings",
+  },
   nav: {
     ariaLabel: "Global",
     tools: "Tools",
