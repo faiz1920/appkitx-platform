@@ -111,10 +111,10 @@ export const es: Dictionary = {
       page: {
         title: "Conversores de unidades y velocidad gratis — AppKitX",
         metaDescription:
-          "Conversores online gratis de longitud, peso, temperatura y velocidad: cambia entre unidades métricas e imperiales, km/h y mph, m/s, pies/s y nudos.",
+          "Conversores online gratis de longitud, peso, temperatura, superficie, volumen y velocidad, con resultados exactos en tu navegador.",
         toolsHeading: "Conversores online gratis",
         intro: [
-          "Los conversores cubren las medidas que más se cambian en el día a día: longitud y distancia, peso, temperatura y velocidad. Elige las unidades de origen y destino y obtén el resultado con la misma conversión escrita completa.",
+          "Los conversores cubren las medidas que más se cambian en el día a día: longitud y distancia, peso, temperatura, superficie, volumen y velocidad. Elige las unidades de origen y destino y obtén el resultado con la misma conversión escrita completa.",
           "Todo se ejecuta en tu navegador, los resultados conservan la precisión completa internamente y solo se redondean para mostrarlos, y cada conversión se puede copiar con un clic. Los números siguen el idioma de la página, incluido el separador decimal.",
         ],
       },
@@ -1214,11 +1214,12 @@ export const es: Dictionary = {
     unitConverter: {
       title: "Conversor de unidades — AppKitX",
       metaDescription:
-        "Conversor de unidades gratis para longitud, peso y temperatura: convierte metros a pies, kilos a libras, grados Celsius a Fahrenheit y más.",
+        "Conversor de unidades gratis para longitud, peso, temperatura, superficie y volumen: convierte metros a pies, kilos a libras, metros cuadrados a pies cuadrados, litros a galones estadounidenses y más.",
       name: "Conversor de unidades",
       description:
-        "Convierte longitud, peso y temperatura entre unidades métricas e imperiales.",
-      cardDescription: "Conversiones de longitud, peso y temperatura.",
+        "Convierte longitud, peso, temperatura, superficie y volumen con cálculos precisos en el navegador.",
+      cardDescription:
+        "Conversiones de longitud, peso, temperatura, superficie y volumen.",
       keywords: [
         "conversor",
         "unidades",
@@ -1226,6 +1227,8 @@ export const es: Dictionary = {
         "peso",
         "masa",
         "temperatura",
+        "superficie",
+        "volumen",
         "métrico",
         "imperial",
         "metros",
@@ -1238,12 +1241,22 @@ export const es: Dictionary = {
         "millas",
         "onzas",
         "kelvin",
+        "metros cuadrados",
+        "pies cuadrados",
+        "hectáreas",
+        "litros",
+        "mililitros",
+        "galones estadounidenses",
+        "tazas",
+        "onzas líquidas",
       ],
       categoryLegend: "Conversión",
       categories: {
         length: "Longitud",
         weight: "Peso",
         temperature: "Temperatura",
+        area: "Superficie",
+        volume: "Volumen",
       },
       units: {
         length: {
@@ -1270,6 +1283,27 @@ export const es: Dictionary = {
           f: "Fahrenheit",
           k: "Kelvin",
         },
+        area: {
+          cm2: "Centímetro cuadrado",
+          m2: "Metro cuadrado",
+          km2: "Kilómetro cuadrado",
+          ft2: "Pie cuadrado",
+          yd2: "Yarda cuadrada",
+          ac: "Acre",
+          ha: "Hectárea",
+        },
+        volume: {
+          ml: "Mililitro",
+          l: "Litro",
+          m3: "Metro cúbico",
+          tsp: "Cucharadita estadounidense",
+          tbsp: "Cucharada estadounidense",
+          floz: "Onza líquida estadounidense",
+          cup: "Taza estadounidense",
+          pt: "Pinta estadounidense",
+          qt: "Cuarto de galón estadounidense",
+          gal: "Galón estadounidense",
+        },
       },
       valueLabel: "Valor",
       valueHint: "El número que quieres convertir.",
@@ -1285,7 +1319,7 @@ export const es: Dictionary = {
         {
           heading: "Cómo funciona",
           paragraphs: [
-            "Elige una categoría de conversión, escribe el valor y selecciona las unidades en ambos lados. Pulsa Calcular para ver el valor convertido y la misma conversión escrita completa.",
+            "Elige una de las cinco categorías de conversión —longitud, peso, temperatura, superficie o volumen—, escribe el valor y selecciona las unidades en ambos lados. Pulsa Calcular para ver el valor convertido y la misma conversión escrita completa.",
             "Todo se ejecuta en tu navegador. Los valores se convierten tal como se escriben, así que los números negativos funcionan como diferencias; en temperatura se comprueba el cero absoluto.",
           ],
         },
@@ -1293,6 +1327,21 @@ export const es: Dictionary = {
           heading: "Longitud y peso",
           paragraphs: [
             "Las conversiones de longitud y peso multiplican por definiciones exactas: `1 in = 2,54 cm`, `1 ft = 0,3048 m`, `1 mi = 1,609344 km`, `1 lb = 0,45359237 kg` y `1 oz = 28,349523125 g`. Las unidades métricas usan los prefijos habituales y `1 st = 14 lb`.",
+          ],
+        },
+        {
+          heading: "Superficie",
+          paragraphs: [
+            "La superficie usa unidades cuadradas, así que cada factor es la definición lineal correspondiente elevada al cuadrado: `1 ft² = 0,3048² m² = 0,09290304 m²` y `1 yd² = 0,9144² m² = 0,83612736 m²`.",
+            "`1 hectárea = 10.000 m²` y `1 acre = 4840 yd² = 4046,8564224 m²` con la yarda internacional. El acre y la hectárea son medidas de tierra; ninguno es un prefijo métrico del otro.",
+          ],
+        },
+        {
+          heading: "Volumen",
+          paragraphs: [
+            "El volumen usa metros cúbicos internamente: `1 L = 0,001 m³` y `1 mL = 0,000001 m³`. Los litros y mililitros son subdivisiones exactas del metro cúbico.",
+            "Las unidades de volumen estadounidenses son del sistema consuetudinario de EE. UU., no imperiales británicas. `1 galón estadounidense = 231 in³ = 3,785411784 L`; la onza líquida, la taza, la pinta, el cuarto y las cucharadas estadounidenses son fracciones exactas de ese galón. Una taza estadounidense son 236,5882365 mL, no la taza legal estadounidense de 240 mL ni la taza métrica de 250 mL.",
+            "Los galones, pintas y onzas líquidas imperiales británicos no se incluyen en esta versión, y tampoco las medidas secas estadounidenses. El calificador `US` aparece en el nombre y el símbolo de cada unidad de EE. UU. para que ninguna conversión se confunda con la imperial.",
           ],
         },
         {
@@ -1305,7 +1354,9 @@ export const es: Dictionary = {
           heading: "Precisión y supuestos",
           items: [
             "Los resultados conservan la precisión completa internamente y se muestran con hasta 10 dígitos significativos, de modo que los valores pequeños siguen siendo legibles y las definiciones exactas no acumulan ruido de redondeo.",
-            "El conversor solo admite longitud, peso y temperatura, no superficie, volumen, velocidad ni divisas, y nunca adivina la unidad a partir del valor.",
+            "Los cálculos usan números de coma flotante IEEE-754. Los valores mostrados se redondean para facilitar la lectura y no son una afirmación de aritmética decimal exacta para cada resultado.",
+            "El conversor solo admite longitud, peso, temperatura, superficie y volumen, no velocidad, presión, energía ni divisas, y nunca adivina la unidad a partir del valor.",
+            "Las unidades de volumen estadounidenses llevan `US` en el nombre y en el símbolo. Se evitan términos sin calificar como «galón» o «taza» porque designan volúmenes distintos en otros sistemas.",
             "Los números mostrados siguen el idioma de la página: coma decimal en español y punto decimal en inglés.",
           ],
         },

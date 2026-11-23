@@ -1,9 +1,11 @@
 import type { ToolCategory } from "../lib/tools";
 import type { Mode } from "../lib/percentage";
 import type {
+  AreaUnit,
   LengthUnit,
   TemperatureUnit,
   UnitCategory,
+  VolumeUnit,
   WeightUnit,
 } from "../lib/unit-convert";
 import type { TermUnit } from "../lib/loan";
@@ -399,6 +401,8 @@ export interface UnitConverterToolStrings {
     length: Record<LengthUnit, string>;
     weight: Record<WeightUnit, string>;
     temperature: Record<TemperatureUnit, string>;
+    area: Record<AreaUnit, string>;
+    volume: Record<VolumeUnit, string>;
   };
   valueLabel: string;
   valueHint: string;

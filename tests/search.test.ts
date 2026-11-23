@@ -208,6 +208,18 @@ describe("searchTools", () => {
     expect(searchTools("fahrenheit", tools).map((tool) => tool.href)).toEqual([
       "/unit-converter",
     ]);
+    expect(searchTools("square feet", tools).map((tool) => tool.href)).toEqual([
+      "/unit-converter",
+    ]);
+    expect(searchTools("acres", tools).map((tool) => tool.href)).toEqual([
+      "/unit-converter",
+    ]);
+    expect(searchTools("US gallons", tools).map((tool) => tool.href)).toEqual([
+      "/unit-converter",
+    ]);
+    expect(searchTools("volume", tools).map((tool) => tool.href)).toEqual([
+      "/unit-converter",
+    ]);
   });
 
   it("finds the speed converter by name and keyword", () => {
@@ -467,6 +479,12 @@ describe("localized search catalogs", () => {
     expect(searchTools("fahrenheit", catalog).map((tool) => tool.href)).toEqual(
       ["/unit-converter"],
     );
+    expect(searchTools("superficie", catalog).map((tool) => tool.href)).toEqual(
+      ["/unit-converter"],
+    );
+    expect(searchTools("galones", catalog).map((tool) => tool.href)).toEqual([
+      "/unit-converter",
+    ]);
     expect(searchTools("velocidad", catalog).map((tool) => tool.href)).toEqual([
       "/speed-converter",
     ]);
