@@ -146,6 +146,16 @@ describe("category metadata", () => {
       );
     });
 
+    it(`describes unit and speed conversions on the Converters page in ${locale}`, () => {
+      const page = dictionaries[locale].categories.Converters.page;
+      if (page === undefined) throw new Error("Converters page copy");
+
+      const copy = [page.metaDescription, ...page.intro].join(" ");
+      expect(copy).toMatch(locale === "es" ? /superficie/i : /area/i);
+      expect(copy).toMatch(locale === "es" ? /volumen/i : /volume/i);
+      expect(copy).toMatch(locale === "es" ? /velocidad/i : /speed/i);
+    });
+
     it(`describes the time zone converter on the Date & time page in ${locale}`, () => {
       const page = dictionaries[locale].categories["Date & time"].page;
       if (page === undefined) throw new Error("Date & time page copy");

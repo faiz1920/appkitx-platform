@@ -235,6 +235,18 @@
     height: var(--layout-control-height);
   }
 
+  /* Unit Converter category control: five options wrap onto multiple rows at
+     narrow widths instead of overflowing the track. Scoped to this modifier
+     so other segmented controls keep their single row. */
+  .segmented--wrap {
+    flex-wrap: wrap;
+  }
+  .segmented--wrap label {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
   /* Category chips (AppKitX-Design.md → Category chips) */
   .chip {
     display: inline-flex;

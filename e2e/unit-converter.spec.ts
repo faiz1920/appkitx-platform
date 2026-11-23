@@ -325,3 +325,246 @@ test("has no horizontal overflow at 320px", async ({ page }) => {
   await expect(page.getByLabel("Value")).toBeVisible();
   await expect(page.getByRole("button", { name: "Calculate" })).toBeVisible();
 });
+
+test("supports five categories with area and volume defaults", async ({
+  page,
+}) => {
+  await page.goto("/unit-converter");
+
+  await expect(page.getByRole("radio")).toHaveCount(5);
+  for (const name of ["Length", "Weight", "Temperature", "Area", "Volume"]) {
+    await expect(page.getByRole("radio", { name })).toBeVisible();
+  }
+
+  await selectCategory(page, "Area");
+  await expect(page.getByLabel("From", { exact: true })).toHaveValue("m2");
+  await expect(page.getByLabel("To", { exact: true })).toHaveValue("ft2");
+  await expect(page.getByLabel("From", { exact: true })).toContainText(
+    "Square meter (m²)",
+  );
+  await expect(page.getByLabel("To", { exact: true })).toContainText(
+    "Square foot (ft²)",
+  );
+
+  await selectCategory(page, "Volume");
+  await expect(page.getByLabel("From", { exact: true })).toHaveValue("l");
+  await expect(page.getByLabel("To", { exact: true })).toHaveValue("gal");
+  await expect(page.getByLabel("From", { exact: true })).toContainText(
+    "Liter (L)",
+  );
+  await expect(page.getByLabel("To", { exact: true })).toContainText(
+    "US gallon (US gal)",
+  );
+});
+
+test("converts area with square units and land measures", async ({ page }) => {
+  await page.goto("/unit-converter");
+  await selectCategory(page, "Area");
+
+  await page.getByLabel("From", { exact: true }).selectOption("ac");
+  await page.getByLabel("To", { exact: true }).selectOption("m2");
+  await convert(page, "1");
+
+  await expect(result(page)).toHaveText("4,046.856422");
+  await expect(resultUnit(page)).toHaveText("m²");
+  await expect(caption(page)).toHaveText("1 ac = 4,046.856422 m²");
+
+  await page.getByLabel("From", { exact: true }).selectOption("ha");
+  await page.getByLabel("To", { exact: true }).selectOption("km2");
+  await convert(page, "1");
+
+  await expect(result(page)).toHaveText("0.01");
+  await expect(resultUnit(page)).toHaveText("km²");
+  await expect(caption(page)).toHaveText("1 ha = 0.01 km²");
+
+  await page.screenshot({
+    path: "test-results/unit-converter-area.png",
+    fullPage: true,
+  });
+});
+
+test("converts US customary volume and copies the US labels", async ({
+  page,
+  browserName,
+}) => {
+  await prepareClipboard(page, browserName);
+  await page.goto("/unit-converter");
+  await selectCategory(page, "Volume");
+
+  await convert(page, "1");
+  await expect(result(page)).toHaveText("0.2641720524");
+  await expect(resultUnit(page)).toHaveText("US gal");
+  await expect(caption(page)).toHaveText("1 L = 0.2641720524 US gal");
+
+  await page.getByLabel("From", { exact: true }).selectOption("gal");
+  await page.getByLabel("To", { exact: true }).selectOption("l");
+  await convert(page, "1");
+
+  await expect(result(page)).toHaveText("3.785411784");
+  await expect(resultUnit(page)).toHaveText("L");
+  await expect(caption(page)).toHaveText("1 US gal = 3.785411784 L");
+
+  await page.getByRole("button", { name: "Copy result" }).click();
+  await expect(page.locator("[data-copy-status-success]")).toBeVisible();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toBe("1 US gal = 3.785411784 L");
+
+  await page.getByLabel("From", { exact: true }).selectOption("cup");
+  await page.getByLabel("To", { exact: true }).selectOption("ml");
+  await convert(page, "1");
+
+  await expect(result(page)).toHaveText("236.5882365");
+  await expect(resultUnit(page)).toHaveText("mL");
+  await expect(caption(page)).toHaveText("1 US cup = 236.5882365 mL");
+
+  await page.screenshot({
+    path: "test-results/unit-converter-volume.png",
+    fullPage: true,
+  });
+});
+
+test("invalidates area and volume results when inputs change", async ({
+  page,
+}) => {
+  await page.goto("/unit-converter");
+  await selectCategory(page, "Area");
+  await convert(page, "1");
+  await expect(result(page)).not.toHaveText("—");
+
+  await page.getByLabel("From", { exact: true }).selectOption("ha");
+  await expect(result(page)).toHaveText("—");
+  await expect(
+    page.getByRole("button", { name: "Copy result" }),
+  ).toBeDisabled();
+
+  await selectCategory(page, "Volume");
+  await expect(result(page)).toHaveText("—");
+  await expect(page.getByLabel("From", { exact: true })).toHaveValue("l");
+  await expect(page.getByLabel("To", { exact: true })).toHaveValue("gal");
+
+  await convert(page, "1");
+  await expect(result(page)).not.toHaveText("—");
+
+  await page.getByLabel("To", { exact: true }).selectOption("m3");
+  await expect(result(page)).toHaveText("—");
+  await expect(
+    page.getByRole("button", { name: "Copy result" }),
+  ).toBeDisabled();
+
+  await page.getByRole("button", { name: "Reset" }).click();
+  await expect(page.getByRole("radio", { name: "Length" })).toBeChecked();
+  await expect(page.getByLabel("From", { exact: true })).toHaveValue("m");
+  await expect(page.getByLabel("To", { exact: true })).toHaveValue("ft");
+  await expect(result(page)).toHaveText("—");
+});
+
+test("the Spanish page localizes area and US volume units", async ({
+  page,
+}) => {
+  await page.goto("/es/unit-converter");
+
+  await selectCategory(page, "Superficie");
+  await expect(page.getByLabel("De", { exact: true })).toHaveValue("m2");
+  await expect(page.getByLabel("A", { exact: true })).toHaveValue("ft2");
+  await expect(page.getByLabel("A", { exact: true })).toContainText(
+    "Pie cuadrado (ft²)",
+  );
+
+  await page.getByLabel("De", { exact: true }).selectOption("ac");
+  await page.getByLabel("A", { exact: true }).selectOption("m2");
+  await page.getByLabel("Valor", { exact: true }).fill("1");
+  await page.getByRole("button", { name: "Calcular" }).click();
+
+  await expect(result(page)).toHaveText("4046,856422");
+  await expect(caption(page)).toHaveText("1 ac = 4046,856422 m²");
+
+  await selectCategory(page, "Volumen");
+  await expect(page.getByLabel("De", { exact: true })).toContainText(
+    "Litro (L)",
+  );
+  await expect(page.getByLabel("A", { exact: true })).toContainText(
+    "Galón estadounidense (US gal)",
+  );
+  await expect(page.getByLabel("A", { exact: true })).toContainText(
+    "Cuarto de galón estadounidense (US qt)",
+  );
+
+  await page.getByLabel("Valor", { exact: true }).fill("1");
+  await page.getByRole("button", { name: "Calcular" }).click();
+
+  await expect(result(page)).toHaveText("0,2641720524");
+  await expect(caption(page)).toHaveText("1 L = 0,2641720524 US gal");
+});
+
+test("keeps five categories inside the viewport at 320px", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+
+  for (const [path, labels] of [
+    ["/unit-converter/", ["Length", "Weight", "Temperature", "Area", "Volume"]],
+    [
+      "/es/unit-converter/",
+      ["Longitud", "Peso", "Temperatura", "Superficie", "Volumen"],
+    ],
+  ] as const) {
+    await page.goto(path);
+
+    const segments = page.locator(".segmented label");
+    await expect(segments).toHaveCount(5);
+
+    for (let index = 0; index < labels.length; index += 1) {
+      const segment = segments.nth(index);
+      await expect(segment).toHaveText(labels[index] ?? "");
+      await expect(segment).toBeVisible();
+      const box = await segment.boundingBox();
+      expect(box, `${path} segment ${index} has no box`).not.toBeNull();
+      if (box === null) throw new Error(`${path} segment ${index} has no box`);
+      expect(
+        box.height,
+        `${path} segment ${index} height`,
+      ).toBeGreaterThanOrEqual(44);
+    }
+
+    const overflow = await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+    );
+    expect(overflow, `${path} overflows horizontally`).toBeLessThanOrEqual(0);
+
+    const rows = await segments.evaluateAll(
+      (elements) =>
+        new Set(
+          elements.map((element) =>
+            Math.round(element.getBoundingClientRect().top),
+          ),
+        ).size,
+    );
+    expect(rows, `${path} category rows`).toBe(3);
+  }
+
+  await page.screenshot({
+    path: "test-results/unit-converter-320-five-categories.png",
+    fullPage: false,
+  });
+});
+
+test("moves between categories with the keyboard and shows the focus ring", async ({
+  page,
+  browserName,
+}) => {
+  await page.goto("/unit-converter");
+  await page.getByRole("heading", { level: 1 }).click();
+
+  await tabTo(page, browserName, page.getByRole("radio", { name: "Length" }));
+  const lengthSegment = page
+    .locator(".segmented label")
+    .filter({ hasText: "Length" });
+  await expect(lengthSegment).toHaveCSS("outline-width", "2px");
+  await expect(lengthSegment).toHaveCSS("outline-style", "solid");
+  await expect(lengthSegment).toHaveCSS("outline-color", "rgb(13, 148, 136)");
+  await expect(lengthSegment).toHaveCSS("outline-offset", "2px");
+
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("radio", { name: "Weight" })).toBeChecked();
+  await expect(page.getByLabel("From", { exact: true })).toHaveValue("kg");
+});

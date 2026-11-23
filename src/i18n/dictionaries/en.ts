@@ -99,10 +99,10 @@ export const en: Dictionary = {
       page: {
         title: "Free Unit and Speed Converters — AppKitX",
         metaDescription:
-          "Free online converters for length, weight, temperature, and speed: switch between metric and imperial units, km/h and mph, m/s, ft/s, and knots.",
+          "Free online converters for length, weight, temperature, area, volume, and speed, with exact results in your browser.",
         toolsHeading: "Free online converters",
         intro: [
-          "The converters cover the measurements people switch between most often: length and distance, weight, temperature, and speed. Pick the source and target units, and get the result with the same calculation written out in full.",
+          "The converters cover the measurements people switch between most often: length and distance, weight, temperature, area, volume, and speed. Pick the source and target units, and get the result with the same calculation written out in full.",
           "Everything runs in your browser, results keep full precision internally and are rounded only for display, and every conversion can be copied with one click. Numbers follow the page language, including the decimal separator.",
         ],
       },
@@ -1193,17 +1193,20 @@ export const en: Dictionary = {
     unitConverter: {
       title: "Unit Converter — AppKitX",
       metaDescription:
-        "Free unit converter for length, weight, and temperature: convert metres to feet, kilograms to pounds, Celsius to Fahrenheit, and more.",
+        "Free unit converter for length, weight, temperature, area, and volume: convert metres to feet, kilograms to pounds, square metres to square feet, litres to US gallons, and more.",
       name: "Unit Converter",
       description:
-        "Convert length, weight, and temperature between metric and imperial units.",
-      cardDescription: "Length, weight, and temperature conversions.",
+        "Convert length, weight, temperature, area, and volume with precise, browser-based calculations.",
+      cardDescription:
+        "Length, weight, temperature, area, and volume conversions.",
       keywords: [
         "unit converter",
         "length",
         "weight",
         "mass",
         "temperature",
+        "area",
+        "volume",
         "metric",
         "imperial",
         "meters",
@@ -1216,12 +1219,23 @@ export const en: Dictionary = {
         "miles",
         "ounces",
         "kelvin",
+        "square meters",
+        "square feet",
+        "acres",
+        "hectares",
+        "liters",
+        "milliliters",
+        "US gallons",
+        "cups",
+        "fluid ounces",
       ],
       categoryLegend: "Conversion",
       categories: {
         length: "Length",
         weight: "Weight",
         temperature: "Temperature",
+        area: "Area",
+        volume: "Volume",
       },
       units: {
         length: {
@@ -1248,6 +1262,27 @@ export const en: Dictionary = {
           f: "Fahrenheit",
           k: "Kelvin",
         },
+        area: {
+          cm2: "Square centimeter",
+          m2: "Square meter",
+          km2: "Square kilometer",
+          ft2: "Square foot",
+          yd2: "Square yard",
+          ac: "Acre",
+          ha: "Hectare",
+        },
+        volume: {
+          ml: "Milliliter",
+          l: "Liter",
+          m3: "Cubic meter",
+          tsp: "US teaspoon",
+          tbsp: "US tablespoon",
+          floz: "US fluid ounce",
+          cup: "US cup",
+          pt: "US pint",
+          qt: "US quart",
+          gal: "US gallon",
+        },
       },
       valueLabel: "Value",
       valueHint: "The number you want to convert.",
@@ -1263,7 +1298,7 @@ export const en: Dictionary = {
         {
           heading: "How it works",
           paragraphs: [
-            "Choose a conversion category, enter the value, and pick the units on both sides. Select Calculate to see the converted value and the same conversion written out in full.",
+            "Choose one of the five conversion categories — length, weight, temperature, area, or volume — enter the value, and pick the units on both sides. Select Calculate to see the converted value and the same conversion written out in full.",
             "Everything runs in your browser. Values are converted as entered, so negative numbers work as expected for differences; for temperature they are checked against absolute zero.",
           ],
         },
@@ -1271,6 +1306,21 @@ export const en: Dictionary = {
           heading: "Length and weight",
           paragraphs: [
             "Length and weight conversions multiply by exact definitions: `1 in = 2.54 cm`, `1 ft = 0.3048 m`, `1 mi = 1.609344 km`, `1 lb = 0.45359237 kg`, and `1 oz = 28.349523125 g`. Metric units use the standard prefixes, and `1 st = 14 lb`.",
+          ],
+        },
+        {
+          heading: "Area",
+          paragraphs: [
+            "Area uses square units, so each factor is the corresponding linear definition squared: `1 ft² = 0.3048² m² = 0.09290304 m²` and `1 yd² = 0.9144² m² = 0.83612736 m²`.",
+            "`1 hectare = 10,000 m²`, and `1 acre = 4,840 yd² = 4,046.8564224 m²` using the international yard. Acre and hectare are land measures; neither is a metric prefix of the other.",
+          ],
+        },
+        {
+          heading: "Volume",
+          paragraphs: [
+            "Volume uses cubic metres internally: `1 L = 0.001 m³` and `1 mL = 0.000001 m³`. Litres and millilitres are exact subdivisions of the cubic metre.",
+            "The US volume units are US customary, not UK imperial. `1 US gallon = 231 in³ = 3.785411784 L`; the US fluid ounce, cup, pint, quart, tablespoon, and teaspoon are exact fractions of that gallon. A US cup is 236.5882365 mL — not the 240 mL US legal cup or the 250 mL metric cup.",
+            "UK imperial gallons, pints, and fluid ounces are not included in this release, and neither are US dry measures. The `US` qualifier appears in every US unit name and symbol so a conversion cannot be read as imperial by mistake.",
           ],
         },
         {
@@ -1283,7 +1333,9 @@ export const en: Dictionary = {
           heading: "Precision and assumptions",
           items: [
             "Results keep full precision internally and are shown with up to 10 significant digits, so small values stay readable and exact definitions do not collect rounding noise.",
-            "The converter handles length, weight, and temperature only — not area, volume, speed, or currency — and it never guesses a unit from the input.",
+            "Calculations use IEEE-754 floating-point numbers. Displayed values are rounded for readability and are not a claim of exact decimal arithmetic for every result.",
+            "The converter handles length, weight, temperature, area, and volume only — not speed, pressure, energy, or currency — and it never guesses a unit from the input.",
+            "US customary volume units are labelled `US` in both the unit name and the symbol. Unqualified terms such as “gallon” or “cup” are avoided because they mean different volumes in other systems.",
             "Displayed numbers follow the page language: a decimal comma in Spanish and a decimal point in English.",
           ],
         },

@@ -122,19 +122,175 @@ describe("unit metadata", () => {
     ]);
     expect(UNITS_BY_CATEGORY.weight).toContain("kg");
     expect(UNITS_BY_CATEGORY.temperature).toEqual(["c", "f", "k"]);
+    expect(UNITS_BY_CATEGORY.area).toEqual([
+      "cm2",
+      "m2",
+      "km2",
+      "ft2",
+      "yd2",
+      "ac",
+      "ha",
+    ]);
+    expect(UNITS_BY_CATEGORY.volume).toEqual([
+      "ml",
+      "l",
+      "m3",
+      "tsp",
+      "tbsp",
+      "floz",
+      "cup",
+      "pt",
+      "qt",
+      "gal",
+    ]);
   });
 
   it("ships a sensible default pair per category", () => {
     expect(DEFAULT_UNITS.length).toEqual({ from: "m", to: "ft" });
     expect(DEFAULT_UNITS.weight).toEqual({ from: "kg", to: "lb" });
     expect(DEFAULT_UNITS.temperature).toEqual({ from: "c", to: "f" });
+    expect(DEFAULT_UNITS.area).toEqual({ from: "m2", to: "ft2" });
+    expect(DEFAULT_UNITS.volume).toEqual({ from: "l", to: "gal" });
   });
 
   it("returns the symbol for a known unit and nothing otherwise", () => {
     expect(unitSymbol("length", "km")).toBe("km");
     expect(unitSymbol("weight", "lb")).toBe("lb");
     expect(unitSymbol("temperature", "f")).toBe("°F");
+    expect(unitSymbol("area", "m2")).toBe("m²");
+    expect(unitSymbol("area", "ft2")).toBe("ft²");
+    expect(unitSymbol("volume", "ml")).toBe("mL");
+    expect(unitSymbol("volume", "gal")).toBe("US gal");
+    expect(unitSymbol("volume", "tsp")).toBe("US tsp");
     expect(unitSymbol("length", "kg")).toBe("");
+    expect(unitSymbol("area", "gal")).toBe("");
+    expect(unitSymbol("volume", "m2")).toBe("");
+  });
+});
+
+describe("area conversion", () => {
+  it("converts between metric square units", () => {
+    expect(convertUnit(1, "area", "cm2", "m2")).toBe(0.0001);
+    expect(convertUnit(1, "area", "m2", "km2")).toBe(0.000001);
+    expect(convertUnit(1, "area", "km2", "ha")).toBe(100);
+    expect(convertUnit(2.5, "area", "ha", "m2")).toBe(25000);
+  });
+
+  it("uses the international square definitions", () => {
+    expect(convertUnit(1, "area", "ft2", "m2")).toBe(0.09290304);
+    expect(convertUnit(1, "area", "yd2", "m2")).toBe(0.83612736);
+    expect(convertUnit(1, "area", "yd2", "ft2")).toBe(9);
+    expect(convertUnit(1, "area", "m2", "ft2")).toBeCloseTo(
+      10.763910416709722,
+      12,
+    );
+  });
+
+  it("converts land measures", () => {
+    expect(convertUnit(1, "area", "ac", "m2")).toBe(4046.8564224);
+    expect(convertUnit(1, "area", "ac", "ft2")).toBe(43560);
+    expect(convertUnit(1, "area", "ha", "km2")).toBe(0.01);
+    expect(convertUnit(1, "area", "ha", "ac")).toBeCloseTo(
+      2.471053814671653,
+      12,
+    );
+    expect(convertUnit(5, "area", "ac", "ha")).toBeCloseTo(2.0234282112, 12);
+  });
+
+  it("round-trips without drift", () => {
+    const there = convertUnit(123.456, "area", "ac", "m2");
+    expect(there).not.toBeNull();
+    expect(convertUnit(there as number, "area", "m2", "ac")).toBeCloseTo(
+      123.456,
+      10,
+    );
+  });
+
+  it("keeps negative values as deltas and converts zero", () => {
+    expect(convertUnit(-5, "area", "m2", "ft2")).toBeCloseTo(
+      -53.81955208354861,
+      10,
+    );
+    expect(convertUnit(0, "area", "ha", "ac")).toBe(0);
+  });
+});
+
+describe("volume conversion", () => {
+  it("converts between metric volume units", () => {
+    expect(convertUnit(1, "volume", "m3", "l")).toBe(1000);
+    expect(convertUnit(1, "volume", "l", "ml")).toBeCloseTo(1000, 10);
+    expect(convertUnit(1, "volume", "ml", "m3")).toBe(0.000001);
+    expect(convertUnit(2.5, "volume", "l", "ml")).toBe(2500);
+  });
+
+  it("uses the US gallon as the US customary reference", () => {
+    expect(convertUnit(1, "volume", "gal", "l")).toBe(3.785411784);
+    expect(convertUnit(1, "volume", "qt", "l")).toBe(0.946352946);
+    expect(convertUnit(1, "volume", "pt", "ml")).toBeCloseTo(473.176473, 9);
+    expect(convertUnit(1, "volume", "floz", "ml")).toBeCloseTo(
+      29.5735295625,
+      9,
+    );
+    expect(convertUnit(1, "volume", "cup", "ml")).toBeCloseTo(236.5882365, 9);
+  });
+
+  it("keeps the US customary ratios", () => {
+    expect(convertUnit(1, "volume", "gal", "floz")).toBe(128);
+    expect(convertUnit(1, "volume", "gal", "cup")).toBe(16);
+    expect(convertUnit(1, "volume", "gal", "pt")).toBe(8);
+    expect(convertUnit(1, "volume", "gal", "qt")).toBe(4);
+    expect(convertUnit(1, "volume", "gal", "tbsp")).toBe(256);
+    expect(convertUnit(1, "volume", "gal", "tsp")).toBeCloseTo(768, 9);
+    expect(convertUnit(1, "volume", "cup", "floz")).toBe(8);
+  });
+
+  it("converts litres to US gallons", () => {
+    expect(convertUnit(1, "volume", "l", "gal")).toBeCloseTo(
+      0.2641720523581484,
+      12,
+    );
+  });
+
+  it("round-trips without drift", () => {
+    const there = convertUnit(123.456, "volume", "gal", "l");
+    expect(there).not.toBeNull();
+    expect(convertUnit(there as number, "volume", "l", "gal")).toBeCloseTo(
+      123.456,
+      10,
+    );
+  });
+
+  it("keeps negative values as deltas and converts zero", () => {
+    expect(convertUnit(-1, "volume", "l", "gal")).toBeCloseTo(
+      -0.2641720523581484,
+      12,
+    );
+    expect(convertUnit(0, "volume", "m3", "gal")).toBe(0);
+  });
+});
+
+describe("area and volume validation", () => {
+  it("rejects unknown units", () => {
+    expect(convertUnit(1, "area", "m2", "parsec")).toBeNull();
+    expect(convertUnit(1, "area", "parsec", "m2")).toBeNull();
+    expect(convertUnit(1, "volume", "gal", "bushel")).toBeNull();
+    expect(convertUnit(1, "volume", "bushel", "gal")).toBeNull();
+  });
+
+  it("rejects units from another category", () => {
+    expect(convertUnit(1, "area", "m2", "kg")).toBeNull();
+    expect(convertUnit(1, "area", "gal", "m2")).toBeNull();
+    expect(convertUnit(1, "volume", "gal", "c")).toBeNull();
+    expect(convertUnit(1, "volume", "m2", "gal")).toBeNull();
+    expect(convertUnit(1, "length", "m", "ac")).toBeNull();
+    expect(convertUnit(1, "weight", "kg", "l")).toBeNull();
+  });
+
+  it("rejects non-finite values", () => {
+    expect(convertUnit(Number.NaN, "area", "m2", "ft2")).toBeNull();
+    expect(
+      convertUnit(Number.POSITIVE_INFINITY, "volume", "l", "gal"),
+    ).toBeNull();
   });
 });
 
@@ -157,6 +313,15 @@ describe("formatUnitValue", () => {
   it("formats with the locale's number conventions", () => {
     expect(formatUnitValue(1.609344, "es-ES")).toBe("1,609344");
     expect(formatUnitValue(1609344, "es-ES")).toBe("1.609.344");
+  });
+
+  it("formats area and volume results", () => {
+    expect(formatUnitValue(4046.8564224)).toBe("4,046.856422");
+    expect(formatUnitValue(0.09290304)).toBe("0.09290304");
+    expect(formatUnitValue(3.785411784)).toBe("3.785411784");
+    expect(formatUnitValue(236.58823650000002)).toBe("236.5882365");
+    expect(formatUnitValue(4046.8564224, "es-ES")).toBe("4046,856422");
+    expect(formatUnitValue(3.785411784, "es-ES")).toBe("3,785411784");
   });
 
   it("normalizes negative zero", () => {

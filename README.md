@@ -37,6 +37,14 @@ The M10.15 / M10.15.1 public-site release adds a bilingual PC-hardware editorial
 
 Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches the typed tool registry, localized per page. English is the source locale and Spanish (`/es/…`) is shipped as a provisional translation (see [Translation status](#translation-status)).
 
+### Unit Converter
+
+The Unit Converter (`/unit-converter`, `/es/unit-converter`) converts length, weight, temperature, area, and volume. Length and weight use exact factor-based definitions, temperature is affine and converts through kelvin, area uses square metres as its base, and volume uses cubic metres. Area covers square centimetres, square metres, square kilometres, square feet, square yards, acres, and hectares.
+
+Volume includes millilitres, litres, and cubic metres plus explicitly labelled US customary units: US teaspoon, US tablespoon, US fluid ounce, US cup, US pint, US quart, and US gallon. These are US customary definitions derived from the 231-cubic-inch US gallon; they are not UK imperial units. UK imperial volume units, US dry measures, the 240 mL US legal cup, and the 250 mL metric cup are not included.
+
+Conversions keep full precision internally and display up to 10 significant digits, formatted for the page language. Results can be copied, and changing any input clears the previous result.
+
 ### Time Zone Converter
 
 The Time Zone Converter (`/time-zone-converter`, `/es/time-zone-converter`) converts a date and time between a curated list of major IANA time zones plus the device zone. It resolves the entered value as a wall-clock time in the source zone, then shows the converted time, both UTC offsets, the source-to-target difference, the weekday, and any change of calendar date across a fixed comparison table.
