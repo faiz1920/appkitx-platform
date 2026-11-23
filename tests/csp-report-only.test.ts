@@ -66,11 +66,11 @@ describe("buildCspReportOnlyPolicy", () => {
     expect(policy).toBe(
       [
         "default-src 'none'",
-        `script-src 'self' https://static.cloudflareinsights.com ${expectedHashes(BODIES)}`,
+        `script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com ${expectedHashes(BODIES)}`,
         "style-src 'self'",
-        "img-src 'self'",
+        "img-src 'self' https://www.google-analytics.com https://*.google-analytics.com",
         "font-src 'self' data:",
-        "connect-src 'self' https://cloudflareinsights.com",
+        "connect-src 'self' https://cloudflareinsights.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
         "base-uri 'none'",
         "form-action 'none'",
         "frame-ancestors 'none'",

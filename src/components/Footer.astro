@@ -44,7 +44,7 @@ const infoLink = (key: InfoPageKey, label: string) => ({
 
 const columns: Array<{
   heading: string;
-  links: Array<{ label: string; href?: string }>;
+  links: Array<{ label: string; href?: string; consent?: boolean }>;
 }> = [
   {
     heading: footer.tools.heading,
@@ -78,6 +78,7 @@ const columns: Array<{
       infoLink("privacy", footer.legal.privacy),
       infoLink("terms", footer.legal.terms),
       infoLink("affiliateDisclosure", footer.legal.affiliateDisclosure),
+      { label: t.consent.settings, consent: true },
     ],
   },
 ];
@@ -94,7 +95,15 @@ const columns: Array<{
           <ul class="mt-4 space-y-2">
             {column.links.map((link) => (
               <li>
-                {link.href ? (
+                {link.consent ? (
+                  <button
+                    type="button"
+                    class="focus-ring inline-flex min-h-6 items-center text-small text-text-secondary hover:text-accent active:text-accent-active"
+                    data-consent-open
+                  >
+                    {link.label}
+                  </button>
+                ) : link.href ? (
                   <a
                     href={link.href}
                     class="focus-ring inline-flex min-h-6 items-center text-small text-text-secondary hover:text-accent active:text-accent-active"

@@ -7,6 +7,12 @@ export const CSP_REPORT_ONLY_RUM_SCRIPT_HOST =
   "https://static.cloudflareinsights.com";
 export const CSP_REPORT_ONLY_RUM_FALLBACK_HOST =
   "https://cloudflareinsights.com";
+export const CSP_REPORT_ONLY_GA_SCRIPT_HOST =
+  "https://www.googletagmanager.com";
+export const CSP_REPORT_ONLY_GA_IMG_HOSTS =
+  "https://www.google-analytics.com https://*.google-analytics.com";
+export const CSP_REPORT_ONLY_GA_CONNECT_HOSTS =
+  "https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com";
 
 const HASH_PATTERN = /^sha256-[A-Za-z0-9+/]+={0,2}$/;
 
@@ -41,11 +47,11 @@ export function buildCspReportOnlyPolicy(
 
   const policy = [
     "default-src 'none'",
-    `script-src 'self' ${CSP_REPORT_ONLY_RUM_SCRIPT_HOST} ${hashes.join(" ")}`,
+    `script-src 'self' ${CSP_REPORT_ONLY_RUM_SCRIPT_HOST} ${CSP_REPORT_ONLY_GA_SCRIPT_HOST} ${hashes.join(" ")}`,
     "style-src 'self'",
-    "img-src 'self'",
+    `img-src 'self' ${CSP_REPORT_ONLY_GA_IMG_HOSTS}`,
     "font-src 'self' data:",
-    `connect-src 'self' ${CSP_REPORT_ONLY_RUM_FALLBACK_HOST}`,
+    `connect-src 'self' ${CSP_REPORT_ONLY_RUM_FALLBACK_HOST} ${CSP_REPORT_ONLY_GA_CONNECT_HOSTS}`,
     "base-uri 'none'",
     "form-action 'none'",
     "frame-ancestors 'none'",

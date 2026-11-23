@@ -3,6 +3,8 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/jetbrains-mono";
 import "../styles/global.css";
 import SearchPalette from "../components/SearchPalette.astro";
+import ConsentBanner from "../components/ConsentBanner.astro";
+import { buildAnalyticsScript } from "../lib/analytics";
 import {
   defaultLocale,
   getDictionary,
@@ -88,6 +90,7 @@ const preferenceScript = noindex
       ...localePreferenceConfig(),
       currentLocale: locale,
     });
+const analyticsScript = buildAnalyticsScript();
 ---
 
 <!doctype html>
@@ -95,6 +98,7 @@ const preferenceScript = noindex
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline set:html={analyticsScript} />
     {preferenceScript !== "" && (
       <script is:inline set:html={preferenceScript} />
     )}
@@ -154,5 +158,6 @@ const preferenceScript = noindex
     </a>
     <slot />
     <SearchPalette locale={locale} />
+    <ConsentBanner locale={locale} />
   </body>
 </html>

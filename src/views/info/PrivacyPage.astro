@@ -18,8 +18,8 @@ const copy = INFO_COPY[locale];
 const isEs = locale === "es";
 
 const reviewNotice = isEs
-  ? `Borrador para revisión del propietario y legal. Jurisdicción prevista: ${INTENDED_JURISDICTION}. Esta política describe el comportamiento actual del sitio web, no una configuración de producción verificada. Debe comprobarse con la configuración desplegada de Cloudflare, el acuerdo de Google Search Console y las obligaciones de la entidad legal antes de publicarse.`
-  : `Draft for owner and legal review. Intended jurisdiction: ${INTENDED_JURISDICTION}. This policy describes the current website's behavior, not a verified production configuration. It must be checked against the deployed Cloudflare settings, the Google Search Console arrangement, and the legal entity's obligations before publication.`;
+  ? `Borrador para revisión del propietario y legal. Jurisdicción prevista: ${INTENDED_JURISDICTION}. Esta política describe el comportamiento actual del sitio web, no una configuración de producción verificada. Debe comprobarse con la configuración desplegada de Cloudflare, la configuración de Google Analytics, el acuerdo de Google Search Console y las obligaciones de la entidad legal antes de publicarse.`
+  : `Draft for owner and legal review. Intended jurisdiction: ${INTENDED_JURISDICTION}. This policy describes the current website's behavior, not a verified production configuration. It must be checked against the deployed Cloudflare settings, the Google Analytics configuration, the Google Search Console arrangement, and the legal entity's obligations before publication.`;
 
 const translationNote = isEs
   ? "Traducción al español provisional. La versión inglesa es el borrador de referencia y prevalece hasta que ambas versiones hayan sido revisadas legalmente."
@@ -31,8 +31,8 @@ const translationNote = isEs
   title={copy.pageLabels.privacy}
   description={
     isEs
-      ? "Cómo trata AppKitX los datos: herramientas en el navegador, preferencia de idioma, alojamiento y analítica de Cloudflare, informes CSP y contacto."
-      : "How AppKitX handles data: browser-only tools, language preference storage, Cloudflare hosting and analytics, CSP reports, and contact messages."
+      ? "Cómo trata AppKitX los datos: herramientas en el navegador, preferencia de idioma, alojamiento y analítica de Cloudflare, Google Analytics con consentimiento, informes CSP y contacto."
+      : "How AppKitX handles data: browser-only tools, language preference storage, Cloudflare hosting, Google Analytics with consent, CSP reports, and contact messages."
   }
   current="privacy"
   lastUpdated={PRIVACY_LAST_UPDATED}
@@ -95,11 +95,12 @@ const translationNote = isEs
           <tr>
             <td>Analítica web de producción</td>
             <td>
-              La documentación del sitio indica que Cloudflare Web Analytics con
-              Real User Measurements está activado. El beacon lo inyecta
-              Cloudflare y no forma parte del build estático del sitio.
+              Cloudflare Web Analytics con Real User Measurements está activado
+              en el borde. Google Analytics 4 (identificador G-YF9V8GSC89)
+              funciona con modo de consentimiento; las cookies analíticas solo
+              se instalan después de que las aceptes.
             </td>
-            <td>Cloudflare</td>
+            <td>Cloudflare, Google LLC</td>
           </tr>
           <tr>
             <td>Administración de búsquedas</td>
@@ -183,12 +184,17 @@ const translationNote = isEs
 
       <h2>Cookies y tecnologías similares</h2>
       <p>
-        El código del sitio AppKitX no establece cookies publicitarias, cookies
-        de analítica ni píxeles de seguimiento. El build estático no contiene
-        redes publicitarias, embeds sociales ni scripts de analítica. En
-        producción, Cloudflare inyecta su beacon de Web Analytics en el borde;
-        no forma parte del código fuente ni del build estático. Consulta la
-        sección de analítica web más abajo.
+        El código del sitio AppKitX no establece cookies publicitarias ni
+        píxeles de seguimiento. Las páginas de producción cargan Google
+        Analytics 4 con el modo de consentimiento denegado: no se instalan
+        cookies analíticas ni se guarda un identificador de usuario hasta que
+        aceptas la analítica en el aviso de cookies. Al aceptar se instalan las
+        cookies propias <code>_ga</code> y <code>_ga_&lt;id&gt;</code> que se
+        describen abajo. Al rechazar, o al usar «Configuración de cookies» en el
+        pie para retirar el consentimiento, el almacenamiento analítico sigue
+        denegado y esas cookies se borran. En producción, Cloudflare también
+        inyecta su beacon de Web Analytics en el borde; no forma parte del
+        código fuente ni del build estático.
       </p>
       <p>
         Cloudflare, como proveedor de alojamiento y red, puede establecer
@@ -229,13 +235,34 @@ const translationNote = isEs
         sitio y no aparece en las vistas previas locales.
       </p>
       <p>
-        Este borrador no afirma que el servicio de analítica no use cookies, que
-        se aplique un periodo de retención concreto ni que exista una base legal
-        determinada. Esos puntos dependen de la configuración desplegada y
-        requieren confirmación del propietario y legal. Si la analítica está
-        activada, el propietario debe asegurarse de que la política publicada,
-        el enfoque de consentimiento y la retención coincidan con el servicio
-        real.
+        Google Analytics 4 (identificador de medición <code>G-YF9V8GSC89</code>)
+        se usa para entender qué páginas y herramientas se utilizan y poder
+        mejorarlas. Lo presta Google LLC. Los eventos pueden incluir la ruta de
+        la página, el referente, la ubicación aproximada derivada de la
+        dirección IP, información del navegador y del dispositivo, y las
+        interacciones con las herramientas. GA4 no registra ni almacena
+        direcciones IP completas.
+      </p>
+      <p>
+        El almacenamiento analítico está denegado por defecto. Hasta que
+        aceptes, GA4 funciona en modo de consentimiento sin cookies analíticas y
+        sin un identificador de usuario almacenado; puede enviar señales
+        agregadas sin cookies. Si aceptas, GA4 instala las cookies propias
+        <code>_ga</code> y <code>_ga_&lt;id&gt;</code> (hasta dos años) y asocia
+        tus visitas a un identificador aleatorio. La retención de datos de
+        usuario es de dos meses por defecto. Puedes cambiar o retirar tu
+        elección en cualquier momento desde «Configuración de cookies» en el pie
+        de página; al retirarla se borran esas cookies.
+      </p>
+      <p>
+        Google trata estos datos como encargado del servicio conforme a las
+        Condiciones de tratamiento de datos de Google Ads aceptadas para esta
+        propiedad, que incluyen las cláusulas contractuales tipo de la Comisión
+        Europea para transferencias internacionales. El sitio se apoya en tu
+        consentimiento para las cookies analíticas. La configuración de
+        analítica de Cloudflare descrita arriba sigue requiriendo confirmación
+        del propietario y legal, y la retención debe mantenerse alineada con
+        esta política.
       </p>
 
       <h2>Administración del rendimiento en búsquedas</h2>
@@ -423,11 +450,12 @@ const translationNote = isEs
           <tr>
             <td>Production website analytics</td>
             <td>
-              The site's documentation states that Cloudflare Web Analytics with
-              Real User Measurements is enabled. The beacon is injected by
-              Cloudflare and is not part of the site's static build.
+              Cloudflare Web Analytics with Real User Measurements is enabled at
+              the edge. Google Analytics 4 (measurement ID G-YF9V8GSC89) runs
+              with consent mode; analytics cookies are set only after you
+              accept.
             </td>
-            <td>Cloudflare</td>
+            <td>Cloudflare, Google LLC</td>
           </tr>
           <tr>
             <td>Search performance administration</td>
@@ -507,11 +535,15 @@ const translationNote = isEs
 
       <h2>Cookies and similar technologies</h2>
       <p>
-        The AppKitX site code does not set advertising cookies, analytics
-        cookies, or tracking pixels. The static build contains no advertising
-        network, social embed, or analytics script. In production, Cloudflare
-        injects its Web Analytics beacon at the edge; it is not part of the
-        site's source or static build. See the website analytics section below.
+        The AppKitX site code sets no advertising cookies and no tracking
+        pixels. Production pages load Google Analytics 4 with consent mode set
+        to denied: no analytics cookies are set and no user-level identifier is
+        stored until you accept analytics in the cookie banner. Accepting sets
+        the first-party <code>_ga</code> and <code>_ga_&lt;id&gt;</code> cookies
+        described below. Rejecting, or using "Cookie settings" in the footer to
+        withdraw consent, keeps analytics storage denied and clears those
+        cookies. In production, Cloudflare also injects its Web Analytics beacon
+        at the edge; it is not part of the site's source or static build.
       </p>
       <p>
         Cloudflare, as the hosting and network provider, may set security or
@@ -551,12 +583,31 @@ const translationNote = isEs
         appear in local previews.
       </p>
       <p>
-        This draft does not claim that the analytics service is cookieless, that
-        a particular retention period applies, or that a particular legal basis
-        has been established. Those points depend on the deployed configuration
-        and require owner and legal confirmation. If analytics is enabled, the
-        site owner must ensure that the published policy, consent approach, and
-        retention settings match the actual service.
+        Google Analytics 4 (measurement ID <code>G-YF9V8GSC89</code>) is used to
+        understand which pages and tools are used so they can be improved. It is
+        provided by Google LLC. Events can include the page path, referrer,
+        approximate location derived from the IP address, browser and device
+        information, and interactions with the tools. GA4 does not log or store
+        full IP addresses.
+      </p>
+      <p>
+        Analytics storage is denied by default. Until you accept, GA4 runs in
+        consent mode without analytics cookies and without a stored user-level
+        identifier; it may send cookieless, aggregated signals. If you accept,
+        GA4 sets the first-party cookies <code>_ga</code> and
+        <code>_ga_&lt;id&gt;</code> (up to two years) and associates your visits
+        with a random identifier. User data retention is set to two months by
+        default. You can change or withdraw your choice at any time through
+        "Cookie settings" in the footer; withdrawing clears those cookies.
+      </p>
+      <p>
+        Google processes this data as a service provider under the Google Ads
+        Data Processing Terms accepted for this property, which include the
+        European Commission's standard contractual clauses for international
+        transfers. The site relies on your consent for analytics cookies. The
+        Cloudflare analytics configuration described above still requires owner
+        and legal confirmation, and retention settings must be kept aligned with
+        this policy.
       </p>
 
       <h2>Search performance administration</h2>
