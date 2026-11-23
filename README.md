@@ -4,7 +4,7 @@ Global platform for free online calculators, developer utilities, and everyday t
 
 ## Design
 
-The visual system and UI requirements are defined in [AppKitX-Design.md](./AppKitX-Design.md). All UI work follows that specification.
+The visual system and UI requirements are defined in [AppKitX-Design.md](./doc/AppKitX-Design.md). All UI work follows that specification.
 
 ## Status
 
@@ -33,7 +33,7 @@ Homepage, navigation, and footer implemented to the AppKitX Design System v1.0 (
 
 Category landing pages are live in both locales for [Calculators](/calculators), [Converters](/converters), [Developer tools](/developer-tools), [Date & time](/date-time), and [Text tools](/text-tools).
 
-The M10.15 / M10.15.1 public-site release adds a bilingual PC-hardware editorial library: ten source-based guides in English (`/guides/`) and Spanish (`/es/guides/`), plus About, Contact, Privacy Policy, Terms of Use, and Affiliate Disclosure pages in both locales. The legal pages are deployed as visible drafts with review notices and must not be presented as final or compliant until the owner inputs in [PC-BUILDER-M10-15-OWNER-INPUTS.md](./PC-BUILDER-M10-15-OWNER-INPUTS.md) are resolved. The guides are research-based and do not claim hands-on testing, benchmarks, or product ownership. The public contact address is `appkitx@gmail.com`. The PC Builder remains development-only and has no public route, navigation entry, or sitemap entry.
+The M10.15 / M10.15.1 public-site release adds a bilingual PC-hardware editorial library: ten source-based guides in English (`/guides/`) and Spanish (`/es/guides/`), plus About, Contact, Privacy Policy, Terms of Use, and Affiliate Disclosure pages in both locales. The legal pages are deployed as visible drafts with review notices and must not be presented as final or compliant until the owner inputs in [PC-BUILDER-M10-15-OWNER-INPUTS.md](./doc/PC-BUILDER-M10-15-OWNER-INPUTS.md) are resolved. The guides are research-based and do not claim hands-on testing, benchmarks, or product ownership. The public contact address is `appkitx@gmail.com`. The PC Builder remains development-only and has no public route, navigation entry, or sitemap entry.
 
 Global search (⌘K / Ctrl+K palette, hero search, nav trigger) searches the typed tool registry, localized per page. English is the source locale and Spanish (`/es/…`) is shipped as a provisional translation (see [Translation status](#translation-status)).
 
@@ -74,7 +74,7 @@ Each locale carries machine-readable provenance in `src/i18n/config.ts`: `source
 | English | `/`     | Source      | —                                                                                                                                                                    |
 | Spanish | `/es/…` | Provisional | Copy compared against the English source using an online translation service. No native-speaker review has been recorded, and no native-speaker approval is claimed. |
 
-Spanish is the only entry in the explicit `PROVISIONAL_LOCALES` allowlist. The outstanding review, record template, and review checklist live in [TRANSLATION-REVIEWS.md](./TRANSLATION-REVIEWS.md). While Spanish remains provisional, the language switcher shows a “Traducción provisional” caption.
+Spanish is the only entry in the explicit `PROVISIONAL_LOCALES` allowlist. The outstanding review, record template, and review checklist live in [TRANSLATION-REVIEWS.md](./doc/TRANSLATION-REVIEWS.md). While Spanish remains provisional, the language switcher shows a “Traducción provisional” caption.
 
 ### Adding a language
 
@@ -229,7 +229,7 @@ Production deployment is currently automatic: Cloudflare Workers Builds builds a
 
 Preview deployments remain available for validation; production is currently promoted automatically from `main`. A documentation-only PR can also trigger a production deployment when merged, so merges require explicit approval.
 
-Deployment provenance, private attestation, rollback, and post-deployment verification are covered in [DEPLOYMENT-RUNBOOK.md](./DEPLOYMENT-RUNBOOK.md).
+Deployment provenance, private attestation, rollback, and post-deployment verification are covered in [DEPLOYMENT-RUNBOOK.md](./doc/DEPLOYMENT-RUNBOOK.md).
 
 The production domain is `appkitx.com` (canonical), with `www.appkitx.com` redirecting to it. Domain binding and DNS setup are manual Cloudflare steps and are not configured by this repository.
 
@@ -268,7 +268,7 @@ report-uri /__csp-report
 
 `https://static.cloudflareinsights.com` is required for the edge-injected Cloudflare RUM module. `https://cloudflareinsights.com` is a fallback allowance for the RUM bundle’s code-inspected fallback URL; it is not an observed production destination. The observed production RUM request is a same-origin POST to `/cdn-cgi/rum`, which `connect-src 'self'` allows.
 
-`report-uri /__csp-report` points at the Worker collector. The endpoint accepts legacy `application/csp-report` payloads and Reporting API `application/reports+json` arrays, normalizes them, and writes bounded fields to the Analytics Engine dataset `appkitx_csp_reports`. `report-to` is intentionally not emitted: Chromium 156 generated violations but delivered no report when `report-to` was present, while `report-uri` delivered in Chromium, Firefox, and WebKit. The endpoint still accepts the Reporting API envelope for future compatibility. See [CSP-REPORTING-COLLECTOR.md](./CSP-REPORTING-COLLECTOR.md) for the contract, schema, privacy rules, and verification steps.
+`report-uri /__csp-report` points at the Worker collector. The endpoint accepts legacy `application/csp-report` payloads and Reporting API `application/reports+json` arrays, normalizes them, and writes bounded fields to the Analytics Engine dataset `appkitx_csp_reports`. `report-to` is intentionally not emitted: Chromium 156 generated violations but delivered no report when `report-to` was present, while `report-uri` delivered in Chromium, Firefox, and WebKit. The endpoint still accepts the Reporting API envelope for future compatibility. See [CSP-REPORTING-COLLECTOR.md](./doc/CSP-REPORTING-COLLECTOR.md) for the contract, schema, privacy rules, and verification steps.
 
 Local builds and previews use a local Miniflare Analytics Engine binding whose writes are no-ops. Local browser tests therefore prove endpoint behavior and delivery, not durable storage. Production storage is not verified until the collector is deployed and a row is queried. The existing `Report-To: cf-nel` response header is Cloudflare Network Error Logging, not a CSP collector.
 
@@ -278,4 +278,4 @@ Enforcement is a separate decision. Before switching from report-only to enforci
 
 `npm run csp:hash` remains the read-only inventory command. `npx playwright test e2e/csp.spec.ts` runs the generated-header, hash-consistency, violation-capture, and local RUM simulation checks. `npx playwright test e2e/csp-reporting.spec.ts` runs the endpoint contract and real browser-delivery checks in Chromium, Firefox, and WebKit. The production-only Cloudflare RUM injection and endpoint are documented under [Analytics and real user measurements](#analytics-and-real-user-measurements); the observed hostname and endpoint are evidence, not a complete directive list.
 
-The collector contract, storage schema, privacy boundaries, deployment checks, aggregate queries, and rollback steps are in [CSP-REPORTING-COLLECTOR.md](./CSP-REPORTING-COLLECTOR.md). The enforcement-readiness assessment, proposed enforcing policy, staged rollout, rollback triggers, and scorecard are in [CSP-ENFORCEMENT-READINESS.md](./CSP-ENFORCEMENT-READINESS.md). Enforcement is not currently authorized.
+The collector contract, storage schema, privacy boundaries, deployment checks, aggregate queries, and rollback steps are in [CSP-REPORTING-COLLECTOR.md](./doc/CSP-REPORTING-COLLECTOR.md). The enforcement-readiness assessment, proposed enforcing policy, staged rollout, rollback triggers, and scorecard are in [CSP-ENFORCEMENT-READINESS.md](./doc/CSP-ENFORCEMENT-READINESS.md). Enforcement is not currently authorized.

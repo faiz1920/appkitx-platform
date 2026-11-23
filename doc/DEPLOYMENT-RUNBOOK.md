@@ -2,7 +2,7 @@
 
 Operational runbook for the production Worker `appkitx-platform` serving
 `https://appkitx.com/`. The architecture and CSP build pipeline are documented
-in [README.md](./README.md); this document covers deployment provenance,
+in [README.md](../README.md); this document covers deployment provenance,
 attestation, rollback, and post-deployment verification.
 
 This runbook does not authorize a deployment or rollback. A rollback changes
