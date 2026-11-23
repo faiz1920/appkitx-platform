@@ -10,7 +10,7 @@ import { pressTab, tabTo } from "./keyboard";
 
 /*
  * Dependency-free accessibility checks. These assertions cover the
- * AppKitX-Design.md invariants that can be verified from the rendered DOM:
+ * doc/AppKitX-Design.md invariants that can be verified from the rendered DOM:
  * landmarks, heading order, skip link, names, language metadata, focus
  * geometry, target sizes, reduced motion, and representative contrast.
  *

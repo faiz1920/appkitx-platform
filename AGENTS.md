@@ -8,9 +8,9 @@ Repo-specific guidance. Global Nexverra rules (`~/.config/opencode/AGENTS.md`) a
 - Tailwind v4 via `@tailwindcss/vite` — CSS-first with `@theme`, no `tailwind.config.js`. Semantic design tokens live once in `src/styles/tokens.css` as CSS custom properties.
 - Inter (UI) + JetBrains Mono (numeric/code) self-hosted via Fontsource. Icons are Lucide SVGs from `lucide-static`, inlined with `?raw` imports.
 
-## AppKitX-Design.md is the binding UI spec
+## doc/AppKitX-Design.md is the binding UI spec
 
-- Read it fully before any UI work; it governs color, typography, components, states, and accessibility.
+- Read `doc/AppKitX-Design.md` fully before any UI work; it governs color, typography, components, states, and accessibility.
 - Semantic color roles only (`--color-accent`, `--color-text-primary`, …) — never primitives or literals in components.
 - Tokenization policy: global tokens for anything repeated across components or system-level (control heights, containers, section rhythm, focus geometry); one-off component-internal dimensions may stay local, documented in the component spec.
 - Invariants most often broken:
@@ -20,7 +20,7 @@ Repo-specific guidance. Global Nexverra rules (`~/.config/opencode/AGENTS.md`) a
   - Focus is a 2px ring + 2px offset everywhere — never removed.
   - The contrast table in the spec is maintained by hand: add a computed ratio before using a new foreground/background pair.
   - 44px minimum targets, skip link first, labels on every input.
-- Any new third-party asset gets its source and license recorded in `LICENSES.md` before merge.
+- Any new third-party asset gets its source and license recorded in `doc/LICENSES.md` before merge.
 
 ## Conventions
 

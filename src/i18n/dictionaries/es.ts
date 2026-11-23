@@ -9,7 +9,7 @@ import type { Dictionary } from "../dictionary";
  * TRANSLATION STATUS: provisional. The copy was compared against the English
  * source using an online translation service, but it has not received
  * native-speaker review. src/i18n/config.ts records the machine-readable
- * status, and TRANSLATION-REVIEWS.md tracks the outstanding review. Automated
+ * status, and doc/TRANSLATION-REVIEWS.md tracks the outstanding review. Automated
  * tests prove structural completeness, never linguistic quality.
  *
  * Conventions: figures and the percent sign keep the typographic space
