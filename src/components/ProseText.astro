@@ -1,15 +1,19 @@
 ---
-import { splitCodeSpans, type ProseSegment } from "../i18n/prose";
+import { splitProseSpans, type ProseSegment } from "../i18n/prose";
+import { defaultLocale, type LocaleCode } from "../i18n/config";
+import { localizedHref } from "../i18n/routing";
 import type { ProseSectionStrings } from "../i18n/dictionary";
 
 interface Props {
   sections: readonly ProseSectionStrings[];
+  /** Locale used to localize in-prose links; defaults to English. */
+  locale?: LocaleCode;
 }
 
-const { sections } = Astro.props;
+const { sections, locale = defaultLocale } = Astro.props;
 
-/* Render prose segments as text nodes and <code> elements — no raw HTML. */
-const renderSegments = (text: string): ProseSegment[] => splitCodeSpans(text);
+/* Render prose segments as text, code, and internal links — no raw HTML. */
+const renderSegments = (text: string): ProseSegment[] => splitProseSpans(text);
 const paragraph = (section: ProseSectionStrings): readonly string[] =>
   section.paragraphs ?? [];
 const items = (section: ProseSectionStrings): readonly string[] =>
@@ -22,7 +26,15 @@ const items = (section: ProseSectionStrings): readonly string[] =>
     {paragraph(section).map((text) => (
       <p>
         {renderSegments(text).map((segment) =>
-          segment.code ? <code>{segment.text}</code> : segment.text,
+          segment.href ? (
+            <a href={localizedHref(segment.href, locale)} class="focus-ring">
+              {segment.text}
+            </a>
+          ) : segment.code ? (
+            <code>{segment.text}</code>
+          ) : (
+            segment.text
+          ),
         )}
       </p>
     ))}
@@ -31,7 +43,18 @@ const items = (section: ProseSectionStrings): readonly string[] =>
         {items(section).map((text) => (
           <li>
             {renderSegments(text).map((segment) =>
-              segment.code ? <code>{segment.text}</code> : segment.text,
+              segment.href ? (
+                <a
+                  href={localizedHref(segment.href, locale)}
+                  class="focus-ring"
+                >
+                  {segment.text}
+                </a>
+              ) : segment.code ? (
+                <code>{segment.text}</code>
+              ) : (
+                segment.text
+              ),
             )}
           </li>
         ))}

@@ -433,7 +433,7 @@ export const es: Dictionary = {
           heading: "Cómo funciona",
           paragraphs: [
             "Introduce el importe prestado, el tipo de interés anual y el plazo de devolución. Indica si el plazo está en años o en meses y pulsa Calcular. La calculadora muestra la cuota mensual fija, los intereses totales durante la vida del préstamo y el importe total devuelto.",
-            "La calculadora es neutral respecto a la moneda: usa la moneda en la que escribas el importe y nunca convierte entre divisas. Todo se ejecuta en tu navegador.",
+            "La calculadora es neutral respecto a la moneda: usa la moneda en la que escribas el importe y nunca convierte entre divisas. Si además quieres ver año a año cómo se reparte cada cuota entre principal e intereses, la [calculadora de EMI](/emi-calculator) añade ese calendario. Todo se ejecuta en tu navegador.",
           ],
         },
         {
@@ -452,7 +452,7 @@ export const es: Dictionary = {
         {
           heading: "Supuestos y casos límite",
           items: [
-            "El tipo se mantiene fijo durante todo el plazo y los intereses se cobran cada mes sobre el saldo pendiente. No se incluyen préstamos a tipo variable, comisiones, seguros ni impuestos.",
+            "El tipo se mantiene fijo durante todo el plazo y los intereses se cobran cada mes sobre el saldo pendiente. No se incluyen préstamos a tipo variable, comisiones, seguros ni impuestos. Para ahorros que crecen en lugar de una deuda que se devuelve, usa la [calculadora de interés compuesto](/compound-interest-calculator).",
             "El plazo debe estar entre un mes y 1.200 meses (100 años). Los plazos fuera de ese rango se rechazan con un mensaje en línea en lugar de ajustarse en silencio.",
             "Los resultados se calculan con precisión completa y solo se redondean a dos decimales para mostrarlos. La última cuota de un préstamo real puede diferir en unos céntimos porque los prestamistas redondean cada plazo.",
             "La calculadora es neutral respecto a la moneda y no asume nada sobre la divisa, la fecha de pago ni las reglas de redondeo del prestamista.",
@@ -547,7 +547,7 @@ export const es: Dictionary = {
           heading: "Cómo funciona",
           paragraphs: [
             "Introduce el importe prestado, el tipo de interés nominal anual y el plazo de devolución. Indica si el plazo está en años o en meses y pulsa Calcular. El resumen muestra la cuota mensual fija (EMI), el principal, los intereses totales, el total a devolver y el reparto entre principal e intereses.",
-            "El calendario agrupa las cuotas por año del préstamo. Despliega cualquier año para ver cada pago mensual, sus componentes de intereses y principal, y el saldo pendiente después de ese pago. Todo se ejecuta en tu navegador.",
+            "El calendario agrupa las cuotas por año del préstamo. Despliega cualquier año para ver cada pago mensual, sus componentes de intereses y principal, y el saldo pendiente después de ese pago. Si solo necesitas la cuota mensual y los intereses totales, la [calculadora de préstamos](/loan-calculator) es una vía más directa. Todo se ejecuta en tu navegador.",
           ],
         },
         {
@@ -694,13 +694,13 @@ export const es: Dictionary = {
           heading: "Cómo funciona",
           paragraphs: [
             "Introduce la inversión inicial, el tipo nominal anual, la duración y la frecuencia de capitalización. Si quieres, añade un aporte mensual e indica si se realiza al inicio o al final de cada mes. Pulsa Calcular para ver el valor final, el total invertido, los intereses generados y una tabla de crecimiento anual.",
-            "Todo se ejecuta en tu navegador. Al cambiar cualquier dato se borra el resultado anterior para que las cifras en pantalla siempre correspondan a los valores actuales.",
+            "Todo se ejecuta en tu navegador. Al cambiar cualquier dato se borra el resultado anterior para que las cifras en pantalla siempre correspondan a los valores actuales. Para una proyección a largo plazo con edades e inflación, usa la [calculadora de jubilación](/retirement-calculator).",
           ],
         },
         {
           heading: "Qué es el interés compuesto",
           paragraphs: [
-            "El interés compuesto es el interés que se gana tanto sobre el importe inicial como sobre los intereses acumulados. Con el tiempo, el saldo crece más rápido que con el interés simple porque los intereses de cada periodo pasan a formar parte de la base del siguiente.",
+            "El interés compuesto es el interés que se gana tanto sobre el importe inicial como sobre los intereses acumulados. Con el tiempo, el saldo crece más rápido que con el interés simple porque los intereses de cada periodo pasan a formar parte de la base del siguiente. Para trabajar hacia atrás desde una meta de ahorro, usa la [calculadora de objetivo de ahorro](/savings-goal-calculator).",
           ],
         },
         {
@@ -850,7 +850,7 @@ export const es: Dictionary = {
           heading: "Cómo funciona",
           paragraphs: [
             "Introduce tu objetivo de ahorro, los ahorros actuales, el tipo nominal anual, el plazo del objetivo y la frecuencia de capitalización. Indica si los ahorros mensuales se añaden al inicio o al final de cada mes y pulsa Calcular. La calculadora muestra el ahorro mensual necesario, el saldo final proyectado y un plan año a año.",
-            "Todo se ejecuta en tu navegador. Al cambiar cualquier dato se borra el resultado anterior para que las cifras en pantalla siempre correspondan a los valores actuales.",
+            "Todo se ejecuta en tu navegador. Al cambiar cualquier dato se borra el resultado anterior para que las cifras en pantalla siempre correspondan a los valores actuales. Si el objetivo es la jubilación, la [calculadora de jubilación](/retirement-calculator) añade edades e inflación.",
           ],
         },
         {
@@ -864,7 +864,7 @@ export const es: Dictionary = {
         {
           heading: "Intereses, capitalización y momento del aporte",
           paragraphs: [
-            "La frecuencia de capitalización elegida define un factor mensual equivalente `g = (1 + r/m)^(m/12)`. Los intereses se acumulan mensualmente a `i = g − 1`, igual que en la Calculadora de interés compuesto. La capitalización diaria usa un año fijo de 365 días; los años bisiestos se ignoran.",
+            "La frecuencia de capitalización elegida define un factor mensual equivalente `g = (1 + r/m)^(m/12)`. Los intereses se acumulan mensualmente a `i = g − 1`, igual que en la [calculadora de interés compuesto](/compound-interest-calculator). La capitalización diaria usa un año fijo de 365 días; los años bisiestos se ignoran.",
             "Los aportes al inicio del mes generan intereses en el mismo mes. Los aportes al final del mes empiezan a generar intereses en el mes siguiente.",
           ],
         },
@@ -1042,7 +1042,7 @@ export const es: Dictionary = {
           heading: "Cómo funciona",
           paragraphs: [
             "Introduce tu edad actual, la edad de jubilación y tus ahorros actuales para la jubilación. En el modo de capital proyectado, añade un aporte mensual y observa cuánto podrías acumular hasta la jubilación. En el modo de ahorro mensual necesario, escribe un capital objetivo nominal y observa el importe mensual necesario para alcanzarlo.",
-            "Todo se ejecuta en tu navegador. Al cambiar cualquier dato se borra el resultado anterior para que las cifras en pantalla siempre correspondan a los valores actuales.",
+            "Todo se ejecuta en tu navegador. Al cambiar cualquier dato se borra el resultado anterior para que las cifras en pantalla siempre correspondan a los valores actuales. Para un objetivo a más corto plazo, usa la [calculadora de objetivo de ahorro](/savings-goal-calculator).",
           ],
         },
         {
@@ -1056,7 +1056,7 @@ export const es: Dictionary = {
         {
           heading: "Rentabilidad, capitalización y momento del aporte",
           paragraphs: [
-            "La frecuencia de capitalización elegida define un factor mensual equivalente `g = (1 + r/m)^(m/12)`. Los intereses se acumulan mensualmente a `i = g − 1`, igual que en la Calculadora de interés compuesto. La capitalización diaria usa un año fijo de 365 días; los años bisiestos se ignoran.",
+            "La frecuencia de capitalización elegida define un factor mensual equivalente `g = (1 + r/m)^(m/12)`. Los intereses se acumulan mensualmente a `i = g − 1`, igual que en la [calculadora de interés compuesto](/compound-interest-calculator). La capitalización diaria usa un año fijo de 365 días; los años bisiestos se ignoran.",
             "Los aportes al inicio del mes generan crecimiento en el mismo mes. Los aportes al final del mes empiezan a generarlo en el mes siguiente.",
           ],
         },
@@ -1364,7 +1364,7 @@ export const es: Dictionary = {
           items: [
             "Los resultados conservan la precisión completa internamente y se muestran con hasta 10 dígitos significativos, de modo que los valores pequeños siguen siendo legibles y las definiciones exactas no acumulan ruido de redondeo.",
             "Los cálculos usan números de coma flotante IEEE-754. Los valores mostrados se redondean para facilitar la lectura y no son una afirmación de aritmética decimal exacta para cada resultado.",
-            "El conversor solo admite longitud, peso, temperatura, superficie y volumen, no velocidad, presión, energía ni divisas, y nunca adivina la unidad a partir del valor.",
+            "El conversor solo admite longitud, peso, temperatura, superficie y volumen; para la velocidad, usa el [conversor de velocidad](/speed-converter). Tampoco admite presión, energía ni divisas, y nunca adivina la unidad a partir del valor.",
             "Las unidades de volumen estadounidenses llevan `US` en el nombre y en el símbolo. Se evitan términos sin calificar como «galón» o «taza» porque designan volúmenes distintos en otros sistemas.",
             "Los números mostrados siguen el idioma de la página: coma decimal en español y punto decimal en inglés.",
           ],
@@ -1412,7 +1412,7 @@ export const es: Dictionary = {
           heading: "Cómo funciona",
           paragraphs: [
             "Escribe la velocidad, elige la unidad de origen y la de destino, y pulsa Calcular. El resultado aparece con la misma conversión escrita completa y puedes copiarlo con un clic.",
-            "Todo se ejecuta en tu navegador. El conversor conserva la precisión completa internamente y solo redondea el resultado que se muestra.",
+            "Todo se ejecuta en tu navegador. El conversor conserva la precisión completa internamente y solo redondea el resultado que se muestra. Para longitud, peso, temperatura, superficie y volumen, usa el [conversor de unidades](/unit-converter).",
           ],
         },
         {
@@ -1488,7 +1488,7 @@ export const es: Dictionary = {
           heading: "Qué es Base64",
           paragraphs: [
             "Base64 representa datos como 64 caracteres imprimibles — `A–Z`, `a–z`, `0–9`, `+` y `/` — para que el contenido binario pueda viajar por formatos solo de texto como JSON, XML, el correo electrónico y las URL.",
-            "Base64 es una codificación, no un cifrado: cualquiera puede descodificarla, así que no debe usarse para proteger datos.",
+            "Base64 es una codificación, no un cifrado: cualquiera puede descodificarla, así que no debe usarse para proteger datos. Si el contenido codificado es JSON, el [formateador JSON](/json-formatter) puede validarlo y darle formato tras descodificarlo.",
           ],
         },
         {
@@ -1506,6 +1506,7 @@ export const es: Dictionary = {
             "El alfabeto URL-safe sustituye `+` y `/` por `-` y `_`; se acepta al descodificar, mientras que la salida codificada siempre usa el alfabeto estándar con relleno.",
             "Los caracteres fuera del alfabeto, el relleno mal colocado y las secuencias de bytes que no son UTF-8 válido se rechazan con un mensaje en línea.",
             "No se comprime, cifra ni sube nada: el texto se convierte por completo en tu navegador.",
+            "Una cadena Base64 corta es texto sin formato, así que puede llevarse en un [código QR](/qr-code-generator); los contenidos más largos superan la capacidad del QR.",
           ],
         },
       ],
@@ -1564,7 +1565,7 @@ export const es: Dictionary = {
         {
           heading: "Minimizar",
           paragraphs: [
-            "Minimizar elimina todos los espacios insignificantes y produce el texto más pequeño que representa los mismos datos: útil antes de pegar JSON en archivos de configuración o cargas de API.",
+            "Minimizar elimina todos los espacios insignificantes y produce el texto más pequeño que representa los mismos datos: útil antes de pegar JSON en archivos de configuración o cargas de API. Si el resultado debe viajar por un canal de solo texto, codifícalo con el [codificador Base64](/base64-encoder).",
           ],
         },
         {
@@ -1763,7 +1764,7 @@ export const es: Dictionary = {
           heading: "Qué codifica cada tipo",
           paragraphs: [
             "Las URL se convierten en una dirección web (se añade `https://` si falta). El correo abre un enlace `mailto:`, el teléfono usa `tel:` y el SMS usa un enlace `sms:` con un mensaje codificado opcional.",
-            "El Wi-Fi usa el formato `WIFI:` con el SSID, el tipo de seguridad y la contraseña. Los contactos vCard usan `BEGIN:VCARD` con el nombre, teléfono, correo, organización y sitio web que indiques.",
+            "El Wi-Fi usa el formato `WIFI:` con el SSID, el tipo de seguridad y la contraseña. Los contactos vCard usan `BEGIN:VCARD` con el nombre, teléfono, correo, organización y sitio web que indiques. El texto plano se codifica tal como se escribe; si debe contener datos binarios o estructurados, codifícalo primero con el [codificador Base64](/base64-encoder).",
           ],
         },
         {
@@ -1840,7 +1841,7 @@ export const es: Dictionary = {
         {
           heading: "Cómo se cuenta",
           paragraphs: [
-            "Las palabras se cuentan como secuencias Unicode de letras, marcas combinantes, dígitos y números. Los apóstrofos internos y los separadores decimales permanecen dentro de una palabra; los guiones separan palabras; el contenido formado solo por puntuación o emoji cuenta como cero.",
+            "Las palabras se cuentan como secuencias Unicode de letras, marcas combinantes, dígitos y números. Los apóstrofos internos y los separadores decimales permanecen dentro de una palabra; los guiones separan palabras; el contenido formado solo por puntuación o emoji cuenta como cero. Las mayúsculas y minúsculas nunca cambian un recuento; para cambiarlas, usa el [conversor de mayúsculas y minúsculas](/case-converter).",
             "Los caracteres son caracteres percibidos por el usuario, así que un emoji o una letra acentuada cuenta una vez aunque use varias unidades de código. El recuento sin espacios excluye espacios, tabulaciones y saltos de línea. Los navegadores sin `Intl.Segmenter` usan una alternativa integrada para marcas combinantes, selectores de variación, modificadores de emoji, secuencias con zero-width joiner, banderas de indicadores regionales, secuencias de etiquetas y pares CRLF; secuencias poco frecuentes como la composición de jamo hangul aún pueden diferir de la segmentación Unicode completa.",
           ],
         },
@@ -1930,7 +1931,7 @@ export const es: Dictionary = {
         {
           heading: "Cómo funciona",
           paragraphs: [
-            "Pega o escribe en el panel de entrada y elige una conversión. El resultado se actualiza al momento y es de solo lectura, así que cambiar de modo siempre parte de tu texto original. Usa Copiar resultado para reutilizarlo.",
+            "Pega o escribe en el panel de entrada y elige una conversión. El resultado se actualiza al momento y es de solo lectura, así que cambiar de modo siempre parte de tu texto original. Usa Copiar resultado para reutilizarlo. Para medir la longitud o el tiempo de lectura del resultado, usa el [contador de palabras](/word-counter).",
           ],
         },
         {
