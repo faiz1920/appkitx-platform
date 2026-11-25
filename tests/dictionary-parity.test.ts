@@ -35,6 +35,10 @@ const tokens = (text: string): string[] =>
 
 const backticks = (text: string): number => (text.match(/`/g) ?? []).length;
 
+/** Internal link targets in [anchor](/path) markup, in source order. */
+const linkTargets = (text: string): string[] =>
+  [...text.matchAll(/\]\((\/[^)\s]+)\)/g)].map((match) => match[1]);
+
 const source = new Map<string, string>();
 collectStrings(dictionaries[defaultLocale], "", source);
 
@@ -62,6 +66,16 @@ describe("dictionary token parity", () => {
         );
       }
     });
+
+    it(`${code} preserves inline link targets`, () => {
+      for (const [path, english] of source) {
+        const translated = translation.get(path);
+        if (translated === undefined) continue;
+        expect(linkTargets(translated), `${code}:${path}`).toEqual(
+          linkTargets(english),
+        );
+      }
+    });
   }
 
   it("keeps every code-span marker balanced in every locale", () => {
@@ -80,6 +94,18 @@ describe("dictionary token parity", () => {
       collectStrings(dictionary, "", leaves);
       for (const [path, text] of leaves) {
         expect(text, `${code}:${path}`).not.toContain("``");
+      }
+    }
+  });
+
+  it("keeps every inline-link marker balanced in every locale", () => {
+    for (const [code, dictionary] of Object.entries(dictionaries)) {
+      const leaves = new Map<string, string>();
+      collectStrings(dictionary, "", leaves);
+      for (const [path, text] of leaves) {
+        const opens = (text.match(/\[/g) ?? []).length;
+        const closings = (text.match(/\]\(/g) ?? []).length;
+        expect(opens, `${code}:${path}`).toBe(closings);
       }
     }
   });

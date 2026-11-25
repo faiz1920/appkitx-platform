@@ -416,7 +416,7 @@ export const en: Dictionary = {
           heading: "How it works",
           paragraphs: [
             "Enter the amount borrowed, the annual interest rate, and the repayment term. Select whether the term is in years or months, then choose Calculate. The calculator shows the fixed monthly payment, the total interest over the life of the loan, and the total amount repaid.",
-            "The calculator is currency-neutral: it uses whatever currency the amount is entered in and never converts between currencies. Everything runs in your browser.",
+            "The calculator is currency-neutral: it uses whatever currency the amount is entered in and never converts between currencies. If you also want a year-by-year breakdown of how each payment splits between principal and interest, the [EMI calculator](/emi-calculator) adds that schedule. Everything runs in your browser.",
           ],
         },
         {
@@ -435,7 +435,7 @@ export const en: Dictionary = {
         {
           heading: "Assumptions and edge cases",
           items: [
-            "The rate stays fixed for the whole term and interest is charged monthly on the outstanding balance. Variable-rate loans, fees, insurance, and taxes are not included.",
+            "The rate stays fixed for the whole term and interest is charged monthly on the outstanding balance. Variable-rate loans, fees, insurance, and taxes are not included. For savings that grow instead of a debt that is repaid, use the [compound interest calculator](/compound-interest-calculator).",
             "The term must be between one month and 1,200 months (100 years). Terms outside that range are rejected with an inline message rather than silently adjusted.",
             "Results are calculated at full precision and rounded to two decimal places only for display. The last payment on a real loan may differ by a few cents because lenders round each instalment.",
             "The calculator is currency-neutral and makes no assumptions about the currency, the payment date, or the lender's own rounding rules.",
@@ -530,7 +530,7 @@ export const en: Dictionary = {
           heading: "How it works",
           paragraphs: [
             "Enter the amount borrowed, the nominal annual interest rate, and the repayment tenure. Choose whether the tenure is in years or months, then select Calculate. The summary shows the fixed monthly EMI, the principal, total interest, total repayment, and the principal-versus-interest split.",
-            "The repayment schedule groups installments by loan year. Expand any year to see each monthly payment, its interest and principal components, and the outstanding balance after that payment. Everything runs in your browser.",
+            "The repayment schedule groups installments by loan year. Expand any year to see each monthly payment, its interest and principal components, and the outstanding balance after that payment. If you only need the monthly payment and total interest, the [loan calculator](/loan-calculator) is a shorter route. Everything runs in your browser.",
           ],
         },
         {
@@ -676,13 +676,13 @@ export const en: Dictionary = {
           heading: "How it works",
           paragraphs: [
             "Enter the initial investment, nominal annual rate, duration, and compounding frequency. Optionally add a monthly contribution and choose whether it is made at the start or end of each month. Select Calculate to see the final value, total invested, interest earned, and a year-by-year growth table.",
-            "Everything runs in your browser. Changing any input clears the previous result so the numbers on screen always match the current inputs.",
+            "Everything runs in your browser. Changing any input clears the previous result so the numbers on screen always match the current inputs. For a long-horizon projection that includes ages and inflation, use the [retirement calculator](/retirement-calculator).",
           ],
         },
         {
           heading: "What compound interest means",
           paragraphs: [
-            "Compound interest is interest earned on both the original amount and the interest already accumulated. Over time, the balance grows faster than with simple interest because each period's interest becomes part of the base for the next period.",
+            "Compound interest is interest earned on both the original amount and the interest already accumulated. Over time, the balance grows faster than with simple interest because each period's interest becomes part of the base for the next period. To work backwards from a savings target, use the [savings goal calculator](/savings-goal-calculator).",
           ],
         },
         {
@@ -833,7 +833,7 @@ export const en: Dictionary = {
           heading: "How it works",
           paragraphs: [
             "Enter your savings goal, current savings, nominal annual rate, target duration, and compounding frequency. Choose whether monthly savings are added at the start or end of each month, then select Calculate. The calculator shows the required monthly savings, the projected final balance, and a year-by-year plan.",
-            "Everything runs in your browser. Changing any input clears the previous result so the figures on screen always match the current inputs.",
+            "Everything runs in your browser. Changing any input clears the previous result so the figures on screen always match the current inputs. If the goal is retirement, the [retirement calculator](/retirement-calculator) adds ages and inflation.",
           ],
         },
         {
@@ -847,7 +847,7 @@ export const en: Dictionary = {
         {
           heading: "Interest, compounding, and timing",
           paragraphs: [
-            "The selected compounding frequency defines an equivalent monthly growth factor `g = (1 + r/m)^(m/12)`. Interest is accrued monthly at `i = g − 1`, matching the Compound Interest Calculator. Daily compounding uses a fixed 365-day year; leap years are ignored.",
+            "The selected compounding frequency defines an equivalent monthly growth factor `g = (1 + r/m)^(m/12)`. Interest is accrued monthly at `i = g − 1`, matching the [compound interest calculator](/compound-interest-calculator). Daily compounding uses a fixed 365-day year; leap years are ignored.",
             "Beginning-of-month savings earn interest in the month they are added. End-of-month savings begin earning in the following month.",
           ],
         },
@@ -1021,7 +1021,7 @@ export const en: Dictionary = {
           heading: "How it works",
           paragraphs: [
             "Enter your current age, retirement age, and current retirement savings. In projected corpus mode, add a monthly contribution and see what you could accumulate by retirement. In required monthly savings mode, enter a nominal target corpus and see the monthly amount needed to reach it.",
-            "Everything runs in your browser. Changing any input clears the previous result so the figures on screen always match the current inputs.",
+            "Everything runs in your browser. Changing any input clears the previous result so the figures on screen always match the current inputs. For a shorter-term goal, use the [savings goal calculator](/savings-goal-calculator).",
           ],
         },
         {
@@ -1035,7 +1035,7 @@ export const en: Dictionary = {
         {
           heading: "Return, compounding, and timing",
           paragraphs: [
-            "The selected compounding frequency defines an equivalent monthly growth factor `g = (1 + r/m)^(m/12)`. Interest is accrued monthly at `i = g − 1`, matching the Compound Interest Calculator. Daily compounding uses a fixed 365-day year; leap years are ignored.",
+            "The selected compounding frequency defines an equivalent monthly growth factor `g = (1 + r/m)^(m/12)`. Interest is accrued monthly at `i = g − 1`, matching the [compound interest calculator](/compound-interest-calculator). Daily compounding uses a fixed 365-day year; leap years are ignored.",
             "Beginning-of-month contributions earn growth in the month they are added. End-of-month contributions begin earning in the following month.",
           ],
         },
@@ -1343,7 +1343,7 @@ export const en: Dictionary = {
           items: [
             "Results keep full precision internally and are shown with up to 10 significant digits, so small values stay readable and exact definitions do not collect rounding noise.",
             "Calculations use IEEE-754 floating-point numbers. Displayed values are rounded for readability and are not a claim of exact decimal arithmetic for every result.",
-            "The converter handles length, weight, temperature, area, and volume only — not speed, pressure, energy, or currency — and it never guesses a unit from the input.",
+            "The converter handles length, weight, temperature, area, and volume only — for speed, use the [speed converter](/speed-converter). It does not handle pressure, energy, or currency, and it never guesses a unit from the input.",
             "US customary volume units are labelled `US` in both the unit name and the symbol. Unqualified terms such as “gallon” or “cup” are avoided because they mean different volumes in other systems.",
             "Displayed numbers follow the page language: a decimal comma in Spanish and a decimal point in English.",
           ],
@@ -1394,7 +1394,7 @@ export const en: Dictionary = {
           heading: "How it works",
           paragraphs: [
             "Enter the speed, choose the unit it is in and the unit you want, then select Calculate. The result appears with the same conversion written out in full, and you can copy it with one click.",
-            "Everything runs in your browser. The converter keeps full precision internally and rounds only the displayed result.",
+            "Everything runs in your browser. The converter keeps full precision internally and rounds only the displayed result. For length, weight, temperature, area, and volume, use the [unit converter](/unit-converter).",
           ],
         },
         {
@@ -1469,7 +1469,7 @@ export const en: Dictionary = {
           heading: "What Base64 is",
           paragraphs: [
             "Base64 represents data as 64 printable characters — `A–Z`, `a–z`, `0–9`, `+`, and `/` — so binary content can travel through text-only formats such as JSON, XML, email, and URLs.",
-            "Base64 is an encoding, not encryption: anyone can decode it, so it must not be used to protect data.",
+            "Base64 is an encoding, not encryption: anyone can decode it, so it must not be used to protect data. If the encoded content is JSON, the [JSON formatter](/json-formatter) can validate and pretty-print it after decoding.",
           ],
         },
         {
@@ -1487,6 +1487,7 @@ export const en: Dictionary = {
             "The URL-safe alphabet replaces `+` and `/` with `-` and `_`; it is accepted when decoding, while encoded output always uses the standard alphabet with padding.",
             "Characters outside the alphabet, misplaced padding, and byte sequences that are not valid UTF-8 are rejected with an inline message.",
             "Nothing is compressed, encrypted, or uploaded: text is converted entirely in your browser.",
+            "A short Base64 string is plain text, so it can be carried in a [QR code](/qr-code-generator); longer payloads exceed QR capacity.",
           ],
         },
       ],
@@ -1545,7 +1546,7 @@ export const en: Dictionary = {
         {
           heading: "Minifying",
           paragraphs: [
-            "Minify removes all insignificant whitespace and produces the smallest text that represents the same data — useful before pasting JSON into configuration files or API payloads.",
+            "Minify removes all insignificant whitespace and produces the smallest text that represents the same data — useful before pasting JSON into configuration files or API payloads. If the result has to travel through a text-only channel, encode it with the [Base64 encoder](/base64-encoder).",
           ],
         },
         {
@@ -1742,7 +1743,7 @@ export const en: Dictionary = {
           heading: "What each type encodes",
           paragraphs: [
             "URLs become a web address (`https://` is added when missing). Email opens a `mailto:` link, phone numbers use `tel:`, and SMS uses an `sms:` link with an optional encoded message.",
-            "Wi-Fi uses the `WIFI:` format with the SSID, security type, and password. vCard contacts use `BEGIN:VCARD` with the name, phone, email, organization, and website you provide.",
+            "Wi-Fi uses the `WIFI:` format with the SSID, security type, and password. vCard contacts use `BEGIN:VCARD` with the name, phone, email, organization, and website you provide. Plain text is encoded exactly as entered; if it must carry binary or structured data, encode it with the [Base64 encoder](/base64-encoder) first.",
           ],
         },
         {
@@ -1816,7 +1817,7 @@ export const en: Dictionary = {
         {
           heading: "How counting works",
           paragraphs: [
-            "Words are counted as runs of Unicode letters, combining marks, digits, and numbers. Internal apostrophes and decimal separators stay inside a word; hyphens split words; punctuation-only and emoji-only content counts as zero.",
+            "Words are counted as runs of Unicode letters, combining marks, digits, and numbers. Internal apostrophes and decimal separators stay inside a word; hyphens split words; punctuation-only and emoji-only content counts as zero. Capitalization never changes a count; to change it, use the [case converter](/case-converter).",
             "Characters are user-perceived characters, so an emoji or an accented letter counts once even when it uses several code units. The no-spaces count excludes spaces, tabs, and line breaks. Browsers without `Intl.Segmenter` use a built-in fallback for combining marks, variation selectors, emoji modifiers, zero-width joiner sequences, regional-indicator flags, tag sequences, and CRLF pairs; rare sequences such as Hangul jamo composition may still differ from full Unicode segmentation.",
           ],
         },
@@ -1905,7 +1906,7 @@ export const en: Dictionary = {
         {
           heading: "How it works",
           paragraphs: [
-            "Paste or type into the input pane and choose a conversion. The output updates immediately and stays read-only, so switching modes always starts from your original text. Use Copy output to reuse the result.",
+            "Paste or type into the input pane and choose a conversion. The output updates immediately and stays read-only, so switching modes always starts from your original text. Use Copy output to reuse the result. To measure the result's length or reading time, use the [word counter](/word-counter).",
           ],
         },
         {
