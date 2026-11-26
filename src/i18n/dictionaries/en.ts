@@ -1199,6 +1199,141 @@ export const en: Dictionary = {
         },
       ],
     },
+    bmiCalculator: {
+      title: "BMI Calculator — AppKitX",
+      metaDescription:
+        "Free adult BMI calculator for metric and imperial measurements: enter weight and height to see BMI, category and a plain-language explanation. No account needed.",
+      name: "BMI Calculator",
+      description:
+        "Calculate adult BMI from metric or imperial measurements, with a clear category and a screening-only explanation.",
+      cardDescription:
+        "Calculate adult BMI from metric or imperial measurements.",
+      keywords: [
+        "bmi",
+        "bmi calculator",
+        "body mass index",
+        "healthy weight",
+        "underweight",
+        "overweight",
+        "obesity",
+        "adult bmi",
+        "metric",
+        "imperial",
+      ],
+      unitLegend: "Units",
+      units: {
+        metric: "Metric",
+        imperial: "Imperial",
+      },
+      unitHint:
+        "Switching units converts the current measurements when they are complete.",
+      unitConverted:
+        "Measurements converted to the selected units. Select Calculate to update the result.",
+      unitReset: "Units changed. Enter the measurements in the new units.",
+      metricWeightLabel: "Weight (kg)",
+      metricHeightLabel: "Height (cm)",
+      imperialWeightLabel: "Weight (lb)",
+      feetLabel: "Feet (ft)",
+      inchesLabel: "Inches (in)",
+      metricWeightPlaceholder: "70",
+      metricHeightPlaceholder: "175",
+      imperialWeightPlaceholder: "154",
+      feetPlaceholder: "5",
+      inchesPlaceholder: "9",
+      inputHint:
+        "Decimals are allowed. The calculation keeps full precision and rounds only the displayed BMI.",
+      imperialHint:
+        "Inches must be between 0 and 11; feet must be a whole number.",
+      calculate: "Calculate BMI",
+      reset: "Clear",
+      resultLabel: "Result",
+      resultUnit: "BMI",
+      emptyTitle: "No result yet",
+      emptyHint: "Enter your measurements and calculate to see BMI.",
+      categories: {
+        underweight: {
+          label: "Underweight",
+          explanation:
+            "Below the standard adult screening range. BMI alone does not explain why.",
+        },
+        healthy: {
+          label: "Healthy weight",
+          explanation: "Within the standard adult screening range.",
+        },
+        overweight: {
+          label: "Overweight",
+          explanation:
+            "Above the standard adult screening range. BMI does not distinguish muscle from fat.",
+        },
+        obesity: {
+          label: "Obesity",
+          explanation:
+            "In the obesity screening range. A healthcare professional can assess what this means in context.",
+        },
+      },
+      disclaimerTitle: "BMI is a screening tool, not a diagnosis.",
+      disclaimerBody:
+        "BMI does not measure body fat directly or distinguish fat from muscle. It may be less suitable for athletes, older adults and some other groups, and these adult categories do not apply to children or teenagers, who need age- and sex-specific percentiles. Do not use BMI alone to make medical decisions.",
+      errors: {
+        weightRequired: "Enter your weight.",
+        weightInvalid: "Enter a valid weight.",
+        weightRangeMetric: "Enter a weight between 20 and 400 kg.",
+        weightRangeImperial: "Enter a weight between 44 and 882 lb.",
+        heightRequired: "Enter your height.",
+        heightInvalid: "Enter a valid height.",
+        heightRangeMetric: "Enter a height between 100 and 250 cm.",
+        feetRequired: "Enter the feet part of your height.",
+        feetInvalid: "Enter feet as a whole number.",
+        inchesRequired: "Enter the inches part of your height.",
+        inchesInvalid: "Enter a valid number of inches.",
+        inchesRange: "Inches must be between 0 and 11.",
+        heightRangeImperial:
+          "Enter a height between about 3 ft 3 in and 8 ft 2 in.",
+        invalidNumber: "Enter a valid number.",
+      },
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Choose metric or imperial units, enter your weight and height, and select Calculate BMI. The result shows BMI to one decimal place plus the adult screening category.",
+            "Metric uses `BMI = weight (kg) / height (m)²`; imperial uses `BMI = 703 × weight (lb) / height (in)²`. The category is based on the unrounded BMI, so a value that displays as 25.0 is still classified from its exact value.",
+          ],
+        },
+        {
+          heading: "What the result means",
+          paragraphs: ["The standard adult categories are:"],
+          items: [
+            "Below 18.5 — underweight.",
+            "18.5 to below 25 — healthy weight.",
+            "25 to below 30 — overweight.",
+            "30 or above — obesity.",
+          ],
+        },
+        {
+          heading: "Metric and imperial units",
+          paragraphs: [
+            "Switching units converts complete measurements using 1 kg = 2.20462 lb, 1 in = 2.54 cm and 12 in = 1 ft. The result is cleared so you can confirm the converted values before recalculating.",
+            "If the current fields are incomplete or invalid, switching units clears the fields and asks you to enter the measurements in the selected units. For other conversions, use the [unit converter](/unit-converter).",
+          ],
+        },
+        {
+          heading: "Health information and limitations",
+          paragraphs: [
+            "BMI is a screening measure, not a diagnosis. It does not measure body fat directly or distinguish fat from muscle, so it may be less suitable for athletes, older adults and some other populations.",
+            "These adult categories are not intended for children or teenagers; pediatric assessment requires age- and sex-specific BMI percentiles. BMI alone should not be used to make medical decisions.",
+            "This calculator does not provide treatment, diet or personalized medical advice.",
+          ],
+        },
+        {
+          heading: "Examples",
+          paragraphs: [
+            "70 kg at 175 cm gives BMI 22.9, in the healthy weight category.",
+            "154 lb at 5 ft 9 in gives BMI 22.7, also in the healthy weight category.",
+            "86.6 kg at 170 cm gives an unrounded BMI of 29.97; it displays as 30.0 but remains in the overweight category because classification uses the unrounded value.",
+          ],
+        },
+      ],
+    },
     unitConverter: {
       title: "Unit Converter — AppKitX",
       metaDescription:

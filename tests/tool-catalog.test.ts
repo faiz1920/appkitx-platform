@@ -63,6 +63,10 @@ describe("localizedToolCatalog", () => {
     expect(hash?.title).toBe("Generador de hash");
     expect(hash?.category).toBe("Herramientas de desarrollo");
     expect(hash?.keywords).toContain("sha-256");
+    const bmi = catalog.find((tool) => tool.href === "/bmi-calculator");
+    expect(bmi?.title).toBe("Calculadora de IMC");
+    expect(bmi?.category).toBe("Calculadoras");
+    expect(bmi?.keywords).toContain("índice de masa corporal");
     const dateCalculator = catalog.find(
       (tool) => tool.href === "/date-calculator",
     );

@@ -25,6 +25,7 @@ import type {
 } from "../lib/qr-payload";
 import type { QrEccLevel, QrSizePreset } from "../lib/qr-options";
 import type { HashAlgorithm } from "../lib/hash";
+import type { BmiCategory, BmiUnitSystem } from "../lib/bmi";
 import type { CaseMode } from "../lib/case-convert";
 import type {
   AngleMode,
@@ -277,6 +278,73 @@ export interface ProseSectionStrings {
   paragraphs?: readonly string[];
   /** List items rendered as a <ul>; inline code marked with backticks. */
   items?: readonly string[];
+}
+
+/** Category label and short explanation for one adult BMI range. */
+export interface BmiCategoryCopyStrings {
+  label: string;
+  explanation: string;
+}
+
+/** BMI Calculator page labels and interface strings. */
+export interface BmiCalculatorToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  unitLegend: string;
+  units: Record<BmiUnitSystem, string>;
+  unitHint: string;
+  /** Unit-switch confirmation after converting complete measurements. */
+  unitConverted: string;
+  /** Unit-switch notice after clearing incomplete or invalid measurements. */
+  unitReset: string;
+  metricWeightLabel: string;
+  metricHeightLabel: string;
+  imperialWeightLabel: string;
+  feetLabel: string;
+  inchesLabel: string;
+  metricWeightPlaceholder: string;
+  metricHeightPlaceholder: string;
+  imperialWeightPlaceholder: string;
+  feetPlaceholder: string;
+  inchesPlaceholder: string;
+  inputHint: string;
+  imperialHint: string;
+  calculate: string;
+  reset: string;
+  resultLabel: string;
+  /** Unit shown beside the numeric result, e.g. "BMI" or "IMC". */
+  resultUnit: string;
+  emptyTitle: string;
+  emptyHint: string;
+  categories: Record<BmiCategory, BmiCategoryCopyStrings>;
+  disclaimerTitle: string;
+  disclaimerBody: string;
+  errors: {
+    weightRequired: string;
+    weightInvalid: string;
+    weightRangeMetric: string;
+    weightRangeImperial: string;
+    heightRequired: string;
+    heightInvalid: string;
+    heightRangeMetric: string;
+    feetRequired: string;
+    feetInvalid: string;
+    inchesRequired: string;
+    inchesInvalid: string;
+    inchesRange: string;
+    heightRangeImperial: string;
+    invalidNumber: string;
+  };
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
 }
 
 /** Percentage Calculator page labels and interface strings. */
@@ -1359,6 +1427,7 @@ export interface ToolsStrings {
   unitConverter: UnitConverterToolStrings;
   speedConverter: SpeedConverterToolStrings;
   scientificCalculator: ScientificCalculatorToolStrings;
+  bmiCalculator: BmiCalculatorToolStrings;
   base64: Base64ToolStrings;
   json: JsonFormatterToolStrings;
   qrCodeGenerator: QrCodeGeneratorToolStrings;
