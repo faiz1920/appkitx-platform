@@ -616,6 +616,50 @@ export interface QrCodeGeneratorToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** UUID Generator page labels and interface strings. */
+export interface UuidGeneratorToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  quantityLabel: string;
+  quantityHint: string;
+  optionsHeading: string;
+  uppercaseLabel: string;
+  uppercaseHint: string;
+  compactLabel: string;
+  compactHint: string;
+  generate: string;
+  copyAll: string;
+  clear: string;
+  resultsHeading: string;
+  /** Live result count, singular; token: {count}. */
+  countOne: string;
+  /** Live result count, plural; token: {count}. */
+  countMany: string;
+  /** Per-row copy button label; token: {index}. */
+  copyUuid: string;
+  copied: string;
+  copyFailed: string;
+  emptyTitle: string;
+  emptyBody: string;
+  privacyTitle: string;
+  privacyBody: string;
+  errors: {
+    quantity: string;
+    unsupportedTitle: string;
+    unsupportedBody: string;
+  };
+  /** Explanation sections rendered by ProseText below the tool. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** Word Counter page labels and interface strings. */
 export interface WordCounterToolStrings {
   title: string;
@@ -1272,6 +1316,7 @@ export interface ToolsStrings {
   base64: Base64ToolStrings;
   json: JsonFormatterToolStrings;
   qrCodeGenerator: QrCodeGeneratorToolStrings;
+  uuidGenerator: UuidGeneratorToolStrings;
   wordCounter: WordCounterToolStrings;
   caseConverter: CaseConverterToolStrings;
   dateCalculator: DateCalculatorToolStrings;

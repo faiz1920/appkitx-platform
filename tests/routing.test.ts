@@ -173,6 +173,7 @@ describe("locale path helpers", () => {
         "/retirement-calculator",
         "/base64-encoder",
         "/json-formatter",
+        "/uuid-generator",
         "/developer-tools",
         "/date-calculator",
         "/time-zone-converter",

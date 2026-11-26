@@ -1469,7 +1469,7 @@ export const en: Dictionary = {
           heading: "What Base64 is",
           paragraphs: [
             "Base64 represents data as 64 printable characters — `A–Z`, `a–z`, `0–9`, `+`, and `/` — so binary content can travel through text-only formats such as JSON, XML, email, and URLs.",
-            "Base64 is an encoding, not encryption: anyone can decode it, so it must not be used to protect data. If the encoded content is JSON, the [JSON formatter](/json-formatter) can validate and pretty-print it after decoding.",
+            "Base64 is an encoding, not encryption: anyone can decode it, so it must not be used to protect data. If the encoded content is JSON, the [JSON formatter](/json-formatter) can validate and pretty-print it after decoding, and generated identifiers such as [UUIDs](/uuid-generator) are often carried this way through text-only systems.",
           ],
         },
         {
@@ -1759,6 +1759,88 @@ export const en: Dictionary = {
           heading: "Privacy",
           paragraphs: [
             "No content is uploaded, stored, or sent to a third-party QR service. The generator runs entirely in this page, and no analytics event includes what you type.",
+          ],
+        },
+      ],
+    },
+    uuidGenerator: {
+      title: "UUID Generator — AppKitX",
+      metaDescription:
+        "Free UUID v4 generator: create one or up to 100 random identifiers in your browser, switch between uppercase or hyphen-free output, and copy one value or the whole batch.",
+      name: "UUID Generator",
+      description:
+        "Generate standard UUID v4 values, one or up to 100 at a time, with per-value and batch copy — all in your browser.",
+      cardDescription:
+        "Generate random UUID v4 values and copy them instantly.",
+      keywords: [
+        "uuid",
+        "uuid v4",
+        "uuid generator",
+        "guid",
+        "random uuid",
+        "unique identifier",
+        "identifier",
+        "generate uuid",
+      ],
+      quantityLabel: "How many UUIDs",
+      quantityHint: "Choose from 1 to 100 per batch.",
+      optionsHeading: "Formatting",
+      uppercaseLabel: "Uppercase",
+      uppercaseHint:
+        "Show A–F in uppercase. Existing values are not regenerated.",
+      compactLabel: "Remove hyphens",
+      compactHint:
+        "Show the 32 hexadecimal digits without separators. Existing values are not regenerated.",
+      generate: "Generate UUIDs",
+      copyAll: "Copy all",
+      clear: "Clear",
+      resultsHeading: "Generated UUIDs",
+      countOne: "{count} UUID generated",
+      countMany: "{count} UUIDs generated",
+      copyUuid: "Copy UUID {index}",
+      copied: "Copied to clipboard.",
+      copyFailed: "Copy failed — select the value and copy it manually.",
+      emptyTitle: "No UUIDs yet",
+      emptyBody:
+        "Choose how many you need and generate a batch. Everything stays in this browser.",
+      privacyTitle: "Generated locally",
+      privacyBody:
+        "UUIDs come from your browser's cryptographic random number generator. Nothing is sent to a server.",
+      errors: {
+        quantity: "Enter a whole number from 1 to 100.",
+        unsupportedTitle: "Web Crypto is unavailable",
+        unsupportedBody:
+          "This browser does not provide a cryptographic random number generator, so secure UUIDs cannot be created. Try a current version of Chrome, Firefox, Safari, or Edge.",
+      },
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Choose a quantity from 1 to 100, generate the batch, then copy one value or all of them at once. The formatting switches apply to the values already on screen and never create new ones.",
+            "Every UUID comes from your browser's cryptographic random number generator. Nothing is sent to a server, and no value is stored.",
+          ],
+        },
+        {
+          heading: "What a UUID is",
+          paragraphs: [
+            "A UUID is a 128-bit identifier written as 32 hexadecimal digits in five groups: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`. The canonical form is lowercase and hyphenated.",
+            "Version 4 UUIDs are random: the 13th hexadecimal digit is always `4`, and the 17th is `8`, `9`, `a`, or `b`. That structure is what makes a value recognizable as a standard UUID. To move one through a text-only system, the [Base64 encoder](/base64-encoder) can encode it, and the [JSON formatter](/json-formatter) can validate documents that carry it.",
+          ],
+        },
+        {
+          heading: "Uniqueness and security",
+          paragraphs: [
+            "UUID v4 values are built from 122 random bits. A collision is negligible in practice, but uniqueness is probabilistic — no central registry guarantees it.",
+            "A UUID is an identifier, not a secret: anyone who sees it can reuse it. Do not use one as a password, an API key, or an authentication token.",
+          ],
+        },
+        {
+          heading: "Assumptions and edge cases",
+          items: [
+            "Quantity is limited to 100 per batch; generate another batch when you need more.",
+            "Hyphen-free output is the same 32 hexadecimal digits without separators, not a different identifier.",
+            "Uppercase output changes presentation only; UUIDs are case-insensitive when compared.",
+            "If the browser lacks the Web Crypto API, generation is disabled and an explanation appears instead of a weaker fallback.",
           ],
         },
       ],

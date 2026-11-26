@@ -1488,7 +1488,7 @@ export const es: Dictionary = {
           heading: "Qué es Base64",
           paragraphs: [
             "Base64 representa datos como 64 caracteres imprimibles — `A–Z`, `a–z`, `0–9`, `+` y `/` — para que el contenido binario pueda viajar por formatos solo de texto como JSON, XML, el correo electrónico y las URL.",
-            "Base64 es una codificación, no un cifrado: cualquiera puede descodificarla, así que no debe usarse para proteger datos. Si el contenido codificado es JSON, el [formateador JSON](/json-formatter) puede validarlo y darle formato tras descodificarlo.",
+            "Base64 es una codificación, no un cifrado: cualquiera puede descodificarla, así que no debe usarse para proteger datos. Si el contenido codificado es JSON, el [formateador JSON](/json-formatter) puede validarlo y darle formato tras descodificarlo, y los identificadores generados como los [UUID](/uuid-generator) suelen viajar así por sistemas de solo texto.",
           ],
         },
         {
@@ -1780,6 +1780,89 @@ export const es: Dictionary = {
           heading: "Privacidad",
           paragraphs: [
             "Ningún contenido se sube, se almacena ni se envía a un servicio de QR de terceros. El generador funciona por completo en esta página y ningún evento de analítica incluye lo que escribes.",
+          ],
+        },
+      ],
+    },
+    uuidGenerator: {
+      title: "Generador de UUID — AppKitX",
+      metaDescription:
+        "Generador de UUID v4 gratis: crea uno o hasta 100 identificadores aleatorios en tu navegador, cambia entre mayúsculas o sin guiones y copia un valor o todo el lote.",
+      name: "Generador de UUID",
+      description:
+        "Genera valores UUID v4 estándar, uno o hasta 100 a la vez, con copia individual y por lote, todo en tu navegador.",
+      cardDescription:
+        "Genera valores UUID v4 aleatorios y cópialos al instante.",
+      keywords: [
+        "uuid",
+        "uuid v4",
+        "generador de uuid",
+        "generar uuid",
+        "guid",
+        "uuid aleatorio",
+        "identificador único",
+        "identificador",
+      ],
+      quantityLabel: "Cuántos UUID",
+      quantityHint: "Elige de 1 a 100 por lote.",
+      optionsHeading: "Formato",
+      uppercaseLabel: "Mayúsculas",
+      uppercaseHint:
+        "Muestra A–F en mayúsculas. Los valores existentes no se regeneran.",
+      compactLabel: "Quitar guiones",
+      compactHint:
+        "Muestra los 32 dígitos hexadecimales sin separadores. Los valores existentes no se regeneran.",
+      generate: "Generar UUID",
+      copyAll: "Copiar todo",
+      clear: "Limpiar",
+      resultsHeading: "UUID generados",
+      countOne: "{count} UUID generado",
+      countMany: "{count} UUID generados",
+      copyUuid: "Copiar UUID {index}",
+      copied: "Copiado al portapapeles.",
+      copyFailed:
+        "No se pudo copiar. Selecciona el valor y cópialo manualmente.",
+      emptyTitle: "Aún no hay UUID",
+      emptyBody:
+        "Elige cuántos necesitas y genera un lote. Todo se queda en este navegador.",
+      privacyTitle: "Generados localmente",
+      privacyBody:
+        "Los UUID proceden del generador criptográfico de números aleatorios de tu navegador. No se envía nada a un servidor.",
+      errors: {
+        quantity: "Introduce un número entero del 1 al 100.",
+        unsupportedTitle: "Web Crypto no está disponible",
+        unsupportedBody:
+          "Este navegador no ofrece un generador criptográfico de números aleatorios, así que no se pueden crear UUID seguros. Prueba una versión actual de Chrome, Firefox, Safari o Edge.",
+      },
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Elige una cantidad del 1 al 100, genera el lote y copia un valor o todos a la vez. Los interruptores de formato se aplican a los valores que ya están en pantalla y nunca crean otros nuevos.",
+            "Cada UUID procede del generador criptográfico de números aleatorios de tu navegador. No se envía nada a un servidor y ningún valor se guarda.",
+          ],
+        },
+        {
+          heading: "Qué es un UUID",
+          paragraphs: [
+            "Un UUID es un identificador de 128 bits escrito como 32 dígitos hexadecimales en cinco grupos: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`. La forma canónica es minúscula y con guiones.",
+            "Los UUID de versión 4 son aleatorios: el decimotercer dígito hexadecimal siempre es `4` y el decimoséptimo es `8`, `9`, `a` o `b`. Esa estructura hace que un valor se reconozca como UUID estándar. Para moverlo por un sistema de solo texto, el [codificador Base64](/base64-encoder) puede codificarlo y el [formateador JSON](/json-formatter) puede validar los documentos que lo contienen.",
+          ],
+        },
+        {
+          heading: "Unicidad y seguridad",
+          paragraphs: [
+            "Los valores UUID v4 se construyen a partir de 122 bits aleatorios. Una colisión es insignificante en la práctica, pero la unicidad es probabilística: ningún registro central la garantiza.",
+            "Un UUID es un identificador, no un secreto: cualquiera que lo vea puede reutilizarlo. No lo uses como contraseña, clave de API ni token de autenticación.",
+          ],
+        },
+        {
+          heading: "Supuestos y casos límite",
+          items: [
+            "La cantidad se limita a 100 por lote; genera otro lote cuando necesites más.",
+            "El formato sin guiones son los mismos 32 dígitos hexadecimales sin separadores, no un identificador distinto.",
+            "El formato en mayúsculas solo cambia la presentación; los UUID no distinguen mayúsculas y minúsculas al compararse.",
+            "Si el navegador no dispone de la API Web Crypto, la generación se desactiva y aparece una explicación en lugar de una alternativa menos segura.",
           ],
         },
       ],
