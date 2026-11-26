@@ -24,6 +24,7 @@ import type {
   QrWifiSecurity,
 } from "../lib/qr-payload";
 import type { QrEccLevel, QrSizePreset } from "../lib/qr-options";
+import type { HashAlgorithm } from "../lib/hash";
 import type { CaseMode } from "../lib/case-convert";
 import type {
   AngleMode,
@@ -656,6 +657,51 @@ export interface UuidGeneratorToolStrings {
     unsupportedTitle: string;
     unsupportedBody: string;
   };
+  /** Explanation sections rendered by ProseText below the tool. */
+  sections: readonly ProseSectionStrings[];
+}
+
+/** Hash Generator page labels and interface strings. */
+export interface HashGeneratorToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  algorithmLegend: string;
+  algorithmHint: string;
+  algorithms: Record<HashAlgorithm, string>;
+  inputLabel: string;
+  inputHint: string;
+  inputPlaceholder: string;
+  generate: string;
+  clear: string;
+  outputLabel: string;
+  outputPlaceholder: string;
+  outputHint: string;
+  copyHash: string;
+  copied: string;
+  copyFailed: string;
+  /** Result summary; tokens: {algorithm}, {count}. */
+  digestSummary: string;
+  /** Loading status; token: {algorithm}. */
+  statusGenerating: string;
+  errors: {
+    empty: string;
+    unsupportedTitle: string;
+    unsupportedBody: string;
+    digestTitle: string;
+    digestBody: string;
+  };
+  securityTitle: string;
+  securityBody: string;
+  privacyTitle: string;
+  privacyBody: string;
   /** Explanation sections rendered by ProseText below the tool. */
   sections: readonly ProseSectionStrings[];
 }
@@ -1317,6 +1363,7 @@ export interface ToolsStrings {
   json: JsonFormatterToolStrings;
   qrCodeGenerator: QrCodeGeneratorToolStrings;
   uuidGenerator: UuidGeneratorToolStrings;
+  hashGenerator: HashGeneratorToolStrings;
   wordCounter: WordCounterToolStrings;
   caseConverter: CaseConverterToolStrings;
   dateCalculator: DateCalculatorToolStrings;

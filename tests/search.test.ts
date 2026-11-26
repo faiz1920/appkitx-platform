@@ -326,6 +326,9 @@ describe("searchTools", () => {
     expect(searchTools("uuid", tools).map((tool) => tool.href)).toEqual([
       "/uuid-generator",
     ]);
+    expect(searchTools("hash", tools).map((tool) => tool.href)).toEqual([
+      "/hash-generator",
+    ]);
     expect(
       searchTools("developer tools", tools).map((tool) => tool.href),
     ).toEqual([
@@ -333,6 +336,7 @@ describe("searchTools", () => {
       "/json-formatter",
       "/qr-code-generator",
       "/uuid-generator",
+      "/hash-generator",
     ]);
   });
 
@@ -554,6 +558,9 @@ describe("localized search catalogs", () => {
     expect(searchTools("uuid", catalog).map((tool) => tool.href)).toEqual([
       "/uuid-generator",
     ]);
+    expect(searchTools("hash", catalog).map((tool) => tool.href)).toEqual([
+      "/hash-generator",
+    ]);
     expect(
       searchTools("herramientas de desarrollo", catalog).map(
         (tool) => tool.href,
@@ -563,6 +570,7 @@ describe("localized search catalogs", () => {
       "/json-formatter",
       "/qr-code-generator",
       "/uuid-generator",
+      "/hash-generator",
     ]);
   });
 

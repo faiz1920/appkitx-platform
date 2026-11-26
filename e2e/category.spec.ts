@@ -244,7 +244,7 @@ test("the English developer tools page lists the registered tools", async ({
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Open tool" });
-  await expect(cards).toHaveCount(4);
+  await expect(cards).toHaveCount(5);
   await expect(cards.nth(0)).toContainText("Base64 Encoder");
   await expect(cards.nth(0)).toHaveAttribute("href", "/base64-encoder/");
   await expect(cards.nth(1)).toContainText("JSON Formatter");
@@ -253,6 +253,8 @@ test("the English developer tools page lists the registered tools", async ({
   await expect(cards.nth(2)).toHaveAttribute("href", "/qr-code-generator/");
   await expect(cards.nth(3)).toContainText("UUID Generator");
   await expect(cards.nth(3)).toHaveAttribute("href", "/uuid-generator/");
+  await expect(cards.nth(4)).toContainText("Hash Generator");
+  await expect(cards.nth(4)).toHaveAttribute("href", "/hash-generator/");
 
   await page.screenshot({
     path: "test-results/category-developer-tools-en.png",
@@ -288,7 +290,7 @@ test("the Spanish developer tools page is fully localized", async ({
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Abrir herramienta" });
-  await expect(cards).toHaveCount(4);
+  await expect(cards).toHaveCount(5);
   await expect(cards.nth(0)).toContainText("Codificador Base64");
   await expect(cards.nth(0)).toHaveAttribute("href", "/es/base64-encoder/");
   await expect(cards.nth(1)).toContainText("Formateador JSON");
@@ -297,6 +299,8 @@ test("the Spanish developer tools page is fully localized", async ({
   await expect(cards.nth(2)).toHaveAttribute("href", "/es/qr-code-generator/");
   await expect(cards.nth(3)).toContainText("Generador de UUID");
   await expect(cards.nth(3)).toHaveAttribute("href", "/es/uuid-generator/");
+  await expect(cards.nth(4)).toContainText("Generador de hash");
+  await expect(cards.nth(4)).toHaveAttribute("href", "/es/hash-generator/");
 
   await page.screenshot({
     path: "test-results/category-developer-tools-es.png",
@@ -607,6 +611,11 @@ test("tool pages link to their published category", async ({ page }) => {
       href: "/developer-tools/",
     },
     {
+      path: "/hash-generator/",
+      label: "See all",
+      href: "/developer-tools/",
+    },
+    {
       path: "/word-counter/",
       label: "See all",
       href: "/text-tools/",
@@ -658,6 +667,11 @@ test("tool pages link to their published category", async ({ page }) => {
     },
     {
       path: "/es/uuid-generator/",
+      label: "Ver todas",
+      href: "/es/developer-tools/",
+    },
+    {
+      path: "/es/hash-generator/",
       label: "Ver todas",
       href: "/es/developer-tools/",
     },

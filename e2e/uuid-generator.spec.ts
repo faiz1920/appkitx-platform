@@ -428,7 +428,7 @@ test("exposes canonical, alternates, structured data, and sitemap entries", asyn
   const urls = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(
     (match) => match[1],
   );
-  expect(urls).toHaveLength(82);
+  expect(urls).toHaveLength(84);
   expect(urls).toContain("https://appkitx.com/uuid-generator/");
   expect(urls).toContain("https://appkitx.com/es/uuid-generator/");
   expect(sitemap).not.toContain("pc-builder");

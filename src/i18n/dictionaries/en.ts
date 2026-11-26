@@ -1824,7 +1824,7 @@ export const en: Dictionary = {
           heading: "What a UUID is",
           paragraphs: [
             "A UUID is a 128-bit identifier written as 32 hexadecimal digits in five groups: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`. The canonical form is lowercase and hyphenated.",
-            "Version 4 UUIDs are random: the 13th hexadecimal digit is always `4`, and the 17th is `8`, `9`, `a`, or `b`. That structure is what makes a value recognizable as a standard UUID. To move one through a text-only system, the [Base64 encoder](/base64-encoder) can encode it, and the [JSON formatter](/json-formatter) can validate documents that carry it.",
+            "Version 4 UUIDs are random: the 13th hexadecimal digit is always `4`, and the 17th is `8`, `9`, `a`, or `b`. That structure is what makes a value recognizable as a standard UUID. To move one through a text-only system, the [Base64 encoder](/base64-encoder) can encode it, the [JSON formatter](/json-formatter) can validate documents that carry it, and the [hash generator](/hash-generator) can produce a digest for integrity checks.",
           ],
         },
         {
@@ -1841,6 +1841,99 @@ export const en: Dictionary = {
             "Hyphen-free output is the same 32 hexadecimal digits without separators, not a different identifier.",
             "Uppercase output changes presentation only; UUIDs are case-insensitive when compared.",
             "If the browser lacks the Web Crypto API, generation is disabled and an explanation appears instead of a weaker fallback.",
+          ],
+        },
+      ],
+    },
+    hashGenerator: {
+      title: "Hash Generator — AppKitX",
+      metaDescription:
+        "Free SHA-256, SHA-384 and SHA-512 hash generator: hash text in your browser with Web Crypto and copy lowercase hexadecimal digests. Nothing is uploaded.",
+      name: "Hash Generator",
+      description:
+        "Generate SHA-256, SHA-384 and SHA-512 hashes from text with your browser's Web Crypto API — fast, local and copyable.",
+      cardDescription:
+        "Generate SHA-256, SHA-384 and SHA-512 hashes from text.",
+      keywords: [
+        "hash",
+        "hash generator",
+        "sha-256",
+        "sha256",
+        "sha-384",
+        "sha384",
+        "sha-512",
+        "sha512",
+        "checksum",
+        "digest",
+        "text hash",
+      ],
+      algorithmLegend: "Algorithm",
+      algorithmHint:
+        "Changing the algorithm recalculates the hash from the current text.",
+      algorithms: {
+        "SHA-256": "SHA-256",
+        "SHA-384": "SHA-384",
+        "SHA-512": "SHA-512",
+      },
+      inputLabel: "Text to hash",
+      inputHint:
+        "UTF-8 input; spaces, line endings and letter case all affect the digest.",
+      inputPlaceholder: "Paste or type text…",
+      generate: "Generate hash",
+      clear: "Clear",
+      outputLabel: "Hash",
+      outputPlaceholder: "—",
+      outputHint: "Lowercase hexadecimal output appears here.",
+      copyHash: "Copy hash",
+      copied: "Copied to clipboard.",
+      copyFailed: "Copy failed — select the hash and copy it manually.",
+      digestSummary: "{algorithm} · {count} hexadecimal characters",
+      statusGenerating: "Generating {algorithm} hash…",
+      errors: {
+        empty: "Enter the text you want to hash.",
+        unsupportedTitle: "Web Crypto is unavailable",
+        unsupportedBody:
+          "This browser does not provide crypto.subtle.digest, so hashes cannot be generated. Try a current version of Chrome, Firefox, Safari, or Edge.",
+        digestTitle: "Hashing failed",
+        digestBody:
+          "The browser could not compute the digest. Try again, or reload the page.",
+      },
+      securityTitle: "Hashing is not encryption",
+      securityBody:
+        "Hashes are one-way and cannot be reversed. SHA-256, SHA-384 and SHA-512 are general-purpose hashes, not password-storage algorithms. Use Argon2id, scrypt or bcrypt for passwords.",
+      privacyTitle: "Computed locally",
+      privacyBody:
+        "Your text and hashes stay in this browser. Nothing is uploaded, stored or sent to a server.",
+      sections: [
+        {
+          heading: "How it works",
+          paragraphs: [
+            "Choose SHA-256, SHA-384 or SHA-512, enter text, and select Generate hash. Changing the algorithm recalculates the digest from the same input without clearing your text.",
+            "Copy the lowercase hexadecimal result when you need it. The same text and algorithm always produce the same digest; spaces, line endings and capitalization are part of the input.",
+          ],
+        },
+        {
+          heading: "What a hash is",
+          paragraphs: [
+            "A cryptographic hash maps any input to a fixed-length digest: 64 hexadecimal characters for SHA-256, 96 for SHA-384 and 128 for SHA-512. A small input change produces a completely different digest.",
+            "Hashes are one-way: the digest cannot be reversed to recover the text. They are used for integrity checks, content addressing, digital signatures and deduplication, not for hiding readable data.",
+          ],
+        },
+        {
+          heading: "Security and passwords",
+          paragraphs: [
+            "Hashing is not encryption. General-purpose hashes such as SHA-256, SHA-384 and SHA-512 are fast and unsalted by design; those properties make them unsuitable for storing passwords.",
+            "Password storage requires a dedicated password-hashing algorithm with a salt and a tunable work factor, such as Argon2id, scrypt or bcrypt. Do not use this tool to store or verify user passwords.",
+          ],
+        },
+        {
+          heading: "Assumptions and edge cases",
+          items: [
+            "Input is encoded as UTF-8 before hashing, so accents, CJK text and emoji produce the expected digest.",
+            "Line endings, trailing spaces and letter case are significant: `abc`, `ABC` and `abc ` produce different hashes.",
+            "The interface rejects empty input; the underlying SHA-2 functions do have defined digests for the empty string, but this page requires text.",
+            "Hexadecimal output is always lowercase. Compare the complete digest, not a shortened prefix, when checking integrity.",
+            "To encode a hash for transport, use the [Base64 encoder](/base64-encoder); to create an identifier instead of a digest, use the [UUID generator](/uuid-generator).",
           ],
         },
       ],
