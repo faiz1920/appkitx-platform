@@ -22,7 +22,7 @@ const LOCALE_CODES = Object.keys(dictionaries) as Array<
 
 describe("published catalogue", () => {
   it("publishes every registered tool in exactly one category", () => {
-    expect(tools).toHaveLength(18);
+    expect(tools).toHaveLength(19);
     expect(CATEGORY_IDS).toHaveLength(5);
     expect(publishedCategories()).toEqual(CATEGORY_IDS);
 
@@ -33,7 +33,7 @@ describe("published catalogue", () => {
     expect(new Set(members.map((tool) => tool.href)).size).toBe(tools.length);
   });
 
-  it("derives the confirmed 80 indexable routes", () => {
+  it("derives the confirmed 82 indexable routes", () => {
     const localeLess =
       1 + // homepage
       tools.length +
@@ -45,7 +45,7 @@ describe("published catalogue", () => {
 
     expect(paths).toHaveLength(localeLess);
     expect(new Set(paths).size).toBe(paths.length);
-    expect(localeLess * LOCALE_CODES.length).toBe(80);
+    expect(localeLess * LOCALE_CODES.length).toBe(82);
   });
 });
 

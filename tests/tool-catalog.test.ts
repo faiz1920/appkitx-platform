@@ -55,6 +55,10 @@ describe("localizedToolCatalog", () => {
     expect(json?.description).toBe(
       "Formatea, minimiza y valida JSON en tu navegador.",
     );
+    const uuid = catalog.find((tool) => tool.href === "/uuid-generator");
+    expect(uuid?.title).toBe("Generador de UUID");
+    expect(uuid?.category).toBe("Herramientas de desarrollo");
+    expect(uuid?.keywords).toContain("uuid v4");
     const dateCalculator = catalog.find(
       (tool) => tool.href === "/date-calculator",
     );

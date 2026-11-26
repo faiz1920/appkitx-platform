@@ -52,7 +52,10 @@ const REQUIRED_EDGES: ReadonlyArray<readonly [string, string]> = [
   ["/json-formatter", "/base64-encoder"],
   ["/base64-encoder", "/json-formatter"],
   ["/base64-encoder", "/qr-code-generator"],
+  ["/base64-encoder", "/uuid-generator"],
   ["/qr-code-generator", "/base64-encoder"],
+  ["/uuid-generator", "/base64-encoder"],
+  ["/uuid-generator", "/json-formatter"],
   ["/word-counter", "/case-converter"],
   ["/case-converter", "/word-counter"],
 ];

@@ -81,7 +81,12 @@ describe("category membership", () => {
       "/speed-converter",
     ]);
     expect(toolsInCategory("Developer tools").map((tool) => tool.href)).toEqual(
-      ["/base64-encoder", "/json-formatter", "/qr-code-generator"],
+      [
+        "/base64-encoder",
+        "/json-formatter",
+        "/qr-code-generator",
+        "/uuid-generator",
+      ],
     );
     expect(toolsInCategory("Date & time").map((tool) => tool.href)).toEqual([
       "/date-calculator",
@@ -106,6 +111,7 @@ describe("category membership", () => {
     expect(toolCategory("/unit-converter")).toBe("Converters");
     expect(toolCategory("/speed-converter")).toBe("Converters");
     expect(toolCategory("/qr-code-generator")).toBe("Developer tools");
+    expect(toolCategory("/uuid-generator")).toBe("Developer tools");
     expect(toolCategory("/date-calculator")).toBe("Date & time");
     expect(toolCategory("/time-zone-converter")).toBe("Date & time");
     expect(toolCategory("/age-calculator")).toBe("Date & time");

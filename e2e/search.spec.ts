@@ -100,7 +100,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.goto("/");
   await openWithShortcut(page);
 
-  await expect(page.getByRole("option")).toHaveCount(18);
+  await expect(page.getByRole("option")).toHaveCount(19);
 
   await page.keyboard.press("ArrowDown");
   await expect(searchInput(page)).toHaveAttribute(
@@ -115,7 +115,7 @@ test("arrow keys wrap through results and Enter activates the selection", async 
   await page.keyboard.press("ArrowUp");
   await expect(searchInput(page)).toHaveAttribute(
     "aria-activedescendant",
-    "search-option-17",
+    "search-option-18",
   );
 
   await page.keyboard.press("ArrowDown");
@@ -146,7 +146,7 @@ test("typing filters results and shows the empty state", async ({ page }) => {
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "false");
 
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(18);
+  await expect(page.getByRole("option")).toHaveCount(19);
   await expect(empty).toBeHidden();
   await expect(searchInput(page)).toHaveAttribute("aria-expanded", "true");
 });
@@ -240,6 +240,7 @@ test("only lists registered tools with unique routes", async ({ page }) => {
     "/speed-converter/",
     "/time-zone-converter/",
     "/unit-converter/",
+    "/uuid-generator/",
     "/word-counter/",
   ]);
   expect(new Set(hrefs).size).toBe(hrefs.length);
@@ -464,7 +465,7 @@ test("uses the full-screen sheet at 320px without horizontal overflow", async ({
   if (!box) throw new Error("palette is not visible");
   expect(box.width).toBeGreaterThanOrEqual(319);
   await expect(searchInput(page)).toBeVisible();
-  await expect(page.getByRole("option")).toHaveCount(18);
+  await expect(page.getByRole("option")).toHaveCount(19);
 });
 
 test("the Spanish palette searches localized tools and stays localized", async ({
@@ -551,5 +552,5 @@ test("the Spanish palette finds the loan calculator and unit converter", async (
   await expect(page.getByRole("option")).toContainText("Calculadora de fechas");
 
   await searchInput(page).fill("");
-  await expect(page.getByRole("option")).toHaveCount(18);
+  await expect(page.getByRole("option")).toHaveCount(19);
 });

@@ -1,0 +1,456 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+import checkIcon from "lucide-static/icons/check.svg?raw";
+import copyIcon from "lucide-static/icons/copy.svg?raw";
+import fingerprintIcon from "lucide-static/icons/fingerprint.svg?raw";
+import shieldCheckIcon from "lucide-static/icons/shield-check.svg?raw";
+import FieldError from "./FieldError.astro";
+import ToggleSwitch from "./ToggleSwitch.astro";
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+import {
+  UUID_DEFAULT_COUNT,
+  UUID_MAX_COUNT,
+  UUID_MIN_COUNT,
+} from "../lib/uuid";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.uuidGenerator;
+
+/*
+ * Strings for the client script — count templates, copy feedback, and the
+ * quantity validation message. The rest of the interface is server-rendered.
+ */
+const scriptStrings = {
+  countOne: tool.countOne,
+  countMany: tool.countMany,
+  copyUuid: tool.copyUuid,
+  copied: tool.copied,
+  copyFailed: tool.copyFailed,
+  quantityError: tool.errors.quantity,
+};
+---
+
+<div data-uuid-tool data-i18n={JSON.stringify(scriptStrings)}>
+  <form
+    class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+    novalidate
+    data-uuid-form
+  >
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div>
+        <label for="uuid-quantity" class="text-label text-text-primary">
+          {tool.quantityLabel}
+        </label>
+        <input
+          id="uuid-quantity"
+          name="quantity"
+          type="number"
+          class="input mt-2 font-mono tabular-nums"
+          min={UUID_MIN_COUNT}
+          max={UUID_MAX_COUNT}
+          step="1"
+          value={UUID_DEFAULT_COUNT}
+          inputmode="numeric"
+          aria-describedby="uuid-quantity-hint uuid-quantity-error"
+          data-uuid-quantity
+        />
+        <p id="uuid-quantity-hint" class="mt-1 text-caption text-text-muted">
+          {tool.quantityHint}
+        </p>
+        <FieldError field="quantity" id="uuid-quantity-error" />
+      </div>
+
+      <fieldset class="min-w-0">
+        <legend class="text-label text-text-primary">
+          {tool.optionsHeading}
+        </legend>
+        <div class="mt-2 space-y-3">
+          <ToggleSwitch
+            name="uuid-uppercase"
+            label={tool.uppercaseLabel}
+            hint={tool.uppercaseHint}
+          />
+          <ToggleSwitch
+            name="uuid-compact"
+            label={tool.compactLabel}
+            hint={tool.compactHint}
+          />
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="mt-6 flex flex-wrap items-center gap-3">
+      <button type="submit" class="btn btn-primary" data-uuid-generate>
+        {tool.generate}
+      </button>
+      <button type="button" class="btn btn-ghost" data-uuid-clear>
+        {tool.clear}
+      </button>
+    </div>
+  </form>
+
+  <div
+    class="mt-4 flex items-start gap-2 rounded-lg bg-error-subtle p-4 text-small text-error"
+    role="alert"
+    hidden
+    data-uuid-unsupported
+  >
+    <span
+      class="mt-0.5 h-5 w-5 shrink-0 [&_svg]:h-5 [&_svg]:w-5"
+      aria-hidden="true"
+      set:html={alertIcon}
+    />
+    <p>
+      <strong class="font-semibold">{tool.errors.unsupportedTitle}</strong>
+      {" — "}
+      {tool.errors.unsupportedBody}
+    </p>
+  </div>
+
+  <section class="mt-6" aria-labelledby="uuid-results-heading">
+    <div class="flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h2 id="uuid-results-heading" class="text-title text-text-primary">
+          {tool.resultsHeading}
+        </h2>
+        <p
+          class="mt-1 text-caption text-text-muted tabular-nums"
+          role="status"
+          aria-live="polite"
+          data-uuid-count
+        ></p>
+      </div>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        disabled
+        data-uuid-copy-all
+      >
+        <span
+          class="h-4 w-4 [&_svg]:h-4 [&_svg]:w-4"
+          aria-hidden="true"
+          set:html={copyIcon}
+        />
+        {tool.copyAll}
+      </button>
+    </div>
+
+    <p
+      class="mt-3 text-caption"
+      role="status"
+      aria-live="polite"
+      hidden
+      data-uuid-feedback
+    ></p>
+
+    <div
+      class="mt-4 flex flex-col items-center rounded-lg border border-dashed border-border-control bg-surface-subtle px-6 py-10 text-center"
+      data-uuid-empty
+    >
+      <span
+        class="flex h-10 w-10 items-center justify-center rounded-md bg-surface-muted text-text-muted [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        set:html={fingerprintIcon}
+      />
+      <p class="mt-3 text-label text-text-primary">{tool.emptyTitle}</p>
+      <p class="mt-1 max-w-[360px] text-caption text-text-muted">
+        {tool.emptyBody}
+      </p>
+    </div>
+
+    <ol class="mt-4 space-y-2" data-uuid-list hidden></ol>
+
+    <template data-uuid-row-template>
+      <li class="flex items-center gap-2 rounded-md border border-border-subtle bg-surface-subtle py-1 pr-1 pl-3">
+        <span
+          class="w-6 shrink-0 text-right font-mono text-caption text-text-muted tabular-nums"
+          aria-hidden="true"
+          data-uuid-index
+        ></span>
+        <code
+          class="min-w-0 flex-1 font-mono text-mono-input break-all text-text-primary select-all"
+          data-uuid-value
+        ></code>
+        <button
+          type="button"
+          class="btn btn-ghost h-11 w-11 shrink-0 px-0"
+          data-uuid-copy
+        >
+          <span
+            class="h-4 w-4 [&_svg]:h-4 [&_svg]:w-4"
+            aria-hidden="true"
+            data-uuid-copy-icon
+            set:html={copyIcon}
+          />
+          <span
+            class="h-4 w-4 text-success [&_svg]:h-4 [&_svg]:w-4"
+            aria-hidden="true"
+            hidden
+            data-uuid-copied-icon
+            set:html={checkIcon}
+          />
+        </button>
+      </li>
+    </template>
+
+    <div class="mt-6 flex items-start gap-3 rounded-md border border-accent-subtle-border bg-accent-subtle p-3">
+      <span
+        class="mt-0.5 h-5 w-5 shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        set:html={shieldCheckIcon}
+      />
+      <div>
+        <p class="text-label text-text-primary">{tool.privacyTitle}</p>
+        <p class="mt-1 text-caption text-text-secondary">{tool.privacyBody}</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  import { interpolate } from "../i18n/interpolate";
+  import {
+    formatUuid,
+    generateUuids,
+    parseUuidCount,
+    uuidCryptoAvailable,
+    type UuidFormatOptions,
+  } from "../lib/uuid";
+
+  interface ScriptStrings {
+    countOne: string;
+    countMany: string;
+    copyUuid: string;
+    copied: string;
+    copyFailed: string;
+    quantityError: string;
+  }
+
+  const root = document.querySelector<HTMLElement>("[data-uuid-tool]");
+
+  if (root) {
+    const i18n: ScriptStrings = JSON.parse(root.dataset.i18n ?? "{}");
+
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`UUID generator: missing ${selector}`);
+      return el;
+    };
+
+    const form = requireEl<HTMLFormElement>("[data-uuid-form]");
+    const quantityInput = requireEl<HTMLInputElement>("[data-uuid-quantity]");
+    const uppercaseToggle = requireEl<HTMLInputElement>("#uuid-uppercase");
+    const compactToggle = requireEl<HTMLInputElement>("#uuid-compact");
+    const generateButton = requireEl<HTMLButtonElement>("[data-uuid-generate]");
+    const clearButton = requireEl<HTMLButtonElement>("[data-uuid-clear]");
+    const copyAllButton = requireEl<HTMLButtonElement>("[data-uuid-copy-all]");
+    const list = requireEl<HTMLOListElement>("[data-uuid-list]");
+    const emptyState = requireEl<HTMLElement>("[data-uuid-empty]");
+    const rowTemplate = requireEl<HTMLTemplateElement>(
+      "[data-uuid-row-template]",
+    );
+    const count = requireEl<HTMLElement>("[data-uuid-count]");
+    const feedback = requireEl<HTMLElement>("[data-uuid-feedback]");
+    const unsupported = requireEl<HTMLElement>("[data-uuid-unsupported]");
+    const errorWrap = requireEl<HTMLElement>('[data-error-for="quantity"]');
+    const errorText = requireEl<HTMLElement>(
+      '[data-error-for="quantity"] [data-error-text]',
+    );
+
+    const supportsCrypto = uuidCryptoAvailable();
+    let values: string[] = [];
+    let feedbackTimer: number | undefined;
+    let copyBusy = false;
+
+    const currentFormat = (): UuidFormatOptions => ({
+      uppercase: uppercaseToggle.checked,
+      hyphens: !compactToggle.checked,
+    });
+
+    const clearError = (): void => {
+      errorWrap.hidden = true;
+      errorText.textContent = "";
+      quantityInput.removeAttribute("aria-invalid");
+    };
+
+    const showError = (message: string): void => {
+      errorWrap.hidden = false;
+      errorText.textContent = message;
+      quantityInput.setAttribute("aria-invalid", "true");
+      quantityInput.focus();
+    };
+
+    const clearFeedback = (): void => {
+      window.clearTimeout(feedbackTimer);
+      feedback.hidden = true;
+      feedback.textContent = "";
+    };
+
+    const showFeedback = (message: string, isError: boolean): void => {
+      window.clearTimeout(feedbackTimer);
+      feedback.textContent = message;
+      feedback.hidden = false;
+      feedback.classList.toggle("text-error", isError);
+      feedback.classList.toggle("text-success", !isError);
+      feedbackTimer = window.setTimeout(() => {
+        feedback.hidden = true;
+      }, 3000);
+    };
+
+    const buildRow = (value: string, index: number): HTMLLIElement => {
+      const fragment = rowTemplate.content.cloneNode(true) as DocumentFragment;
+      const row = fragment.querySelector<HTMLLIElement>("li");
+      if (!row) throw new Error("UUID generator: empty row template");
+
+      const indexLabel = row.querySelector<HTMLElement>("[data-uuid-index]");
+      if (indexLabel) indexLabel.textContent = String(index + 1);
+
+      const valueLabel = row.querySelector<HTMLElement>("[data-uuid-value]");
+      if (valueLabel) valueLabel.textContent = value;
+
+      const copyButton =
+        row.querySelector<HTMLButtonElement>("[data-uuid-copy]");
+      if (copyButton) {
+        copyButton.dataset.uuidCopy = String(index);
+        copyButton.setAttribute(
+          "aria-label",
+          interpolate(i18n.copyUuid, { index: index + 1 }),
+        );
+      }
+
+      return row;
+    };
+
+    const render = (): void => {
+      const formatted = values.map((value) =>
+        formatUuid(value, currentFormat()),
+      );
+
+      list.replaceChildren(...formatted.map(buildRow));
+      list.hidden = formatted.length === 0;
+      emptyState.hidden = formatted.length > 0;
+      copyAllButton.disabled = formatted.length === 0;
+
+      const nextCount =
+        formatted.length === 0
+          ? ""
+          : interpolate(
+              formatted.length === 1 ? i18n.countOne : i18n.countMany,
+              { count: formatted.length },
+            );
+      /* Formatting re-renders values, not the count; avoid a duplicate announcement. */
+      if (count.textContent !== nextCount) count.textContent = nextCount;
+    };
+
+    const markCopied = (button: HTMLButtonElement): void => {
+      const glyph = button.querySelector<HTMLElement>("[data-uuid-copy-icon]");
+      const check = button.querySelector<HTMLElement>(
+        "[data-uuid-copied-icon]",
+      );
+      if (glyph) glyph.hidden = true;
+      if (check) check.hidden = false;
+      window.setTimeout(() => {
+        if (glyph) glyph.hidden = false;
+        if (check) check.hidden = true;
+      }, 2000);
+    };
+
+    const copyText = async (
+      text: string,
+      button?: HTMLButtonElement,
+    ): Promise<void> => {
+      if (copyBusy) return;
+      copyBusy = true;
+      clearFeedback();
+      try {
+        await navigator.clipboard.writeText(text);
+        showFeedback(i18n.copied, false);
+        if (button) markCopied(button);
+      } catch {
+        showFeedback(i18n.copyFailed, true);
+      } finally {
+        copyBusy = false;
+      }
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      clearError();
+      clearFeedback();
+
+      if (!supportsCrypto) {
+        unsupported.hidden = false;
+        return;
+      }
+
+      const parsed = parseUuidCount(quantityInput.value);
+      if (!parsed.ok) {
+        showError(i18n.quantityError);
+        return;
+      }
+
+      try {
+        values = generateUuids(parsed.value);
+      } catch {
+        values = [];
+        unsupported.hidden = false;
+        generateButton.disabled = true;
+        render();
+        return;
+      }
+
+      render();
+    });
+
+    quantityInput.addEventListener("input", clearError);
+
+    for (const toggle of [uppercaseToggle, compactToggle]) {
+      toggle.addEventListener("change", () => {
+        if (values.length === 0) return;
+        clearFeedback();
+        render();
+      });
+    }
+
+    list.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const button = target.closest<HTMLButtonElement>("[data-uuid-copy]");
+      if (!button) return;
+
+      const index = Number(button.dataset.uuidCopy);
+      const value = values[index];
+      if (value === undefined) return;
+
+      void copyText(formatUuid(value, currentFormat()), button);
+    });
+
+    copyAllButton.addEventListener("click", () => {
+      if (values.length === 0) return;
+      void copyText(
+        values.map((value) => formatUuid(value, currentFormat())).join("\n"),
+      );
+    });
+
+    clearButton.addEventListener("click", () => {
+      values = [];
+      clearError();
+      clearFeedback();
+      render();
+      quantityInput.focus();
+    });
+
+    if (!supportsCrypto) {
+      unsupported.hidden = false;
+      generateButton.disabled = true;
+    }
+
+    render();
+  }
+</script>

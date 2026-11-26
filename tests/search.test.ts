@@ -323,9 +323,17 @@ describe("searchTools", () => {
     expect(searchTools("qr code", tools).map((tool) => tool.href)).toEqual([
       "/qr-code-generator",
     ]);
+    expect(searchTools("uuid", tools).map((tool) => tool.href)).toEqual([
+      "/uuid-generator",
+    ]);
     expect(
       searchTools("developer tools", tools).map((tool) => tool.href),
-    ).toEqual(["/base64-encoder", "/json-formatter", "/qr-code-generator"]);
+    ).toEqual([
+      "/base64-encoder",
+      "/json-formatter",
+      "/qr-code-generator",
+      "/uuid-generator",
+    ]);
   });
 
   it("finds the text tools by name, keyword, and category", () => {
@@ -543,11 +551,19 @@ describe("localized search catalogs", () => {
     expect(searchTools("código qr", catalog).map((tool) => tool.href)).toEqual([
       "/qr-code-generator",
     ]);
+    expect(searchTools("uuid", catalog).map((tool) => tool.href)).toEqual([
+      "/uuid-generator",
+    ]);
     expect(
       searchTools("herramientas de desarrollo", catalog).map(
         (tool) => tool.href,
       ),
-    ).toEqual(["/base64-encoder", "/json-formatter", "/qr-code-generator"]);
+    ).toEqual([
+      "/base64-encoder",
+      "/json-formatter",
+      "/qr-code-generator",
+      "/uuid-generator",
+    ]);
   });
 
   it("finds the text tools with localized terms", () => {
