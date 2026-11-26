@@ -174,6 +174,7 @@ describe("locale path helpers", () => {
         "/base64-encoder",
         "/json-formatter",
         "/uuid-generator",
+        "/hash-generator",
         "/developer-tools",
         "/date-calculator",
         "/time-zone-converter",

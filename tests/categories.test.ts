@@ -86,6 +86,7 @@ describe("category membership", () => {
         "/json-formatter",
         "/qr-code-generator",
         "/uuid-generator",
+        "/hash-generator",
       ],
     );
     expect(toolsInCategory("Date & time").map((tool) => tool.href)).toEqual([
@@ -112,6 +113,7 @@ describe("category membership", () => {
     expect(toolCategory("/speed-converter")).toBe("Converters");
     expect(toolCategory("/qr-code-generator")).toBe("Developer tools");
     expect(toolCategory("/uuid-generator")).toBe("Developer tools");
+    expect(toolCategory("/hash-generator")).toBe("Developer tools");
     expect(toolCategory("/date-calculator")).toBe("Date & time");
     expect(toolCategory("/time-zone-converter")).toBe("Date & time");
     expect(toolCategory("/age-calculator")).toBe("Date & time");

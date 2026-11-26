@@ -1,0 +1,480 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+import checkIcon from "lucide-static/icons/check.svg?raw";
+import copyIcon from "lucide-static/icons/copy.svg?raw";
+import shieldAlertIcon from "lucide-static/icons/shield-alert.svg?raw";
+import shieldCheckIcon from "lucide-static/icons/shield-check.svg?raw";
+import FieldError from "./FieldError.astro";
+import { defaultLocale, getDictionary, type LocaleCode } from "../i18n/config";
+import {
+  HASH_ALGORITHMS,
+  HASH_DEFAULT_ALGORITHM,
+  type HashAlgorithm,
+} from "../lib/hash";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.hashGenerator;
+
+/*
+ * Strings for the client script — dynamic algorithm labels/status, copy
+ * feedback, and the empty-input validation message. The rest of the
+ * interface is server-rendered.
+ */
+const scriptStrings = {
+  algorithms: tool.algorithms,
+  outputPlaceholder: tool.outputPlaceholder,
+  statusGenerating: tool.statusGenerating,
+  digestSummary: tool.digestSummary,
+  copied: tool.copied,
+  copyFailed: tool.copyFailed,
+  emptyError: tool.errors.empty,
+};
+---
+
+<div data-hash-tool data-i18n={JSON.stringify(scriptStrings)}>
+  <form
+    class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)"
+    novalidate
+    data-hash-form
+  >
+    <fieldset class="min-w-0">
+      <legend class="text-label text-text-primary">
+        {tool.algorithmLegend}
+      </legend>
+      <div class="segmented segmented--large mt-2">
+        {HASH_ALGORITHMS.map((algorithm: HashAlgorithm) => (
+          <label>
+            <input
+              type="radio"
+              name="algorithm"
+              value={algorithm}
+              class="sr-only"
+              checked={algorithm === HASH_DEFAULT_ALGORITHM}
+            />
+            {tool.algorithms[algorithm]}
+          </label>
+        ))}
+      </div>
+      <p id="hash-algorithm-hint" class="mt-1 text-caption text-text-muted">
+        {tool.algorithmHint}
+      </p>
+    </fieldset>
+
+    <div class="mt-5">
+      <label for="hash-input" class="text-label text-text-primary">
+        {tool.inputLabel}
+      </label>
+      <textarea
+        id="hash-input"
+        class="textarea mt-2 min-h-[200px] font-mono text-[15px]"
+        spellcheck="false"
+        placeholder={tool.inputPlaceholder}
+        aria-describedby="hash-input-hint hash-input-error"
+        data-hash-input
+      ></textarea>
+      <p id="hash-input-hint" class="mt-1 text-caption text-text-muted">
+        {tool.inputHint}
+      </p>
+      <FieldError field="input" id="hash-input-error" />
+    </div>
+
+    <div class="mt-6 flex flex-wrap items-center gap-3">
+      <button type="submit" class="btn btn-primary" data-hash-generate>
+        {tool.generate}
+      </button>
+      <button type="button" class="btn btn-ghost" data-hash-clear>
+        {tool.clear}
+      </button>
+    </div>
+  </form>
+
+  <div
+    class="mt-4 flex items-start gap-2 rounded-lg bg-error-subtle p-4 text-small text-error"
+    role="alert"
+    hidden
+    data-hash-unsupported
+  >
+    <span
+      class="mt-0.5 h-5 w-5 shrink-0 [&_svg]:h-5 [&_svg]:w-5"
+      aria-hidden="true"
+      set:html={alertIcon}
+    />
+    <p>
+      <strong class="font-semibold">{tool.errors.unsupportedTitle}</strong>
+      {" — "}
+      {tool.errors.unsupportedBody}
+    </p>
+  </div>
+
+  <div
+    class="mt-4 flex items-start gap-2 rounded-lg bg-error-subtle p-4 text-small text-error"
+    role="alert"
+    hidden
+    data-hash-failure
+  >
+    <span
+      class="mt-0.5 h-5 w-5 shrink-0 [&_svg]:h-5 [&_svg]:w-5"
+      aria-hidden="true"
+      set:html={alertIcon}
+    />
+    <p>
+      <strong class="font-semibold">{tool.errors.digestTitle}</strong>
+      {" — "}
+      {tool.errors.digestBody}
+    </p>
+  </div>
+
+  <section class="mt-6" aria-labelledby="hash-output-heading">
+    <div class="flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h2 id="hash-output-heading" class="text-title text-text-primary">
+          {tool.outputLabel}
+        </h2>
+        <p
+          class="mt-1 text-caption text-text-muted tabular-nums"
+          role="status"
+          aria-live="polite"
+          data-hash-status
+        ></p>
+      </div>
+      <button type="button" class="btn btn-secondary" disabled data-hash-copy>
+        <span
+          class="h-4 w-4 [&_svg]:h-4 [&_svg]:w-4"
+          aria-hidden="true"
+          data-hash-copy-icon
+          set:html={copyIcon}
+        />
+        <span
+          class="h-4 w-4 text-success [&_svg]:h-4 [&_svg]:w-4"
+          aria-hidden="true"
+          hidden
+          data-hash-copied-icon
+          set:html={checkIcon}
+        />
+        {tool.copyHash}
+      </button>
+    </div>
+
+    <p
+      class="mt-3 text-caption"
+      role="status"
+      aria-live="polite"
+      hidden
+      data-hash-feedback
+    ></p>
+
+    <div
+      class="mt-4 rounded-lg bg-accent-subtle p-5"
+      aria-busy="false"
+      data-hash-result
+    >
+      <span class="text-overline text-text-secondary" data-hash-algorithm>
+        {tool.algorithms[HASH_DEFAULT_ALGORITHM]}
+      </span>
+      <code
+        class="mt-2 block font-mono text-mono-input break-all text-text-disabled select-all"
+        data-hash-value
+      >
+        {tool.outputPlaceholder}
+      </code>
+      <p class="mt-2 text-caption text-text-muted" data-hash-hint>
+        {tool.outputHint}
+      </p>
+    </div>
+
+    <div
+      class="mt-6 flex items-start gap-3 rounded-md bg-warning-subtle p-4 text-warning"
+      role="note"
+    >
+      <span
+        class="mt-0.5 h-5 w-5 shrink-0 [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        set:html={shieldAlertIcon}
+      />
+      <div>
+        <p class="text-label font-semibold">{tool.securityTitle}</p>
+        <p class="mt-1 text-small">{tool.securityBody}</p>
+      </div>
+    </div>
+
+    <div class="mt-4 flex items-start gap-3 rounded-md border border-accent-subtle-border bg-accent-subtle p-3">
+      <span
+        class="mt-0.5 h-5 w-5 shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-5"
+        aria-hidden="true"
+        set:html={shieldCheckIcon}
+      />
+      <div>
+        <p class="text-label text-text-primary">{tool.privacyTitle}</p>
+        <p class="mt-1 text-caption text-text-secondary">{tool.privacyBody}</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  import { interpolate } from "../i18n/interpolate";
+  import {
+    hashCryptoAvailable,
+    hashText,
+    HASH_DEFAULT_ALGORITHM,
+    HASH_HEX_LENGTHS,
+    isHashAlgorithm,
+    HashUnsupportedError,
+    type HashAlgorithm,
+  } from "../lib/hash";
+
+  interface ScriptStrings {
+    algorithms: Record<HashAlgorithm, string>;
+    outputPlaceholder: string;
+    statusGenerating: string;
+    digestSummary: string;
+    copied: string;
+    copyFailed: string;
+    emptyError: string;
+  }
+
+  const root = document.querySelector<HTMLElement>("[data-hash-tool]");
+
+  if (root) {
+    const i18n: ScriptStrings = JSON.parse(root.dataset.i18n ?? "{}");
+
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`Hash generator: missing ${selector}`);
+      return el;
+    };
+
+    const form = requireEl<HTMLFormElement>("[data-hash-form]");
+    const input = requireEl<HTMLTextAreaElement>("[data-hash-input]");
+    const generateButton = requireEl<HTMLButtonElement>("[data-hash-generate]");
+    const clearButton = requireEl<HTMLButtonElement>("[data-hash-clear]");
+    const copyButton = requireEl<HTMLButtonElement>("[data-hash-copy]");
+    const algorithmLabel = requireEl<HTMLElement>("[data-hash-algorithm]");
+    const valueLabel = requireEl<HTMLElement>("[data-hash-value]");
+    const hint = requireEl<HTMLElement>("[data-hash-hint]");
+    const status = requireEl<HTMLElement>("[data-hash-status]");
+    const feedback = requireEl<HTMLElement>("[data-hash-feedback]");
+    const result = requireEl<HTMLElement>("[data-hash-result]");
+    const unsupported = requireEl<HTMLElement>("[data-hash-unsupported]");
+    const failure = requireEl<HTMLElement>("[data-hash-failure]");
+    const errorWrap = requireEl<HTMLElement>('[data-error-for="input"]');
+    const errorText = requireEl<HTMLElement>(
+      '[data-error-for="input"] [data-error-text]',
+    );
+    const radios = root.querySelectorAll<HTMLInputElement>(
+      'input[name="algorithm"]',
+    );
+
+    let available = hashCryptoAvailable();
+    let currentHash: string | null = null;
+    let requestId = 0;
+    let feedbackTimer: number | undefined;
+    let copyBusy = false;
+
+    const selectedAlgorithm = (): HashAlgorithm => {
+      const checked =
+        root.querySelector<HTMLInputElement>('input[name="algorithm"]:checked')
+          ?.value ?? HASH_DEFAULT_ALGORITHM;
+      return isHashAlgorithm(checked) ? checked : HASH_DEFAULT_ALGORITHM;
+    };
+
+    const setAlgorithmLabel = (): void => {
+      const algorithm = selectedAlgorithm();
+      algorithmLabel.textContent = i18n.algorithms[algorithm] ?? algorithm;
+    };
+
+    const clearError = (): void => {
+      errorWrap.hidden = true;
+      errorText.textContent = "";
+      input.removeAttribute("aria-invalid");
+    };
+
+    const showError = (message: string): void => {
+      errorWrap.hidden = false;
+      errorText.textContent = message;
+      input.setAttribute("aria-invalid", "true");
+      input.focus();
+    };
+
+    const clearFeedback = (): void => {
+      window.clearTimeout(feedbackTimer);
+      feedback.hidden = true;
+      feedback.textContent = "";
+    };
+
+    const showFeedback = (message: string, isError: boolean): void => {
+      window.clearTimeout(feedbackTimer);
+      feedback.textContent = message;
+      feedback.hidden = false;
+      feedback.classList.toggle("text-error", isError);
+      feedback.classList.toggle("text-success", !isError);
+      feedbackTimer = window.setTimeout(() => {
+        feedback.hidden = true;
+      }, 3000);
+    };
+
+    const resetResult = (): void => {
+      currentHash = null;
+      valueLabel.textContent = i18n.outputPlaceholder;
+      valueLabel.classList.add("text-text-disabled");
+      hint.hidden = false;
+      copyButton.disabled = true;
+      status.textContent = "";
+      result.setAttribute("aria-busy", "false");
+    };
+
+    const cancelPending = (): void => {
+      requestId += 1;
+      generateButton.disabled = !available;
+      result.setAttribute("aria-busy", "false");
+    };
+
+    const markCopied = (): void => {
+      const glyph = copyButton.querySelector<HTMLElement>(
+        "[data-hash-copy-icon]",
+      );
+      const check = copyButton.querySelector<HTMLElement>(
+        "[data-hash-copied-icon]",
+      );
+      if (glyph) glyph.hidden = true;
+      if (check) check.hidden = false;
+      window.setTimeout(() => {
+        if (glyph) glyph.hidden = false;
+        if (check) check.hidden = true;
+      }, 2000);
+    };
+
+    const copyText = async (): Promise<void> => {
+      if (!currentHash || copyBusy) return;
+      copyBusy = true;
+      clearFeedback();
+      try {
+        await navigator.clipboard.writeText(currentHash);
+        showFeedback(i18n.copied, false);
+        markCopied();
+      } catch {
+        showFeedback(i18n.copyFailed, true);
+      } finally {
+        copyBusy = false;
+      }
+    };
+
+    const generate = async (): Promise<void> => {
+      if (!available) {
+        unsupported.hidden = false;
+        return;
+      }
+
+      clearError();
+      failure.hidden = true;
+      clearFeedback();
+
+      if (input.value === "") {
+        cancelPending();
+        resetResult();
+        showError(i18n.emptyError);
+        return;
+      }
+
+      const id = ++requestId;
+      const algorithm = selectedAlgorithm();
+
+      setAlgorithmLabel();
+      generateButton.disabled = true;
+      copyButton.disabled = true;
+      result.setAttribute("aria-busy", "true");
+      valueLabel.textContent = "…";
+      valueLabel.classList.add("text-text-disabled");
+      hint.hidden = true;
+      status.textContent = interpolate(i18n.statusGenerating, {
+        algorithm: i18n.algorithms[algorithm] ?? algorithm,
+      });
+
+      try {
+        const digest = await hashText(input.value, algorithm);
+        if (id !== requestId) return;
+
+        currentHash = digest;
+        valueLabel.textContent = digest;
+        valueLabel.classList.remove("text-text-disabled");
+        hint.hidden = true;
+        copyButton.disabled = false;
+        status.textContent = interpolate(i18n.digestSummary, {
+          algorithm: i18n.algorithms[algorithm] ?? algorithm,
+          count: HASH_HEX_LENGTHS[algorithm],
+        });
+      } catch (error) {
+        if (id !== requestId) return;
+
+        resetResult();
+        if (error instanceof HashUnsupportedError) {
+          available = false;
+          unsupported.hidden = false;
+        } else {
+          failure.hidden = false;
+        }
+      } finally {
+        if (id === requestId) {
+          generateButton.disabled = !available;
+          result.setAttribute("aria-busy", "false");
+        }
+      }
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      void generate();
+    });
+
+    input.addEventListener("input", () => {
+      clearError();
+      failure.hidden = true;
+      clearFeedback();
+      cancelPending();
+      resetResult();
+    });
+
+    for (const radio of radios) {
+      radio.addEventListener("change", () => {
+        setAlgorithmLabel();
+        clearError();
+        failure.hidden = true;
+        clearFeedback();
+        if (input.value === "") {
+          cancelPending();
+          resetResult();
+          return;
+        }
+        void generate();
+      });
+    }
+
+    copyButton.addEventListener("click", () => {
+      void copyText();
+    });
+
+    clearButton.addEventListener("click", () => {
+      cancelPending();
+      input.value = "";
+      clearError();
+      failure.hidden = true;
+      clearFeedback();
+      resetResult();
+      setAlgorithmLabel();
+      input.focus();
+    });
+
+    if (!available) {
+      unsupported.hidden = false;
+      generateButton.disabled = true;
+    }
+
+    setAlgorithmLabel();
+    resetResult();
+  }
+</script>

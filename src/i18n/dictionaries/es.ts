@@ -1846,7 +1846,7 @@ export const es: Dictionary = {
           heading: "Qué es un UUID",
           paragraphs: [
             "Un UUID es un identificador de 128 bits escrito como 32 dígitos hexadecimales en cinco grupos: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`. La forma canónica es minúscula y con guiones.",
-            "Los UUID de versión 4 son aleatorios: el decimotercer dígito hexadecimal siempre es `4` y el decimoséptimo es `8`, `9`, `a` o `b`. Esa estructura hace que un valor se reconozca como UUID estándar. Para moverlo por un sistema de solo texto, el [codificador Base64](/base64-encoder) puede codificarlo y el [formateador JSON](/json-formatter) puede validar los documentos que lo contienen.",
+            "Los UUID de versión 4 son aleatorios: el decimotercer dígito hexadecimal siempre es `4` y el decimoséptimo es `8`, `9`, `a` o `b`. Esa estructura hace que un valor se reconozca como UUID estándar. Para moverlo por un sistema de solo texto, el [codificador Base64](/base64-encoder) puede codificarlo, el [formateador JSON](/json-formatter) puede validar los documentos que lo contienen y el [generador de hash](/hash-generator) puede producir un resumen para comprobar la integridad.",
           ],
         },
         {
@@ -1863,6 +1863,100 @@ export const es: Dictionary = {
             "El formato sin guiones son los mismos 32 dígitos hexadecimales sin separadores, no un identificador distinto.",
             "El formato en mayúsculas solo cambia la presentación; los UUID no distinguen mayúsculas y minúsculas al compararse.",
             "Si el navegador no dispone de la API Web Crypto, la generación se desactiva y aparece una explicación en lugar de una alternativa menos segura.",
+          ],
+        },
+      ],
+    },
+    hashGenerator: {
+      title: "Generador de hash — AppKitX",
+      metaDescription:
+        "Generador de hash SHA-256, SHA-384 y SHA-512 gratis: hashea texto en tu navegador con Web Crypto y copia resúmenes hexadecimales en minúsculas. Nada se sube.",
+      name: "Generador de hash",
+      description:
+        "Genera hashes SHA-256, SHA-384 y SHA-512 a partir de texto con la API Web Crypto de tu navegador: rápido, local y listo para copiar.",
+      cardDescription:
+        "Genera hashes SHA-256, SHA-384 y SHA-512 a partir de texto.",
+      keywords: [
+        "hash",
+        "generador de hash",
+        "sha-256",
+        "sha256",
+        "sha-384",
+        "sha384",
+        "sha-512",
+        "sha512",
+        "suma de comprobación",
+        "resumen",
+        "hash de texto",
+      ],
+      algorithmLegend: "Algoritmo",
+      algorithmHint:
+        "Cambiar el algoritmo recalcula el hash a partir del texto actual.",
+      algorithms: {
+        "SHA-256": "SHA-256",
+        "SHA-384": "SHA-384",
+        "SHA-512": "SHA-512",
+      },
+      inputLabel: "Texto para hashear",
+      inputHint:
+        "Entrada UTF-8; los espacios, los saltos de línea y las mayúsculas afectan al resumen.",
+      inputPlaceholder: "Pega o escribe texto…",
+      generate: "Generar hash",
+      clear: "Limpiar",
+      outputLabel: "Hash",
+      outputPlaceholder: "—",
+      outputHint: "La salida hexadecimal en minúsculas aparece aquí.",
+      copyHash: "Copiar hash",
+      copied: "Copiado al portapapeles.",
+      copyFailed:
+        "No se pudo copiar. Selecciona el hash y cópialo manualmente.",
+      digestSummary: "{algorithm} · {count} caracteres hexadecimales",
+      statusGenerating: "Generando hash {algorithm}…",
+      errors: {
+        empty: "Introduce el texto que quieres hashear.",
+        unsupportedTitle: "Web Crypto no está disponible",
+        unsupportedBody:
+          "Este navegador no ofrece crypto.subtle.digest, así que no se pueden generar hashes. Prueba una versión actual de Chrome, Firefox, Safari o Edge.",
+        digestTitle: "No se pudo generar el hash",
+        digestBody:
+          "El navegador no pudo calcular el resumen. Inténtalo de nuevo o recarga la página.",
+      },
+      securityTitle: "Hashear no es cifrar",
+      securityBody:
+        "Los hashes son unidireccionales y no se pueden revertir. SHA-256, SHA-384 y SHA-512 son hashes de propósito general, no algoritmos para almacenar contraseñas. Usa Argon2id, scrypt o bcrypt para contraseñas.",
+      privacyTitle: "Calculado localmente",
+      privacyBody:
+        "Tu texto y los hashes se quedan en este navegador. No se sube, almacena ni envía nada a un servidor.",
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Elige SHA-256, SHA-384 o SHA-512, introduce el texto y pulsa Generar hash. Cambiar el algoritmo recalcula el resumen a partir del mismo texto sin borrarlo.",
+            "Copia el resultado hexadecimal en minúsculas cuando lo necesites. El mismo texto y algoritmo producen siempre el mismo resumen; los espacios, los saltos de línea y las mayúsculas forman parte de la entrada.",
+          ],
+        },
+        {
+          heading: "Qué es un hash",
+          paragraphs: [
+            "Un hash criptográfico convierte cualquier entrada en un resumen de longitud fija: 64 caracteres hexadecimales para SHA-256, 96 para SHA-384 y 128 para SHA-512. Un pequeño cambio en la entrada produce un resumen completamente distinto.",
+            "Los hashes son unidireccionales: el resumen no se puede revertir para recuperar el texto. Se usan para comprobar integridad, direccionar contenido, firmas digitales y deduplicación, no para ocultar datos legibles.",
+          ],
+        },
+        {
+          heading: "Seguridad y contraseñas",
+          paragraphs: [
+            "Hashear no es cifrar. Los hashes de propósito general como SHA-256, SHA-384 y SHA-512 son rápidos y no llevan sal por diseño; esas propiedades los hacen inadecuados para almacenar contraseñas.",
+            "Almacenar contraseñas requiere un algoritmo específico con sal y un factor de trabajo ajustable, como Argon2id, scrypt o bcrypt. No uses esta herramienta para guardar ni verificar contraseñas de usuarios.",
+          ],
+        },
+        {
+          heading: "Supuestos y casos límite",
+          items: [
+            "La entrada se codifica en UTF-8 antes de hashearse, así que los acentos, el texto CJK y los emoji producen el resumen esperado.",
+            "Los saltos de línea, los espacios finales y las mayúsculas son significativos: `abc`, `ABC` y `abc ` producen hashes distintos.",
+            "La interfaz rechaza la entrada vacía; las funciones SHA-2 tienen un resumen definido para la cadena vacía, pero esta página exige texto.",
+            "La salida hexadecimal siempre está en minúsculas. Compara el resumen completo, no un prefijo corto, al comprobar la integridad.",
+            "Para codificar un hash y transportarlo, usa el [codificador Base64](/base64-encoder); para crear un identificador en lugar de un resumen, usa el [generador de UUID](/uuid-generator).",
           ],
         },
       ],

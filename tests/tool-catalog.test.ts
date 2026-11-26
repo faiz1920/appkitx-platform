@@ -59,6 +59,10 @@ describe("localizedToolCatalog", () => {
     expect(uuid?.title).toBe("Generador de UUID");
     expect(uuid?.category).toBe("Herramientas de desarrollo");
     expect(uuid?.keywords).toContain("uuid v4");
+    const hash = catalog.find((tool) => tool.href === "/hash-generator");
+    expect(hash?.title).toBe("Generador de hash");
+    expect(hash?.category).toBe("Herramientas de desarrollo");
+    expect(hash?.keywords).toContain("sha-256");
     const dateCalculator = catalog.find(
       (tool) => tool.href === "/date-calculator",
     );

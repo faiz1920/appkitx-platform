@@ -83,7 +83,7 @@ test("every shipped tool is an interactive card and footer link", async ({
   await page.goto("/");
 
   const grid = page.locator("#tools");
-  await expect(grid.getByText("Open tool")).toHaveCount(19);
+  await expect(grid.getByText("Open tool")).toHaveCount(20);
   await expect(grid.getByText("Coming soon")).toHaveCount(0);
 
   const footer = page.getByRole("contentinfo");
@@ -92,6 +92,7 @@ test("every shipped tool is an interactive card and footer link", async ({
     ["Speed Converter", "/speed-converter/"],
     ["QR Code Generator", "/qr-code-generator/"],
     ["UUID Generator", "/uuid-generator/"],
+    ["Hash Generator", "/hash-generator/"],
     ["Loan Calculator", "/loan-calculator/"],
     ["EMI Calculator", "/emi-calculator/"],
     ["Compound Interest Calculator", "/compound-interest-calculator/"],
@@ -114,7 +115,7 @@ test("every shipped tool is an interactive card and footer link", async ({
 
   await page.goto("/es/");
   const gridEs = page.locator("#tools");
-  await expect(gridEs.getByText("Abrir herramienta")).toHaveCount(19);
+  await expect(gridEs.getByText("Abrir herramienta")).toHaveCount(20);
   await expect(gridEs.getByText("Próximamente")).toHaveCount(0);
   await expect(
     gridEs.getByRole("link", { name: "Conversor de unidades" }),
@@ -143,6 +144,9 @@ test("every shipped tool is an interactive card and footer link", async ({
   await expect(
     gridEs.getByRole("link", { name: "Generador de UUID" }),
   ).toHaveAttribute("href", "/es/uuid-generator/");
+  await expect(
+    gridEs.getByRole("link", { name: "Generador de hash" }),
+  ).toHaveAttribute("href", "/es/hash-generator/");
   await expect(
     gridEs.getByRole("link", { name: "Contador de palabras" }),
   ).toHaveAttribute("href", "/es/word-counter/");
