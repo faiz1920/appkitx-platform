@@ -104,7 +104,7 @@ test("contextual linking leaves the route and sitemap set unchanged", async ({
     (match) => match[1],
   );
 
-  expect(urls).toHaveLength(86);
+  expect(urls).toHaveLength(88);
   expect(sitemap).not.toContain("pc-builder");
   expect((await request.get("/pc-builder/")).status()).toBe(404);
   expect((await request.get("/es/pc-builder/")).status()).toBe(404);

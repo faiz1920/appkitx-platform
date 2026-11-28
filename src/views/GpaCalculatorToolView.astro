@@ -1,0 +1,55 @@
+---
+import ToolLayout from "../layouts/ToolLayout.astro";
+import GpaCalculator from "../components/GpaCalculator.astro";
+import ProseText from "../components/ProseText.astro";
+import { getDictionary, type LocaleCode } from "../i18n/config";
+import { resolveLocalizedTools } from "../i18n/tool-catalog";
+import { localizedHref } from "../i18n/routing";
+import {
+  categoryPath,
+  isCategoryPublished,
+  toolCategory,
+} from "../lib/categories";
+import calculatorIcon from "lucide-static/icons/calculator.svg?raw";
+
+interface Props {
+  locale: LocaleCode;
+}
+
+const { locale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.gpaCalculator;
+
+const category = toolCategory("/gpa-calculator");
+const relatedHref = isCategoryPublished(category)
+  ? localizedHref(categoryPath(category), locale)
+  : undefined;
+
+const toolIcons: Record<string, string> = { calculator: calculatorIcon };
+const relatedTools = resolveLocalizedTools(locale, [
+  "/percentage-calculator",
+]).map((related) => ({
+  title: related.title,
+  description: related.description,
+  href: localizedHref(related.href, locale),
+  icon: toolIcons[related.icon] ?? "",
+}));
+---
+
+<ToolLayout
+  title={tool.title}
+  description={tool.metaDescription}
+  toolName={tool.name}
+  toolDescription={tool.description}
+  locale={locale}
+  breadcrumb={[
+    { label: t.toolLayout.breadcrumbHome, href: localizedHref("/", locale) },
+    { label: tool.name },
+  ]}
+  relatedTools={relatedTools}
+  relatedHref={relatedHref}
+>
+  <GpaCalculator slot="tool" locale={locale} />
+
+  <ProseText sections={tool.sections} locale={locale} />
+</ToolLayout>

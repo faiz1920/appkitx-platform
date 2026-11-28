@@ -347,6 +347,96 @@ export interface BmiCalculatorToolStrings {
   sections: readonly ProseSectionStrings[];
 }
 
+/** GPA Calculator page labels and interface strings. */
+export interface GpaCalculatorToolStrings {
+  title: string;
+  metaDescription: string;
+  /** H1, breadcrumb, and related-tools label. */
+  name: string;
+  /** Tool page subline (long form). */
+  description: string;
+  /** Homepage, related-tools, and search card text (short form). */
+  cardDescription: string;
+  /** Localized search terms for the search palette. */
+  keywords: readonly string[];
+  coursesHeading: string;
+  courseLimit: string;
+  emptyRowsHint: string;
+  addCourse: string;
+  /** Token: {index}. */
+  removeCourse: string;
+  /** Token: {index}. */
+  courseNameLabel: string;
+  courseNamePlaceholder: string;
+  /** Token: {index}. */
+  creditsLabel: string;
+  creditsPlaceholder: string;
+  /** Token: {index}. */
+  gradeLabel: string;
+  gradePlaceholder: string;
+  /** Token: {points}. */
+  gradePoints: string;
+  calculate: string;
+  reset: string;
+  activeScaleLabel: string;
+  /** Tokens: {name}, {max}. */
+  activeScaleDisplay: string;
+  defaultScaleName: string;
+  defaultScaleNote: string;
+  scaleEditorSummary: string;
+  scaleNameLabel: string;
+  scaleNamePlaceholder: string;
+  scaleMaxLabel: string;
+  scaleMaxHint: string;
+  scaleGradesLabel: string;
+  /** Token: {index}. */
+  scaleGradeLabel: string;
+  /** Token: {index}. */
+  scalePointsLabel: string;
+  addGrade: string;
+  /** Token: {index}. */
+  removeGrade: string;
+  applyScale: string;
+  resetScale: string;
+  scaleApplied: string;
+  scaleAppliedInvalidated: string;
+  scaleReset: string;
+  scaleResetInvalidated: string;
+  resultLabel: string;
+  gpaUnit: string;
+  totalCreditsLabel: string;
+  coursesIncludedLabel: string;
+  scaleUsedLabel: string;
+  /** Token: {count}. */
+  courseCountOne: string;
+  /** Token: {count}. */
+  courseCountMany: string;
+  emptyTitle: string;
+  emptyHint: string;
+  privacyTitle: string;
+  privacyBody: string;
+  errors: {
+    noCourses: string;
+    creditsRequired: string;
+    creditsInvalid: string;
+    creditsRange: string;
+    gradeRequired: string;
+    gradeUnknown: string;
+    gradeInvalidated: string;
+    scaleNameRequired: string;
+    scaleMaxInvalid: string;
+    scaleMaxRange: string;
+    noGrades: string;
+    scaleGradeRequired: string;
+    scaleGradeDuplicate: string;
+    scalePointsInvalid: string;
+    /** Token: {max}. */
+    scalePointsRange: string;
+  };
+  /** Explanation sections rendered by ProseText below the calculator. */
+  sections: readonly ProseSectionStrings[];
+}
+
 /** Percentage Calculator page labels and interface strings. */
 export interface PercentageToolStrings {
   title: string;
@@ -1428,6 +1518,7 @@ export interface ToolsStrings {
   speedConverter: SpeedConverterToolStrings;
   scientificCalculator: ScientificCalculatorToolStrings;
   bmiCalculator: BmiCalculatorToolStrings;
+  gpaCalculator: GpaCalculatorToolStrings;
   base64: Base64ToolStrings;
   json: JsonFormatterToolStrings;
   qrCodeGenerator: QrCodeGeneratorToolStrings;

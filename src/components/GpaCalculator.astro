@@ -1,0 +1,1100 @@
+---
+import alertIcon from "lucide-static/icons/circle-alert.svg?raw";
+import graduationCapIcon from "lucide-static/icons/graduation-cap.svg?raw";
+import plusIcon from "lucide-static/icons/plus.svg?raw";
+import shieldCheckIcon from "lucide-static/icons/shield-check.svg?raw";
+import trashIcon from "lucide-static/icons/trash-2.svg?raw";
+import {
+  defaultLocale,
+  getDictionary,
+  getLocale,
+  type LocaleCode,
+} from "../i18n/config";
+import {
+  DEFAULT_GPA_GRADES,
+  DEFAULT_GPA_MAX,
+  formatGradePoints,
+} from "../lib/gpa";
+import { interpolate } from "../i18n/interpolate";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.gpaCalculator;
+const localeMeta = getLocale(locale);
+
+const scriptStrings = {
+  tool,
+  intlLocale: localeMeta.intlLocale,
+};
+
+const initialScaleDisplay = interpolate(tool.activeScaleDisplay, {
+  name: tool.defaultScaleName,
+  max: formatGradePoints(DEFAULT_GPA_MAX, localeMeta.intlLocale),
+});
+const initialScaleMap = DEFAULT_GPA_GRADES.map(
+  (grade) =>
+    `${grade.label} ${formatGradePoints(grade.points, localeMeta.intlLocale)}`,
+).join(" · ");
+---
+
+<div data-gpa-calculator data-i18n={JSON.stringify(scriptStrings)}>
+  <form novalidate data-gpa-form>
+    <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h2 class="text-title text-text-primary">{tool.coursesHeading}</h2>
+          <p class="mt-1 text-caption text-text-muted">
+            {tool.activeScaleLabel}:{" "}
+            <span data-active-scale-display>{initialScaleDisplay}</span>
+          </p>
+          <p
+            class="mt-1 max-w-[520px] text-caption text-text-muted"
+            data-active-scale-map
+          >
+            {initialScaleMap}
+          </p>
+        </div>
+      </div>
+
+      <p class="mt-3 text-caption text-text-muted">{tool.emptyRowsHint}</p>
+
+      <ol class="mt-4 space-y-3" data-course-list></ol>
+
+      <p class="field-error mt-3" role="alert" hidden data-form-error>
+        <span aria-hidden="true" set:html={alertIcon} />
+        <span data-form-error-text></span>
+      </p>
+
+      <div class="mt-4 flex flex-wrap items-center gap-3">
+        <button type="button" class="btn btn-secondary gap-2" data-add-course>
+          <span
+            class="h-4 w-4 [&_svg]:h-4 [&_svg]:w-4"
+            aria-hidden="true"
+            set:html={plusIcon}
+          />
+          {tool.addCourse}
+        </button>
+        <p class="text-caption text-text-muted">{tool.courseLimit}</p>
+      </div>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <button type="submit" class="btn btn-primary">
+          {tool.calculate}
+        </button>
+        <button type="button" class="btn btn-secondary" data-reset>
+          {tool.reset}
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <details
+    class="mt-6 rounded-lg border border-border-subtle bg-surface"
+    data-scale-editor
+  >
+    <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-lg px-5 py-3 text-label text-text-primary [&::-webkit-details-marker]:hidden">
+      <span>{tool.scaleEditorSummary}</span>
+      <span class="text-caption text-text-muted" data-scale-summary-name>
+        {tool.defaultScaleName}
+      </span>
+    </summary>
+
+    <div class="border-t border-border-subtle p-5">
+      <p class="text-caption text-text-muted">{tool.defaultScaleNote}</p>
+
+      <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label for="gpa-scale-name" class="text-label text-text-primary">
+            {tool.scaleNameLabel}
+          </label>
+          <input
+            id="gpa-scale-name"
+            type="text"
+            class="input mt-2"
+            autocomplete="off"
+            placeholder={tool.scaleNamePlaceholder}
+            data-scale-name
+          />
+        </div>
+
+        <div>
+          <label for="gpa-scale-max" class="text-label text-text-primary">
+            {tool.scaleMaxLabel}
+          </label>
+          <input
+            id="gpa-scale-max"
+            type="text"
+            inputmode="decimal"
+            class="input mt-2 font-mono tabular-nums"
+            autocomplete="off"
+            data-scale-max
+          />
+          <p class="mt-1 text-caption text-text-muted">{tool.scaleMaxHint}</p>
+        </div>
+      </div>
+
+      <div class="mt-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p class="text-label text-text-primary">{tool.scaleGradesLabel}</p>
+          <button
+            type="button"
+            class="btn btn-secondary h-11 gap-2 px-3"
+            data-add-grade
+          >
+            <span
+              class="h-4 w-4 [&_svg]:h-4 [&_svg]:w-4"
+              aria-hidden="true"
+              set:html={plusIcon}
+            />
+            {tool.addGrade}
+          </button>
+        </div>
+
+        <ol
+          class="mt-3 max-h-[420px] space-y-2 overflow-y-auto pr-1"
+          data-scale-grade-list
+        ></ol>
+      </div>
+
+      <ul
+        class="mt-3 space-y-1 text-caption text-error"
+        role="alert"
+        hidden
+        data-scale-errors
+      ></ul>
+
+      <div class="mt-4 flex flex-wrap items-center gap-3">
+        <button type="button" class="btn btn-primary" data-apply-scale>
+          {tool.applyScale}
+        </button>
+        <button type="button" class="btn btn-secondary" data-reset-scale>
+          {tool.resetScale}
+        </button>
+      </div>
+
+      <p
+        class="mt-3 text-caption text-text-secondary"
+        role="status"
+        aria-live="polite"
+        hidden
+        data-scale-status
+      ></p>
+    </div>
+  </details>
+
+  <div
+    class="mt-6 flex flex-col items-center rounded-lg border border-border-subtle bg-surface-subtle px-6 py-10 text-center"
+    data-gpa-empty
+  >
+    <span
+      class="flex h-10 w-10 items-center justify-center rounded-md bg-surface-muted text-text-muted [&_svg]:h-5 [&_svg]:w-5"
+      aria-hidden="true"
+      set:html={graduationCapIcon}
+    />
+    <p class="mt-3 text-label text-text-primary">{tool.emptyTitle}</p>
+    <p class="mt-1 max-w-[360px] text-caption text-text-muted">
+      {tool.emptyHint}
+    </p>
+  </div>
+
+  <div class="mt-6" data-gpa-result hidden>
+    <div
+      class="rounded-lg bg-accent-subtle p-(--layout-card-padding)"
+      aria-live="polite"
+    >
+      <p class="text-overline text-text-secondary">{tool.resultLabel}</p>
+      <div class="mt-2 flex items-baseline gap-2">
+        <p
+          class="text-mono-result tabular-nums text-text-primary"
+          data-gpa-value
+        >
+          —
+        </p>
+        <span class="text-label text-text-secondary">{tool.gpaUnit}</span>
+      </div>
+
+      <dl class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div>
+          <dt class="text-caption text-text-secondary">
+            {tool.totalCreditsLabel}
+          </dt>
+          <dd
+            class="mt-1 font-mono text-body font-medium tabular-nums text-text-primary"
+            data-total-credits
+          >
+            —
+          </dd>
+        </div>
+        <div>
+          <dt class="text-caption text-text-secondary">
+            {tool.coursesIncludedLabel}
+          </dt>
+          <dd
+            class="mt-1 text-body font-medium text-text-primary"
+            data-course-count
+          >
+            —
+          </dd>
+        </div>
+        <div>
+          <dt class="text-caption text-text-secondary">
+            {tool.scaleUsedLabel}
+          </dt>
+          <dd
+            class="mt-1 text-small break-words text-text-primary"
+            data-result-scale
+          >
+            —
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="mt-6 flex items-start gap-3 rounded-md border border-accent-subtle-border bg-accent-subtle p-3">
+    <span
+      class="mt-0.5 h-5 w-5 shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-5"
+      aria-hidden="true"
+      set:html={shieldCheckIcon}
+    />
+    <div>
+      <p class="text-label text-text-primary">{tool.privacyTitle}</p>
+      <p class="mt-1 text-caption text-text-secondary">{tool.privacyBody}</p>
+    </div>
+  </div>
+</div>
+
+<template data-course-template>
+  <li
+    class="rounded-md border border-border-subtle bg-surface p-3"
+    data-course-row
+  >
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_100px_160px_44px] sm:items-start">
+      <div>
+        <label
+          class="text-caption text-text-secondary"
+          data-course-name-label
+        ></label>
+        <input
+          type="text"
+          class="input mt-1"
+          autocomplete="off"
+          placeholder={tool.courseNamePlaceholder}
+          data-course-name
+        />
+      </div>
+
+      <div>
+        <label
+          class="text-caption text-text-secondary"
+          data-course-credits-label
+        ></label>
+        <input
+          type="text"
+          inputmode="decimal"
+          class="input mt-1 font-mono tabular-nums"
+          autocomplete="off"
+          placeholder={tool.creditsPlaceholder}
+          data-course-credits
+        />
+        <p class="field-error mt-1" hidden data-course-credits-error>
+          <span aria-hidden="true" set:html={alertIcon} />
+          <span data-course-credits-error-text></span>
+        </p>
+      </div>
+
+      <div>
+        <label
+          class="text-caption text-text-secondary"
+          data-course-grade-label
+        ></label>
+        <select class="input mt-1" data-course-grade></select>
+        <p class="mt-1 text-caption text-text-muted" data-course-points></p>
+        <p class="field-error mt-1" hidden data-course-grade-error>
+          <span aria-hidden="true" set:html={alertIcon} />
+          <span data-course-grade-error-text></span>
+        </p>
+      </div>
+
+      <div class="flex sm:justify-end sm:pt-5">
+        <button
+          type="button"
+          class="btn btn-ghost h-11 w-11 shrink-0 px-0"
+          data-remove-course
+        >
+          <span
+            class="h-4 w-4 [&_svg]:h-4 [&_svg]:w-4"
+            aria-hidden="true"
+            set:html={trashIcon}
+          />
+        </button>
+      </div>
+    </div>
+  </li>
+</template>
+
+<template data-scale-grade-template>
+  <li
+    class="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_100px_44px] sm:items-start"
+    data-scale-grade-row
+  >
+    <div>
+      <label
+        class="text-caption text-text-secondary"
+        data-scale-grade-label
+      ></label>
+      <input
+        type="text"
+        class="input mt-1"
+        autocomplete="off"
+        placeholder="A"
+        data-scale-grade-name
+      />
+    </div>
+    <div>
+      <label
+        class="text-caption text-text-secondary"
+        data-scale-points-label
+      ></label>
+      <input
+        type="text"
+        inputmode="decimal"
+        class="input mt-1 font-mono tabular-nums"
+        autocomplete="off"
+        placeholder="4.0"
+        data-scale-points
+      />
+    </div>
+    <div class="sm:pt-5">
+      <button
+        type="button"
+        class="btn btn-ghost h-11 w-11 shrink-0 px-0"
+        data-remove-grade
+      >
+        <span
+          class="h-4 w-4 [&_svg]:h-4 [&_svg]:w-4"
+          aria-hidden="true"
+          set:html={trashIcon}
+        />
+      </button>
+    </div>
+  </li>
+</template>
+
+<script>
+  import { interpolate } from "../i18n/interpolate";
+  import type { GpaCalculatorToolStrings } from "../i18n/dictionary";
+  import {
+    calculateGpa,
+    DEFAULT_GPA_MAX,
+    defaultGpaGrades,
+    formatCredits,
+    formatGpa,
+    formatGradePoints,
+    GPA_MAX_COURSES,
+    validateGpaScale,
+    type GpaScale,
+    type GpaScaleIssue,
+  } from "../lib/gpa";
+  import { parseLocaleNumber } from "../lib/number-input";
+
+  interface ScriptStrings {
+    tool: GpaCalculatorToolStrings;
+    intlLocale: string;
+  }
+
+  const root = document.querySelector<HTMLElement>("[data-gpa-calculator]");
+
+  if (root) {
+    const i18n: ScriptStrings = JSON.parse(root.dataset.i18n ?? "{}");
+    const tool = i18n.tool;
+    const intlLocale = i18n.intlLocale;
+
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`GPA calculator: missing ${selector}`);
+      return el;
+    };
+
+    const form = requireEl<HTMLFormElement>("[data-gpa-form]");
+    const courseList = requireEl<HTMLOListElement>("[data-course-list]");
+    const courseTemplate = document.querySelector<HTMLTemplateElement>(
+      "[data-course-template]",
+    );
+    if (!courseTemplate) {
+      throw new Error("GPA calculator: missing course template");
+    }
+    const scaleTemplate = document.querySelector<HTMLTemplateElement>(
+      "[data-scale-grade-template]",
+    );
+    if (!scaleTemplate) {
+      throw new Error("GPA calculator: missing scale template");
+    }
+    const addCourseButton = requireEl<HTMLButtonElement>("[data-add-course]");
+    const resetButton = requireEl<HTMLButtonElement>("[data-reset]");
+    const formError = requireEl<HTMLElement>("[data-form-error]");
+    const formErrorText = requireEl<HTMLElement>("[data-form-error-text]");
+    const activeScaleDisplay = requireEl<HTMLElement>(
+      "[data-active-scale-display]",
+    );
+    const activeScaleMap = requireEl<HTMLElement>("[data-active-scale-map]");
+    const emptyState = requireEl<HTMLElement>("[data-gpa-empty]");
+    const resultRegion = requireEl<HTMLElement>("[data-gpa-result]");
+    const resultValue = requireEl<HTMLElement>("[data-gpa-value]");
+    const totalCredits = requireEl<HTMLElement>("[data-total-credits]");
+    const courseCount = requireEl<HTMLElement>("[data-course-count]");
+    const resultScale = requireEl<HTMLElement>("[data-result-scale]");
+
+    const scaleEditor = requireEl<HTMLDetailsElement>("[data-scale-editor]");
+    const scaleNameInput = requireEl<HTMLInputElement>("[data-scale-name]");
+    const scaleMaxInput = requireEl<HTMLInputElement>("[data-scale-max]");
+    const scaleGradeList = requireEl<HTMLOListElement>(
+      "[data-scale-grade-list]",
+    );
+    const addGradeButton = requireEl<HTMLButtonElement>("[data-add-grade]");
+    const applyScaleButton = requireEl<HTMLButtonElement>("[data-apply-scale]");
+    const resetScaleButton = requireEl<HTMLButtonElement>("[data-reset-scale]");
+    const scaleErrors = requireEl<HTMLElement>("[data-scale-errors]");
+    const scaleStatus = requireEl<HTMLElement>("[data-scale-status]");
+    const scaleSummaryName = requireEl<HTMLElement>(
+      "[data-scale-summary-name]",
+    );
+
+    let scale: GpaScale = defaultScale();
+    let courseSeq = 0;
+    let scaleSeq = 0;
+
+    function defaultScale(): GpaScale {
+      return {
+        name: tool.defaultScaleName,
+        max: DEFAULT_GPA_MAX,
+        grades: defaultGpaGrades(),
+      };
+    }
+
+    const formatPoints = (value: number): string =>
+      formatGradePoints(value, intlLocale);
+
+    const clearFormError = (): void => {
+      formError.hidden = true;
+      formErrorText.textContent = "";
+    };
+
+    const showFormError = (message: string): void => {
+      formErrorText.textContent = message;
+      formError.hidden = false;
+    };
+
+    const resetResult = (): void => {
+      resultRegion.hidden = true;
+      emptyState.hidden = false;
+      resultValue.textContent = "—";
+      totalCredits.textContent = "—";
+      courseCount.textContent = "—";
+      resultScale.textContent = "—";
+    };
+
+    const updateScaleSummary = (): void => {
+      activeScaleDisplay.textContent = interpolate(tool.activeScaleDisplay, {
+        name: scale.name,
+        max: formatPoints(scale.max),
+      });
+      activeScaleMap.textContent = scale.grades
+        .map((grade) => `${grade.label} ${formatPoints(grade.points)}`)
+        .join(" · ");
+      scaleSummaryName.textContent = scale.name;
+    };
+
+    const pointsFor = (label: string): number | undefined =>
+      scale.grades.find((grade) => grade.label === label)?.points;
+
+    const courseRows = (): HTMLLIElement[] => [
+      ...courseList.querySelectorAll<HTMLLIElement>("[data-course-row]"),
+    ];
+
+    interface CourseRefs {
+      row: HTMLLIElement;
+      name: HTMLInputElement;
+      credits: HTMLInputElement;
+      grade: HTMLSelectElement;
+      points: HTMLElement;
+      creditsError: HTMLElement;
+      creditsErrorText: HTMLElement;
+      gradeError: HTMLElement;
+      gradeErrorText: HTMLElement;
+      remove: HTMLButtonElement;
+    }
+
+    const courseRefs = (row: HTMLLIElement): CourseRefs => ({
+      row,
+      name: row.querySelector<HTMLInputElement>("[data-course-name]")!,
+      credits: row.querySelector<HTMLInputElement>("[data-course-credits]")!,
+      grade: row.querySelector<HTMLSelectElement>("[data-course-grade]")!,
+      points: row.querySelector<HTMLElement>("[data-course-points]")!,
+      creditsError: row.querySelector<HTMLElement>(
+        "[data-course-credits-error]",
+      )!,
+      creditsErrorText: row.querySelector<HTMLElement>(
+        "[data-course-credits-error-text]",
+      )!,
+      gradeError: row.querySelector<HTMLElement>("[data-course-grade-error]")!,
+      gradeErrorText: row.querySelector<HTMLElement>(
+        "[data-course-grade-error-text]",
+      )!,
+      remove: row.querySelector<HTMLButtonElement>("[data-remove-course]")!,
+    });
+
+    const buildCourseGradeOptions = (
+      select: HTMLSelectElement,
+      previous = "",
+    ): void => {
+      const placeholder = new Option(tool.gradePlaceholder, "");
+      const options = scale.grades.map(
+        (grade) =>
+          new Option(
+            `${grade.label} (${formatPoints(grade.points)})`,
+            grade.label,
+          ),
+      );
+      select.replaceChildren(placeholder, ...options);
+      select.value = scale.grades.some((grade) => grade.label === previous)
+        ? previous
+        : "";
+    };
+
+    const updateRowPoints = (refs: CourseRefs): void => {
+      const points = pointsFor(refs.grade.value);
+      refs.points.textContent =
+        points === undefined
+          ? ""
+          : interpolate(tool.gradePoints, { points: formatPoints(points) });
+    };
+
+    const clearCourseError = (
+      refs: CourseRefs,
+      field: "credits" | "grade",
+    ): void => {
+      const wrap = field === "credits" ? refs.creditsError : refs.gradeError;
+      const text =
+        field === "credits" ? refs.creditsErrorText : refs.gradeErrorText;
+      const input = field === "credits" ? refs.credits : refs.grade;
+      wrap.hidden = true;
+      text.textContent = "";
+      input.removeAttribute("aria-invalid");
+    };
+
+    const clearAllCourseErrors = (): void => {
+      for (const row of courseRows()) {
+        const refs = courseRefs(row);
+        clearCourseError(refs, "credits");
+        clearCourseError(refs, "grade");
+      }
+    };
+
+    const showCourseError = (
+      refs: CourseRefs,
+      field: "credits" | "grade",
+      message: string,
+    ): void => {
+      const wrap = field === "credits" ? refs.creditsError : refs.gradeError;
+      const text =
+        field === "credits" ? refs.creditsErrorText : refs.gradeErrorText;
+      const input = field === "credits" ? refs.credits : refs.grade;
+      wrap.hidden = false;
+      text.textContent = message;
+      input.setAttribute("aria-invalid", "true");
+    };
+
+    const reindexCourses = (): void => {
+      const rows = courseRows();
+      rows.forEach((row, index) => {
+        const refs = courseRefs(row);
+        const number = index + 1;
+        const nameId = `gpa-course-${refs.row.dataset.courseId}-name`;
+        const creditsId = `gpa-course-${refs.row.dataset.courseId}-credits`;
+        const gradeId = `gpa-course-${refs.row.dataset.courseId}-grade`;
+        const creditsErrorId = `${creditsId}-error`;
+        const gradeErrorId = `${gradeId}-error`;
+
+        const nameLabel = row.querySelector<HTMLLabelElement>(
+          "[data-course-name-label]",
+        )!;
+        const creditsLabel = row.querySelector<HTMLLabelElement>(
+          "[data-course-credits-label]",
+        )!;
+        const gradeLabel = row.querySelector<HTMLLabelElement>(
+          "[data-course-grade-label]",
+        )!;
+
+        nameLabel.htmlFor = nameId;
+        nameLabel.textContent = interpolate(tool.courseNameLabel, {
+          index: number,
+        });
+        creditsLabel.htmlFor = creditsId;
+        creditsLabel.textContent = interpolate(tool.creditsLabel, {
+          index: number,
+        });
+        gradeLabel.htmlFor = gradeId;
+        gradeLabel.textContent = interpolate(tool.gradeLabel, {
+          index: number,
+        });
+
+        refs.name.id = nameId;
+        refs.credits.id = creditsId;
+        refs.creditsError.id = creditsErrorId;
+        refs.credits.setAttribute("aria-describedby", creditsErrorId);
+        refs.grade.id = gradeId;
+        refs.gradeError.id = gradeErrorId;
+        refs.grade.setAttribute("aria-describedby", gradeErrorId);
+        refs.remove.disabled = rows.length <= 1;
+        refs.remove.setAttribute(
+          "aria-label",
+          interpolate(tool.removeCourse, { index: number }),
+        );
+      });
+
+      addCourseButton.disabled = rows.length >= GPA_MAX_COURSES;
+    };
+
+    const createCourseRow = (): CourseRefs => {
+      const fragment = courseTemplate.content.cloneNode(
+        true,
+      ) as DocumentFragment;
+      const row = fragment.querySelector<HTMLLIElement>("[data-course-row]");
+      if (!row) throw new Error("GPA calculator: empty course template");
+      row.dataset.courseId = String(++courseSeq);
+      courseList.append(row);
+      const refs = courseRefs(row);
+
+      buildCourseGradeOptions(refs.grade);
+      updateRowPoints(refs);
+
+      refs.name.addEventListener("input", () => {
+        clearFormError();
+        resetResult();
+      });
+      refs.credits.addEventListener("input", () => {
+        clearCourseError(refs, "credits");
+        clearFormError();
+        resetResult();
+      });
+      refs.grade.addEventListener("change", () => {
+        clearCourseError(refs, "grade");
+        updateRowPoints(refs);
+        clearFormError();
+        resetResult();
+      });
+      refs.remove.addEventListener("click", () => {
+        if (courseRows().length <= 1) return;
+        row.remove();
+        reindexCourses();
+        clearFormError();
+        resetResult();
+        courseRows()[0] && courseRefs(courseRows()[0]!).credits.focus();
+      });
+
+      reindexCourses();
+      return refs;
+    };
+
+    addCourseButton.addEventListener("click", () => {
+      if (courseRows().length >= GPA_MAX_COURSES) return;
+      const refs = createCourseRow();
+      clearFormError();
+      resetResult();
+      refs.credits.focus();
+    });
+
+    interface ScaleRowRefs {
+      row: HTMLLIElement;
+      label: HTMLInputElement;
+      points: HTMLInputElement;
+      remove: HTMLButtonElement;
+    }
+
+    const scaleRows = (): HTMLLIElement[] => [
+      ...scaleGradeList.querySelectorAll<HTMLLIElement>(
+        "[data-scale-grade-row]",
+      ),
+    ];
+
+    const scaleRowRefs = (row: HTMLLIElement): ScaleRowRefs => ({
+      row,
+      label: row.querySelector<HTMLInputElement>("[data-scale-grade-name]")!,
+      points: row.querySelector<HTMLInputElement>("[data-scale-points]")!,
+      remove: row.querySelector<HTMLButtonElement>("[data-remove-grade]")!,
+    });
+
+    const reindexScaleRows = (): void => {
+      const rows = scaleRows();
+      rows.forEach((row, index) => {
+        const refs = scaleRowRefs(row);
+        const number = index + 1;
+        const labelId = `gpa-scale-grade-${refs.row.dataset.gradeId}-label`;
+        const pointsId = `gpa-scale-grade-${refs.row.dataset.gradeId}-points`;
+        const label = row.querySelector<HTMLLabelElement>(
+          "[data-scale-grade-label]",
+        )!;
+        const points = row.querySelector<HTMLLabelElement>(
+          "[data-scale-points-label]",
+        )!;
+
+        label.htmlFor = labelId;
+        label.textContent = interpolate(tool.scaleGradeLabel, {
+          index: number,
+        });
+        points.htmlFor = pointsId;
+        points.textContent = interpolate(tool.scalePointsLabel, {
+          index: number,
+        });
+        refs.label.id = labelId;
+        refs.points.id = pointsId;
+        refs.remove.disabled = rows.length <= 1;
+        refs.remove.setAttribute(
+          "aria-label",
+          interpolate(tool.removeGrade, { index: number }),
+        );
+      });
+    };
+
+    const clearScaleFeedback = (): void => {
+      scaleErrors.hidden = true;
+      scaleErrors.replaceChildren();
+      scaleStatus.hidden = true;
+      scaleStatus.textContent = "";
+      scaleNameInput.removeAttribute("aria-invalid");
+      scaleMaxInput.removeAttribute("aria-invalid");
+      for (const row of scaleRows()) {
+        const refs = scaleRowRefs(row);
+        refs.label.removeAttribute("aria-invalid");
+        refs.points.removeAttribute("aria-invalid");
+      }
+    };
+
+    const createScaleRow = (label = "", points = ""): ScaleRowRefs => {
+      const fragment = scaleTemplate.content.cloneNode(
+        true,
+      ) as DocumentFragment;
+      const row = fragment.querySelector<HTMLLIElement>(
+        "[data-scale-grade-row]",
+      );
+      if (!row) throw new Error("GPA calculator: empty scale template");
+      row.dataset.gradeId = String(++scaleSeq);
+      scaleGradeList.append(row);
+      const refs = scaleRowRefs(row);
+      refs.label.value = label;
+      refs.points.value = points;
+
+      refs.label.addEventListener("input", clearScaleFeedback);
+      refs.points.addEventListener("input", clearScaleFeedback);
+      refs.remove.addEventListener("click", () => {
+        if (scaleRows().length <= 1) return;
+        row.remove();
+        reindexScaleRows();
+        clearScaleFeedback();
+      });
+
+      reindexScaleRows();
+      return refs;
+    };
+
+    const resetScaleDraft = (nextScale: GpaScale): void => {
+      scaleNameInput.value = nextScale.name;
+      scaleMaxInput.value = formatPoints(nextScale.max);
+      scaleGradeList.replaceChildren();
+      for (const grade of nextScale.grades) {
+        createScaleRow(grade.label, formatPoints(grade.points));
+      }
+      reindexScaleRows();
+      clearScaleFeedback();
+    };
+
+    addGradeButton.addEventListener("click", () => {
+      const refs = createScaleRow();
+      clearScaleFeedback();
+      refs.label.focus();
+    });
+
+    scaleNameInput.addEventListener("input", clearScaleFeedback);
+    scaleMaxInput.addEventListener("input", clearScaleFeedback);
+
+    const readScaleDraft = (): GpaScale => {
+      const max = parseLocaleNumber(scaleMaxInput.value, intlLocale);
+      const grades = scaleRows().map((row) => {
+        const refs = scaleRowRefs(row);
+        const points = parseLocaleNumber(refs.points.value, intlLocale);
+        return {
+          label: refs.label.value,
+          points: points.ok ? points.value : Number.NaN,
+        };
+      });
+      return {
+        name: scaleNameInput.value,
+        max: max.ok ? max.value : Number.NaN,
+        grades,
+      };
+    };
+
+    const scaleIssueMessage = (
+      issue: GpaScaleIssue,
+      draft: GpaScale,
+    ): string => {
+      switch (issue.code) {
+        case "nameRequired":
+          return tool.errors.scaleNameRequired;
+        case "maxInvalid":
+          return tool.errors.scaleMaxInvalid;
+        case "maxRange":
+          return tool.errors.scaleMaxRange;
+        case "noGrades":
+          return tool.errors.noGrades;
+        case "labelRequired":
+          return tool.errors.scaleGradeRequired;
+        case "labelDuplicate":
+          return tool.errors.scaleGradeDuplicate;
+        case "pointsInvalid":
+          return tool.errors.scalePointsInvalid;
+        case "pointsRange":
+          return interpolate(tool.errors.scalePointsRange, {
+            max: Number.isFinite(draft.max)
+              ? formatPoints(draft.max)
+              : scaleMaxInput.value,
+          });
+      }
+    };
+
+    const showScaleIssues = (
+      issues: GpaScaleIssue[],
+      draft: GpaScale,
+    ): void => {
+      clearScaleFeedback();
+      scaleErrors.hidden = false;
+      for (const issue of issues) {
+        const item = document.createElement("li");
+        item.textContent = scaleIssueMessage(issue, draft);
+        scaleErrors.append(item);
+
+        if (issue.field === "name") {
+          scaleNameInput.setAttribute("aria-invalid", "true");
+        } else if (issue.field === "max") {
+          scaleMaxInput.setAttribute("aria-invalid", "true");
+        } else if (issue.index !== undefined) {
+          const row = scaleRows()[issue.index];
+          if (!row) continue;
+          const refs = scaleRowRefs(row);
+          if (
+            issue.code === "labelRequired" ||
+            issue.code === "labelDuplicate"
+          ) {
+            refs.label.setAttribute("aria-invalid", "true");
+          } else {
+            refs.points.setAttribute("aria-invalid", "true");
+          }
+        }
+      }
+    };
+
+    const applyScaleToCourses = (): number => {
+      let invalidated = 0;
+      clearAllCourseErrors();
+
+      for (const row of courseRows()) {
+        const refs = courseRefs(row);
+        const previous = refs.grade.value;
+        buildCourseGradeOptions(refs.grade, previous);
+        if (previous !== "" && refs.grade.value === "") {
+          invalidated += 1;
+          showCourseError(refs, "grade", tool.errors.gradeInvalidated);
+        }
+        updateRowPoints(refs);
+      }
+
+      resetResult();
+      clearFormError();
+      return invalidated;
+    };
+
+    const applyScale = (nextScale: GpaScale, isReset: boolean): void => {
+      scale = {
+        name: nextScale.name.trim(),
+        max: nextScale.max,
+        grades: nextScale.grades.map((grade) => ({
+          label: grade.label.trim(),
+          points: grade.points,
+        })),
+      };
+      updateScaleSummary();
+      const invalidated = applyScaleToCourses();
+
+      scaleStatus.textContent = isReset
+        ? invalidated > 0
+          ? tool.scaleResetInvalidated
+          : tool.scaleReset
+        : invalidated > 0
+          ? tool.scaleAppliedInvalidated
+          : tool.scaleApplied;
+      scaleStatus.hidden = false;
+    };
+
+    applyScaleButton.addEventListener("click", () => {
+      const draft = readScaleDraft();
+      const issues = validateGpaScale(draft);
+      if (issues.length > 0) {
+        showScaleIssues(issues, draft);
+        return;
+      }
+      applyScale(draft, false);
+      clearScaleFeedback();
+      scaleStatus.textContent = courseRows().some(
+        (row) => courseRefs(row).grade.getAttribute("aria-invalid") === "true",
+      )
+        ? tool.scaleAppliedInvalidated
+        : tool.scaleApplied;
+      scaleStatus.hidden = false;
+    });
+
+    resetScaleButton.addEventListener("click", () => {
+      const next = defaultScale();
+      resetScaleDraft(next);
+      applyScale(next, true);
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      clearAllCourseErrors();
+      clearFormError();
+
+      const activeRows = courseRows()
+        .map((row) => {
+          const refs = courseRefs(row);
+          return {
+            refs,
+            name: refs.name.value.trim(),
+            creditsRaw: refs.credits.value.trim(),
+            grade: refs.grade.value,
+          };
+        })
+        .filter(
+          (row) => row.name !== "" || row.creditsRaw !== "" || row.grade !== "",
+        );
+
+      if (activeRows.length === 0) {
+        showFormError(tool.errors.noCourses);
+        resetResult();
+        const first = courseRows()[0];
+        if (first) courseRefs(first).credits.focus();
+        return;
+      }
+
+      const included: { credits: number; gradeLabel: string }[] = [];
+      const includedRefs: CourseRefs[] = [];
+      let firstInvalid: HTMLElement | null = null;
+
+      for (const row of activeRows) {
+        let creditsValid = false;
+        if (row.creditsRaw === "") {
+          showCourseError(row.refs, "credits", tool.errors.creditsRequired);
+        } else {
+          const parsed = parseLocaleNumber(row.creditsRaw, intlLocale);
+          if (!parsed.ok) {
+            showCourseError(row.refs, "credits", tool.errors.creditsInvalid);
+          } else {
+            creditsValid = true;
+            included.push({
+              credits: parsed.value,
+              gradeLabel: row.grade,
+            });
+            includedRefs.push(row.refs);
+          }
+        }
+
+        if (row.grade === "") {
+          showCourseError(row.refs, "grade", tool.errors.gradeRequired);
+        }
+
+        if (!creditsValid && !firstInvalid) firstInvalid = row.refs.credits;
+        if (row.grade === "" && !firstInvalid) firstInvalid = row.refs.grade;
+      }
+
+      if (firstInvalid) {
+        resetResult();
+        firstInvalid.focus();
+        return;
+      }
+
+      const result = calculateGpa(included, scale);
+      if (!result.ok) {
+        let firstIssueInput: HTMLElement | null = null;
+        for (const issue of result.issues) {
+          if (issue.index < 0) {
+            showFormError(tool.errors.noCourses);
+            continue;
+          }
+          const refs = includedRefs[issue.index];
+          if (!refs) continue;
+          if (
+            issue.code === "creditsInvalid" ||
+            issue.code === "creditsRange"
+          ) {
+            showCourseError(
+              refs,
+              "credits",
+              issue.code === "creditsRange"
+                ? tool.errors.creditsRange
+                : tool.errors.creditsInvalid,
+            );
+            firstIssueInput ??= refs.credits;
+          } else {
+            showCourseError(
+              refs,
+              "grade",
+              issue.code === "gradeUnknown"
+                ? tool.errors.gradeUnknown
+                : tool.errors.gradeRequired,
+            );
+            firstIssueInput ??= refs.grade;
+          }
+        }
+        resetResult();
+        firstIssueInput?.focus();
+        return;
+      }
+
+      resultValue.textContent = formatGpa(result.gpa, intlLocale);
+      totalCredits.textContent = formatCredits(result.totalCredits, intlLocale);
+      courseCount.textContent = interpolate(
+        result.courseCount === 1 ? tool.courseCountOne : tool.courseCountMany,
+        { count: result.courseCount },
+      );
+      resultScale.textContent = interpolate(tool.activeScaleDisplay, {
+        name: scale.name,
+        max: formatPoints(scale.max),
+      });
+      emptyState.hidden = true;
+      resultRegion.hidden = false;
+    });
+
+    resetButton.addEventListener("click", () => {
+      courseList.replaceChildren();
+      for (let index = 0; index < 3; index += 1) createCourseRow();
+      scale = defaultScale();
+      resetScaleDraft(scale);
+      updateScaleSummary();
+      scaleEditor.open = false;
+      clearAllCourseErrors();
+      clearFormError();
+      resetResult();
+      const first = courseRows()[0];
+      if (first) courseRefs(first).credits.focus();
+    });
+
+    for (let index = 0; index < 3; index += 1) createCourseRow();
+    resetScaleDraft(scale);
+    updateScaleSummary();
+    resetResult();
+  }
+</script>

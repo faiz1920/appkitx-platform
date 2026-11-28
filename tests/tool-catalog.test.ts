@@ -67,6 +67,10 @@ describe("localizedToolCatalog", () => {
     expect(bmi?.title).toBe("Calculadora de IMC");
     expect(bmi?.category).toBe("Calculadoras");
     expect(bmi?.keywords).toContain("índice de masa corporal");
+    const gpa = catalog.find((tool) => tool.href === "/gpa-calculator");
+    expect(gpa?.title).toBe("Calculadora de GPA");
+    expect(gpa?.category).toBe("Calculadoras");
+    expect(gpa?.keywords).toContain("gpa ponderado");
     const dateCalculator = catalog.find(
       (tool) => tool.href === "/date-calculator",
     );

@@ -1357,6 +1357,141 @@ export const es: Dictionary = {
         },
       ],
     },
+    gpaCalculator: {
+      title: "Calculadora de GPA — AppKitX",
+      metaDescription:
+        "Calculadora de GPA ponderado gratis: introduce créditos y notas, elige una escala 4.0 o personalizada y consulta el GPA, los créditos totales y el número de cursos. Sin registro.",
+      name: "Calculadora de GPA",
+      description:
+        "Calcula un GPA ponderado por créditos a partir de notas y créditos, con una escala de calificación configurable.",
+      cardDescription: "Calcula el GPA ponderado con créditos y notas.",
+      keywords: [
+        "gpa",
+        "calculadora de gpa",
+        "gpa ponderado",
+        "promedio ponderado",
+        "promedio de notas",
+        "créditos",
+        "horas crédito",
+        "escala de calificación",
+        "promedio universitario",
+      ],
+      coursesHeading: "Cursos",
+      courseLimit: "Hasta 30 cursos.",
+      emptyRowsHint:
+        "Las filas completamente vacías se ignoran; cualquier fila con nombre, créditos o nota debe estar completa.",
+      addCourse: "Añadir curso",
+      removeCourse: "Quitar curso {index}",
+      courseNameLabel: "Nombre del curso {index} (opcional)",
+      courseNamePlaceholder: "p. ej., Biología",
+      creditsLabel: "Créditos {index}",
+      creditsPlaceholder: "3",
+      gradeLabel: "Nota {index}",
+      gradePlaceholder: "Selecciona una nota",
+      gradePoints: "{points} puntos",
+      calculate: "Calcular GPA",
+      reset: "Restablecer",
+      activeScaleLabel: "Escala de calificación activa",
+      activeScaleDisplay: "{name} · máximo {max}",
+      defaultScaleName: "Escala de letras 4.0",
+      defaultScaleNote:
+        "Escala de ejemplo común; consulta la política de tu institución.",
+      scaleEditorSummary: "Personalizar escala de calificación",
+      scaleNameLabel: "Nombre de la escala",
+      scaleNamePlaceholder: "p. ej., Escala de letras 4.0",
+      scaleMaxLabel: "Máximo de la escala",
+      scaleMaxHint:
+        "Usa la puntuación máxima que otorga tu institución. El valor predeterminado es 4.0.",
+      scaleGradesLabel: "Equivalencias de notas",
+      scaleGradeLabel: "Nota {index}",
+      scalePointsLabel: "Puntos {index}",
+      addGrade: "Añadir nota",
+      removeGrade: "Quitar nota {index}",
+      applyScale: "Aplicar escala",
+      resetScale: "Restablecer la predeterminada",
+      scaleApplied: "Escala de calificación aplicada.",
+      scaleAppliedInvalidated:
+        "Escala aplicada. Vuelve a seleccionar las notas marcadas abajo.",
+      scaleReset: "Escala 4.0 predeterminada restablecida.",
+      scaleResetInvalidated:
+        "Escala 4.0 restablecida. Vuelve a seleccionar las notas marcadas abajo.",
+      resultLabel: "Resultado",
+      gpaUnit: "GPA",
+      totalCreditsLabel: "Créditos totales",
+      coursesIncludedLabel: "Cursos incluidos",
+      scaleUsedLabel: "Escala de calificación",
+      courseCountOne: "{count} curso",
+      courseCountMany: "{count} cursos",
+      emptyTitle: "Aún no hay GPA",
+      emptyHint: "Añade cursos y pulsa Calcular GPA.",
+      privacyTitle: "Calculado localmente",
+      privacyBody:
+        "Los nombres de cursos, créditos, notas y el GPA se quedan en este navegador. No se sube ni se almacena nada.",
+      errors: {
+        noCourses: "Añade al menos un curso con créditos y una nota.",
+        creditsRequired: "Introduce los créditos.",
+        creditsInvalid: "Introduce créditos válidos.",
+        creditsRange: "Introduce entre 0,1 y 30 créditos.",
+        gradeRequired: "Selecciona una nota.",
+        gradeUnknown: "Elige una nota de la escala activa.",
+        gradeInvalidated:
+          "Esta nota ya no está en la escala activa. Selecciona una nota de nuevo.",
+        scaleNameRequired: "Introduce un nombre para la escala.",
+        scaleMaxInvalid: "Introduce un máximo de escala válido.",
+        scaleMaxRange: "Introduce un máximo de escala de 100 o menos.",
+        noGrades: "Añade al menos una nota válida.",
+        scaleGradeRequired: "Introduce una etiqueta de nota.",
+        scaleGradeDuplicate: "Las etiquetas de nota deben ser únicas.",
+        scalePointsInvalid: "Introduce puntos de nota válidos.",
+        scalePointsRange:
+          "Los puntos de nota no pueden superar el máximo de la escala: {max}.",
+      },
+      sections: [
+        {
+          heading: "Cómo funciona el GPA ponderado",
+          paragraphs: [
+            "El GPA es una media ponderada por créditos: los puntos de cada nota se multiplican por sus créditos, se suman los resultados y el total se divide entre la suma de créditos.",
+            "La fórmula es `GPA = Σ(créditos × puntos de nota) / Σ(créditos)`. El cálculo conserva toda la precisión y solo redondea el GPA mostrado a dos decimales.",
+            "Para notas basadas en porcentajes, la [calculadora de porcentajes](/percentage-calculator) puede convertir valores o comparar puntuaciones antes de asignarlas a la escala de tu institución.",
+          ],
+        },
+        {
+          heading: "Créditos y filas de cursos",
+          paragraphs: [
+            "Introduce entre 0,1 y 30 créditos por curso. El nombre del curso es opcional. Las filas completamente vacías se ignoran, pero cualquier fila con nombre, créditos o nota debe estar completa.",
+            "Se pueden incluir hasta 30 cursos en un cálculo. Nunca se muestra un GPA parcial: todas las filas no vacías deben ser válidas antes de mostrar un resultado.",
+          ],
+        },
+        {
+          heading: "Las escalas de calificación varían",
+          paragraphs: [
+            "La escala de letras 4.0 predeterminada es un ejemplo común, no un estándar universal. Las instituciones y los países usan etiquetas, puntuaciones, máximos y reglas de ponderación diferentes.",
+            "Usa el editor para definir el nombre, el máximo y las equivalencias de tu institución. Al cambiar la escala se actualizan las opciones de nota; si una etiqueta seleccionada ya no existe, el curso afectado se marca y hay que volver a elegir la nota.",
+          ],
+        },
+        {
+          heading: "Política académica",
+          paragraphs: [
+            "Esta calculadora muestra el GPA ponderado a partir de los valores que introduces. No aplica reglas específicas de una institución, como cursos repetidos, asignaturas aprobadas/suspendidas, créditos transferidos, sustitución de notas, políticas de redondeo o ponderación de honores.",
+            "Consulta la política oficial de tu institución antes de usar el resultado para decisiones académicas.",
+          ],
+        },
+        {
+          heading: "Ejemplos",
+          paragraphs: [
+            "3 créditos con A (4.0), 4 créditos con B (3.0) y 3 créditos con C (2.0) dan un GPA de 3,00 en 10 créditos.",
+            "1,5 créditos con A (4.0) y 2,5 créditos con B (3.0) dan un GPA de 3,38 en 4 créditos.",
+            "Una nota de cero puntos permanece en el denominador: 3 créditos con A y 3 créditos con F dan un GPA de 2,00.",
+          ],
+        },
+        {
+          heading: "Privacidad",
+          paragraphs: [
+            "Los nombres de cursos, créditos, notas y el GPA calculado se procesan en este navegador. Nunca se suben, se guardan en el almacenamiento del navegador ni se incluyen en un evento de analítica.",
+          ],
+        },
+      ],
+    },
     unitConverter: {
       title: "Conversor de unidades — AppKitX",
       metaDescription:
