@@ -1,0 +1,627 @@
+---
+import activityIcon from "lucide-static/icons/activity.svg?raw";
+import infoIcon from "lucide-static/icons/info.svg?raw";
+import FieldError from "./FieldError.astro";
+import {
+  defaultLocale,
+  getDictionary,
+  getLocale,
+  type LocaleCode,
+} from "../i18n/config";
+import { BMI_CATEGORIES } from "../lib/bmi";
+
+interface Props {
+  locale?: LocaleCode;
+}
+
+const { locale = defaultLocale } = Astro.props;
+const t = getDictionary(locale);
+const tool = t.tools.bmiCalculator;
+const localeMeta = getLocale(locale);
+
+const scriptStrings = {
+  unitConverted: tool.unitConverted,
+  unitReset: tool.unitReset,
+  categories: tool.categories,
+  errors: tool.errors,
+  intlLocale: localeMeta.intlLocale,
+};
+---
+
+<div data-bmi-calculator data-i18n={JSON.stringify(scriptStrings)}>
+  <form novalidate data-bmi-form>
+    <div class="rounded-lg border border-border-subtle bg-surface p-(--layout-panel-padding)">
+      <fieldset class="min-w-0">
+        <legend class="text-label text-text-primary">{tool.unitLegend}</legend>
+        <div class="segmented segmented--large mt-2">
+          <label>
+            <input
+              type="radio"
+              name="system"
+              value="metric"
+              class="sr-only"
+              checked
+            />
+            {tool.units.metric}
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="system"
+              value="imperial"
+              class="sr-only"
+            />
+            {tool.units.imperial}
+          </label>
+        </div>
+        <p class="mt-1 text-caption text-text-muted">{tool.unitHint}</p>
+        <p
+          class="mt-2 text-caption text-text-secondary"
+          role="status"
+          aria-live="polite"
+          hidden
+          data-unit-note
+        ></p>
+      </fieldset>
+
+      <div class="mt-5 space-y-5" data-bmi-panel="metric">
+        <div>
+          <label for="bmi-metric-weight" class="text-label text-text-primary">
+            {tool.metricWeightLabel}
+          </label>
+          <input
+            id="bmi-metric-weight"
+            name="metricWeight"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            spellcheck="false"
+            class="input mt-2 font-mono tabular-nums"
+            placeholder={tool.metricWeightPlaceholder}
+            aria-describedby="bmi-metric-hint bmi-metric-weight-error"
+            data-bmi-input="metricWeight"
+          />
+          <FieldError field="metricWeight" id="bmi-metric-weight-error" />
+        </div>
+
+        <div>
+          <label for="bmi-metric-height" class="text-label text-text-primary">
+            {tool.metricHeightLabel}
+          </label>
+          <input
+            id="bmi-metric-height"
+            name="metricHeight"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            spellcheck="false"
+            class="input mt-2 font-mono tabular-nums"
+            placeholder={tool.metricHeightPlaceholder}
+            aria-describedby="bmi-metric-hint bmi-metric-height-error"
+            data-bmi-input="metricHeight"
+          />
+          <FieldError field="metricHeight" id="bmi-metric-height-error" />
+        </div>
+
+        <p id="bmi-metric-hint" class="text-caption text-text-muted">
+          {tool.inputHint}
+        </p>
+      </div>
+
+      <div class="mt-5 space-y-5" data-bmi-panel="imperial" hidden>
+        <div>
+          <label for="bmi-imperial-weight" class="text-label text-text-primary">
+            {tool.imperialWeightLabel}
+          </label>
+          <input
+            id="bmi-imperial-weight"
+            name="imperialWeight"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            spellcheck="false"
+            class="input mt-2 font-mono tabular-nums"
+            placeholder={tool.imperialWeightPlaceholder}
+            aria-describedby="bmi-imperial-hint bmi-imperial-weight-error"
+            data-bmi-input="imperialWeight"
+          />
+          <FieldError field="imperialWeight" id="bmi-imperial-weight-error" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="bmi-imperial-feet" class="text-label text-text-primary">
+              {tool.feetLabel}
+            </label>
+            <input
+              id="bmi-imperial-feet"
+              name="imperialFeet"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              spellcheck="false"
+              class="input mt-2 font-mono tabular-nums"
+              placeholder={tool.feetPlaceholder}
+              aria-describedby="bmi-imperial-hint bmi-imperial-feet-error"
+              data-bmi-input="imperialFeet"
+            />
+            <FieldError field="imperialFeet" id="bmi-imperial-feet-error" />
+          </div>
+
+          <div>
+            <label
+              for="bmi-imperial-inches"
+              class="text-label text-text-primary"
+            >
+              {tool.inchesLabel}
+            </label>
+            <input
+              id="bmi-imperial-inches"
+              name="imperialInches"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              spellcheck="false"
+              class="input mt-2 font-mono tabular-nums"
+              placeholder={tool.inchesPlaceholder}
+              aria-describedby="bmi-imperial-hint bmi-imperial-inches-error"
+              data-bmi-input="imperialInches"
+            />
+            <FieldError field="imperialInches" id="bmi-imperial-inches-error" />
+          </div>
+        </div>
+
+        <p id="bmi-imperial-hint" class="text-caption text-text-muted">
+          {tool.imperialHint}
+        </p>
+      </div>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <button type="submit" class="btn btn-primary">
+          {tool.calculate}
+        </button>
+        <button type="button" class="btn btn-secondary" data-reset>
+          {tool.reset}
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div
+    class="mt-6 flex flex-col items-center rounded-lg border border-border-subtle bg-surface-subtle px-6 py-10 text-center"
+    data-bmi-empty
+  >
+    <span
+      class="flex h-10 w-10 items-center justify-center rounded-md bg-surface-muted text-text-muted [&_svg]:h-5 [&_svg]:w-5"
+      aria-hidden="true"
+      set:html={activityIcon}
+    />
+    <p class="mt-3 text-label text-text-primary">{tool.emptyTitle}</p>
+    <p class="mt-1 max-w-[360px] text-caption text-text-muted">
+      {tool.emptyHint}
+    </p>
+  </div>
+
+  <div class="mt-6" data-bmi-result hidden>
+    <div
+      class="rounded-lg bg-accent-subtle p-(--layout-card-padding)"
+      aria-live="polite"
+    >
+      <p class="text-overline text-text-secondary">{tool.resultLabel}</p>
+      <div class="mt-2 flex items-baseline gap-2">
+        <p
+          class="text-mono-result tabular-nums text-text-primary"
+          data-bmi-value
+        >
+          —
+        </p>
+        <span class="text-label text-text-secondary">{tool.resultUnit}</span>
+      </div>
+      <p class="mt-2 text-title text-text-primary" data-bmi-category></p>
+      <p class="mt-1 text-small text-text-secondary" data-bmi-explanation></p>
+      <div
+        class="mt-4 grid grid-cols-4 gap-1"
+        aria-hidden="true"
+        data-bmi-scale
+      >
+        {BMI_CATEGORIES.map((category) => (
+          <span
+            class="h-2 rounded-sm bg-surface-muted"
+            data-bmi-segment={category}
+          ></span>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="mt-6 flex items-start gap-3 rounded-md border border-border-subtle bg-surface-subtle p-4"
+    role="note"
+  >
+    <span
+      class="mt-0.5 h-5 w-5 shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-5"
+      aria-hidden="true"
+      set:html={infoIcon}
+    />
+    <div>
+      <p class="text-label text-text-primary">{tool.disclaimerTitle}</p>
+      <p class="mt-1 text-small text-text-secondary">{tool.disclaimerBody}</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import {
+    calculateImperialBmi,
+    calculateMetricBmi,
+    cmToInches,
+    combineHeightInches,
+    formatBmi,
+    formatMeasurement,
+    inchesToCm,
+    kgToLb,
+    lbToKg,
+    splitHeightInches,
+    type BmiCategory,
+    type BmiIssueCode,
+    type BmiUnitSystem,
+  } from "../lib/bmi";
+  import { parseLocaleNumber } from "../lib/number-input";
+  import type { BmiCalculatorToolStrings } from "../i18n/dictionary";
+
+  interface ScriptStrings {
+    unitConverted: string;
+    unitReset: string;
+    categories: BmiCalculatorToolStrings["categories"];
+    errors: BmiCalculatorToolStrings["errors"];
+    intlLocale: string;
+  }
+
+  const root = document.querySelector<HTMLElement>("[data-bmi-calculator]");
+
+  if (root) {
+    const i18n: ScriptStrings = JSON.parse(root.dataset.i18n ?? "{}");
+
+    const requireEl = <T extends Element>(selector: string): T => {
+      const el = root.querySelector<T>(selector);
+      if (!el) throw new Error(`BMI calculator: missing ${selector}`);
+      return el;
+    };
+
+    const form = requireEl<HTMLFormElement>("[data-bmi-form]");
+    const metricPanel = requireEl<HTMLElement>('[data-bmi-panel="metric"]');
+    const imperialPanel = requireEl<HTMLElement>('[data-bmi-panel="imperial"]');
+    const unitNote = requireEl<HTMLElement>("[data-unit-note]");
+    const emptyState = requireEl<HTMLElement>("[data-bmi-empty]");
+    const resultRegion = requireEl<HTMLElement>("[data-bmi-result]");
+    const resultValue = requireEl<HTMLElement>("[data-bmi-value]");
+    const resultCategory = requireEl<HTMLElement>("[data-bmi-category]");
+    const resultExplanation = requireEl<HTMLElement>("[data-bmi-explanation]");
+    const resultSegments = [
+      ...root.querySelectorAll<HTMLElement>("[data-bmi-segment]"),
+    ];
+    const resetButton = requireEl<HTMLButtonElement>("[data-reset]");
+    const radios = root.querySelectorAll<HTMLInputElement>(
+      'input[name="system"]',
+    );
+
+    const fieldRefs = (key: string) => ({
+      input: requireEl<HTMLInputElement>(`[data-bmi-input="${key}"]`),
+      wrap: requireEl<HTMLElement>(`[data-error-for="${key}"]`),
+      text: requireEl<HTMLElement>(
+        `[data-error-for="${key}"] [data-error-text]`,
+      ),
+    });
+
+    const fields = {
+      metricWeight: fieldRefs("metricWeight"),
+      metricHeight: fieldRefs("metricHeight"),
+      imperialWeight: fieldRefs("imperialWeight"),
+      imperialFeet: fieldRefs("imperialFeet"),
+      imperialInches: fieldRefs("imperialInches"),
+    } as const;
+
+    type FieldKey = keyof typeof fields;
+    type Parsed =
+      { ok: true; value: number } | { ok: false; required: boolean };
+
+    const selectedSystem = (): BmiUnitSystem =>
+      (root.querySelector<HTMLInputElement>('input[name="system"]:checked')
+        ?.value as BmiUnitSystem | undefined) ?? "metric";
+
+    const systemFields = (system: BmiUnitSystem): FieldKey[] =>
+      system === "metric"
+        ? ["metricWeight", "metricHeight"]
+        : ["imperialWeight", "imperialFeet", "imperialInches"];
+
+    const parseField = (key: FieldKey): Parsed => {
+      const raw = fields[key].input.value.trim();
+      if (raw === "") return { ok: false, required: true };
+      const parsed = parseLocaleNumber(raw, i18n.intlLocale);
+      return parsed.ok
+        ? { ok: true, value: parsed.value }
+        : { ok: false, required: false };
+    };
+
+    const requiredMessage = (key: FieldKey): string => {
+      switch (key) {
+        case "metricWeight":
+        case "imperialWeight":
+          return i18n.errors.weightRequired;
+        case "metricHeight":
+          return i18n.errors.heightRequired;
+        case "imperialFeet":
+          return i18n.errors.feetRequired;
+        case "imperialInches":
+          return i18n.errors.inchesRequired;
+      }
+    };
+
+    const invalidMessage = (key: FieldKey): string => {
+      switch (key) {
+        case "metricWeight":
+        case "imperialWeight":
+          return i18n.errors.weightInvalid;
+        case "metricHeight":
+          return i18n.errors.heightInvalid;
+        case "imperialFeet":
+          return i18n.errors.feetInvalid;
+        case "imperialInches":
+          return i18n.errors.inchesInvalid;
+      }
+    };
+
+    const issueMessage = (
+      code: BmiIssueCode,
+      system: BmiUnitSystem,
+    ): string => {
+      switch (code) {
+        case "weightRequired":
+          return i18n.errors.weightRequired;
+        case "weightInvalid":
+          return i18n.errors.weightInvalid;
+        case "weightRange":
+          return system === "metric"
+            ? i18n.errors.weightRangeMetric
+            : i18n.errors.weightRangeImperial;
+        case "heightRequired":
+          return i18n.errors.heightRequired;
+        case "heightInvalid":
+          return i18n.errors.heightInvalid;
+        case "heightRange":
+          return i18n.errors.heightRangeMetric;
+        case "feetRequired":
+          return i18n.errors.feetRequired;
+        case "feetInvalid":
+          return i18n.errors.feetInvalid;
+        case "inchesRequired":
+          return i18n.errors.inchesRequired;
+        case "inchesInvalid":
+          return i18n.errors.inchesInvalid;
+        case "inchesRange":
+          return i18n.errors.inchesRange;
+        case "heightRangeImperial":
+          return i18n.errors.heightRangeImperial;
+      }
+    };
+
+    const issueField = (
+      field: "weight" | "height" | "feet" | "inches",
+      system: BmiUnitSystem,
+    ): FieldKey => {
+      if (field === "weight")
+        return system === "metric" ? "metricWeight" : "imperialWeight";
+      if (field === "height") return "metricHeight";
+      if (field === "feet") return "imperialFeet";
+      return "imperialInches";
+    };
+
+    const clearError = (key: FieldKey): void => {
+      const ref = fields[key];
+      ref.wrap.hidden = true;
+      ref.text.textContent = "";
+      ref.input.removeAttribute("aria-invalid");
+    };
+
+    const clearAllErrors = (): void => {
+      for (const key of Object.keys(fields) as FieldKey[]) clearError(key);
+    };
+
+    const showError = (key: FieldKey, message: string): void => {
+      const ref = fields[key];
+      ref.wrap.hidden = false;
+      ref.text.textContent = message;
+      ref.input.setAttribute("aria-invalid", "true");
+    };
+
+    const resetResult = (): void => {
+      resultRegion.hidden = true;
+      emptyState.hidden = false;
+      resultValue.textContent = "—";
+      resultCategory.textContent = "";
+      resultExplanation.textContent = "";
+      for (const segment of resultSegments) {
+        segment.classList.remove("bg-accent");
+        segment.classList.add("bg-surface-muted");
+      }
+    };
+
+    const showResult = (bmi: number, category: BmiCategory): void => {
+      resultRegion.hidden = false;
+      emptyState.hidden = true;
+      resultValue.textContent = formatBmi(bmi, i18n.intlLocale);
+      resultCategory.textContent = i18n.categories[category].label;
+      resultExplanation.textContent = i18n.categories[category].explanation;
+
+      for (const segment of resultSegments) {
+        const active = segment.dataset.bmiSegment === category;
+        segment.classList.toggle("bg-accent", active);
+        segment.classList.toggle("bg-surface-muted", !active);
+      }
+    };
+
+    const applyPanels = (system: BmiUnitSystem): void => {
+      metricPanel.hidden = system !== "metric";
+      imperialPanel.hidden = system !== "imperial";
+    };
+
+    const firstField = (system: BmiUnitSystem): HTMLInputElement =>
+      fields[systemFields(system)[0]].input;
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      clearAllErrors();
+      unitNote.hidden = true;
+
+      const system = selectedSystem();
+      const parsed = new Map<FieldKey, number>();
+      let firstInvalid: FieldKey | null = null;
+
+      for (const key of systemFields(system)) {
+        const value = parseField(key);
+        if (!value.ok) {
+          showError(
+            key,
+            value.required ? requiredMessage(key) : invalidMessage(key),
+          );
+          firstInvalid ??= key;
+        } else {
+          parsed.set(key, value.value);
+        }
+      }
+
+      if (firstInvalid) {
+        resetResult();
+        fields[firstInvalid].input.focus();
+        return;
+      }
+
+      const result =
+        system === "metric"
+          ? calculateMetricBmi(
+              parsed.get("metricWeight") as number,
+              parsed.get("metricHeight") as number,
+            )
+          : calculateImperialBmi(
+              parsed.get("imperialWeight") as number,
+              parsed.get("imperialFeet") as number,
+              parsed.get("imperialInches") as number,
+            );
+
+      if (!result.ok) {
+        let firstIssueField: FieldKey | null = null;
+        for (const issue of result.issues) {
+          const key = issueField(issue.field, system);
+          showError(key, issueMessage(issue.code, system));
+          firstIssueField ??= key;
+        }
+        resetResult();
+        if (firstIssueField) fields[firstIssueField].input.focus();
+        return;
+      }
+
+      showResult(result.bmi, result.category);
+    });
+
+    for (const key of Object.keys(fields) as FieldKey[]) {
+      fields[key].input.addEventListener("input", () => {
+        clearError(key);
+        unitNote.hidden = true;
+        resetResult();
+      });
+    }
+
+    const switchSystem = (target: BmiUnitSystem): void => {
+      const source: BmiUnitSystem = target === "metric" ? "imperial" : "metric";
+      const sourceKeys = systemFields(source);
+      const targetKeys = systemFields(target);
+      const allEmpty = sourceKeys.every(
+        (key) => fields[key].input.value.trim() === "",
+      );
+      const sourceValues = sourceKeys.map((key) => parseField(key));
+      const valueAt = (index: number): number | null => {
+        const item = sourceValues[index];
+        return item?.ok ? item.value : null;
+      };
+      const weight = valueAt(0);
+      const second = valueAt(1);
+      const third = valueAt(2);
+
+      applyPanels(target);
+      clearAllErrors();
+      resetResult();
+      unitNote.hidden = true;
+
+      if (allEmpty) {
+        for (const key of targetKeys) fields[key].input.value = "";
+        return;
+      }
+
+      const convertible =
+        source === "metric"
+          ? weight !== null && second !== null && weight > 0 && second > 0
+          : weight !== null &&
+            second !== null &&
+            third !== null &&
+            weight > 0 &&
+            Number.isInteger(second) &&
+            second >= 0 &&
+            third >= 0 &&
+            third < 12 &&
+            combineHeightInches(second, third) > 0;
+
+      if (!convertible) {
+        for (const key of targetKeys) fields[key].input.value = "";
+        unitNote.textContent = i18n.unitReset;
+        unitNote.hidden = false;
+        return;
+      }
+
+      if (target === "imperial") {
+        if (weight === null || second === null) return;
+        fields.imperialWeight.input.value = formatMeasurement(
+          kgToLb(weight),
+          i18n.intlLocale,
+        );
+        const split = splitHeightInches(cmToInches(second));
+        fields.imperialFeet.input.value = String(split.feet);
+        fields.imperialInches.input.value = formatMeasurement(
+          split.inches,
+          i18n.intlLocale,
+        );
+      } else {
+        if (weight === null || second === null || third === null) return;
+        fields.metricWeight.input.value = formatMeasurement(
+          lbToKg(weight),
+          i18n.intlLocale,
+        );
+        fields.metricHeight.input.value = formatMeasurement(
+          inchesToCm(combineHeightInches(second, third)),
+          i18n.intlLocale,
+        );
+      }
+
+      unitNote.textContent = i18n.unitConverted;
+      unitNote.hidden = false;
+    };
+
+    for (const radio of radios) {
+      radio.addEventListener("change", () => {
+        if (radio.checked) switchSystem(radio.value as BmiUnitSystem);
+      });
+    }
+
+    resetButton.addEventListener("click", () => {
+      for (const key of Object.keys(fields) as FieldKey[]) {
+        fields[key].input.value = "";
+      }
+      clearAllErrors();
+      unitNote.hidden = true;
+      resetResult();
+      firstField(selectedSystem()).focus();
+    });
+
+    applyPanels("metric");
+    resetResult();
+  }
+</script>

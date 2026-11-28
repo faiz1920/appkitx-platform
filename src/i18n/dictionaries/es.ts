@@ -1220,6 +1220,143 @@ export const es: Dictionary = {
         },
       ],
     },
+    bmiCalculator: {
+      title: "Calculadora de IMC — AppKitX",
+      metaDescription:
+        "Calculadora de IMC para adultos gratis, en sistema métrico e imperial: introduce peso y altura para ver el IMC, la categoría y una explicación clara. Sin registro.",
+      name: "Calculadora de IMC",
+      description:
+        "Calcula el IMC de adultos a partir de medidas métricas o imperiales, con una categoría clara y una explicación de cribado.",
+      cardDescription:
+        "Calcula el IMC de adultos con medidas métricas o imperiales.",
+      keywords: [
+        "imc",
+        "calculadora de imc",
+        "índice de masa corporal",
+        "peso saludable",
+        "bajo peso",
+        "sobrepeso",
+        "obesidad",
+        "imc adulto",
+        "métrico",
+        "imperial",
+      ],
+      unitLegend: "Unidades",
+      units: {
+        metric: "Métrico",
+        imperial: "Imperial",
+      },
+      unitHint:
+        "Cambiar de unidades convierte las medidas actuales cuando están completas.",
+      unitConverted:
+        "Medidas convertidas a las unidades seleccionadas. Pulsa Calcular para actualizar el resultado.",
+      unitReset:
+        "Unidades cambiadas. Introduce las medidas en las nuevas unidades.",
+      metricWeightLabel: "Peso (kg)",
+      metricHeightLabel: "Altura (cm)",
+      imperialWeightLabel: "Peso (lb)",
+      feetLabel: "Pies (ft)",
+      inchesLabel: "Pulgadas (in)",
+      metricWeightPlaceholder: "70",
+      metricHeightPlaceholder: "175",
+      imperialWeightPlaceholder: "154",
+      feetPlaceholder: "5",
+      inchesPlaceholder: "9",
+      inputHint:
+        "Se permiten decimales. El cálculo usa precisión completa y solo redondea el IMC mostrado.",
+      imperialHint:
+        "Las pulgadas deben estar entre 0 y 11; los pies deben ser un número entero.",
+      calculate: "Calcular IMC",
+      reset: "Limpiar",
+      resultLabel: "Resultado",
+      resultUnit: "IMC",
+      emptyTitle: "Aún no hay resultado",
+      emptyHint: "Introduce tus medidas y calcula para ver el IMC.",
+      categories: {
+        underweight: {
+          label: "Bajo peso",
+          explanation:
+            "Por debajo del intervalo de cribado para adultos. El IMC por sí solo no explica la causa.",
+        },
+        healthy: {
+          label: "Peso saludable",
+          explanation: "Dentro del intervalo de cribado para adultos.",
+        },
+        overweight: {
+          label: "Sobrepeso",
+          explanation:
+            "Por encima del intervalo de cribado para adultos. El IMC no distingue entre músculo y grasa.",
+        },
+        obesity: {
+          label: "Obesidad",
+          explanation:
+            "Dentro del intervalo de obesidad del cribado. Un profesional sanitario puede valorar qué significa en su contexto.",
+        },
+      },
+      disclaimerTitle:
+        "El IMC es una herramienta de cribado, no un diagnóstico.",
+      disclaimerBody:
+        "El IMC no mide directamente la grasa corporal ni distingue entre grasa y músculo. Puede ser menos adecuado para deportistas, personas mayores y otros grupos, y estas categorías para adultos no se aplican a niños ni adolescentes, que necesitan percentiles específicos por edad y sexo. No uses el IMC por sí solo para tomar decisiones médicas.",
+      errors: {
+        weightRequired: "Introduce tu peso.",
+        weightInvalid: "Introduce un peso válido.",
+        weightRangeMetric: "Introduce un peso entre 20 y 400 kg.",
+        weightRangeImperial: "Introduce un peso entre 44 y 882 lb.",
+        heightRequired: "Introduce tu altura.",
+        heightInvalid: "Introduce una altura válida.",
+        heightRangeMetric: "Introduce una altura entre 100 y 250 cm.",
+        feetRequired: "Introduce los pies de tu altura.",
+        feetInvalid: "Introduce los pies como un número entero.",
+        inchesRequired: "Introduce las pulgadas de tu altura.",
+        inchesInvalid: "Introduce un número de pulgadas válido.",
+        inchesRange: "Las pulgadas deben estar entre 0 y 11.",
+        heightRangeImperial:
+          "Introduce una altura entre 3 pies 3 pulgadas y 8 pies 2 pulgadas aproximadamente.",
+        invalidNumber: "Introduce un número válido.",
+      },
+      sections: [
+        {
+          heading: "Cómo funciona",
+          paragraphs: [
+            "Elige unidades métricas o imperiales, introduce tu peso y tu altura y pulsa Calcular IMC. El resultado muestra el IMC con un decimal y la categoría de cribado para adultos.",
+            "El sistema métrico usa `IMC = peso (kg) / altura (m)²`; el imperial usa `IMC = 703 × peso (lb) / altura (in)²`. La categoría se calcula con el IMC sin redondear, así que un valor que se muestra como 25,0 sigue clasificándose por su valor exacto.",
+          ],
+        },
+        {
+          heading: "Qué significa el resultado",
+          paragraphs: ["Las categorías estándar para adultos son:"],
+          items: [
+            "Menos de 18,5: bajo peso.",
+            "De 18,5 a menos de 25: peso saludable.",
+            "De 25 a menos de 30: sobrepeso.",
+            "30 o más: obesidad.",
+          ],
+        },
+        {
+          heading: "Unidades métricas e imperiales",
+          paragraphs: [
+            "Al cambiar de unidades se convierten las medidas completas con 1 kg = 2,20462 lb, 1 in = 2,54 cm y 12 in = 1 ft. El resultado se borra para que confirmes los valores convertidos antes de volver a calcular.",
+            "Si los campos actuales están incompletos o no son válidos, el cambio de unidades borra los campos y pide introducir las medidas en las unidades seleccionadas. Para otras conversiones, usa el [conversor de unidades](/unit-converter).",
+          ],
+        },
+        {
+          heading: "Información de salud y limitaciones",
+          paragraphs: [
+            "El IMC es una medida de cribado, no un diagnóstico. No mide directamente la grasa corporal ni distingue entre grasa y músculo, por lo que puede ser menos adecuado para deportistas, personas mayores y otras poblaciones.",
+            "Estas categorías para adultos no están pensadas para niños ni adolescentes; la valoración pediátrica requiere percentiles de IMC específicos por edad y sexo. El IMC por sí solo no debe usarse para tomar decisiones médicas.",
+            "Esta calculadora no ofrece tratamiento, dietas ni recomendaciones médicas personalizadas.",
+          ],
+        },
+        {
+          heading: "Ejemplos",
+          paragraphs: [
+            "70 kg con 175 cm dan un IMC de 22,9, dentro de peso saludable.",
+            "154 lb con 5 ft 9 in dan un IMC de 22,7, también dentro de peso saludable.",
+            "86,6 kg con 170 cm dan un IMC sin redondear de 29,97; se muestra como 30,0 pero sigue en sobrepeso porque la clasificación usa el valor sin redondear.",
+          ],
+        },
+      ],
+    },
     unitConverter: {
       title: "Conversor de unidades — AppKitX",
       metaDescription:

@@ -127,7 +127,7 @@ describe("searchTools", () => {
     expect(
       searchTools("developer tools", fixture).map((tool) => tool.title),
     ).toEqual(["Beta Utility"]);
-    expect(searchTools("calculators", tools)).toHaveLength(8);
+    expect(searchTools("calculators", tools)).toHaveLength(9);
   });
 
   it("matches by description", () => {
@@ -176,6 +176,7 @@ describe("searchTools", () => {
       "/savings-goal-calculator",
       "/retirement-calculator",
       "/scientific-calculator",
+      "/bmi-calculator",
       "/date-calculator",
       "/age-calculator",
       "/time-zone-converter",
@@ -329,6 +330,9 @@ describe("searchTools", () => {
     expect(searchTools("hash", tools).map((tool) => tool.href)).toEqual([
       "/hash-generator",
     ]);
+    expect(searchTools("bmi", tools).map((tool) => tool.href)).toEqual([
+      "/bmi-calculator",
+    ]);
     expect(
       searchTools("developer tools", tools).map((tool) => tool.href),
     ).toEqual([
@@ -407,6 +411,7 @@ describe("localized search catalogs", () => {
       "/savings-goal-calculator",
       "/retirement-calculator",
       "/scientific-calculator",
+      "/bmi-calculator",
     ]);
   });
 
