@@ -1334,6 +1334,141 @@ export const en: Dictionary = {
         },
       ],
     },
+    gpaCalculator: {
+      title: "GPA Calculator — AppKitX",
+      metaDescription:
+        "Free weighted GPA calculator: enter course credits and grades, choose a 4.0 or custom grading scale, and see GPA, total credits and course count. No account needed.",
+      name: "GPA Calculator",
+      description:
+        "Calculate a credit-weighted GPA from course grades and credits, with a configurable grading scale.",
+      cardDescription: "Calculate weighted GPA from course credits and grades.",
+      keywords: [
+        "gpa",
+        "gpa calculator",
+        "weighted gpa",
+        "grade point average",
+        "college gpa",
+        "university gpa",
+        "credit hours",
+        "grading scale",
+        "semester gpa",
+      ],
+      coursesHeading: "Courses",
+      courseLimit: "Up to 30 courses.",
+      emptyRowsHint:
+        "Completely empty rows are ignored; any row with a name, credits or grade must be complete.",
+      addCourse: "Add course",
+      removeCourse: "Remove course {index}",
+      courseNameLabel: "Course {index} name (optional)",
+      courseNamePlaceholder: "e.g. Biology",
+      creditsLabel: "Credits {index}",
+      creditsPlaceholder: "3",
+      gradeLabel: "Grade {index}",
+      gradePlaceholder: "Select grade",
+      gradePoints: "{points} points",
+      calculate: "Calculate GPA",
+      reset: "Reset",
+      activeScaleLabel: "Active grading scale",
+      activeScaleDisplay: "{name} · maximum {max}",
+      defaultScaleName: "4.0 letter scale",
+      defaultScaleNote:
+        "Common example scale — check your institution's policy.",
+      scaleEditorSummary: "Customize grading scale",
+      scaleNameLabel: "Scale name",
+      scaleNamePlaceholder: "e.g. 4.0 letter scale",
+      scaleMaxLabel: "Scale maximum",
+      scaleMaxHint:
+        "Use the maximum points your institution awards. The default is 4.0.",
+      scaleGradesLabel: "Grade mappings",
+      scaleGradeLabel: "Grade {index}",
+      scalePointsLabel: "Points {index}",
+      addGrade: "Add grade",
+      removeGrade: "Remove grade {index}",
+      applyScale: "Apply scale",
+      resetScale: "Reset to default",
+      scaleApplied: "Grading scale applied.",
+      scaleAppliedInvalidated:
+        "Grading scale applied. Re-select the grades marked below.",
+      scaleReset: "Default 4.0 scale restored.",
+      scaleResetInvalidated:
+        "Default 4.0 scale restored. Re-select the grades marked below.",
+      resultLabel: "Result",
+      gpaUnit: "GPA",
+      totalCreditsLabel: "Total credits",
+      coursesIncludedLabel: "Courses included",
+      scaleUsedLabel: "Grading scale",
+      courseCountOne: "{count} course",
+      courseCountMany: "{count} courses",
+      emptyTitle: "No GPA yet",
+      emptyHint: "Add courses and select Calculate GPA.",
+      privacyTitle: "Calculated locally",
+      privacyBody:
+        "Course names, credits, grades and the GPA stay in this browser. Nothing is uploaded or stored.",
+      errors: {
+        noCourses: "Add at least one course with credits and a grade.",
+        creditsRequired: "Enter credit hours.",
+        creditsInvalid: "Enter valid credit hours.",
+        creditsRange: "Enter credit hours between 0.1 and 30.",
+        gradeRequired: "Select a grade.",
+        gradeUnknown: "Choose a grade from the active scale.",
+        gradeInvalidated:
+          "This grade is no longer in the active scale. Select a grade again.",
+        scaleNameRequired: "Enter a scale name.",
+        scaleMaxInvalid: "Enter a valid scale maximum.",
+        scaleMaxRange: "Enter a scale maximum of 100 or less.",
+        noGrades: "Add at least one valid grade.",
+        scaleGradeRequired: "Enter a grade label.",
+        scaleGradeDuplicate: "Grade labels must be unique.",
+        scalePointsInvalid: "Enter valid grade points.",
+        scalePointsRange:
+          "Grade points cannot exceed the scale maximum of {max}.",
+      },
+      sections: [
+        {
+          heading: "How weighted GPA works",
+          paragraphs: [
+            "GPA is a credit-weighted average: each course's grade points are multiplied by its credit hours, the results are added, and the total is divided by the sum of the credits.",
+            "The formula is `GPA = Σ(credits × grade points) / Σ(credits)`. The calculation keeps full precision and rounds only the displayed GPA to two decimal places.",
+            "For percentage-based marks, the [percentage calculator](/percentage-calculator) can convert values or compare scores before you map them to your institution's grade scale.",
+          ],
+        },
+        {
+          heading: "Credits and course rows",
+          paragraphs: [
+            "Enter 0.1–30 credit hours per course. Course names are optional. Completely empty rows are ignored, but any row with a name, credits or grade must be complete.",
+            "Up to 30 courses can be included in one calculation. A partial GPA is never shown: every non-empty row must be valid before a result appears.",
+          ],
+        },
+        {
+          heading: "Grading scales differ",
+          paragraphs: [
+            "The default 4.0 letter scale is a common example, not a universal standard. Institutions and countries use different grade labels, point values, maxima and weighting rules.",
+            "Use the scale editor to set the name, maximum and mappings for your institution. Changing the scale updates the grade options; if a selected label no longer exists, the affected course is marked and its grade must be selected again.",
+          ],
+        },
+        {
+          heading: "Academic policy",
+          paragraphs: [
+            "This calculator reports the weighted GPA from the values you enter. It does not apply institution-specific rules such as repeated courses, pass/fail handling, transfer credit, grade replacement, rounding policies or honors weighting.",
+            "Check your institution's official policy before using the result for academic decisions.",
+          ],
+        },
+        {
+          heading: "Examples",
+          paragraphs: [
+            "3 credits at A (4.0), 4 credits at B (3.0) and 3 credits at C (2.0) give GPA 3.00 across 10 credits.",
+            "1.5 credits at A (4.0) and 2.5 credits at B (3.0) give GPA 3.38 across 4 credits.",
+            "A zero-point grade remains in the denominator: 3 credits at A and 3 credits at F give GPA 2.00.",
+          ],
+        },
+        {
+          heading: "Privacy",
+          paragraphs: [
+            "Course names, credits, grades and the calculated GPA are processed in this browser. They are never uploaded, stored in browser storage or included in an analytics event.",
+          ],
+        },
+      ],
+    },
     unitConverter: {
       title: "Unit Converter — AppKitX",
       metaDescription:

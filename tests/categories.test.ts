@@ -76,6 +76,7 @@ describe("category membership", () => {
       "/retirement-calculator",
       "/scientific-calculator",
       "/bmi-calculator",
+      "/gpa-calculator",
     ]);
     expect(toolsInCategory("Converters").map((tool) => tool.href)).toEqual([
       "/unit-converter",
@@ -111,6 +112,7 @@ describe("category membership", () => {
     expect(toolCategory("/retirement-calculator")).toBe("Calculators");
     expect(toolCategory("/scientific-calculator")).toBe("Calculators");
     expect(toolCategory("/bmi-calculator")).toBe("Calculators");
+    expect(toolCategory("/gpa-calculator")).toBe("Calculators");
     expect(toolCategory("/unit-converter")).toBe("Converters");
     expect(toolCategory("/speed-converter")).toBe("Converters");
     expect(toolCategory("/qr-code-generator")).toBe("Developer tools");

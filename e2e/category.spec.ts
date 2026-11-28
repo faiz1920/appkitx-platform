@@ -34,7 +34,7 @@ test("the English category page lists the registered calculators", async ({
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Open tool" });
-  await expect(cards).toHaveCount(9);
+  await expect(cards).toHaveCount(10);
   await expect(cards.nth(0)).toContainText("Percentage Calculator");
   await expect(cards.nth(0)).toHaveAttribute("href", "/percentage-calculator/");
   await expect(cards.nth(1)).toContainText("Discount Calculator");
@@ -59,6 +59,8 @@ test("the English category page lists the registered calculators", async ({
   await expect(cards.nth(7)).toHaveAttribute("href", "/scientific-calculator/");
   await expect(cards.nth(8)).toContainText("BMI Calculator");
   await expect(cards.nth(8)).toHaveAttribute("href", "/bmi-calculator/");
+  await expect(cards.nth(9)).toContainText("GPA Calculator");
+  await expect(cards.nth(9)).toHaveAttribute("href", "/gpa-calculator/");
 
   /* The converters belong to another category. */
   await expect(page.getByRole("main").getByText("Unit Converter")).toHaveCount(
@@ -100,7 +102,7 @@ test("the Spanish category page is fully localized", async ({ page }) => {
     .getByRole("main")
     .getByRole("link")
     .filter({ hasText: "Abrir herramienta" });
-  await expect(cards).toHaveCount(9);
+  await expect(cards).toHaveCount(10);
   await expect(cards.nth(0)).toContainText("Calculadora de porcentajes");
   await expect(cards.nth(0)).toHaveAttribute(
     "href",
@@ -137,6 +139,8 @@ test("the Spanish category page is fully localized", async ({ page }) => {
   );
   await expect(cards.nth(8)).toContainText("Calculadora de IMC");
   await expect(cards.nth(8)).toHaveAttribute("href", "/es/bmi-calculator/");
+  await expect(cards.nth(9)).toContainText("Calculadora de GPA");
+  await expect(cards.nth(9)).toHaveAttribute("href", "/es/gpa-calculator/");
 
   await page.screenshot({
     path: "test-results/category-calculators-es.png",
@@ -590,6 +594,11 @@ test("tool pages link to their published category", async ({ page }) => {
       href: "/calculators/",
     },
     {
+      path: "/gpa-calculator/",
+      label: "See all",
+      href: "/calculators/",
+    },
+    {
       path: "/unit-converter/",
       label: "See all",
       href: "/converters/",
@@ -651,6 +660,11 @@ test("tool pages link to their published category", async ({ page }) => {
     },
     {
       path: "/es/bmi-calculator/",
+      label: "Ver todas",
+      href: "/es/calculators/",
+    },
+    {
+      path: "/es/gpa-calculator/",
       label: "Ver todas",
       href: "/es/calculators/",
     },

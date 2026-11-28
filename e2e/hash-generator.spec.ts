@@ -437,7 +437,7 @@ test("exposes canonical, alternates, structured data, and sitemap entries", asyn
   const urls = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(
     (match) => match[1],
   );
-  expect(urls).toHaveLength(86);
+  expect(urls).toHaveLength(88);
   expect(urls).toContain("https://appkitx.com/hash-generator/");
   expect(urls).toContain("https://appkitx.com/es/hash-generator/");
   expect(sitemap).not.toContain("pc-builder");
